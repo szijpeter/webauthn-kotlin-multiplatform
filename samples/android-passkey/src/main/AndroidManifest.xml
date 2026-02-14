@@ -1,0 +1,10 @@
+<manifest package="dev.webauthn.samples.android" xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:label="WebAuthn Sample">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
