@@ -1,0 +1,8 @@
+{
+  "instructionsFile": "docs/ai/STEERING.md",
+  "approvalPolicy": "default",
+  "sandboxMode": "workspace-write",
+  "workflows": [
+    "fast-pr-check"
+  ]
+}

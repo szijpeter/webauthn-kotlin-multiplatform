@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+echo "[pre-commit] Running advisory fast quality gate..."
+if ! tools/agent/quality-gate.sh --mode fast --scope changed --block false; then
+  echo "[pre-commit] advisory gate reported issues (commit allowed)." >&2
+fi

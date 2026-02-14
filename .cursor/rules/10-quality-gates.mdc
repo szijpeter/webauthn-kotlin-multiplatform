@@ -1,0 +1,19 @@
+---
+description: Quality gate and validation policy
+alwaysApply: true
+---
+
+Validation sequence:
+
+1. Fast changed-scope gate first.
+2. Strict changed-scope gate for push-ready changes.
+3. Full checks only when cross-cutting risk or requested.
+
+Commands:
+
+```bash
+tools/agent/quality-gate.sh --mode fast --scope changed --block false
+tools/agent/quality-gate.sh --mode strict --scope changed --block true
+```
+
+If files under `webauthn-core` or `webauthn-model` change validator/rule semantics, update `spec-notes/webauthn-l3-validation-map.md`.

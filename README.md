@@ -31,3 +31,27 @@ This repository is currently a V1 scaffold with strict validation foundations, m
 - RFC 9052 / RFC 9053 (COSE)
 
 See `spec-notes/` for implemented rule mapping.
+
+## AI Harness
+
+Repository AI steering is centralized in `docs/ai/STEERING.md`.
+
+Quick start:
+
+```bash
+tools/agent/setup-hooks.sh
+tools/agent/verify-harness-sync.sh
+```
+
+Common gate commands:
+
+```bash
+tools/agent/quality-gate.sh --mode fast --scope changed --block false
+tools/agent/quality-gate.sh --mode strict --scope changed --block true
+```
+
+Related docs:
+
+- `docs/ai/WORKFLOWS.md`
+- `docs/ai/COST_POLICY.md`
+- `docs/ai/SKILLS.md`

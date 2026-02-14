@@ -1,0 +1,12 @@
+---
+description: Token economy and context strategy
+alwaysApply: true
+---
+
+Keep context cost low:
+
+1. Read changed files first.
+2. Read direct dependencies second.
+3. Read architecture/spec documents only when behavior decisions require them.
+4. Avoid whole-repo scans unless blocked.
+5. Summarize findings before expanding context.
