@@ -24,6 +24,9 @@ required_files=(
   "docs/ai/SKILLS.md"
   "docs/ai/WORKFLOWS.md"
   "docs/ai/COST_POLICY.md"
+  "docs/IMPLEMENTATION_STATUS.md"
+  "docs/ROADMAP.md"
+  "tools/agent/status-trace-check.sh"
 )
 
 for file in "${required_files[@]}"; do

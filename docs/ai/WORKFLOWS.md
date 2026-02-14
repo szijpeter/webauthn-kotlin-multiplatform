@@ -24,6 +24,8 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block true
 
 4. If core/model validation behavior changed, ensure:
 - `spec-notes/webauthn-l3-validation-map.md` is updated.
+5. If core/security-critical modules changed, ensure:
+- `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md` is updated.
 
 ## Docs-Only Workflow
 

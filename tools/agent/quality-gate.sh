@@ -178,6 +178,8 @@ else
     fi
 
     if [[ "$mode" == "strict" ]]; then
+        run_list+=("tools/agent/status-trace-check.sh --changed-files $tmp_changed_files --strict")
+
         if [[ "$SPEC_SENSITIVE" == "true" ]]; then
             run_list+=("tools/agent/spec-trace-check.sh --changed-files $tmp_changed_files --strict")
         fi

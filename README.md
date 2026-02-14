@@ -55,3 +55,5 @@ Related docs:
 - `docs/ai/WORKFLOWS.md`
 - `docs/ai/COST_POLICY.md`
 - `docs/ai/SKILLS.md`
+- `docs/IMPLEMENTATION_STATUS.md`
+- `docs/ROADMAP.md`

@@ -75,8 +75,9 @@ A change is done only when all apply:
 1. Code and tests updated for impacted modules.
 2. `tools/agent/quality-gate.sh` passes at required mode.
 3. If validator/model rule semantics changed, `spec-notes/webauthn-l3-validation-map.md` is updated.
-4. CI parity command for impacted area has been run locally or explicitly called out as not run.
-5. Documentation updated when workflow/contracts changed.
+4. If core/security-critical modules changed, `docs/IMPLEMENTATION_STATUS.md` or `docs/ROADMAP.md` is updated.
+5. CI parity command for impacted area has been run locally or explicitly called out as not run.
+6. Documentation updated when workflow/contracts changed.
 
 ## Quality Gate Contract
 
@@ -114,5 +115,7 @@ Stop and ask before continuing when:
 
 - Architecture: `docs/architecture.md`
 - Dependency policy: `docs/dependency-decisions.md`
+- Implementation status: `docs/IMPLEMENTATION_STATUS.md`
+- Roadmap: `docs/ROADMAP.md`
 - Validation mapping: `spec-notes/webauthn-l3-validation-map.md`
 - CI baseline: `.github/workflows/ci.yml`
