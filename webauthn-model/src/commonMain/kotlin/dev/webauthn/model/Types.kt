@@ -27,6 +27,14 @@ public class RpId private constructor(public val value: String) {
         public fun parseOrThrow(value: String): RpId = parse(value).getOrThrow()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is RpId) return false
+        return value == other.value
+    }
+
+    override fun hashCode(): Int = value.hashCode()
+
     override fun toString(): String = value
 }
 
@@ -48,6 +56,14 @@ public class Origin private constructor(public val value: String) {
 
         public fun parseOrThrow(value: String): Origin = parse(value).getOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Origin) return false
+        return value == other.value
+    }
+
+    override fun hashCode(): Int = value.hashCode()
 
     override fun toString(): String = value
 }
@@ -84,6 +100,14 @@ public class Challenge private constructor(public val value: Base64UrlBytes) {
         public fun parseOrThrow(encoded: String): Challenge = parse(encoded).getOrThrow()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Challenge) return false
+        return value == other.value
+    }
+
+    override fun hashCode(): Int = value.hashCode()
+
     override fun toString(): String = value.toString()
 }
 
@@ -100,6 +124,16 @@ public class CredentialId private constructor(public val value: Base64UrlBytes) 
 
         public fun parseOrThrow(encoded: String): CredentialId = parse(encoded).getOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CredentialId) return false
+        return value == other.value
+    }
+
+    override fun hashCode(): Int = value.hashCode()
+
+    override fun toString(): String = value.toString()
 }
 
 public class UserHandle private constructor(public val value: Base64UrlBytes) {
@@ -113,6 +147,16 @@ public class UserHandle private constructor(public val value: Base64UrlBytes) {
 
         public fun fromBytes(value: ByteArray): UserHandle = UserHandle(Base64UrlBytes.fromBytes(value))
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UserHandle) return false
+        return value == other.value
+    }
+
+    override fun hashCode(): Int = value.hashCode()
+
+    override fun toString(): String = value.toString()
 }
 
 public enum class PublicKeyCredentialType {

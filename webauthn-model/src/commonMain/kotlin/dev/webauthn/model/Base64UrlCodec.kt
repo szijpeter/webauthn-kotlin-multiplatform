@@ -17,6 +17,12 @@ internal object Base64UrlCodec {
             return ByteArray(0)
         }
 
+        // RFC 4648 base64/base64url cannot represent data with 1 trailing sextet.
+        // For unpadded base64url, valid lengths are length % 4 in {0, 2, 3}.
+        if (input.length % 4 == 1) {
+            return null
+        }
+
         if (input.any { it.code > 255 || decodeTable[it.code] == INVALID }) {
             return null
         }
