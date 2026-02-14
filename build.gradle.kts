@@ -1,5 +1,9 @@
 plugins {
-    alias(libs.plugins.binary.compatibility.validator)
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.application) apply false
     alias(libs.plugins.dokka)
 }
 
@@ -10,22 +14,7 @@ allprojects {
     group = rootProject.group
     version = rootProject.version
 
-    repositories {
-        mavenCentral()
-        google()
-    }
-
     dependencyLocking {
         lockAllConfigurations()
     }
-}
-
-apiValidation {
-    ignoredProjects += setOf(
-        "samples:backend-ktor",
-        "samples:android-passkey",
-        "samples:ios-passkey",
-        "platform:bom",
-        "platform:constraints"
-    )
 }

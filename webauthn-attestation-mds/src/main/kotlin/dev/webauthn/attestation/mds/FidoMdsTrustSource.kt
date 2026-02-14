@@ -4,7 +4,6 @@ import dev.webauthn.crypto.TrustAnchorSource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,7 +23,7 @@ public data class MdsEntry(
 public class FidoMdsTrustSource(
     private val httpClient: HttpClient,
     private val metadataUrl: String,
-    private val now: () -> Instant,
+    private val nowEpochSeconds: () -> Long,
 ) : TrustAnchorSource {
     @Volatile
     private var cache: CachedBlob? = null
@@ -43,20 +42,20 @@ public class FidoMdsTrustSource(
     public suspend fun refreshIfStale(maxAgeSeconds: Long = 86_400) {
         val cached = cache
         if (cached != null) {
-            val ageSeconds = now().epochSeconds - cached.fetchedAt.epochSeconds
+            val ageSeconds = nowEpochSeconds() - cached.fetchedAtEpochSeconds
             if (ageSeconds <= maxAgeSeconds) {
                 return
             }
         }
 
         val blob: MdsMetadataBlob = httpClient.get(metadataUrl).body()
-        cache = CachedBlob(blob = blob, fetchedAt = now())
+        cache = CachedBlob(blob = blob, fetchedAtEpochSeconds = nowEpochSeconds())
     }
 }
 
 private data class CachedBlob(
     val blob: MdsMetadataBlob,
-    val fetchedAt: Instant,
+    val fetchedAtEpochSeconds: Long,
 )
 
 private fun decodePemToDer(value: String): ByteArray? {

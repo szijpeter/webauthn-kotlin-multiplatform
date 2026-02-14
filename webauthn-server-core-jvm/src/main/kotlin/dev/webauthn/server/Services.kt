@@ -20,7 +20,6 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
 import java.security.MessageDigest
-import kotlinx.datetime.Clock
 
 public class RegistrationService(
     private val challengeStore: ChallengeStore,
@@ -28,7 +27,7 @@ public class RegistrationService(
     private val userAccountStore: UserAccountStore,
     private val attestationVerifier: AttestationVerifier,
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
-    private val clock: Clock = Clock.System,
+    private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: RegistrationStartRequest): PublicKeyCredentialCreationOptions {
         val challenge = ChallengeGenerator.generate()
@@ -38,8 +37,8 @@ public class RegistrationService(
                 rpId = request.rpId,
                 origin = request.origin,
                 userName = request.userName,
-                createdAt = now(clock),
-                expiresAt = challengeExpiration(clock, request.timeoutMs),
+                createdAtEpochMs = currentEpochMs(nowEpochMs),
+                expiresAtEpochMs = challengeExpirationEpochMs(nowEpochMs, request.timeoutMs),
                 type = CeremonyType.REGISTRATION,
             ),
         )
@@ -86,7 +85,7 @@ public class RegistrationService(
         val session = challengeStore.consume(request.clientData.challenge, CeremonyType.REGISTRATION)
             ?: return failure("challenge", "Unknown or expired registration challenge")
 
-        if (now(clock) > session.expiresAt) {
+        if (currentEpochMs(nowEpochMs) > session.expiresAtEpochMs) {
             return failure("challenge", "Registration challenge has expired")
         }
 
@@ -151,7 +150,7 @@ public class AuthenticationService(
     private val userAccountStore: UserAccountStore,
     private val signatureVerifier: SignatureVerifier,
     private val rpIdHasher: RpIdHasher,
-    private val clock: Clock = Clock.System,
+    private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: AuthenticationStartRequest): ValidationResult<PublicKeyCredentialRequestOptions> {
         val user = userAccountStore.findByName(request.userName)
@@ -164,8 +163,8 @@ public class AuthenticationService(
                 rpId = request.rpId,
                 origin = request.origin,
                 userName = request.userName,
-                createdAt = now(clock),
-                expiresAt = challengeExpiration(clock, request.timeoutMs),
+                createdAtEpochMs = currentEpochMs(nowEpochMs),
+                expiresAtEpochMs = challengeExpirationEpochMs(nowEpochMs, request.timeoutMs),
                 type = CeremonyType.AUTHENTICATION,
             ),
         )
@@ -193,7 +192,7 @@ public class AuthenticationService(
         val session = challengeStore.consume(request.clientData.challenge, CeremonyType.AUTHENTICATION)
             ?: return failure("challenge", "Unknown or expired authentication challenge")
 
-        if (now(clock) > session.expiresAt) {
+        if (currentEpochMs(nowEpochMs) > session.expiresAtEpochMs) {
             return failure("challenge", "Authentication challenge has expired")
         }
 

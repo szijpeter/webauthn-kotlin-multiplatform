@@ -10,7 +10,6 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
-import kotlinx.datetime.Instant
 
 public enum class CeremonyType {
     REGISTRATION,
@@ -22,8 +21,8 @@ public data class ChallengeSession(
     public val rpId: RpId,
     public val origin: Origin,
     public val userName: String,
-    public val createdAt: Instant,
-    public val expiresAt: Instant,
+    public val createdAtEpochMs: Long,
+    public val expiresAtEpochMs: Long,
     public val type: CeremonyType,
 )
 

@@ -10,5 +10,6 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.datetime)
+    testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
 }

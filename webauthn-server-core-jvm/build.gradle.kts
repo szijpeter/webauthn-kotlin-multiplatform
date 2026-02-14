@@ -8,5 +8,7 @@ dependencies {
     api(project(":webauthn-crypto-api"))
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.coroutines.core)
+    testImplementation(project(":webauthn-server-jvm-crypto"))
+    testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
 }

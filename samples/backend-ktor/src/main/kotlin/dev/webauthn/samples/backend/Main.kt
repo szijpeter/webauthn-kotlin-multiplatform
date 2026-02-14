@@ -11,6 +11,7 @@ import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
 import dev.webauthn.server.ktor.installWebAuthnRoutes
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation

@@ -21,9 +21,6 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import java.security.SecureRandom
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlin.time.Duration.Companion.milliseconds
 
 public data class UserAccount(
     public val id: UserHandle,
@@ -122,10 +119,10 @@ internal object ChallengeGenerator {
     }
 }
 
-internal fun now(clock: Clock): Instant = clock.now()
+internal fun currentEpochMs(clock: () -> Long): Long = clock()
 
-internal fun challengeExpiration(clock: Clock, timeoutMs: Long): Instant {
-    return now(clock).plus(timeoutMs.milliseconds)
+internal fun challengeExpirationEpochMs(clock: () -> Long, timeoutMs: Long): Long {
+    return currentEpochMs(clock) + timeoutMs
 }
 
 internal fun failure(field: String, message: String): ValidationResult.Invalid {
