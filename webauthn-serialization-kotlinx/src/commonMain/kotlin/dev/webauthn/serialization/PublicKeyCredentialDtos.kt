@@ -18,7 +18,6 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import dev.webauthn.model.getOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -256,16 +255,38 @@ public object WebAuthnDtoMapper {
                 if (attestation is ValidationResult.Invalid) {
                     return attestation
                 }
+                val authDataBytes = extractAuthDataFromAttestationObject((attestation as ValidationResult.Valid).value.bytes())
+                if (authDataBytes == null) {
+                    return ValidationResult.Invalid(
+                        listOf(
+                            WebAuthnValidationError.InvalidFormat(
+                                field = "attestationObject",
+                                message = "Attestation object does not contain a valid authData field",
+                            ),
+                        ),
+                    )
+                }
+                val parsedAuthData = parseAuthenticatorData(authDataBytes, field = "attestationObject.authData")
+                if (parsedAuthData is ValidationResult.Invalid) {
+                    return parsedAuthData
+                }
+                val parsedAuthDataValue = (parsedAuthData as ValidationResult.Valid).value
+                val attestedCredentialData = parsedAuthDataValue.attestedCredentialData
+                    ?: return ValidationResult.Invalid(
+                        listOf(
+                            WebAuthnValidationError.InvalidFormat(
+                                field = "attestationObject.authData",
+                                message = "Attested credential data flag is not set or is malformed",
+                            ),
+                        ),
+                    )
                 ValidationResult.Valid(
                     RegistrationResponse(
                         credentialId = credentialId.value,
                         clientDataJson = (clientData as ValidationResult.Valid).value,
-                        attestationObject = (attestation as ValidationResult.Valid).value,
-                        rawAuthenticatorData = dev.webauthn.model.AuthenticatorData(ByteArray(32), 0, 0),
-                        attestedCredentialData = AttestedCredentialData(
-                            credentialId = credentialId.value,
-                            cosePublicKey = ByteArray(0),
-                        ),
+                        attestationObject = attestation.value,
+                        rawAuthenticatorData = parsedAuthDataValue.authenticatorData,
+                        attestedCredentialData = attestedCredentialData,
                     ),
                 )
             }
@@ -279,25 +300,297 @@ public object WebAuthnDtoMapper {
             is ValidationResult.Valid -> {
                 val clientData = dev.webauthn.model.Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
                 val signature = dev.webauthn.model.Base64UrlBytes.parse(value.response.signature, "signature")
+                val authenticatorData = dev.webauthn.model.Base64UrlBytes.parse(
+                    value.response.authenticatorData,
+                    "response.authenticatorData",
+                )
                 if (clientData is ValidationResult.Invalid) {
                     return clientData
                 }
                 if (signature is ValidationResult.Invalid) {
                     return signature
                 }
+                if (authenticatorData is ValidationResult.Invalid) {
+                    return authenticatorData
+                }
+                val parsedAuthData = parseAuthenticatorData(
+                    bytes = (authenticatorData as ValidationResult.Valid).value.bytes(),
+                    field = "response.authenticatorData",
+                )
+                if (parsedAuthData is ValidationResult.Invalid) {
+                    return parsedAuthData
+                }
+
+                val parsedUserHandle = when (val userHandle = value.response.userHandle) {
+                    null -> null
+                    else -> {
+                        when (val parsed = UserHandle.parse(userHandle)) {
+                            is ValidationResult.Invalid -> return parsed
+                            is ValidationResult.Valid -> parsed.value
+                        }
+                    }
+                }
+
                 ValidationResult.Valid(
                     AuthenticationResponse(
                         credentialId = credentialId.value,
                         clientDataJson = (clientData as ValidationResult.Valid).value,
-                        authenticatorData = dev.webauthn.model.AuthenticatorData(ByteArray(32), 0, 0),
+                        authenticatorData = (parsedAuthData as ValidationResult.Valid).value.authenticatorData,
                         signature = (signature as ValidationResult.Valid).value,
-                        userHandle = value.response.userHandle?.let { UserHandle.parse(it).getOrNull() },
+                        userHandle = parsedUserHandle,
                     ),
                 )
             }
         }
     }
 }
+
+private data class ParsedAuthenticatorData(
+    val authenticatorData: dev.webauthn.model.AuthenticatorData,
+    val attestedCredentialData: AttestedCredentialData?,
+)
+
+private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationResult<ParsedAuthenticatorData> {
+    if (bytes.size < 37) {
+        return ValidationResult.Invalid(
+            listOf(
+                WebAuthnValidationError.InvalidFormat(
+                    field = field,
+                    message = "Authenticator data must be at least 37 bytes",
+                ),
+            ),
+        )
+    }
+
+    val rpIdHash = bytes.copyOfRange(0, 32)
+    val flags = bytes[32].toInt() and 0xFF
+    val signCount = bytes.readUint32(33)
+    var offset = 37
+
+    val attestedCredentialData = if ((flags and FLAG_ATTESTED_CREDENTIAL_DATA) != 0) {
+        if (bytes.size < offset + 16 + 2) {
+            return ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidFormat(
+                        field = field,
+                        message = "Attested credential data is truncated",
+                    ),
+                ),
+            )
+        }
+        offset += 16 // AAGUID
+        val credentialIdLength = bytes.readUint16(offset)
+        offset += 2
+        if (bytes.size < offset + credentialIdLength) {
+            return ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidFormat(
+                        field = field,
+                        message = "Credential ID bytes are truncated",
+                    ),
+                ),
+            )
+        }
+        val credentialId = bytes.copyOfRange(offset, offset + credentialIdLength)
+        offset += credentialIdLength
+        val coseEnd = skipCborItem(bytes, offset)
+            ?: return ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidFormat(
+                        field = field,
+                        message = "COSE public key is malformed",
+                    ),
+                ),
+            )
+        AttestedCredentialData(
+            credentialId = CredentialId.fromBytes(credentialId),
+            cosePublicKey = bytes.copyOfRange(offset, coseEnd),
+        )
+    } else {
+        null
+    }
+
+    return ValidationResult.Valid(
+        ParsedAuthenticatorData(
+            authenticatorData = dev.webauthn.model.AuthenticatorData(
+                rpIdHash = rpIdHash,
+                flags = flags,
+                signCount = signCount,
+            ),
+            attestedCredentialData = attestedCredentialData,
+        ),
+    )
+}
+
+private fun extractAuthDataFromAttestationObject(attestationObject: ByteArray): ByteArray? {
+    var offset = 0
+    val mapHeader = readCborHeader(attestationObject, offset) ?: return null
+    if (mapHeader.majorType != MAJOR_MAP || mapHeader.length == null) {
+        return null
+    }
+    offset = mapHeader.nextOffset
+
+    repeat(mapHeader.length.toInt()) {
+        val key = readCborText(attestationObject, offset) ?: return null
+        offset = key.second
+        if (key.first == "authData") {
+            val authData = readCborByteString(attestationObject, offset) ?: return null
+            offset = authData.second
+            return authData.first
+        }
+        offset = skipCborItem(attestationObject, offset) ?: return null
+    }
+    return null
+}
+
+private data class CborHeader(
+    val majorType: Int,
+    val additionalInfo: Int,
+    val length: Long?,
+    val nextOffset: Int,
+)
+
+private fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
+    if (offset >= bytes.size) return null
+    val initial = bytes[offset].toInt() and 0xFF
+    val majorType = (initial ushr 5) and 0x07
+    val additionalInfo = initial and 0x1F
+    val lengthResult = readCborLength(bytes, offset + 1, additionalInfo) ?: return null
+    return CborHeader(
+        majorType = majorType,
+        additionalInfo = additionalInfo,
+        length = lengthResult.first,
+        nextOffset = lengthResult.second,
+    )
+}
+
+private fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
+    return when {
+        additionalInfo in 0..23 -> additionalInfo.toLong() to offset
+        additionalInfo == 24 -> if (offset + 1 <= bytes.size) {
+            (bytes[offset].toInt() and 0xFF).toLong() to (offset + 1)
+        } else {
+            null
+        }
+
+        additionalInfo == 25 -> if (offset + 2 <= bytes.size) {
+            bytes.readUint16(offset).toLong() to (offset + 2)
+        } else {
+            null
+        }
+
+        additionalInfo == 26 -> if (offset + 4 <= bytes.size) {
+            bytes.readUint32(offset) to (offset + 4)
+        } else {
+            null
+        }
+
+        additionalInfo == 27 -> if (offset + 8 <= bytes.size) {
+            bytes.readInt64(offset) to (offset + 8)
+        } else {
+            null
+        }
+
+        additionalInfo == 31 -> null to offset
+        else -> null
+    }
+}
+
+private fun readCborText(bytes: ByteArray, offset: Int): Pair<String, Int>? {
+    val header = readCborHeader(bytes, offset) ?: return null
+    if (header.majorType != MAJOR_TEXT || header.length == null) return null
+    val length = header.length.toInt()
+    if (length < 0 || header.nextOffset + length > bytes.size) return null
+    val value = bytes.copyOfRange(header.nextOffset, header.nextOffset + length).decodeToString()
+    return value to (header.nextOffset + length)
+}
+
+private fun readCborByteString(bytes: ByteArray, offset: Int): Pair<ByteArray, Int>? {
+    val header = readCborHeader(bytes, offset) ?: return null
+    if (header.majorType != MAJOR_BYTE_STRING || header.length == null) return null
+    val length = header.length.toInt()
+    if (length < 0 || header.nextOffset + length > bytes.size) return null
+    return bytes.copyOfRange(header.nextOffset, header.nextOffset + length) to (header.nextOffset + length)
+}
+
+private fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
+    val header = readCborHeader(bytes, offset) ?: return null
+    return when (header.majorType) {
+        MAJOR_UNSIGNED_INT, MAJOR_NEGATIVE_INT -> header.nextOffset
+        MAJOR_BYTE_STRING, MAJOR_TEXT -> {
+            val length = header.length?.toInt() ?: return null
+            val end = header.nextOffset + length
+            if (end > bytes.size) return null
+            end
+        }
+
+        MAJOR_ARRAY -> {
+            val count = header.length?.toInt() ?: return null
+            var next = header.nextOffset
+            repeat(count) {
+                next = skipCborItem(bytes, next) ?: return null
+            }
+            next
+        }
+
+        MAJOR_MAP -> {
+            val count = header.length?.toInt() ?: return null
+            var next = header.nextOffset
+            repeat(count) {
+                next = skipCborItem(bytes, next) ?: return null
+                next = skipCborItem(bytes, next) ?: return null
+            }
+            next
+        }
+
+        MAJOR_TAG -> skipCborItem(bytes, header.nextOffset)
+        MAJOR_SIMPLE_FLOAT -> {
+            when (header.additionalInfo) {
+                in 0..23 -> header.nextOffset
+                24 -> if (header.nextOffset + 1 <= bytes.size) header.nextOffset + 1 else null
+                25 -> if (header.nextOffset + 2 <= bytes.size) header.nextOffset + 2 else null
+                26 -> if (header.nextOffset + 4 <= bytes.size) header.nextOffset + 4 else null
+                27 -> if (header.nextOffset + 8 <= bytes.size) header.nextOffset + 8 else null
+                else -> null
+            }
+        }
+
+        else -> null
+    }
+}
+
+private fun ByteArray.readUint16(offset: Int): Int {
+    return ((this[offset].toInt() and 0xFF) shl 8) or
+        (this[offset + 1].toInt() and 0xFF)
+}
+
+private fun ByteArray.readUint32(offset: Int): Long {
+    return ((this[offset].toLong() and 0xFF) shl 24) or
+        ((this[offset + 1].toLong() and 0xFF) shl 16) or
+        ((this[offset + 2].toLong() and 0xFF) shl 8) or
+        (this[offset + 3].toLong() and 0xFF)
+}
+
+private fun ByteArray.readInt64(offset: Int): Long {
+    return ((this[offset].toLong() and 0xFF) shl 56) or
+        ((this[offset + 1].toLong() and 0xFF) shl 48) or
+        ((this[offset + 2].toLong() and 0xFF) shl 40) or
+        ((this[offset + 3].toLong() and 0xFF) shl 32) or
+        ((this[offset + 4].toLong() and 0xFF) shl 24) or
+        ((this[offset + 5].toLong() and 0xFF) shl 16) or
+        ((this[offset + 6].toLong() and 0xFF) shl 8) or
+        (this[offset + 7].toLong() and 0xFF)
+}
+
+private const val FLAG_ATTESTED_CREDENTIAL_DATA: Int = 0x40
+private const val MAJOR_UNSIGNED_INT: Int = 0
+private const val MAJOR_NEGATIVE_INT: Int = 1
+private const val MAJOR_BYTE_STRING: Int = 2
+private const val MAJOR_TEXT: Int = 3
+private const val MAJOR_ARRAY: Int = 4
+private const val MAJOR_MAP: Int = 5
+private const val MAJOR_TAG: Int = 6
+private const val MAJOR_SIMPLE_FLOAT: Int = 7
 
 private inline fun <T, R> ValidationResult<T>.fold(
     onValid: (T) -> R,
