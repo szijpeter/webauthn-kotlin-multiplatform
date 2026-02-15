@@ -48,6 +48,23 @@ public data class LargeBlobExtensionInput(
     }
 }
 
+public data class AuthenticationExtensionsClientOutputs(
+    public val prf: PrfExtensionOutput? = null,
+    public val largeBlob: LargeBlobExtensionOutput? = null,
+)
+
+public data class PrfExtensionOutput(
+    public val enabled: Boolean? = null,
+    public val results: AuthenticationExtensionsPRFValues? = null,
+)
+
+public data class LargeBlobExtensionOutput(
+    public val supported: Boolean? = null,
+    public val blob: ByteArray? = null,
+    public val written: Boolean? = null,
+)
+
+
 
 public data class PublicKeyCredentialCreationOptions(
     public val rp: PublicKeyCredentialRpEntity,
@@ -96,12 +113,17 @@ public data class RegistrationResponse(
     public val attestationObject: Base64UrlBytes,
     public val rawAuthenticatorData: AuthenticatorData,
     public val attestedCredentialData: AttestedCredentialData,
+    public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
 
 public data class AuthenticationResponse(
     public val credentialId: CredentialId,
     public val clientDataJson: Base64UrlBytes,
+    public val rawAuthenticatorData: Base64UrlBytes,
     public val authenticatorData: AuthenticatorData,
     public val signature: Base64UrlBytes,
     public val userHandle: UserHandle? = null,
+    public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
+
+

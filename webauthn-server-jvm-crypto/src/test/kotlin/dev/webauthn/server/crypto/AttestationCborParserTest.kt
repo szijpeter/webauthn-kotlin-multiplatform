@@ -328,6 +328,238 @@ class AttestationCborParserTest {
         assertNull(parseAttestationObject(bytes))
     }
 
+    // ---- Conformance Vectors: Edge Cases ----
+
+    @Test
+    fun skipCborItemSkipsTaggedValue() {
+        // tag(1) followed by uint(0)
+        val bytes = byteArrayOf(0xC1.toByte(), 0x00, 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(2, result)
+    }
+
+    @Test
+    fun skipCborItemSkipsSimpleValueTrue() {
+        // CBOR true = 0xF5
+        val bytes = byteArrayOf(0xF5.toByte(), 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(1, result)
+    }
+
+    @Test
+    fun skipCborItemSkipsSimpleValueFalse() {
+        // CBOR false = 0xF4
+        val bytes = byteArrayOf(0xF4.toByte(), 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(1, result)
+    }
+
+    @Test
+    fun skipCborItemSkipsSimpleValueNull() {
+        // CBOR null = 0xF6
+        val bytes = byteArrayOf(0xF6.toByte(), 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(1, result)
+    }
+
+    @Test
+    fun skipCborItemSkipsFloat16() {
+        // half-float: 0xF9 + 2 bytes
+        val bytes = byteArrayOf(0xF9.toByte(), 0x3C, 0x00, 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(3, result) // header consumed float bytes inline via readCborLength
+    }
+
+    @Test
+    fun skipCborItemSkipsFloat32() {
+        // float32: 0xFA + 4 bytes
+        val bytes = byteArrayOf(0xFA.toByte(), 0x41, 0x20, 0x00, 0x00, 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(5, result)
+    }
+
+    @Test
+    fun skipCborItemSkipsFloat64() {
+        // float64: 0xFB + 8 bytes
+        val bytes = byteArrayOf(0xFB.toByte(), 0x40, 0x09, 0x21.toByte(), 0xFB.toByte(), 0x54, 0x44, 0x2D, 0x18, 0xFF.toByte())
+        val result = skipCborItem(bytes, 0)
+        assertEquals(9, result)
+    }
+
+    @Test
+    fun skipCborItemReturnsNullForTruncatedFloat64() {
+        // float64 header + only 5 bytes (needs 8)
+        val bytes = byteArrayOf(0xFB.toByte(), 0x40, 0x09, 0x21.toByte(), 0xFB.toByte(), 0x54)
+        assertNull(skipCborItem(bytes, 0))
+    }
+
+    @Test
+    fun readCborIntParsesLargePositiveInt() {
+        // uint with 4-byte length: 0x1A 0x00 0x0F 0x42 0x40 = 1_000_000
+        val bytes = byteArrayOf(0x1A, 0x00, 0x0F, 0x42, 0x40)
+        val result = readCborInt(bytes, 0)
+        assertNotNull(result)
+        assertEquals(1_000_000L, result.first)
+    }
+
+    @Test
+    fun readCborIntParsesLargeNegativeInt() {
+        // negint with value 999: -1 - 999 = -1000
+        // 0x39 = negint 2-byte, 0x03 0xE7 = 999
+        val bytes = byteArrayOf(0x39, 0x03, 0xE7.toByte())
+        val result = readCborInt(bytes, 0)
+        assertNotNull(result)
+        assertEquals(-1000L, result.first)
+    }
+
+    @Test
+    fun parseAttestationObjectParsesFieldsInAnyOrder() {
+        // CBOR maps are unordered; put attStmt before fmt
+        val bytes = cborMap(
+            "attStmt" to cborMap(),
+            "fmt" to cborText("none"),
+            "authData" to cborBytes(byteArrayOf(0xAA.toByte())),
+        )
+        val parsed = parseAttestationObject(bytes)
+        assertNotNull(parsed)
+        assertEquals("none", parsed.fmt)
+        assertEquals(0, parsed.attStmtEntryCount)
+        assertTrue(byteArrayOf(0xAA.toByte()).contentEquals(parsed.authDataBytes!!))
+    }
+
+    @Test
+    fun parseAttestationObjectSkipsUnknownTopLevelKeys() {
+        val bytes = cborMap(
+            "fmt" to cborText("none"),
+            "unknownField" to cborUint(42),
+            "attStmt" to cborMap(),
+        )
+        val parsed = parseAttestationObject(bytes)
+        assertNotNull(parsed)
+        assertEquals("none", parsed.fmt)
+    }
+
+    @Test
+    fun parseAttestationObjectSkipsUnknownAttStmtFields() {
+        val bytes = cborMap(
+            "fmt" to cborText("packed"),
+            "attStmt" to cborMap(
+                "alg" to cborNegInt(7),
+                "unknownStmtField" to cborBytes(byteArrayOf(0x01)),
+            ),
+        )
+        val parsed = parseAttestationObject(bytes)
+        assertNotNull(parsed)
+        assertEquals("packed", parsed.fmt)
+        assertEquals(-7L, parsed.alg)
+        assertEquals(2, parsed.attStmtEntryCount)
+    }
+
+    @Test
+    fun parseAttestationObjectParsesMultipleCertsInX5c() {
+        val cert1 = byteArrayOf(0x30, 0x31)
+        val cert2 = byteArrayOf(0x40, 0x41, 0x42)
+        val bytes = cborMap(
+            "fmt" to cborText("packed"),
+            "attStmt" to cborMap(
+                "alg" to cborNegInt(7),
+                "sig" to cborBytes(byteArrayOf(0x0A)),
+                "x5c" to cborArray(listOf(cborBytes(cert1), cborBytes(cert2))),
+            ),
+        )
+        val parsed = parseAttestationObject(bytes)
+        assertNotNull(parsed)
+        assertNotNull(parsed.x5c)
+        assertEquals(2, parsed.x5c!!.size)
+        assertTrue(cert1.contentEquals(parsed.x5c!![0]))
+        assertTrue(cert2.contentEquals(parsed.x5c!![1]))
+    }
+
+    @Test
+    fun parseAttestationObjectParsesVerAndCertInfoAndResponse() {
+        val certInfoData = byteArrayOf(0x01, 0x02, 0x03, 0x04)
+        val responseData = byteArrayOf(0x05, 0x06)
+        val bytes = cborMap(
+            "fmt" to cborText("tpm"),
+            "attStmt" to cborMap(
+                "ver" to cborText("2.0"),
+                "certInfo" to cborBytes(certInfoData),
+                "response" to cborBytes(responseData),
+            ),
+        )
+        val parsed = parseAttestationObject(bytes)
+        assertNotNull(parsed)
+        assertEquals("tpm", parsed.fmt)
+        assertEquals("2.0", parsed.ver)
+        assertTrue(certInfoData.contentEquals(parsed.certInfo!!))
+        assertTrue(responseData.contentEquals(parsed.response!!))
+    }
+
+    @Test
+    fun skipCborItemSkipsDeeplyNestedStructure() {
+        // map(1) { "a": array(1) { map(1) { "b": uint(0) } } }
+        val inner = cborMap("b" to cborUint(0))
+        val arr = cborArray(listOf(inner))
+        val outer = cborMap("a" to arr)
+        val withTrailing = outer + byteArrayOf(0xFF.toByte())
+        val result = skipCborItem(withTrailing, 0)
+        assertEquals(outer.size, result)
+    }
+
+    @Test
+    fun readCborHeaderParsesSimpleValueTrue() {
+        // CBOR true = major 7 (simple/float), additional info 21
+        val header = readCborHeader(byteArrayOf(0xF5.toByte()), 0)
+        assertNotNull(header)
+        assertEquals(MAJOR_SIMPLE_FLOAT, header.majorType)
+        assertEquals(21, header.additionalInfo)
+    }
+
+    @Test
+    fun readCborHeaderParsesArrayHeader() {
+        // 0x83 = array(3)
+        val header = readCborHeader(byteArrayOf(0x83.toByte()), 0)
+        assertNotNull(header)
+        assertEquals(MAJOR_ARRAY, header.majorType)
+        assertEquals(3L, header.length)
+    }
+
+    @Test
+    fun readCborHeaderParsesTagHeader() {
+        // 0xC1 = tag(1)
+        val header = readCborHeader(byteArrayOf(0xC1.toByte()), 0)
+        assertNotNull(header)
+        assertEquals(MAJOR_TAG, header.majorType)
+        assertEquals(1L, header.length)
+    }
+
+    @Test
+    fun readCborHeaderWithNonZeroOffset() {
+        // Skip 2 prefix bytes and parse uint 5 at offset 2
+        val bytes = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0x05)
+        val header = readCborHeader(bytes, 2)
+        assertNotNull(header)
+        assertEquals(MAJOR_UNSIGNED_INT, header.majorType)
+        assertEquals(5L, header.length)
+    }
+
+    @Test
+    fun readCborTextParsesUtf8String() {
+        // UTF-8 text with non-ASCII character: "ä" = 0xC3 0xA4
+        val utf8 = "ä".encodeToByteArray()
+        val bytes = cborHeader(3, utf8.size) + utf8
+        val result = readCborText(bytes, 0)
+        assertNotNull(result)
+        assertEquals("ä", result.first)
+    }
+
+    @Test
+    fun readCborBytesParsesEmptyByteString() {
+        val result = readCborBytes(byteArrayOf(0x40), 0)
+        assertNotNull(result)
+        assertEquals(0, result.first.size)
+    }
+
     // ---- CBOR builders for tests ----
 
     private fun cborMap(vararg entries: Pair<String, ByteArray>): ByteArray {

@@ -441,6 +441,7 @@ class WebAuthnCoreValidatorTest {
         return AuthenticationResponse(
             credentialId = credentialId,
             clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
+            rawAuthenticatorData = Base64UrlBytes.fromBytes(ByteArray(37)),
             authenticatorData = AuthenticatorData(
                 rpIdHash = ByteArray(32) { 2 },
                 flags = flags,
@@ -450,4 +451,5 @@ class WebAuthnCoreValidatorTest {
             userHandle = null,
         )
     }
+
 }

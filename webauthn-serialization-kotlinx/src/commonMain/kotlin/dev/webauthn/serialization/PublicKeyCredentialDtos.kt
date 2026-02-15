@@ -31,6 +31,7 @@ public data class PublicKeyCredentialCreationOptionsDto(
     @SerialName("excludeCredentials") public val excludeCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
     @SerialName("residentKey") public val residentKey: String = "preferred",
     @SerialName("userVerification") public val userVerification: String = "preferred",
+    @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
 
 @Serializable
@@ -40,7 +41,29 @@ public data class PublicKeyCredentialRequestOptionsDto(
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("allowCredentials") public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
     @SerialName("userVerification") public val userVerification: String = "preferred",
+    @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
+
+@Serializable
+public data class AuthenticationExtensionsClientInputsDto(
+    @SerialName("prf") public val prf: PrfExtensionInputDto? = null,
+    @SerialName("largeBlob") public val largeBlob: LargeBlobExtensionInputDto? = null,
+    @SerialName("relatedOrigins") public val relatedOrigins: List<String>? = null,
+)
+
+@Serializable
+public data class PrfExtensionInputDto(
+    @SerialName("eval") public val eval: PrfValuesDto? = null,
+    @SerialName("evalByCredential") public val evalByCredential: Map<String, PrfValuesDto>? = null,
+)
+
+@Serializable
+public data class LargeBlobExtensionInputDto(
+    @SerialName("support") public val support: String? = null,
+    @SerialName("read") public val read: Boolean? = null,
+    @SerialName("write") public val write: String? = null,
+)
+
 
 @Serializable
 public data class PublicKeyCredentialParametersDto(
@@ -72,6 +95,7 @@ public data class RegistrationResponseDto(
     @SerialName("id") public val id: String,
     @SerialName("rawId") public val rawId: String,
     @SerialName("response") public val response: RegistrationResponsePayloadDto,
+    @SerialName("clientExtensionResults") public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
 )
 
 @Serializable
@@ -85,6 +109,7 @@ public data class AuthenticationResponseDto(
     @SerialName("id") public val id: String,
     @SerialName("rawId") public val rawId: String,
     @SerialName("response") public val response: AuthenticationResponsePayloadDto,
+    @SerialName("clientExtensionResults") public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
 )
 
 @Serializable
@@ -94,6 +119,32 @@ public data class AuthenticationResponsePayloadDto(
     @SerialName("signature") public val signature: String,
     @SerialName("userHandle") public val userHandle: String? = null,
 )
+
+@Serializable
+public data class AuthenticationExtensionsClientOutputsDto(
+    @SerialName("prf") public val prf: PrfExtensionOutputDto? = null,
+    @SerialName("largeBlob") public val largeBlob: LargeBlobExtensionOutputDto? = null,
+)
+
+@Serializable
+public data class PrfExtensionOutputDto(
+    @SerialName("enabled") public val enabled: Boolean? = null,
+    @SerialName("results") public val results: PrfValuesDto? = null,
+)
+
+@Serializable
+public data class PrfValuesDto(
+    @SerialName("first") public val first: String,
+    @SerialName("second") public val second: String? = null,
+)
+
+@Serializable
+public data class LargeBlobExtensionOutputDto(
+    @SerialName("supported") public val supported: Boolean? = null,
+    @SerialName("blob") public val blob: String? = null,
+    @SerialName("written") public val written: Boolean? = null,
+)
+
 
 public object WebAuthnDtoMapper {
     public fun fromModel(value: PublicKeyCredentialCreationOptions): PublicKeyCredentialCreationOptionsDto {
@@ -114,6 +165,7 @@ public object WebAuthnDtoMapper {
             },
             residentKey = value.residentKey.name.lowercase(),
             userVerification = value.userVerification.name.lowercase(),
+            extensions = value.extensions?.let(::fromModel),
         )
     }
 
@@ -180,6 +232,7 @@ public object WebAuthnDtoMapper {
                 excludeCredentials = excludeCredentials,
                 residentKey = residentKey,
                 userVerification = userVerification,
+                extensions = value.extensions?.let(::toModel),
             ),
         )
     }
@@ -193,6 +246,7 @@ public object WebAuthnDtoMapper {
                 PublicKeyCredentialDescriptorDto(type = "public-key", id = it.id.value.encoded())
             },
             userVerification = value.userVerification.name.lowercase(),
+            extensions = value.extensions?.let(::fromModel),
         )
     }
 
@@ -238,6 +292,7 @@ public object WebAuthnDtoMapper {
                 timeoutMs = value.timeoutMs,
                 allowCredentials = allowCredentials,
                 userVerification = userVerification,
+                extensions = value.extensions?.let(::toModel),
             ),
         )
     }
@@ -287,10 +342,23 @@ public object WebAuthnDtoMapper {
                         attestationObject = attestation.value,
                         rawAuthenticatorData = parsedAuthDataValue.authenticatorData,
                         attestedCredentialData = attestedCredentialData,
+                        extensions = value.clientExtensionResults?.let(::toModel),
                     ),
                 )
             }
         }
+    }
+
+    public fun fromModel(value: RegistrationResponse): RegistrationResponseDto {
+        return RegistrationResponseDto(
+            id = value.credentialId.value.encoded(),
+            rawId = value.credentialId.value.encoded(),
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = value.clientDataJson.encoded(),
+                attestationObject = value.attestationObject.encoded(),
+            ),
+            clientExtensionResults = value.extensions?.let(::fromModel),
+        )
     }
 
     public fun toModel(value: AuthenticationResponseDto): ValidationResult<AuthenticationResponse> {
@@ -335,14 +403,126 @@ public object WebAuthnDtoMapper {
                     AuthenticationResponse(
                         credentialId = credentialId.value,
                         clientDataJson = (clientData as ValidationResult.Valid).value,
+                        rawAuthenticatorData = (authenticatorData as ValidationResult.Valid).value,
                         authenticatorData = (parsedAuthData as ValidationResult.Valid).value.authenticatorData,
                         signature = (signature as ValidationResult.Valid).value,
                         userHandle = parsedUserHandle,
+                        extensions = value.clientExtensionResults?.let(::toModel),
                     ),
                 )
             }
         }
     }
+
+    public fun fromModel(value: AuthenticationResponse): AuthenticationResponseDto {
+        return AuthenticationResponseDto(
+            id = value.credentialId.value.encoded(),
+            rawId = value.credentialId.value.encoded(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = value.clientDataJson.encoded(),
+                authenticatorData = value.rawAuthenticatorData.encoded(),
+                signature = value.signature.encoded(),
+                userHandle = value.userHandle?.value?.encoded(),
+            ),
+            clientExtensionResults = value.extensions?.let(::fromModel),
+        )
+    }
+
+    // --- Extension Mapping Helpers ---
+
+    private fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientInputs): AuthenticationExtensionsClientInputsDto {
+        return AuthenticationExtensionsClientInputsDto(
+            prf = value.prf?.let { prf ->
+                PrfExtensionInputDto(
+                    eval = prf.eval?.let(::fromModel),
+                    evalByCredential = prf.evalByCredential?.mapValues { fromModel(it.value) }
+                )
+            },
+            largeBlob = value.largeBlob?.let { lb ->
+                LargeBlobExtensionInputDto(
+                    support = lb.support?.name?.lowercase(),
+                    read = lb.read,
+                    write = lb.write?.toBase64Url()
+                )
+            },
+            relatedOrigins = value.relatedOrigins
+        )
+    }
+
+    private fun toModel(value: AuthenticationExtensionsClientInputsDto): dev.webauthn.model.AuthenticationExtensionsClientInputs {
+        return dev.webauthn.model.AuthenticationExtensionsClientInputs(
+            prf = value.prf?.let { prf ->
+                dev.webauthn.model.PrfExtensionInput(
+                    eval = prf.eval?.let(::toModel),
+                    evalByCredential = prf.evalByCredential?.mapValues { toModel(it.value) }
+                )
+            },
+            largeBlob = value.largeBlob?.let { lb ->
+                dev.webauthn.model.LargeBlobExtensionInput(
+                    support = lb.support?.uppercase()?.let { dev.webauthn.model.LargeBlobExtensionInput.LargeBlobSupport.valueOf(it) },
+                    read = lb.read,
+                    write = lb.write?.fromBase64Url()
+                )
+            },
+            relatedOrigins = value.relatedOrigins
+        )
+    }
+
+    private fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientOutputs): AuthenticationExtensionsClientOutputsDto {
+        return AuthenticationExtensionsClientOutputsDto(
+            prf = value.prf?.let { prf ->
+                PrfExtensionOutputDto(
+                    enabled = prf.enabled,
+                    results = prf.results?.let(::fromModel)
+                )
+            },
+            largeBlob = value.largeBlob?.let { lb ->
+                LargeBlobExtensionOutputDto(
+                    supported = lb.supported,
+                    blob = lb.blob?.toBase64Url(),
+                    written = lb.written
+                )
+            }
+        )
+    }
+
+    private fun toModel(value: AuthenticationExtensionsClientOutputsDto): dev.webauthn.model.AuthenticationExtensionsClientOutputs {
+        return dev.webauthn.model.AuthenticationExtensionsClientOutputs(
+            prf = value.prf?.let { prf ->
+                dev.webauthn.model.PrfExtensionOutput(
+                    enabled = prf.enabled,
+                    results = prf.results?.let(::toModel)
+                )
+            },
+            largeBlob = value.largeBlob?.let { lb ->
+                dev.webauthn.model.LargeBlobExtensionOutput(
+                    supported = lb.supported,
+                    blob = lb.blob?.fromBase64Url(),
+                    written = lb.written
+                )
+            }
+        )
+    }
+
+    private fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsPRFValues): PrfValuesDto {
+        return PrfValuesDto(
+            first = value.first.toBase64Url(),
+            second = value.second?.toBase64Url()
+        )
+    }
+
+    private fun toModel(value: PrfValuesDto): dev.webauthn.model.AuthenticationExtensionsPRFValues {
+        return dev.webauthn.model.AuthenticationExtensionsPRFValues(
+            first = value.first.fromBase64Url(),
+            second = value.second?.fromBase64Url()
+        )
+    }
+
+    private fun ByteArray.toBase64Url(): String = dev.webauthn.model.Base64UrlBytes.fromBytes(this).encoded()
+    private fun String.fromBase64Url(): ByteArray = dev.webauthn.model.Base64UrlBytes.parse(this).fold(
+        onValid = { it.bytes() },
+        onInvalid = { throw IllegalArgumentException("Invalid base64url: $it") }
+    )
 }
 
 private data class ParsedAuthenticatorData(

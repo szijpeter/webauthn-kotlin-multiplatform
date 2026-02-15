@@ -6,6 +6,7 @@ import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class WebAuthnDtoMapperTest {
@@ -120,6 +121,47 @@ class WebAuthnDtoMapperTest {
         assertEquals(0x41, result.value.rawAuthenticatorData.flags)
         assertEquals(credentialId.value.encoded(), result.value.attestedCredentialData.credentialId.value.encoded())
         assertContentEquals(cosePublicKey, result.value.attestedCredentialData.cosePublicKey)
+    }
+
+    @Test
+    fun authenticationResponseParsesExtensions() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val authenticatorData = authenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x22 },
+            flags = 0x01,
+            signCount = 10,
+        )
+        val dto = AuthenticationResponseDto(
+            id = credentialId.value.encoded(),
+            rawId = credentialId.value.encoded(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                authenticatorData = Base64UrlBytes.fromBytes(authenticatorData).encoded(),
+                signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+            ),
+            clientExtensionResults = AuthenticationExtensionsClientOutputsDto(
+                prf = PrfExtensionOutputDto(
+                    enabled = true,
+                    results = PrfValuesDto(
+                        first = Base64UrlBytes.fromBytes(byteArrayOf(0xAA.toByte())).encoded(),
+                    )
+                )
+            )
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        val extensions = result.value.extensions
+        assertNotNull(extensions)
+        assertNotNull(extensions.prf)
+        assertTrue(extensions.prf!!.enabled!!)
+        assertNotNull(extensions.prf!!.results)
+        assertContentEquals(byteArrayOf(0xAA.toByte()), extensions.prf!!.results!!.first)
+
+        // Round trip
+        val backToDto = WebAuthnDtoMapper.fromModel(result.value)
+        assertEquals(dto.clientExtensionResults?.prf?.enabled, backToDto.clientExtensionResults?.prf?.enabled)
+        assertEquals(dto.clientExtensionResults?.prf?.results?.first, backToDto.clientExtensionResults?.prf?.results?.first)
     }
 
     @Test
