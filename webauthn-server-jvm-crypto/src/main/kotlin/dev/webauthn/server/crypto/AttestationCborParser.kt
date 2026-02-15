@@ -146,7 +146,7 @@ internal fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     val initial = bytes[offset].toInt() and 0xFF
     val majorType = (initial ushr 5) and 0x07
     val additionalInfo = initial and 0x1F
-    val lengthResult = readCborLength(bytes, offset + 1, additionalInfo) ?: return null
+    val lengthResult = readCborLength(bytes, offset + 1, majorType, additionalInfo) ?: return null
     return CborHeader(
         majorType = majorType,
         additionalInfo = additionalInfo,
@@ -155,31 +155,31 @@ internal fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     )
 }
 
-internal fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
+internal fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additionalInfo: Int): Pair<Long?, Int>? {
     return when {
         additionalInfo < 24 -> additionalInfo.toLong() to offset
         additionalInfo == 24 -> {
             if (offset + 1 > bytes.size) return null
             val value = (bytes[offset].toInt() and 0xFF).toLong()
-            if (value < 24) return null // Non-minimal: should have been encoded directly in additionalInfo
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 24) return null // Non-minimal: should have been encoded directly in additionalInfo
             value to (offset + 1)
         }
         additionalInfo == 25 -> {
             if (offset + 2 > bytes.size) return null
             val value = bytes.readUint16(offset).toLong()
-            if (value < 256) return null // Non-minimal: should have been encoded as 1 byte
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 256) return null // Non-minimal: should have been encoded as 1 byte
             value to (offset + 2)
         }
         additionalInfo == 26 -> {
             if (offset + 4 > bytes.size) return null
             val value = bytes.readUint32(offset)
-            if (value < 65536) return null // Non-minimal: should have been encoded as 2 bytes
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 65536) return null // Non-minimal: should have been encoded as 2 bytes
             value to (offset + 4)
         }
         additionalInfo == 27 -> {
             if (offset + 8 > bytes.size) return null
             val value = bytes.readUint64(offset)
-            if (value < 4294967296L && value >= 0) return null // Non-minimal: should have been encoded as 4 bytes (check positive range)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 4294967296L && value >= 0) return null // Non-minimal: should have been encoded as 4 bytes (check positive range)
             value to (offset + 8)
         }
         additionalInfo == 31 -> null to offset

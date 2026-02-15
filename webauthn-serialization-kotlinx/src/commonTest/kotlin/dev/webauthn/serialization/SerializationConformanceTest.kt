@@ -96,4 +96,54 @@ class SerializationConformanceTest {
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Invalid, "Should reject non-minimal CBOR in COSE key")
     }
+    @Test
+    fun testRegistrationResponseAcceptsAttestationObjectWithFloat() {
+        // Construct an attestation object with a float value to ensure skipCborItem handles it.
+        // Map(2)
+        // Key 1: "authData" check
+        // Key 2: "dummy" -> Float(0.0)
+        
+        val authDataPayload = ByteArray(37) { 0 } // Minimal valid authData length
+        
+        // Manual CBOR construction
+        // Map(2)
+        var cbor = byteArrayOf(0xA2.toByte())
+        
+        // Key 1: "authData"
+        cbor += byteArrayOf(0x68) + "authData".encodeToByteArray()
+        // Value 1: ByteString(37)
+        cbor += byteArrayOf(0x58, 0x25) + authDataPayload
+        
+        // Key 2: "dummy"
+        cbor += byteArrayOf(0x65) + "dummy".encodeToByteArray()
+        // Value 2: Half-precision float 0.0 (0xF9 0x00 0x00)
+        // Major type 7, additional info 25
+        cbor += byteArrayOf(0xF9.toByte(), 0x00, 0x00)
+        
+        val attestationObjectBase64 = Base64UrlBytes.fromBytes(cbor).encoded()
+        
+        val dto = RegistrationResponseDto(
+            id = "AA",
+            rawId = "AA",
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf()).encoded(),
+                attestationObject = attestationObjectBase64
+            )
+        )
+        
+        // We expect this to NOT fail with "Invalid attestation object" due to CBOR parsing.
+        // It might fail validation later (e.g. missing fmt), but the CBOR parsing itself should succeed
+        // and extract authData.
+        // If parsing fails, it returns InvalidFormat("Attestation object does not contain a valid authData field")
+        
+        val result = WebAuthnDtoMapper.toModel(dto)
+        
+        // If result is Invalid, check that it's NOT about authData or malformed CBOR
+        if (result is ValidationResult.Invalid) {
+            val errors = result.errors
+            val authDataError = errors.find { it.message.contains("valid authData") || it.message.contains("Malformed") }
+            assertEquals(null, authDataError, "Should validly parse CBOR with float, but failed with: $errors")
+        }
+        // If result is Valid, that's great too (means other validations passed or were not triggered by this minimal input)
+    }
 }

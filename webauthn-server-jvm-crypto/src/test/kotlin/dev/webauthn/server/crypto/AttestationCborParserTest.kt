@@ -567,21 +567,21 @@ class AttestationCborParserTest {
         // Value 23 encoded as 1-byte length (0x18 0x17) instead of directly (0x17)
         // 0x18 = additional info 24
         // readCborLength expects offset to point to the length bytes (index 1)
-        assertNull(readCborLength(byteArrayOf(0x18, 0x17), 1, 24))
+        assertNull(readCborLength(byteArrayOf(0x18, 0x17), 1, 0, 24))
     }
 
     @Test
     fun readCborLengthRejectsNonMinimalTwoByteLengthInt() {
         // Value 255 encoded as 2-byte length (0x19 0x00 0xFF) instead of 1-byte length (0x18 0xFF)
         // 0x19 = additional info 25
-        assertNull(readCborLength(byteArrayOf(0x19, 0x00, 0xFF.toByte()), 1, 25))
+        assertNull(readCborLength(byteArrayOf(0x19, 0x00, 0xFF.toByte()), 1, 0, 25))
     }
 
     @Test
     fun readCborLengthRejectsNonMinimalFourByteLengthInt() {
         // Value 65535 encoded as 4-byte length (0x1A 0x00 0x00 0xFF 0xFF) instead of 2-byte length
         // 0x1A = additional info 26
-        assertNull(readCborLength(byteArrayOf(0x1A, 0x00, 0x00, 0xFF.toByte(), 0xFF.toByte()), 1, 26))
+        assertNull(readCborLength(byteArrayOf(0x1A, 0x00, 0x00, 0xFF.toByte(), 0xFF.toByte()), 1, 0, 26))
     }
 
     @Test
@@ -594,7 +594,20 @@ class AttestationCborParserTest {
             0x00, 0x00, 0x00, 0x00,
             0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte()
         )
-        assertNull(readCborLength(bytes, 0, 27))
+        assertNull(readCborLength(bytes, 0, 0, 27))
+    }
+
+    @Test
+    fun readCborLengthAcceptsSmallFloatValues() {
+        // Major Type 7 (Float/Simple)
+        // Half-Precision Float (0.0) -> 0xF9 00 00
+        // Additional Info 25 (2 bytes)
+        // Value 0x0000 is < 256, but should be accepted for Major Type 7
+        val bytes = byteArrayOf(0x00, 0x00)
+        val result = readCborLength(bytes, 0, 7, 25)
+        assertNotNull(result)
+        assertEquals(0L, result.first)
+        assertEquals(2, result.second)
     }
 
     // ---- CBOR builders for tests ----
