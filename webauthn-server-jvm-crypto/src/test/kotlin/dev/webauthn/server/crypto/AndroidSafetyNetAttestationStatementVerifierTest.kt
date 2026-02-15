@@ -27,6 +27,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
     @Test
     fun verifyPassesForValidSafetyNet() {
+        // ... existing test body ...
         val kp = generateRSA2048KeyPair()
         val authData = sampleAuthDataBytes()
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
@@ -56,6 +57,42 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         
         assertTrue(result is ValidationResult.Valid, "Expected Valid, got $result")
     }
+
+    @Test
+    fun verifyPassesWithTrustAnchorValidation() {
+        val kp = generateRSA2048KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val nonce = sha256(authData + clientDataHash)
+
+        val certBytes = generateSelfSignedCert(kp)
+        val certB64 = Base64.getEncoder().encodeToString(certBytes)
+        
+        // Use the cert itself as the trust anchor
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> listOf(certBytes) }
+
+        val headerJson = """{"alg":"RS256","x5c":["$certB64"]}"""
+        val payloadJson = """{"nonce":"${Base64.getEncoder().encodeToString(nonce)}","ctsProfileMatch":true,"timestampMs":1234567890}"""
+        
+        val headerB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.toByteArray())
+        val payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.toByteArray())
+        
+        val signedData = "$headerB64.$payloadB64".toByteArray()
+        val sig = signRS256(kp.private as RSAPrivateKey, signedData)
+        val sigB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(sig)
+        
+        val jws = "$headerB64.$payloadB64.$sigB64"
+
+        val attestationObject = buildSafetyNetAttestationObject(jws, authData)
+
+        val verifier = AndroidSafetyNetAttestationStatementVerifier(trustAnchorSource = trustSource)
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Valid, "Expected Valid with trust anchor, got $result")
+    }
+
 
     @Test
     fun verifyFailsForInvalidNonce() {

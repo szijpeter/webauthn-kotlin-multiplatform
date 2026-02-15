@@ -21,11 +21,11 @@ Last updated: 2026-02-15
 
 | Module | Maturity | Implemented | Gaps / Risks |
 |---|---|---|---|
-| `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests | Continued edge-case coverage for uncommon protocol combinations |
-| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), broad negative-path tests (incl. AAGUID model updates) | Additional L3 extensions hardening |
+| `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins) | Continued edge-case coverage for uncommon protocol combinations |
+| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests (incl. AAGUID model updates) | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Abstraction interfaces in place | Additional implementations and cross-provider behavior parity |
-| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key`/`apple`/`tpm` trust-path (Google/Apple roots configured) + `android-safetynet` scaffold + dispatcher integration | Additional attestation formats (`android-safetynet`), `android-key` depth |
+| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet` trust-path (Google/Apple roots configured) + dispatcher integration | `android-key` depth |
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + persistence race tests (double-consume, overwrite, sign-count propagation) | Persistence integration scenarios with external stores |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
@@ -47,9 +47,9 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 Pending high-impact coverage:
 
-- remaining attestation statement formats (`tpm`, `android-key`, `android-safetynet`, `apple`)
-- packed attestation AAGUID extension validation
-- L3 extension-specific checks (PRF, `largeBlob`, Related Origins)
+- CBOR/COSE conformance vector expansion
+- L3 extension runtime validation (PRF HMAC computation, `largeBlob` storage, Related Origins fetch)
+- Server-side extension processing hooks
 
 ## Current Quality Gates
 

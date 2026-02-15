@@ -19,6 +19,7 @@ public object WebAuthnCoreValidator {
         expectedType: String,
         expectedChallenge: String,
         expectedOrigin: Origin,
+        allowedOrigins: Set<Origin> = emptySet(),
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
@@ -36,7 +37,8 @@ public object WebAuthnCoreValidator {
             )
         }
 
-        if (clientData.origin != expectedOrigin) {
+        val validOrigins = setOf(expectedOrigin) + allowedOrigins
+        if (!validOrigins.contains(clientData.origin)) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.origin",
                 message = "Origin does not match relying party expectations",
@@ -56,6 +58,7 @@ public object WebAuthnCoreValidator {
             expectedType = "webauthn.create",
             expectedChallenge = input.options.challenge.value.encoded(),
             expectedOrigin = input.expectedOrigin,
+            allowedOrigins = input.allowedOrigins,
         )
         if (clientDataResult is ValidationResult.Invalid) {
             return clientDataResult
@@ -84,6 +87,7 @@ public object WebAuthnCoreValidator {
             expectedType = "webauthn.get",
             expectedChallenge = input.options.challenge.value.encoded(),
             expectedOrigin = input.expectedOrigin,
+            allowedOrigins = input.allowedOrigins,
         )
         if (clientDataResult is ValidationResult.Invalid) {
             return clientDataResult

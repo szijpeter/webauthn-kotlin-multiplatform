@@ -18,9 +18,9 @@ public class CompositeAttestationVerifier(
         "none" to NoneAttestationStatementVerifier(),
         // packed handled separately
         "android-key" to AndroidKeyAttestationStatementVerifier(trustAnchorSource),
-        "tpm" to TpmAttestationStatementVerifier(), // TODO: add trust source
-        "apple" to AppleAttestationStatementVerifier(), // TODO: add trust source
-        "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(),
+        "tpm" to TpmAttestationStatementVerifier(trustAnchorSource),
+        "apple" to AppleAttestationStatementVerifier(trustAnchorSource),
+        "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(trustAnchorSource),
     )
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {

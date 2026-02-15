@@ -2,6 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.io.ByteArrayInputStream
@@ -10,7 +11,9 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.Base64
 
-internal class AndroidSafetyNetAttestationStatementVerifier : AttestationVerifier {
+internal class AndroidSafetyNetAttestationStatementVerifier(
+    private val trustAnchorSource: TrustAnchorSource? = null,
+) : AttestationVerifier {
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
@@ -70,14 +73,28 @@ internal class AndroidSafetyNetAttestationStatementVerifier : AttestationVerifie
         }
 
         val certFactory = CertificateFactory.getInstance("X.509")
+        val certs = mutableListOf<X509Certificate>()
         val leafCert: X509Certificate
         try {
-            val certBytes = Base64.getDecoder().decode(certsB64[0])
-            leafCert = certFactory.generateCertificate(ByteArrayInputStream(certBytes)) as X509Certificate
+            for (certB64 in certsB64) {
+                val certBytes = Base64.getDecoder().decode(certB64)
+                val cert = certFactory.generateCertificate(ByteArrayInputStream(certBytes)) as X509Certificate
+                certs.add(cert)
+            }
+            leafCert = certs[0]
         } catch (e: Exception) {
              return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to decode/parse certificate: ${e.message}")),
             )
+        }
+
+        if (trustAnchorSource != null) {
+            val chainVerifier = TrustChainVerifier(trustAnchorSource)
+            // SafetyNet does not use AAGUID for trust selection
+            val chainResult = chainVerifier.verify(certs, null)
+            if (chainResult is ValidationResult.Invalid) {
+                return chainResult
+            }
         }
         
         // 4. Verify signature

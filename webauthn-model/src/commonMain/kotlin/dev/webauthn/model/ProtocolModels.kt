@@ -24,20 +24,30 @@ public data class PublicKeyCredentialDescriptor(
 public data class AuthenticationExtensionsClientInputs(
     public val prf: PrfExtensionInput? = null,
     public val largeBlob: LargeBlobExtensionInput? = null,
+    public val relatedOrigins: List<String>? = null,
 )
 
 public data class PrfExtensionInput(
-    public val enabled: Boolean,
+    public val eval: AuthenticationExtensionsPRFValues? = null,
+    public val evalByCredential: Map<String, AuthenticationExtensionsPRFValues>? = null,
+)
+
+public data class AuthenticationExtensionsPRFValues(
+    public val first: ByteArray,
+    public val second: ByteArray? = null,
 )
 
 public data class LargeBlobExtensionInput(
-    public val support: LargeBlobSupport,
+    public val support: LargeBlobSupport? = null,
+    public val read: Boolean? = null,
+    public val write: ByteArray? = null,
 ) {
     public enum class LargeBlobSupport {
         REQUIRED,
         PREFERRED,
     }
 }
+
 
 public data class PublicKeyCredentialCreationOptions(
     public val rp: PublicKeyCredentialRpEntity,

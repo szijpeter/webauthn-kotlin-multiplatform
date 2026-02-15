@@ -90,6 +90,41 @@ class WebAuthnCoreValidatorTest {
     }
 
     @Test
+    fun clientDataPassesForAllowedOrigin() {
+        val challenge = sampleChallenge(10)
+        val result = WebAuthnCoreValidator.validateClientData(
+            clientData = CollectedClientData(
+                type = "webauthn.get",
+                challenge = challenge,
+                origin = Origin.parseOrThrow("https://other.example.com"),
+            ),
+            expectedType = "webauthn.get",
+            expectedChallenge = challenge.value.encoded(),
+            expectedOrigin = sampleOrigin(),
+            allowedOrigins = setOf(Origin.parseOrThrow("https://other.example.com")),
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+    }
+
+    @Test
+    fun clientDataFailsForOriginNotInAllowedList() {
+        val result = WebAuthnCoreValidator.validateClientData(
+            clientData = CollectedClientData(
+                type = "webauthn.get",
+                challenge = sampleChallenge(11),
+                origin = Origin.parseOrThrow("https://evil.com"),
+            ),
+            expectedType = "webauthn.get",
+            expectedChallenge = sampleChallenge(11).value.encoded(),
+            expectedOrigin = sampleOrigin(),
+            allowedOrigins = setOf(Origin.parseOrThrow("https://other.example.com")),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
     fun authenticatorDataFailsForInvalidRpIdHashLength() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(

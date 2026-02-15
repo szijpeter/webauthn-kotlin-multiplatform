@@ -25,6 +25,8 @@ This document maps currently implemented validation behavior to normative requir
 | Android Key: `attestationChallenge` extension matching and cert chain verification (trust path). | W3C WebAuthn Level 3, §8.4 Android Key Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/AndroidKeyAttestationStatementVerifier.kt` | `verifyPassesWithTrustAnchorValidation`, `verifyFailsForChallengeMismatch` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/AndroidKeyAttestationStatementVerifierTest.kt` |
 | Apple: `x5c` cert chain verification. | W3C WebAuthn Level 3, §8.8 Apple Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/AppleAttestationStatementVerifier.kt` | Tests in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/AppleAttestationStatementVerifierTest.kt` |
 | TPM: Attestation signature verification over `certInfo`, `extraData` validation, and cert chain verification. | W3C WebAuthn Level 3, §8.3 TPM Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/TpmAttestationStatementVerifier.kt` | Tests in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/TpmAttestationStatementVerifierTest.kt` |
+| Android SafetyNet: JWS signature verification, nonce validation, `ctsProfileMatch` check, and cert chain verification (trust path). | W3C WebAuthn Level 3, §8.5 Android SafetyNet Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/AndroidSafetyNetAttestationStatementVerifier.kt` | `verifyPassesForValidSafetyNet`, `verifyPassesWithTrustAnchorValidation`, `verifyFailsForInvalidNonce` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/AndroidSafetyNetAttestationStatementVerifierTest.kt` |
+| Related Origins: `clientData.origin` may match the expected RP origin or any origin in the `allowedOrigins` set. | W3C WebAuthn Level 3, Related Origins. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`validateClientData` with `allowedOrigins`) | `clientDataPassesForAllowedOrigin`, `clientDataFailsForOriginNotInAllowedList` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
 
 ## Positive-path sanity checks
 
@@ -38,6 +40,6 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Pending coverage
 
-- Remaining attestation statement formats (`android-safetynet`) with trust path checks
-
-- Level 3 extension-specific checks (PRF, `largeBlob`, Related Origins)
+- CBOR/COSE conformance vector expansion (strict negative cases)
+- L3 extension runtime validation (PRF HMAC computation, `largeBlob` storage, Related Origins fetch)
+- Server-side extension processing hooks
