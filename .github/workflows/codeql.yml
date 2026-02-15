@@ -25,19 +25,32 @@ jobs:
         include:
           - language: actions
             build-mode: none
+            run-codeql: true
+          # Keep this matrix entry so required workflow policies that still
+          # reference it continue to receive a successful status.
+          - language: java-kotlin
+            build-mode: autobuild
+            run-codeql: false
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Initialize CodeQL
+        if: matrix.run-codeql
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
       - name: Autobuild
-        if: matrix.build-mode == 'autobuild'
+        if: matrix.run-codeql && matrix.build-mode == 'autobuild'
         uses: github/codeql-action/autobuild@v4
 
       - name: Analyze
+        if: matrix.run-codeql
         uses: github/codeql-action/analyze@v4
+
+      - name: Skip unsupported Kotlin CodeQL scan
+        if: ${{ !matrix.run-codeql }}
+        run: |
+          echo "::notice::Skipping java-kotlin CodeQL scan because Kotlin 2.3.10 is not yet supported by the current CodeQL CLI on GitHub-hosted runners."
