@@ -14,8 +14,16 @@ Last updated: 2026-02-15
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - JVM server flow is implemented with ceremony orchestration and smoke tests.
-- Platform clients (Android/iOS) and attestation trust paths remain hardening-focused.
+- Attestation verification now includes hardened TPM and Android Key policy checks with expanded tests.
+- Platform clients (Android/iOS) have deterministic error mapping coverage, with response parsing still pending.
 - CI lanes cover JVM checks, Android assemble, and iOS compile.
+
+## Plan Progress (Estimated)
+
+- Phase 1 (Conformance/Security): ~75% complete.
+- Phase 2 (Server robustness): ~70% complete.
+- Phase 3 (Platform runtime): ~45% complete.
+- Phase 4-5 (DX/release): mostly pending.
 
 ## Module Maturity
 
@@ -25,12 +33,12 @@ Last updated: 2026-02-15
 | `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests (incl. AAGUID model updates), extension processing hooks, LargeBlob validation, PRF missing-output checks | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Abstraction interfaces in place | Additional implementations and cross-provider behavior parity |
-| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key`/`apple`/`tpm` (hardened)/`android-safetynet`/`fido-u2f` trust-path (Google/Apple roots configured) + dispatcher integration | `android-key` depth |
+| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key` (hardened policy checks)/`apple`/`tpm` (hardened)/`android-safetynet`/`fido-u2f` trust-path (Google/Apple roots configured) + dispatcher integration | Broader attestation vector and trust-anchor coverage depth |
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + comprehensive persistence race tests (concurrent double-consume, sign-count propagation, replay protection) | Persistence integration scenarios with external stores |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
-| `webauthn-client-android` | Scaffold/Beta | Credential Manager integration scaffold and sample buildability | Runtime passkey behavior hardening across device/API variations |
-| `webauthn-client-ios` | Scaffold/Beta | AuthenticationServices scaffold and compile path | Runtime behavior hardening + delegate lifecycle/error handling |
+| `webauthn-client-android` | Scaffold/Beta | Credential Manager request serialization wired from model DTOs + deterministic cancellation/platform error mapping tests | Response parsing and full success-path propagation |
+| `webauthn-client-ios` | Scaffold/Beta | NSError-to-PasskeyClientError mapping with unit coverage + AuthenticationServices scaffold/compile path | Delegate lifecycle handling and response parsing |
 | `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher | Retry/error policy hardening |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
 | `samples:*` | Scaffold/Beta | Runnable backend/android/ios sample structure | End-to-end realistic passkey flows and docs depth |
@@ -48,8 +56,8 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 Pending high-impact coverage:
 
 - CBOR/COSE conformance vector expansion (Support for real COSE_Key in JvmCoseKeyParser)
+- Platform client response parsing and success-path behavior validation
 - L3 extension runtime hardening (PRF HMAC computation context hooks and richer authenticator interoperability vectors)
-- Server-side extension processing hardening for deployment-specific policy hooks and observability
 
 ## Current Quality Gates
 

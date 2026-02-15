@@ -1,25 +1,56 @@
 package dev.webauthn.server.crypto
 
-import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.model.WebAuthnValidationError
+internal data class CoseKeyMetadata(
+    val kty: Long,
+    val alg: Long?,
+    val crv: Long? = null,
+    val x: ByteArray? = null,
+    val y: ByteArray? = null,
+    val n: ByteArray? = null,
+    val e: ByteArray? = null,
+)
 
 internal object CoseToSpkiConverter {
 
     fun convert(coseKey: ByteArray): ByteArray? {
-        val map = parseCoseMap(coseKey) ?: return null
-        val kty = map[1L] as? Long ?: return null
+        val metadata = parseCoseKey(coseKey) ?: return null
 
-        return when (kty) {
-            2L -> convertEc2(map)
-            3L -> convertRsa(map)
+        return when (metadata.kty) {
+            2L -> convertEc2(metadata)
+            3L -> convertRsa(metadata)
             else -> null
         }
     }
 
-    private fun convertEc2(map: Map<Long, Any>): ByteArray? {
-        val crv = map[-1L] as? Long ?: return null
-        val x = map[-2L] as? ByteArray ?: return null
-        val y = map[-3L] as? ByteArray ?: return null
+    fun parseCoseKey(coseKey: ByteArray): CoseKeyMetadata? {
+        val map = parseCoseMap(coseKey) ?: return null
+        val kty = map[1L] as? Long ?: return null
+        val alg = map[3L] as? Long
+        
+        // EC2 specific
+        val crv = map[-1L] as? Long
+        val x = map[-2L] as? ByteArray
+        val y = map[-3L] as? ByteArray
+
+        // RSA specific
+        val n = map[-1L] as? ByteArray
+        val e = map[-2L] as? ByteArray
+
+        return CoseKeyMetadata(
+            kty = kty,
+            alg = alg,
+            crv = crv,
+            x = x,
+            y = y,
+            n = n,
+            e = e
+        )
+    }
+
+    private fun convertEc2(metadata: CoseKeyMetadata): ByteArray? {
+        val crv = metadata.crv ?: return null
+        val x = metadata.x ?: return null
+        val y = metadata.y ?: return null
 
         if (crv != 1L) return null // Only P-256 supported for now
 
@@ -36,9 +67,9 @@ internal object CoseToSpkiConverter {
         )
     }
 
-    private fun convertRsa(map: Map<Long, Any>): ByteArray? {
-        val n = map[-1L] as? ByteArray ?: return null
-        val e = map[-2L] as? ByteArray ?: return null
+    private fun convertRsa(metadata: CoseKeyMetadata): ByteArray? {
+        val n = metadata.n ?: return null
+        val e = metadata.e ?: return null
 
         // RSA public key: SEQUENCE { INTEGER(n), INTEGER(e) }
         val rsaPubKey = derSequence(

@@ -89,16 +89,19 @@ class AndroidPasskeyClientTest {
     }
 
     @Test
-    fun getAssertion_returns_InvalidOptions_when_allowCredentials_is_empty() = runBlocking {
-        val client = AndroidPasskeyClient(mockk(relaxed = true), mockk(relaxed = true))
+    fun getAssertion_allows_empty_allowCredentials() = runBlocking {
+        val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
+        val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
+        coEvery { mockCredentialManager.getCredential(any<Context>(), any<GetCredentialRequest>()) } throws GetCredentialCancellationException("Cancelled")
+
         val options = PublicKeyCredentialRequestOptions(
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
             rpId = RpId.parseOrThrow("example.com"),
-            allowCredentials = emptyList()
+            allowCredentials = emptyList(),
         )
         val result = client.getAssertion(options)
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue((result as PasskeyResult.Failure).error is PasskeyClientError.InvalidOptions)
+        assertTrue((result as PasskeyResult.Failure).error is PasskeyClientError.UserCancelled)
     }
 
     @Test

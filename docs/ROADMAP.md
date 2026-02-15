@@ -13,7 +13,7 @@ Last updated: 2026-02-15
 
 ## Phase 1: Conformance and Security Hardening (Immediate)
 
-1. Attestation format matrix hardening (`packed`, `tpm` (done), `android-key`, `android-safetynet`, `apple`, `none`).
+1. Attestation format matrix hardening (`packed`, `tpm` (done), `android-key` (done), `android-safetynet`, `apple`, `none`).
 2. CBOR/COSE vector-based parser/validator expansion.
 3. UV-required and BE/BS branching policy behavior coverage.
 4. Core negative-path expansion tied to spec map rows.
@@ -25,7 +25,7 @@ Definition of done:
 ## Phase 2: Server Robustness and Store Semantics
 
 1. Strengthen registration/authentication finish-path invariants.
-2. Add replay, race, and persistence-oriented scenarios.
+2. Add replay, race, and persistence-oriented scenarios (in-memory done; external-store contracts pending).
 3. Expand server-ktor integration coverage.
 
 Definition of done:
@@ -34,8 +34,8 @@ Definition of done:
 
 ## Phase 3: Platform Runtime Hardening
 
-1. Android Credential Manager lifecycle/error edge handling.
-2. iOS AuthenticationServices delegate lifecycle/error handling.
+1. Android Credential Manager lifecycle/error edge handling (error mapping done; response parsing pending).
+2. iOS AuthenticationServices delegate lifecycle/error handling (NSError mapping done; delegate runtime handling pending).
 3. Cross-platform client-core policy consistency.
 
 Definition of done:
@@ -64,6 +64,6 @@ Definition of done:
 
 ## Active Priorities (Next 3)
 
-1. Implement attestation verification matrix and trust-path tests.
-2. Expand CBOR/COSE conformance vectors with strict negative cases.
-3. Expand persistence-backed server finish-flow race/replay scenarios beyond in-memory smoke tests.
+1. Implement remaining attestation trust-path hardening (`android-safetynet`, `apple`) and vector coverage.
+2. Expand CBOR/COSE conformance vectors with strict malformed-input rejection cases.
+3. Implement platform client response parsing and end-to-end success-path tests on Android/iOS.

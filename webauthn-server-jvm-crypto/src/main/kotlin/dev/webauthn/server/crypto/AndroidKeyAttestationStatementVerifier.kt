@@ -1,10 +1,10 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
-import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.io.ByteArrayInputStream
+import java.math.BigInteger
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.Arrays
@@ -15,6 +15,22 @@ import dev.webauthn.crypto.TrustAnchorSource
 internal class AndroidKeyAttestationStatementVerifier(
     private val trustAnchorSource: TrustAnchorSource? = null,
 ) : AttestationVerifier {
+    companion object {
+        private const val TAG_PURPOSE = 0xA1
+        private const val TAG_ALGORITHM = 0xA2
+        private const val TAG_KEY_SIZE = 0xA3
+        private const val TAG_DIGEST = 0xA5
+        private const val TAG_EC_CURVE = 0xAA
+        private const val TAG_ALL_APPLICATIONS = 0xBF8458
+        private const val TAG_ORIGIN = 0xBF853E
+
+        private const val KM_PURPOSE_SIGN = 2
+        private const val KM_ALGORITHM_RSA = 1
+        private const val KM_ALGORITHM_EC = 3
+        private const val KM_DIGEST_SHA_2_256 = 4
+        private const val KM_EC_CURVE_P_256 = 1
+        private const val KM_ORIGIN_GENERATED = 0
+    }
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
@@ -106,6 +122,11 @@ internal class AndroidKeyAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.MissingValue("x5c", "Android Key Attestation extension missing")),
             )
 
+        val metadata = CoseToSpkiConverter.parseCoseKey(input.response.attestedCredentialData.cosePublicKey)
+            ?: return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("coseKey", "Failed to parse COSE key")),
+            )
+
         try {
             // getExtensionValue returns OCTET STRING (DER encoded) wrapping the value
             val outerParser = DerParser(extensionVal)
@@ -137,11 +158,15 @@ internal class AndroidKeyAttestationStatementVerifier(
 
             // softwareEnforced (AuthorizationList)
             val swEnforcedSeq = sequence.readSequence()
-            checkAuthorizationList(swEnforcedSeq, requireOriginGenerated = false)
+            val swTags = parseAuthorizationList(swEnforcedSeq)
 
             // teeEnforced (AuthorizationList)
             val teeEnforcedSeq = sequence.readSequence()
-            checkAuthorizationList(teeEnforcedSeq, requireOriginGenerated = true)
+            val teeTags = parseAuthorizationList(teeEnforcedSeq)
+
+            // Combined check: attributes can be in either software or tee enforced lists
+            val allTags = swTags + teeTags
+            checkKeyRequirements(allTags, metadata)
 
         } catch (e: Exception) {
             return ValidationResult.Invalid(
@@ -152,28 +177,89 @@ internal class AndroidKeyAttestationStatementVerifier(
         return ValidationResult.Valid(Unit)
     }
 
-    private fun checkAuthorizationList(parser: DerParser, requireOriginGenerated: Boolean) {
+    private fun parseAuthorizationList(parser: DerParser): Map<Int, ByteArray> {
+        val tags = mutableMapOf<Int, ByteArray>()
         while (!parser.isExhausted) {
             val header = parser.readNextTLV()
-            
-            // Check for [600] allApplications (Tag 600 = 0x258 -> 0xBF8458)
-            if (header.tag == 0xBF8458) {
-                 throw IllegalArgumentException("Key is not restricted to this application (allApplications present)")
-            }
-            
-            // Check for [702] origin (Tag 702 = 0x2BE -> 0xBF853E)
-            if (requireOriginGenerated && header.tag == 0xBF853E) {
-                // origin [702] EXPLICIT INTEGER OPTIONAL
-                // The value of this header is the INNER TLV.
-                val innerParser = DerParser(header.value)
-                val originBytes = innerParser.readInteger()
-                // KM_ORIGIN_GENERATED = 0. Check only last byte if small, or use BigInteger
-                val origin = java.math.BigInteger(originBytes).toInt()
-                if (origin != 0) { 
-                    throw IllegalArgumentException("Key origin is not GENERATED (found $origin)")
-                }
+            tags[header.tag] = header.value
+        }
+        return tags
+    }
+
+    private fun checkKeyRequirements(tags: Map<Int, ByteArray>, key: CoseKeyMetadata) {
+        if (tags.containsKey(TAG_ALL_APPLICATIONS)) {
+            throw IllegalArgumentException("Key is not restricted to this application (allApplications present)")
+        }
+
+        // [1] purpose: SET OF INTEGER
+        val purposeBytes = tags[TAG_PURPOSE] ?: throw IllegalArgumentException("Key purpose missing")
+        val purposeSet = DerParser(purposeBytes).readSet()
+        var hasSignPurpose = false
+        while (!purposeSet.isExhausted) {
+            if (BigInteger(purposeSet.readInteger()).toInt() == KM_PURPOSE_SIGN) {
+                hasSignPurpose = true
             }
         }
+        if (!hasSignPurpose) {
+            throw IllegalArgumentException("Key purpose does not contain SIGN")
+        }
+
+        // [2] algorithm: INTEGER
+        val alg = parseIntTag(tags[TAG_ALGORITHM], "Key algorithm missing")
+
+        // [3] keySize: INTEGER
+        val size = parseIntTag(tags[TAG_KEY_SIZE], "Key size missing")
+
+        // [5] digest: SET OF INTEGER
+        val digestBytes = tags[TAG_DIGEST] ?: throw IllegalArgumentException("Key digest missing")
+        val digestSet = DerParser(digestBytes).readSet()
+        var hasSha256 = false
+        while (!digestSet.isExhausted) {
+            if (BigInteger(digestSet.readInteger()).toInt() == KM_DIGEST_SHA_2_256) {
+                hasSha256 = true
+            }
+        }
+        if (!hasSha256) {
+            throw IllegalArgumentException("Key digest does not contain SHA-256")
+        }
+
+        // [702] origin: INTEGER
+        val origin = parseIntTag(tags[TAG_ORIGIN], "Key origin missing")
+        if (origin != KM_ORIGIN_GENERATED) {
+            throw IllegalArgumentException("Key origin is not GENERATED (found $origin)")
+        }
+
+        // Validate against COSE key
+        when (key.kty) {
+            2L -> {
+                if (alg != KM_ALGORITHM_EC) {
+                    throw IllegalArgumentException("Attestation alg $alg does not match EC key")
+                }
+                if (size != 256) {
+                    throw IllegalArgumentException("Attestation key size $size != 256 for EC")
+                }
+                val curve = parseIntTag(tags[TAG_EC_CURVE], "Attestation curve missing for EC key")
+                if (curve != KM_EC_CURVE_P_256) {
+                    throw IllegalArgumentException("Attestation curve $curve is not P-256")
+                }
+            }
+            3L -> {
+                if (alg != KM_ALGORITHM_RSA) {
+                    throw IllegalArgumentException("Attestation alg $alg does not match RSA key")
+                }
+                val modulus = key.n ?: throw IllegalArgumentException("RSA modulus missing in COSE key")
+                val modulusBits = BigInteger(1, modulus).bitLength()
+                if (size != modulusBits) {
+                    throw IllegalArgumentException("Attestation key size $size does not match RSA modulus size $modulusBits")
+                }
+            }
+            else -> throw IllegalArgumentException("Unsupported COSE key type for Android Key attestation: ${key.kty}")
+        }
+    }
+
+    private fun parseIntTag(value: ByteArray?, missingMessage: String): Int {
+        val bytes = value ?: throw IllegalArgumentException(missingMessage)
+        return BigInteger(DerParser(bytes).readInteger()).toInt()
     }
 
     private fun jcaParams(alg: Long): String {

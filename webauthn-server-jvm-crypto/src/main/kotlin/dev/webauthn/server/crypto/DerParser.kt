@@ -104,10 +104,19 @@ internal class DerParser(private val data: ByteArray) {
         return length
     }
 
+    fun readSet(): DerParser {
+        val header = readHeader()
+        if (header.tag != TAG_SET) {
+            throw IllegalArgumentException("Expected SET (0x31), found 0x${header.tag.toString(16)}")
+        }
+        return DerParser(header.value)
+    }
+
     companion object {
         const val TAG_INTEGER = 0x02
         const val TAG_OCTET_STRING = 0x04
         const val TAG_ENUMERATED = 0x0A
         const val TAG_SEQUENCE = 0x30
+        const val TAG_SET = 0x31
     }
 }

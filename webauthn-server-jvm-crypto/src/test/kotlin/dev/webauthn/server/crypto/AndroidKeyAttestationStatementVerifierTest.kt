@@ -34,6 +34,16 @@ class AndroidKeyAttestationStatementVerifierTest {
         // Construct extension value: SEQUENCE pointing to challenge = clientDataHash
         // KeyDescription schema:
         // Version(Int), SecLevel(Int), KMVer(Int), KMSecLevel(Int), Challenge(OctetString), ...
+        // Construct valid AuthorizationList (swEnforced)
+        val validTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256 (0x0100)
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+            derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+        )
+
         val extensionValueSeq = derSequence(
             derInteger(byteArrayOf(0)), // Version
             derInteger(byteArrayOf(0)), // SecurityLevel
@@ -41,7 +51,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             derInteger(byteArrayOf(0)), // KeymasterSecurityLevel
             derOctetString(clientDataHash), // Challenge
             derOctetString(ByteArray(0)), // UniqueId
-            derSequence(), // swEnforced
+            validTags, // swEnforced
             derSequence()  // teeEnforced
         )
         // The extension value itself must be an OCTET STRING containing the DER of the sequence
@@ -74,9 +84,19 @@ class AndroidKeyAttestationStatementVerifierTest {
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val clientDataHash = sha256(clientDataJson)
         
+        // Construct valid AuthorizationList (swEnforced)
+        val validTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+            derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+        )
+
         val extensionValueSeq = derSequence(
             derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
-            derOctetString(clientDataHash), derOctetString(ByteArray(0)), derSequence(), derSequence()
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), validTags, derSequence()
         )
         val extensionValue = derOctetString(extensionValueSeq)
         val attCert = generateAttestationCert(kp, extensionValue)
@@ -118,7 +138,14 @@ class AndroidKeyAttestationStatementVerifierTest {
             derInteger(byteArrayOf(0)),
             derOctetString(wrongHash), // Mismatch!
             derOctetString(ByteArray(0)),
-            derSequence(),
+            derSequence(
+                derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+                derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+                derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+                derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+                derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+                derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+            ),
             derSequence()
         )
         val extensionValue = derOctetString(extensionValueSeq)
@@ -162,7 +189,14 @@ class AndroidKeyAttestationStatementVerifierTest {
             derInteger(byteArrayOf(0)),
             derOctetString(clientDataHash),
             derOctetString(ByteArray(0)),
-            derSequence(), // swEnforced
+            derSequence(
+                derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+                derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+                derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+                derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+                derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+                derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+            ), // swEnforced with valid tags
             derSequence(allApplications) // teeEnforced with allApplications (should fail)
         )
         val extensionValue = derOctetString(extensionValueSeq)
@@ -199,7 +233,14 @@ class AndroidKeyAttestationStatementVerifierTest {
             derInteger(byteArrayOf(0)),
             derOctetString(clientDataHash),
             derOctetString(ByteArray(0)),
-            derSequence(), // swEnforced
+            derSequence(
+                derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+                derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+                derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+                derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+                derTag(0xAA, derInteger(byteArrayOf(1))) // Curve: P-256
+                // Missing Origin in swEnforced, present in teeEnforced as bad value
+            ), // swEnforced
             derSequence(originImported) // teeEnforced with bad origin
         )
         val extensionValue = derOctetString(extensionValueSeq)
@@ -278,7 +319,14 @@ class AndroidKeyAttestationStatementVerifierTest {
         // Generate valid cert
         val extensionValueSeq = derSequence(
             derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
-            derOctetString(sha256(clientDataJson)), derOctetString(ByteArray(0)), derSequence(), derSequence()
+            derOctetString(sha256(clientDataJson)), derOctetString(ByteArray(0)), derSequence(
+                derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+                derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+                derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+                derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+                derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+                derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+            ), derSequence()
         )
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         
@@ -334,6 +382,207 @@ class AndroidKeyAttestationStatementVerifierTest {
         
         assertTrue(result is ValidationResult.Invalid)
         assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("alg, sig, and x5c are required"))
+    }
+
+
+    @Test
+    fun verifyFailsWhenKeyPurposeWrong() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        // Purpose: VERIFY (1) instead of SIGN (2)
+        val wrongPurposeTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(1)))), // VERIFY
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+            derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+        )
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), wrongPurposeTags, derSequence()
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key purpose does not contain SIGN"))
+    }
+
+    @Test
+    fun verifyFailsWhenAlgorithmWrong() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        // Alg: RSA (1) instead of EC (3)
+        val wrongAlgTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(1))), // Alg: RSA
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256 (matches EC but wrong alg)
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256 (shouldn't be here for RSA but logic might ignore or check consistency)
+            derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+        )
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), wrongAlgTags, derSequence()
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Attestation alg 1 does not match EC key"))
+    }
+
+    @Test
+    fun verifyFailsWhenKeySizeWrong() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        // KeySize: 384 instead of 256
+        val wrongSizeTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0x80.toByte()))), // KeySize: 384 (0x0180)
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+            derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+        )
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), wrongSizeTags, derSequence()
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Attestation key size 384 != 256"))
+    }
+
+    @Test
+    fun verifyFailsWhenDigestWrong() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        // Digest: SHA1 (2) instead of SHA256 (4)
+        val wrongDigestTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+            derTag(0xA5, derSet(derInteger(byteArrayOf(2)))), // Digest: SHA-1
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+            derTag(0xBF853E, derInteger(byteArrayOf(0))) // Origin: GENERATED
+        )
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), wrongDigestTags, derSequence()
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key digest does not contain SHA-256"))
+    }
+
+    @Test
+    fun verifyFailsWhenDigestMissing() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        val missingDigestTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+            derTag(0xBF853E, derInteger(byteArrayOf(0))), // Origin: GENERATED
+        )
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), missingDigestTags, derSequence(),
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key digest missing"))
+    }
+
+    @Test
+    fun verifyFailsWhenOriginMissing() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        val missingOriginTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
+            derTag(0xA2, derInteger(byteArrayOf(3))), // Alg: EC
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))), // KeySize: 256
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))), // Digest: SHA-256
+            derTag(0xAA, derInteger(byteArrayOf(1))), // Curve: P-256
+        )
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), missingOriginTags, derSequence(),
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key origin missing"))
     }
 
 
@@ -407,6 +656,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         clientDataJson: ByteArray,
         attestationObject: ByteArray,
         authData: ByteArray,
+        cosePublicKey: ByteArray = validCoseEcKeyBytes(),
     ): RegistrationValidationInput {
         return RegistrationValidationInput(
             options = PublicKeyCredentialCreationOptions(
@@ -420,11 +670,37 @@ class AndroidKeyAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, ByteArray(0))
+                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey)
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
+    }
+
+    private fun validCoseEcKeyBytes(): ByteArray {
+        val x = ByteArray(32) { 0x01 }
+        val y = ByteArray(32) { 0x02 }
+        return cborMapInt(
+            1L to 2L, // kty: EC2
+            3L to -7L, // alg: ES256
+            -1L to 1L, // crv: P-256
+            -2L to x,
+            -3L to y
+        )
+    }
+
+    private fun cborMapInt(vararg entries: Pair<Long, Any>): ByteArray {
+        var res = cborHeader(5, entries.size)
+        entries.forEach { (k,v) -> 
+            res = concat(res, cborInt(k))
+            res = when(v) {
+                is Long -> concat(res, cborInt(v))
+                is Int -> concat(res, cborInt(v.toLong()))
+                is ByteArray -> concat(res, cborBytes(v))
+                else -> throw IllegalArgumentException("Unsupported value type")
+            }
+        }
+        return res
     }
 
     private fun buildAndroidKeyAttestationObject(authData: ByteArray, alg: Long, sig: ByteArray, x5c: List<ByteArray>): ByteArray {

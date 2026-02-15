@@ -1,7 +1,10 @@
 package dev.webauthn.client.android
 
 import android.content.Context
+import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.exceptions.CreateCredentialCancellationException
 import androidx.credentials.exceptions.CreateCredentialException
 import androidx.credentials.exceptions.GetCredentialCancellationException
@@ -14,11 +17,17 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto
+import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 public class AndroidPasskeyClient(
     private val context: Context,
     private val credentialManager: CredentialManager = CredentialManager.create(context),
 ) : PasskeyClient {
+    private val requestJson = Json { encodeDefaults = false }
 
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
         if (options.pubKeyCredParams.isEmpty()) {
@@ -26,14 +35,16 @@ public class AndroidPasskeyClient(
         }
 
         return try {
-            // TODO: Serialize options to JSON
-            // Minimal valid JSON to pass constructor validation
-            val requestJson = """{"rp":{"name":"n","id":"example.com"},"user":{"name":"u","id":"AQ","displayName":"d"},"challenge":"AQ","pubKeyCredParams":[{"type":"public-key","alg":-7}]}"""
-            val request = androidx.credentials.CreatePublicKeyCredentialRequest(requestJson)
-            val response = credentialManager.createCredential(context, request)
-            
-            // TODO: Parse response
-            throw IllegalStateException("Response parsing not implemented")
+            val request = CreatePublicKeyCredentialRequest(
+                requestJson.encodeToString(
+                    PublicKeyCredentialCreationOptionsDto.serializer(),
+                    WebAuthnDtoMapper.fromModel(options),
+                ),
+            )
+            credentialManager.createCredential(context, request)
+            PasskeyResult.Failure(
+                PasskeyClientError.Platform("Credential Manager registration response parsing is not implemented yet"),
+            )
         } catch (e: CreateCredentialException) {
             PasskeyResult.Failure(e.toPasskeyClientError())
         } catch (e: Throwable) {
@@ -42,20 +53,17 @@ public class AndroidPasskeyClient(
     }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
-        if (options.allowCredentials.isEmpty()) {
-            return PasskeyResult.Failure(PasskeyClientError.InvalidOptions("allowCredentials must not be empty"))
-        }
-
         return try {
-            // TODO: Serialize options to JSON
-            // Minimal valid JSON to pass constructor validation
-            val requestJson = """{"challenge":"AQ","allowCredentials":[{"type":"public-key","id":"AQ"}]}"""
-            val request = androidx.credentials.GetPublicKeyCredentialOption(requestJson)
-            val getCredRequest = androidx.credentials.GetCredentialRequest(listOf(request))
-            val response = credentialManager.getCredential(context, getCredRequest)
-
-            // TODO: Parse response
-            throw IllegalStateException("Response parsing not implemented")
+            val request = GetPublicKeyCredentialOption(
+                requestJson.encodeToString(
+                    PublicKeyCredentialRequestOptionsDto.serializer(),
+                    WebAuthnDtoMapper.fromModel(options),
+                ),
+            )
+            credentialManager.getCredential(context, GetCredentialRequest(listOf(request)))
+            PasskeyResult.Failure(
+                PasskeyClientError.Platform("Credential Manager assertion response parsing is not implemented yet"),
+            )
         } catch (e: GetCredentialException) {
             PasskeyResult.Failure(e.toPasskeyClientError())
         } catch (e: Throwable) {

@@ -38,6 +38,7 @@ required_files=(
   "docs/ROADMAP.md"
   "docs/IMPLEMENTATION_TRACKER.md"
   "tools/agent/next-step.sh"
+  "tools/agent/progress-report.sh"
   "tools/agent/status-trace-check.sh"
 )
 

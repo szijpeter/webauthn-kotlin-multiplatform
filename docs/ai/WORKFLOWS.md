@@ -55,6 +55,20 @@ tools/agent/next-step.sh --format prompt
 tools/agent/quality-gate.sh --mode strict --scope changed --block true
 ```
 
+## Progress Tracking Workflow
+
+1. Check current tracker completion:
+
+```bash
+tools/agent/progress-report.sh --format human
+```
+
+2. For automation or dashboards, use JSON:
+
+```bash
+tools/agent/progress-report.sh --format json
+```
+
 ## Onboarding Workflow
 
 1. Install repo hooks:
