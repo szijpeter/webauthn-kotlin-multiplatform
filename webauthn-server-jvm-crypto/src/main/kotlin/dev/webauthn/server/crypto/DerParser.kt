@@ -12,6 +12,12 @@ internal class DerParser(private val data: ByteArray) {
     val isExhausted: Boolean
         get() = pos >= data.size
 
+    data class Header(val tag: Int, val value: ByteArray)
+
+    fun readNextTLV(): Header {
+        return readHeader()
+    }
+
     fun readSequence(): DerParser {
         val header = readHeader()
         if (header.tag != TAG_SEQUENCE) {
@@ -43,12 +49,21 @@ internal class DerParser(private val data: ByteArray) {
         }
     }
 
-    private data class Header(val tag: Int, val value: ByteArray)
-
     private fun readHeader(): Header {
         if (pos >= data.size) throw IllegalArgumentException("Unexpected end of DER data")
 
-        val tag = data[pos++].toInt() and 0xFF
+        var b = data[pos++].toInt() and 0xFF
+        var tag = b
+        
+        // Handle high-tag-number form (multi-byte tags)
+        if ((b and 0x1F) == 0x1F) {
+            do {
+                if (pos >= data.size) throw IllegalArgumentException("Unexpected end of DER data in tag")
+                b = data[pos++].toInt() and 0xFF
+                tag = (tag shl 8) or b
+            } while ((b and 0x80) != 0)
+        }
+
         val length = readLength()
 
         if (pos + length > data.size) {

@@ -109,6 +109,82 @@ class AndroidKeyAttestationStatementVerifierTest {
         assertTrue(result is ValidationResult.Invalid)
     }
 
+    @Test
+    fun verifyFailsWhenAllApplicationsPresent() {
+        // [600] EXPLICIT NULL
+        // Tag 600 = 0xBF8458
+        // NULL = 05 00
+        val allApplications = derTag(0xBF8458, byteArrayOf(0x05, 0x00))
+
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)),
+            derInteger(byteArrayOf(0)),
+            derInteger(byteArrayOf(0)),
+            derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash),
+            derOctetString(ByteArray(0)),
+            derSequence(), // swEnforced
+            derSequence(allApplications) // teeEnforced with allApplications (should fail)
+        )
+        val extensionValue = derOctetString(extensionValueSeq)
+        val attCert = generateAttestationCert(kp, extensionValue)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase) 
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        val error = (result as ValidationResult.Invalid).errors.first()
+        assertTrue(error.message.contains("allApplications"))
+    }
+
+    @Test
+    fun verifyFailsWhenOriginNotGenerated() {
+        // [702] EXPLICIT INTEGER (1) - 1 means KM_ORIGIN_IMPORTED (or similar, != GENERATED)
+        // Tag 702 = 0xBF853E
+        val originImported = derTag(0xBF853E, derInteger(byteArrayOf(1)))
+
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)),
+            derInteger(byteArrayOf(0)),
+            derInteger(byteArrayOf(0)),
+            derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash),
+            derOctetString(ByteArray(0)),
+            derSequence(), // swEnforced
+            derSequence(originImported) // teeEnforced with bad origin
+        )
+        val extensionValue = derOctetString(extensionValueSeq)
+        val attCert = generateAttestationCert(kp, extensionValue)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+
+        assertTrue(result is ValidationResult.Invalid)
+        val error = (result as ValidationResult.Invalid).errors.first()
+        assertTrue(error.message.contains("Key origin is not GENERATED"))
+    }
+
+
     // ---- Helpers ----
 
     private fun sampleAuthDataBytes(): ByteArray {
@@ -223,6 +299,11 @@ class AndroidKeyAttestationStatementVerifierTest {
     private fun derExplicit(tag: Int, content: ByteArray) = derTag(0xA0 or tag, content)
     private fun derRaw(content: ByteArray) = content
     private fun derTag(tag: Int, content: ByteArray): ByteArray {
+        val tagBytes = if (tag == 0xBF8458) byteArrayOf(0xBF.toByte(), 0x84.toByte(), 0x58.toByte())
+        else if (tag == 0xBF853E) byteArrayOf(0xBF.toByte(), 0x85.toByte(), 0x3E.toByte())
+        else if (tag > 255) throw IllegalArgumentException("Unsupported tag: $tag")
+        else byteArrayOf(tag.toByte())
+        
         val len = if (content.size < 128) {
             byteArrayOf(content.size.toByte())
         } else if (content.size < 256) {
@@ -230,7 +311,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         } else {
             byteArrayOf(0x82.toByte(), (content.size shr 8).toByte(), content.size.toByte())
         }
-        return concat(byteArrayOf(tag.toByte()), len, content)
+        return concat(tagBytes, len, content)
     }
     private fun concat(vararg chunks: ByteArray): ByteArray {
         val size = chunks.sumOf { it.size }

@@ -114,6 +114,17 @@ internal class AndroidKeyAttestationStatementVerifier : AttestationVerifier {
                 )
             }
 
+            // UniqueId (OCTET STRING)
+            sequence.readOctetString()
+
+            // softwareEnforced (AuthorizationList)
+            val swEnforcedSeq = sequence.readSequence()
+            checkAuthorizationList(swEnforcedSeq, requireOriginGenerated = false)
+
+            // teeEnforced (AuthorizationList)
+            val teeEnforcedSeq = sequence.readSequence()
+            checkAuthorizationList(teeEnforcedSeq, requireOriginGenerated = true)
+
         } catch (e: Exception) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse Android Key Attestation extension: ${e.message}")),
@@ -121,6 +132,30 @@ internal class AndroidKeyAttestationStatementVerifier : AttestationVerifier {
         }
 
         return ValidationResult.Valid(Unit)
+    }
+
+    private fun checkAuthorizationList(parser: DerParser, requireOriginGenerated: Boolean) {
+        while (!parser.isExhausted) {
+            val header = parser.readNextTLV()
+            
+            // Check for [600] allApplications (Tag 600 = 0x258 -> 0xBF8458)
+            if (header.tag == 0xBF8458) {
+                 throw IllegalArgumentException("Key is not restricted to this application (allApplications present)")
+            }
+            
+            // Check for [702] origin (Tag 702 = 0x2BE -> 0xBF853E)
+            if (requireOriginGenerated && header.tag == 0xBF853E) {
+                // origin [702] EXPLICIT INTEGER OPTIONAL
+                // The value of this header is the INNER TLV.
+                val innerParser = DerParser(header.value)
+                val originBytes = innerParser.readInteger()
+                // KM_ORIGIN_GENERATED = 0. Check only last byte if small, or use BigInteger
+                val origin = java.math.BigInteger(originBytes).toInt()
+                if (origin != 0) { 
+                    throw IllegalArgumentException("Key origin is not GENERATED (found $origin)")
+                }
+            }
+        }
     }
 
     private fun jcaParams(alg: Long): String {
