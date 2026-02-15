@@ -60,11 +60,15 @@ public class JvmCoseKeyParser(
     }
 }
 
-public class StrictAttestationVerifier : AttestationVerifier {
+public class StrictAttestationVerifier(
+    signatureVerifier: SignatureVerifier? = null,
+) : AttestationVerifier {
     private val noneVerifier = NoneAttestationStatementVerifier()
+    private val packedVerifier = signatureVerifier?.let { PackedAttestationStatementVerifier(it) }
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
-        if (input.response.attestationObject.bytes().isEmpty()) {
+        val attestationBytes = input.response.attestationObject.bytes()
+        if (attestationBytes.isEmpty()) {
             return ValidationResult.Invalid(
                 listOf(
                     WebAuthnValidationError.InvalidValue(
@@ -75,8 +79,36 @@ public class StrictAttestationVerifier : AttestationVerifier {
             )
         }
 
-        // Delegate to the none-format verifier. When additional attestation format
-        // verifiers are added (packed, tpm, etc.), dispatch based on parsed fmt here.
-        return noneVerifier.verify(input)
+        // Parse just to determine fmt for dispatching
+        val parsed = parseAttestationObject(attestationBytes)
+            ?: return ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidFormat(
+                        field = "attestationObject",
+                        message = "Attestation object is not valid CBOR",
+                    ),
+                ),
+            )
+
+        return when (parsed.fmt) {
+            "none" -> noneVerifier.verify(input)
+            "packed" -> packedVerifier?.verify(input)
+                ?: ValidationResult.Invalid(
+                    listOf(
+                        WebAuthnValidationError.InvalidValue(
+                            field = "attestationObject.fmt",
+                            message = "Packed attestation not supported: no SignatureVerifier configured",
+                        ),
+                    ),
+                )
+            else -> ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        field = "attestationObject.fmt",
+                        message = "Unsupported attestation format: ${parsed.fmt}",
+                    ),
+                ),
+            )
+        }
     }
 }

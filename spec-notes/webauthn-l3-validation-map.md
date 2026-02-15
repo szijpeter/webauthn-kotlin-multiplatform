@@ -18,6 +18,9 @@ This document maps currently implemented validation behavior to normative requir
 | Backup State (BS) flag must not be set when Backup Eligible (BE) flag is clear. | W3C WebAuthn Level 3, Authenticator Data flags (BE/BS semantics). | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`validateAuthenticatorData`) | `authenticatorDataFailsWhenBackupStateSetWithoutBackupEligible`, `authenticatorDataPassesWhenBackupStateAndEligibleBothSet` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
 | `authenticatorData.rpIdHash` must match RP ID during registration. | W3C WebAuthn Level 3, registration ceremony verification procedure. | `webauthn-server-core-jvm/src/main/kotlin/dev/webauthn/server/Services.kt` (`RegistrationService.finish`) | `registrationFinishFailsForRpIdHashMismatch` in `webauthn-server-core-jvm/src/test/kotlin/dev/webauthn/server/ServiceSmokeTest.kt` |
 | Attestation statement `fmt: "none"` must have empty `attStmt`. | W3C WebAuthn Level 3, §8.7 None Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/NoneAttestationStatementVerifier.kt` | `verifyPassesForNoneFmtWithEmptyAttStmt`, `verifyFailsForNoneFmtWithNonEmptyAttStmt`, `verifyFailsForUnsupportedFmt` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/NoneAttestationStatementVerifierTest.kt` |
+| Packed self-attestation: `sig` over `authData \|\| hash(clientDataJSON)` must verify with credential public key; `alg` must match. | W3C WebAuthn Level 3, §8.2 Packed Attestation Statement Format (self-attestation path). | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifier.kt` | `selfAttestationPassesForValidES256Signature`, `selfAttestationFailsForSignatureMismatch`, `selfAttestationFailsForAlgorithmMismatch` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifierTest.kt` |
+| Packed full attestation (`x5c`): `sig` must verify with `attCert` public key; `attCert` subject OU must be "Authenticator Attestation". | W3C WebAuthn Level 3, §8.2 Packed Attestation Statement Format (full attestation path). | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifier.kt` | `fullAttestationPassesForValidX5cChain`, `fullAttestationFailsForInvalidSignature` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifierTest.kt` |
+| Packed attestation must reject `ecdaaKeyId` (ECDAA not supported in Level 3). | W3C WebAuthn Level 3, §8.2 Packed Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifier.kt` | `ecdaaPresenceRejected` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifierTest.kt` |
 
 ## Positive-path sanity checks
 
@@ -31,6 +34,7 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Pending coverage
 
-- Full attestation statement format verification (`packed`, `tpm`, `android-key`, `android-safetynet`, `apple`) with trust path checks
+- Remaining attestation statement formats (`tpm`, `android-key`, `android-safetynet`, `apple`) with trust path checks
+- Packed attestation AAGUID extension validation (OID `1.3.6.1.4.1.45724.1.1.4`)
 - CBOR/COSE structural parsing against RFC 8949 and RFC 9052/9053 vectors
 - Level 3 extension-specific checks (PRF, `largeBlob`, Related Origins)
