@@ -68,6 +68,7 @@ public data class RegistrationStartRequest(
     public val timeoutMs: Long = 60_000,
     public val residentKey: ResidentKeyRequirement = ResidentKeyRequirement.PREFERRED,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
+    public val extensions: dev.webauthn.model.AuthenticationExtensionsClientInputs? = null,
 )
 
 public data class RegistrationFinishRequest(
@@ -81,7 +82,9 @@ public data class AuthenticationStartRequest(
     public val userName: String,
     public val timeoutMs: Long = 60_000,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
+    public val extensions: dev.webauthn.model.AuthenticationExtensionsClientInputs? = null,
 )
+
 
 public data class AuthenticationFinishRequest(
     public val responseDto: dev.webauthn.serialization.AuthenticationResponseDto,

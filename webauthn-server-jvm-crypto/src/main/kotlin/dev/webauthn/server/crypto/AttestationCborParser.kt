@@ -167,6 +167,9 @@ private fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): 
         additionalInfo == 26 -> if (offset + 4 <= bytes.size) {
             bytes.readUint32(offset) to (offset + 4)
         } else null
+        additionalInfo == 27 -> if (offset + 8 <= bytes.size) {
+            bytes.readUint64(offset) to (offset + 8)
+        } else null
         additionalInfo == 31 -> null to offset
         else -> null
     }
@@ -229,19 +232,11 @@ internal fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
             next
         }
         MAJOR_TAG -> skipCborItem(bytes, header.nextOffset)
-        MAJOR_SIMPLE_FLOAT -> {
-            when (header.additionalInfo) {
-                in 0..23 -> header.nextOffset
-                24 -> if (header.nextOffset + 1 <= bytes.size) header.nextOffset + 1 else null
-                25 -> if (header.nextOffset + 2 <= bytes.size) header.nextOffset + 2 else null
-                26 -> if (header.nextOffset + 4 <= bytes.size) header.nextOffset + 4 else null
-                27 -> if (header.nextOffset + 8 <= bytes.size) header.nextOffset + 8 else null
-                else -> null
-            }
-        }
+        MAJOR_SIMPLE_FLOAT -> header.nextOffset
         else -> null
     }
 }
+
 
 private fun ByteArray.readUint16(offset: Int): Int {
     return ((this[offset].toInt() and 0xFF) shl 8) or
@@ -253,6 +248,17 @@ private fun ByteArray.readUint32(offset: Int): Long {
         ((this[offset + 1].toLong() and 0xFF) shl 16) or
         ((this[offset + 2].toLong() and 0xFF) shl 8) or
         (this[offset + 3].toLong() and 0xFF)
+}
+
+private fun ByteArray.readUint64(offset: Int): Long {
+    return ((this[offset].toLong() and 0xFF) shl 56) or
+        ((this[offset + 1].toLong() and 0xFF) shl 48) or
+        ((this[offset + 2].toLong() and 0xFF) shl 40) or
+        ((this[offset + 3].toLong() and 0xFF) shl 32) or
+        ((this[offset + 4].toLong() and 0xFF) shl 24) or
+        ((this[offset + 5].toLong() and 0xFF) shl 16) or
+        ((this[offset + 6].toLong() and 0xFF) shl 8) or
+        (this[offset + 7].toLong() and 0xFF)
 }
 
 internal const val MAJOR_UNSIGNED_INT: Int = 0

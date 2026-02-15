@@ -28,6 +28,8 @@ public class RegistrationService(
     private val attestationVerifier: AttestationVerifier,
     private val rpIdHasher: RpIdHasher,
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
+    @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+    private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: RegistrationStartRequest): PublicKeyCredentialCreationOptions {
@@ -41,6 +43,7 @@ public class RegistrationService(
                 createdAtEpochMs = currentEpochMs(nowEpochMs),
                 expiresAtEpochMs = challengeExpirationEpochMs(nowEpochMs, request.timeoutMs),
                 type = CeremonyType.REGISTRATION,
+                extensions = request.extensions,
             ),
         )
 
@@ -71,6 +74,7 @@ public class RegistrationService(
             excludeCredentials = existingCredentials.map(::defaultCredentialDescriptor),
             residentKey = request.residentKey,
             userVerification = request.userVerification,
+            extensions = request.extensions,
         )
     }
 
@@ -103,6 +107,7 @@ public class RegistrationService(
             ),
             challenge = session.challenge,
             pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.ES256.code)),
+            extensions = session.extensions,
         )
 
         val validation = WebAuthnCoreValidator.validateRegistration(
@@ -146,6 +151,14 @@ public class RegistrationService(
             userHandle = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id,
         )))
 
+        @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+        for (hook in extensionHooks) {
+            val hookResult = hook.validateRegistrationExtensions(options.extensions, response.extensions)
+            if (hookResult is ValidationResult.Invalid) {
+                return hookResult
+            }
+        }
+
         return ValidationResult.Valid(response)
     }
 }
@@ -156,6 +169,8 @@ public class AuthenticationService(
     private val userAccountStore: UserAccountStore,
     private val signatureVerifier: SignatureVerifier,
     private val rpIdHasher: RpIdHasher,
+    @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+    private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: AuthenticationStartRequest): ValidationResult<PublicKeyCredentialRequestOptions> {
@@ -172,6 +187,7 @@ public class AuthenticationService(
                 createdAtEpochMs = currentEpochMs(nowEpochMs),
                 expiresAtEpochMs = challengeExpirationEpochMs(nowEpochMs, request.timeoutMs),
                 type = CeremonyType.AUTHENTICATION,
+                extensions = request.extensions,
             ),
         )
 
@@ -184,6 +200,7 @@ public class AuthenticationService(
                 timeoutMs = request.timeoutMs,
                 allowCredentials = credentials.map(::defaultCredentialDescriptor),
                 userVerification = request.userVerification,
+                extensions = request.extensions,
             ),
         )
     }
@@ -213,6 +230,7 @@ public class AuthenticationService(
             challenge = session.challenge,
             rpId = session.rpId,
             allowCredentials = listOf(defaultCredentialDescriptor(storedCredential)),
+            extensions = session.extensions,
         )
 
         val validation = WebAuthnCoreValidator.validateAuthentication(
@@ -247,6 +265,14 @@ public class AuthenticationService(
         }
 
         credentialStore.updateSignCount(response.credentialId, response.authenticatorData.signCount)
+
+        @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+        for (hook in extensionHooks) {
+            val hookResult = hook.validateAuthenticationExtensions(requestOptions.extensions, response.extensions)
+            if (hookResult is ValidationResult.Invalid) {
+                return hookResult
+            }
+        }
 
         return ValidationResult.Valid(response)
     }

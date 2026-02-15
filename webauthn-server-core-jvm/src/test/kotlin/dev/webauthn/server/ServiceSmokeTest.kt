@@ -106,6 +106,82 @@ class ServiceSmokeTest {
     }
 
     @Test
+    fun registrationFinishCallsExtensionHooks() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        var hookCalled = false
+        val hook = object : dev.webauthn.core.WebAuthnExtensionHook {
+            @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+            override fun validateRegistrationExtensions(
+                inputs: dev.webauthn.model.AuthenticationExtensionsClientInputs?,
+                outputs: dev.webauthn.model.AuthenticationExtensionsClientOutputs?,
+            ): ValidationResult<Unit> {
+                hookCalled = true
+                return ValidationResult.Valid(Unit)
+            }
+
+            @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+            override fun validateAuthenticationExtensions(
+                inputs: dev.webauthn.model.AuthenticationExtensionsClientInputs?,
+                outputs: dev.webauthn.model.AuthenticationExtensionsClientOutputs?,
+            ): ValidationResult<Unit> = ValidationResult.Valid(Unit)
+        }
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+            attestationPolicy = AttestationPolicy.Strict,
+            extensionHooks = listOf(hook),
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+        )
+        val options = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = options.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(hookCalled)
+    }
+
+    @Test
     fun authenticationFinishUpdatesSignatureCounter() = runBlocking {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()

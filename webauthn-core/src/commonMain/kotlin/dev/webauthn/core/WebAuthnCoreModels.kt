@@ -1,5 +1,7 @@
 package dev.webauthn.core
 
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
+import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
@@ -10,6 +12,7 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.ValidationResult
 
 public enum class CeremonyType {
     REGISTRATION,
@@ -24,7 +27,9 @@ public data class ChallengeSession(
     public val createdAtEpochMs: Long,
     public val expiresAtEpochMs: Long,
     public val type: CeremonyType,
+    public val extensions: AuthenticationExtensionsClientInputs? = null,
 )
+
 
 public data class RegistrationValidationInput(
     public val options: PublicKeyCredentialCreationOptions,
@@ -57,7 +62,14 @@ public data class AuthenticationValidationOutput(
 
 @ExperimentalWebAuthnL3Api
 public interface WebAuthnExtensionHook {
-    public fun validateRegistrationExtensions(rawClientExtensionResults: Map<String, String>): List<String>
+    public fun validateRegistrationExtensions(
+        inputs: AuthenticationExtensionsClientInputs?,
+        outputs: AuthenticationExtensionsClientOutputs?,
+    ): ValidationResult<Unit>
 
-    public fun validateAuthenticationExtensions(rawClientExtensionResults: Map<String, String>): List<String>
+    public fun validateAuthenticationExtensions(
+        inputs: AuthenticationExtensionsClientInputs?,
+        outputs: AuthenticationExtensionsClientOutputs?,
+    ): ValidationResult<Unit>
 }
+

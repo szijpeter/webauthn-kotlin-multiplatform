@@ -34,6 +34,7 @@ public data class RegistrationStartPayload(
     public val userName: String,
     public val userDisplayName: String,
     public val userHandle: String,
+    public val extensions: dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto? = null,
 )
 
 @Serializable
@@ -41,6 +42,7 @@ public data class AuthenticationStartPayload(
     public val rpId: String,
     public val origin: String,
     public val userName: String,
+    public val extensions: dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto? = null,
 )
 
 @Serializable
@@ -83,6 +85,7 @@ public fun Route.webAuthnRoutes(
                     userName = payload.userName,
                     userDisplayName = payload.userDisplayName,
                     userHandle = UserHandle.parse(payload.userHandle).getOrThrow(),
+                    extensions = payload.extensions?.let { WebAuthnDtoMapper.toModel(it) },
                 ),
             )
             call.respond(HttpStatusCode.OK, WebAuthnDtoMapper.fromModel(options))
@@ -116,6 +119,7 @@ public fun Route.webAuthnRoutes(
                     rpId = RpId.parseOrThrow(payload.rpId),
                     origin = Origin.parseOrThrow(payload.origin),
                     userName = payload.userName,
+                    extensions = payload.extensions?.let { WebAuthnDtoMapper.toModel(it) },
                 ),
             )
             when (result) {

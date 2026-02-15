@@ -430,7 +430,7 @@ public object WebAuthnDtoMapper {
 
     // --- Extension Mapping Helpers ---
 
-    private fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientInputs): AuthenticationExtensionsClientInputsDto {
+    public fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientInputs): AuthenticationExtensionsClientInputsDto {
         return AuthenticationExtensionsClientInputsDto(
             prf = value.prf?.let { prf ->
                 PrfExtensionInputDto(
@@ -449,7 +449,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    private fun toModel(value: AuthenticationExtensionsClientInputsDto): dev.webauthn.model.AuthenticationExtensionsClientInputs {
+    public fun toModel(value: AuthenticationExtensionsClientInputsDto): dev.webauthn.model.AuthenticationExtensionsClientInputs {
         return dev.webauthn.model.AuthenticationExtensionsClientInputs(
             prf = value.prf?.let { prf ->
                 dev.webauthn.model.PrfExtensionInput(
@@ -468,7 +468,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    private fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientOutputs): AuthenticationExtensionsClientOutputsDto {
+    public fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientOutputs): AuthenticationExtensionsClientOutputsDto {
         return AuthenticationExtensionsClientOutputsDto(
             prf = value.prf?.let { prf ->
                 PrfExtensionOutputDto(
@@ -486,7 +486,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    private fun toModel(value: AuthenticationExtensionsClientOutputsDto): dev.webauthn.model.AuthenticationExtensionsClientOutputs {
+    public fun toModel(value: AuthenticationExtensionsClientOutputsDto): dev.webauthn.model.AuthenticationExtensionsClientOutputs {
         return dev.webauthn.model.AuthenticationExtensionsClientOutputs(
             prf = value.prf?.let { prf ->
                 dev.webauthn.model.PrfExtensionOutput(
