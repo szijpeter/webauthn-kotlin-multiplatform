@@ -65,6 +65,7 @@ public class StrictAttestationVerifier(
 ) : AttestationVerifier {
     private val noneVerifier = NoneAttestationStatementVerifier()
     private val packedVerifier = signatureVerifier?.let { PackedAttestationStatementVerifier(it) }
+    private val androidKeyVerifier = AndroidKeyAttestationStatementVerifier()
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationBytes = input.response.attestationObject.bytes()
@@ -92,6 +93,7 @@ public class StrictAttestationVerifier(
 
         return when (parsed.fmt) {
             "none" -> noneVerifier.verify(input)
+            "android-key" -> androidKeyVerifier.verify(input)
             "packed" -> packedVerifier?.verify(input)
                 ?: ValidationResult.Invalid(
                     listOf(
