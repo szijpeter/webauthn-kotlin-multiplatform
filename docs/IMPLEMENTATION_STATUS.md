@@ -47,9 +47,9 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 Pending high-impact coverage:
 
-- CBOR/COSE conformance vector expansion
-- L3 extension runtime validation (PRF HMAC computation context, LargeBlob support validation, Related Origins fetch)
-- Server-side extension processing hooks (Registration/Authentication services)
+- CBOR/COSE conformance vector expansion (Support for real COSE_Key in JvmCoseKeyParser)
+- L3 extension runtime validation (PRF HMAC computation context hooks, LargeBlob validation, Related Origins fetch integration)
+- Server-side extension processing hooks implemented in Registration/Authentication services
 
 ## Current Quality Gates
 

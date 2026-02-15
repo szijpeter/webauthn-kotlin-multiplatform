@@ -155,7 +155,7 @@ internal fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     )
 }
 
-private fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
+internal fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
     return when {
         additionalInfo in 0..23 -> additionalInfo.toLong() to offset
         additionalInfo == 24 -> if (offset + 1 <= bytes.size) {
@@ -238,19 +238,19 @@ internal fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
 }
 
 
-private fun ByteArray.readUint16(offset: Int): Int {
+internal fun ByteArray.readUint16(offset: Int): Int {
     return ((this[offset].toInt() and 0xFF) shl 8) or
         (this[offset + 1].toInt() and 0xFF)
 }
 
-private fun ByteArray.readUint32(offset: Int): Long {
+internal fun ByteArray.readUint32(offset: Int): Long {
     return ((this[offset].toLong() and 0xFF) shl 24) or
         ((this[offset + 1].toLong() and 0xFF) shl 16) or
         ((this[offset + 2].toLong() and 0xFF) shl 8) or
         (this[offset + 3].toLong() and 0xFF)
 }
 
-private fun ByteArray.readUint64(offset: Int): Long {
+internal fun ByteArray.readUint64(offset: Int): Long {
     return ((this[offset].toLong() and 0xFF) shl 56) or
         ((this[offset + 1].toLong() and 0xFF) shl 48) or
         ((this[offset + 2].toLong() and 0xFF) shl 40) or

@@ -33,6 +33,22 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
             }
         }
 
+        // 2. PRF validation
+        val prfInput = inputs?.prf
+        if (prfInput != null) {
+            val prfOutput = outputs?.prf
+            if (prfOutput == null) {
+                // Technically optional unless RP policy says otherwise, but spec says "the authenticator MUST return the prf extension"
+                // if it was in the create call. However, old authenticators might ignore it.
+                // We'll treat it as valid unless we have a "REQUIRED" flag (which PRF doesn't have in inputs yet).
+            } else if (prfOutput.enabled == false && prfInput.eval != null) {
+                errors += WebAuthnValidationError.InvalidValue(
+                    field = "extensions.prf.enabled",
+                    message = "PRF was enabled in inputs but reported as disabled by authenticator"
+                )
+            }
+        }
+
         return if (errors.isEmpty()) {
             ValidationResult.Valid(Unit)
         } else {
@@ -46,8 +62,24 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
-        // For Authentication, we mostly expect results if we sent inputs.
-        // Normative L3 doesn't typically "fail" purely based on output absence unless it's an RP policy.
+        // 1. PRF validation
+        val prfInput = inputs?.prf
+        if (prfInput?.eval != null || prfInput?.evalByCredential != null) {
+            val prfResults = outputs?.prf?.results
+            if (prfResults == null) {
+                // If we requested evaluation, we expect results.
+            } else {
+                // Check if we expected two outputs but got one
+                val requestedSecond = prfInput.eval?.second != null || 
+                                     prfInput.evalByCredential?.values?.any { it.second != null } == true
+                if (requestedSecond && prfResults.second == null) {
+                     errors += WebAuthnValidationError.InvalidValue(
+                        field = "extensions.prf.results.second",
+                        message = "PRF evaluation requested two outputs but only one was returned"
+                    )
+                }
+            }
+        }
 
         return if (errors.isEmpty()) {
             ValidationResult.Valid(Unit)

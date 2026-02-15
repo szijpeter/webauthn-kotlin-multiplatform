@@ -30,6 +30,7 @@ public class RegistrationService(
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
     @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
     private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
+    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider = dev.webauthn.core.NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: RegistrationStartRequest): PublicKeyCredentialCreationOptions {
@@ -94,8 +95,12 @@ public class RegistrationService(
             return failure("challenge", "Registration challenge has expired")
         }
 
+        var allowedOrigins = emptySet<dev.webauthn.model.Origin>()
         if (request.clientData.origin != session.origin) {
-            return failure("origin", "Origin mismatch")
+            allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
+            if (!allowedOrigins.contains(request.clientData.origin)) {
+                return failure("origin", "Origin mismatch")
+            }
         }
 
         val options = PublicKeyCredentialCreationOptions(
@@ -116,6 +121,7 @@ public class RegistrationService(
                 response = response,
                 clientData = request.clientData,
                 expectedOrigin = session.origin,
+                allowedOrigins = allowedOrigins,
             ),
         )
 
@@ -135,6 +141,7 @@ public class RegistrationService(
                 response = response,
                 clientData = request.clientData,
                 expectedOrigin = session.origin,
+                allowedOrigins = allowedOrigins,
             ),
         )
 
@@ -171,6 +178,7 @@ public class AuthenticationService(
     private val rpIdHasher: RpIdHasher,
     @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
     private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
+    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider = dev.webauthn.core.NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: AuthenticationStartRequest): ValidationResult<PublicKeyCredentialRequestOptions> {
@@ -219,8 +227,12 @@ public class AuthenticationService(
             return failure("challenge", "Authentication challenge has expired")
         }
 
+        var allowedOrigins = emptySet<dev.webauthn.model.Origin>()
         if (request.clientData.origin != session.origin) {
-            return failure("origin", "Origin mismatch")
+            allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
+            if (!allowedOrigins.contains(request.clientData.origin)) {
+                return failure("origin", "Origin mismatch")
+            }
         }
 
         val storedCredential = credentialStore.findById(response.credentialId)
@@ -239,6 +251,7 @@ public class AuthenticationService(
                 response = response,
                 clientData = request.clientData,
                 expectedOrigin = session.origin,
+                allowedOrigins = allowedOrigins,
                 previousSignCount = storedCredential.signCount,
             ),
         )

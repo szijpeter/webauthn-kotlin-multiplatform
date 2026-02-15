@@ -53,10 +53,10 @@ public class JvmCoseKeyParser(
     private val defaultAlgorithm: CoseAlgorithm = CoseAlgorithm.ES256,
 ) : CoseKeyParser {
     override fun parsePublicKey(coseKey: ByteArray): ParsedCosePublicKey {
-        // V1 baseline: parser currently accepts SPKI input as-is.
+        val spki = CoseToSpkiConverter.convert(coseKey) ?: coseKey
         return ParsedCosePublicKey(
             algorithm = defaultAlgorithm,
-            x509SubjectPublicKeyInfo = coseKey,
+            x509SubjectPublicKeyInfo = spki,
         )
     }
 }

@@ -21,6 +21,7 @@ public class CompositeAttestationVerifier(
         "tpm" to TpmAttestationStatementVerifier(trustAnchorSource),
         "apple" to AppleAttestationStatementVerifier(trustAnchorSource),
         "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(trustAnchorSource),
+        "fido-u2f" to FidoU2fAttestationStatementVerifier(trustAnchorSource),
     )
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {

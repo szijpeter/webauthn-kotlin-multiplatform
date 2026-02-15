@@ -50,4 +50,53 @@ class WebAuthnExtensionValidatorTest {
         val result = WebAuthnExtensionValidator.validateRegistrationExtensions(inputs, outputs)
         assertTrue(result is ValidationResult.Valid)
     }
+
+    @Test
+    fun registrationFailsIfPrfReportedDisabledButInputsProvided() {
+        val inputs = AuthenticationExtensionsClientInputs(
+            prf = dev.webauthn.model.PrfExtensionInput(
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1))
+            )
+        )
+        val outputs = AuthenticationExtensionsClientOutputs(
+            prf = dev.webauthn.model.PrfExtensionOutput(enabled = false)
+        )
+
+        val result = WebAuthnExtensionValidator.validateRegistrationExtensions(inputs, outputs)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFailsIfPrfResultsMissingSecondOutput() {
+        val inputs = AuthenticationExtensionsClientInputs(
+            prf = dev.webauthn.model.PrfExtensionInput(
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1), byteArrayOf(2))
+            )
+        )
+        val outputs = AuthenticationExtensionsClientOutputs(
+            prf = dev.webauthn.model.PrfExtensionOutput(
+                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(3)) // missing second
+            )
+        )
+
+        val result = WebAuthnExtensionValidator.validateAuthenticationExtensions(inputs, outputs)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationPassesIfPrfResultsMatchRequestedOutputCount() {
+        val inputs = AuthenticationExtensionsClientInputs(
+            prf = dev.webauthn.model.PrfExtensionInput(
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1), byteArrayOf(2))
+            )
+        )
+        val outputs = AuthenticationExtensionsClientOutputs(
+            prf = dev.webauthn.model.PrfExtensionOutput(
+                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(3), byteArrayOf(4))
+            )
+        )
+
+        val result = WebAuthnExtensionValidator.validateAuthenticationExtensions(inputs, outputs)
+        assertTrue(result is ValidationResult.Valid)
+    }
 }
