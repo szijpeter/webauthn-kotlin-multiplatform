@@ -2,6 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
@@ -18,6 +19,8 @@ internal class TpmAttestationStatementVerifier(
     companion object {
         private const val TPM_GENERATED_VALUE = 0xFF544347.toInt()
         private const val TPM_ST_ATTEST_CERTIFY = 0x8017.toShort()
+        private const val VERSION_2_0 = "2.0"
+        private const val OID_TCG_KP_AIK_CERTIFICATE = "2.23.133.8.3"
     }
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -35,7 +38,7 @@ internal class TpmAttestationStatementVerifier(
         }
 
         // 1. Verify "ver" is "2.0"
-        if (attestationObject.ver != "2.0") {
+        if (attestationObject.ver != VERSION_2_0) {
              return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("ver", "TPM version must be 2.0")),
             )
@@ -77,16 +80,19 @@ internal class TpmAttestationStatementVerifier(
         }
 
 
-        val alg = attestationObject.alg ?: -7 // Default ES256 if missing? But map can have it. If missing, COSE alg usually inferred or required.
-        // Usually alg is present in attStmt for TPM.
-        if (attestationObject.alg == null) {
+        val algId = attestationObject.alg
+        if (algId == null) {
              return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("alg", "Algorithm identifier missing")),
             )
         }
+        val coseAlg = CoseAlgorithm.entries.find { it.code == algId.toInt() }
+            ?: return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: $algId")),
+            )
 
         try {
-            val signature = java.security.Signature.getInstance(jcaParams(alg!!))
+            val signature = java.security.Signature.getInstance(jcaParams(coseAlg))
             signature.initVerify(leafCert.publicKey)
             signature.update(attestationObject.certInfo)
             if (!signature.verify(attestationObject.sig)) {
@@ -153,18 +159,67 @@ internal class TpmAttestationStatementVerifier(
             )
         }
 
-        // 6. Verify AIK certificate constraints (extendedKeyUsage, etc) - optional/advanced step, maybe later.
-        // Prompt only asked for checks implemented above.
+        // 6. Verify AIK certificate constraints (extendedKeyUsage, etc)
+        val aikResult = validateAikCert(leafCert)
+        if (aikResult is ValidationResult.Invalid) {
+            return aikResult
+        }
         
         return ValidationResult.Valid(Unit)
     }
 
-    private fun jcaParams(alg: Long): String {
+    private fun validateAikCert(cert: X509Certificate): ValidationResult<Unit> {
+        // Version MUST be 3 (integer 2)
+        if (cert.version != 3) {
+            return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate version must be 3")),
+            )
+        }
+
+        // Subject DN MUST NOT be empty
+        if (cert.subjectX500Principal.name.isEmpty()) {
+            return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate subject must not be empty")),
+            )
+        }
+
+        // Basic Constraints MUST have CA component set to false
+        if (cert.basicConstraints != -1) {
+             return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate must not be a CA")),
+            )
+        }
+
+        // Extended Key Usage MUST contain "tcg-kp-AIKCertificate" (2.23.133.8.3)
+        try {
+            val eku = cert.extendedKeyUsage
+            if (eku == null || !eku.contains(OID_TCG_KP_AIK_CERTIFICATE)) {
+                return ValidationResult.Invalid(
+                    listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate missing tcg-kp-AIKCertificate EKU")),
+                )
+            }
+        } catch (e: Exception) {
+            return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse EKU: ${e.message}")),
+            )
+        }
+
+        // If SAN is present, it MUST NOT be critical
+        val criticalOids = cert.criticalExtensionOIDs
+        if (criticalOids != null && criticalOids.contains("2.5.29.17")) { // OID for SubjectAlternativeName
+             return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate SAN extension must not be critical")),
+            )
+        }
+
+        return ValidationResult.Valid(Unit)
+    }
+
+    private fun jcaParams(alg: CoseAlgorithm): String {
         return when (alg) {
-            -7L -> "SHA256withECDSA" // ES256
-            -257L -> "SHA256withRSA" // RS256
-            -8L -> "Ed25519" // EdDSA
-            else -> throw IllegalArgumentException("Unsupported algorithm: $alg")
+            CoseAlgorithm.ES256 -> "SHA256withECDSA"
+            CoseAlgorithm.RS256 -> "SHA256withRSA"
+            CoseAlgorithm.EdDSA -> "Ed25519"
         }
     }
 }

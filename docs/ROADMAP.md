@@ -13,7 +13,7 @@ Last updated: 2026-02-15
 
 ## Phase 1: Conformance and Security Hardening (Immediate)
 
-1. Attestation format matrix hardening (`packed`, `tpm`, `android-key`, `android-safetynet`, `apple`, `none`).
+1. Attestation format matrix hardening (`packed`, `tpm` (done), `android-key`, `android-safetynet`, `apple`, `none`).
 2. CBOR/COSE vector-based parser/validator expansion.
 3. UV-required and BE/BS branching policy behavior coverage.
 4. Core negative-path expansion tied to spec map rows.

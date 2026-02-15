@@ -196,19 +196,170 @@ class TpmAttestationStatementVerifierTest {
         return sig.sign()
     }
 
-    private fun generateAttestationCert(keyPair: java.security.KeyPair): ByteArray {
-        // Minimal valid self-signed cert for testing (using JCA/BouncyCastle logic if available, or manual DER)
-        // Re-use manual DER from Android test
+    @Test
+    fun verifyFailsForAikCertWithCaTrue() {
+        // ... (setup similar to valid case) ...
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val concatHash = sha256(authData + clientDataHash)
+
+        val certInfo = createCertInfo(
+            magic = 0xFF544347.toInt(),
+            type = 0x8017.toShort(),
+            extraData = concatHash,
+            signerName = ByteArray(10)
+        )
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, certInfo)
+        
+        // Generate INVALID cert: CA=true
+        val attCert = generateAttestationCert(kp, isCa = true)
+
+        val attestationObject = buildTpmAttestationObject(
+            ver = "2.0",
+            alg = -7,
+            sig = sig,
+            certInfo = certInfo,
+            pubArea = ByteArray(10),
+            x5c = listOf(attCert)
+        )
+        val verifier = TpmAttestationStatementVerifier()
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("AIK certificate must not be a CA") })
+    }
+
+    @Test
+    fun verifyFailsForAikCertMissingEku() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val concatHash = sha256(authData + clientDataHash)
+
+        val certInfo = createCertInfo(
+            magic = 0xFF544347.toInt(),
+            type = 0x8017.toShort(),
+            extraData = concatHash,
+            signerName = ByteArray(10)
+        )
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, certInfo)
+
+        // Generate INVALID cert: Missing EKU
+        val attCert = generateAttestationCert(kp, includeEku = false)
+
+        val attestationObject = buildTpmAttestationObject(
+            ver = "2.0",
+            alg = -7,
+            sig = sig,
+            certInfo = certInfo,
+            pubArea = ByteArray(10),
+            x5c = listOf(attCert) // Invalid cert
+        )
+        val verifier = TpmAttestationStatementVerifier()
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("AIK certificate missing tcg-kp-AIKCertificate EKU") })
+    }
+
+    @Test
+    fun verifyFailsForAikCertWithCriticalSan() {
+         val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val concatHash = sha256(authData + clientDataHash)
+
+        val certInfo = createCertInfo(
+            magic = 0xFF544347.toInt(),
+            type = 0x8017.toShort(),
+            extraData = concatHash,
+            signerName = ByteArray(10)
+        )
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, certInfo)
+
+        // Generate INVALID cert: Critical SAN
+        val attCert = generateAttestationCert(kp, criticalSan = true)
+
+        val attestationObject = buildTpmAttestationObject(
+            ver = "2.0",
+            alg = -7,
+            sig = sig,
+            certInfo = certInfo,
+            pubArea = ByteArray(10),
+            x5c = listOf(attCert) // Invalid cert
+        )
+        val verifier = TpmAttestationStatementVerifier()
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("AIK certificate SAN extension must not be critical") })
+    }
+
+    private fun generateAttestationCert(
+        keyPair: java.security.KeyPair,
+        isCa: Boolean = false,
+        includeEku: Boolean = true,
+        criticalSan: Boolean = false
+    ): ByteArray {
         val subjectPublicKeyInfo = keyPair.public.encoded
-        // Simple manual DER certificate builder
+        
+        // Extension Construction
+        val extensionsList = mutableListOf<ByteArray>()
+
+        // 1. BasicConstraints (OID 2.5.29.19)
+        val bcValue = if (isCa) {
+             derSequence(derBoolean(true))
+        } else {
+             derSequence() // cA default false
+        }
+        extensionsList.add(derExtension(
+            byteArrayOf(0x55, 0x1D, 0x13), // 2.5.29.19
+            true,
+            derOctetString(bcValue)
+        ))
+
+        // 2. ExtendedKeyUsage (OID 2.5.29.37)
+        if (includeEku) {
+            // tcg-kp-AIKCertificate (2.23.133.8.3)
+            // OID bytes: 2.23.133.8.3 -> 0x67 0x81 0x05 0x08 0x03
+            val aikOid = byteArrayOf(0x67, 0x81.toByte(), 0x05, 0x08, 0x03)
+            val ekuValue = derSequence(derOid(aikOid))
+            extensionsList.add(derExtension(
+                byteArrayOf(0x55, 0x1D, 0x25), // 2.5.29.37
+                false, // Critical MUST be false
+                derOctetString(ekuValue)
+            ))
+        }
+
+        // 3. SubjectAlternativeName (OID 2.5.29.17) - Optional
+        if (criticalSan) {
+             // Add dummy SAN
+             val sanValue = derSequence(derTag(0x82, "test".toByteArray())) // dNSName context specific 2
+             extensionsList.add(derExtension(
+                 byteArrayOf(0x55, 0x1D, 0x11), // 2.5.29.17
+                 true, // Invalid if critical
+                 derOctetString(sanValue)
+             ))
+        }
+
+        val extensions = derExplicit(3, derSequence(*extensionsList.toTypedArray()))
+
         val tbsCert = derSequence(
             derExplicit(0, derInteger(byteArrayOf(2))), // v3
             derInteger(byteArrayOf(1)), // Serial
-            derSequence(derOid(byteArrayOf(0x2A, 0x86.toByte(), 0x48, 0xCE.toByte(), 0x3D, 0x04, 0x03, 0x02))),
-            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test")))),
+            derSequence(derOid(byteArrayOf(0x2A, 0x86.toByte(), 0x48, 0xCE.toByte(), 0x3D, 0x04, 0x03, 0x02))), // ecdsa-with-sha256
+            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test")))), // Issuer
             derSequence(derUtcTime("260101000000Z"), derUtcTime("270101000000Z")),
-            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test")))),
-            derRaw(subjectPublicKeyInfo)
+            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test")))), // Subject
+            derRaw(subjectPublicKeyInfo),
+            extensions // Add extensions here
         )
         val sig = Signature.getInstance("SHA256withECDSA")
         sig.initSign(keyPair.private)
@@ -271,6 +422,17 @@ class TpmAttestationStatementVerifierTest {
     private fun derOid(value: ByteArray) = derTag(0x06, value)
     private fun derUtf8String(value: String) = derTag(0x0C, value.encodeToByteArray())
     private fun derUtcTime(value: String) = derTag(0x17, value.encodeToByteArray())
+    // Correct implementation based on usage:
+    // derExtension(oid, critical, octetStringWrappedValue)
+    private fun derExtension(oid: ByteArray, critical: Boolean, value: ByteArray): ByteArray {
+        return if (critical) {
+            derSequence(derOid(oid), derBoolean(true), value)
+        } else {
+            derSequence(derOid(oid), value)
+        }
+    }
+
+    private fun derBoolean(value: Boolean): ByteArray = derTag(0x01, byteArrayOf(if (value) 0xFF.toByte() else 0x00))
     private fun derExplicit(tag: Int, content: ByteArray) = derTag(0xA0 or tag, content)
     private fun derRaw(content: ByteArray) = content
     private fun derTag(tag: Int, content: ByteArray): ByteArray {
