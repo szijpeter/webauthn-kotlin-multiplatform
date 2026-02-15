@@ -22,7 +22,7 @@ Last updated: 2026-02-15
 | Module | Maturity | Implemented | Gaps / Risks |
 |---|---|---|---|
 | `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins) | Continued edge-case coverage for uncommon protocol combinations |
-| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests (incl. AAGUID model updates) | Additional L3 extensions hardening |
+| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests (incl. AAGUID model updates), extension processing hooks, LargeBlob validation | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Abstraction interfaces in place | Additional implementations and cross-provider behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet` trust-path (Google/Apple roots configured) + dispatcher integration | `android-key` depth |
@@ -31,7 +31,7 @@ Last updated: 2026-02-15
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
 | `webauthn-client-android` | Scaffold/Beta | Credential Manager integration scaffold and sample buildability | Runtime passkey behavior hardening across device/API variations |
 | `webauthn-client-ios` | Scaffold/Beta | AuthenticationServices scaffold and compile path | Runtime behavior hardening + delegate lifecycle/error handling |
-| `webauthn-network-ktor-client` | Beta | Transport helper client + payload tests | Retry/error policy hardening |
+| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher | Retry/error policy hardening |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
 | `samples:*` | Scaffold/Beta | Runnable backend/android/ios sample structure | End-to-end realistic passkey flows and docs depth |
 
@@ -48,8 +48,8 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 Pending high-impact coverage:
 
 - CBOR/COSE conformance vector expansion
-- L3 extension runtime validation (PRF HMAC computation, `largeBlob` storage, Related Origins fetch)
-- Server-side extension processing hooks
+- L3 extension runtime validation (PRF HMAC computation context, LargeBlob support validation, Related Origins fetch)
+- Server-side extension processing hooks (Registration/Authentication services)
 
 ## Current Quality Gates
 

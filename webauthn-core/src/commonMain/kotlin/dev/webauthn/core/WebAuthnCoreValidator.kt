@@ -77,6 +77,7 @@ public object WebAuthnCoreValidator {
             RegistrationValidationOutput(
                 credentialId = input.response.credentialId,
                 signCount = input.response.rawAuthenticatorData.signCount,
+                extensions = input.response.extensions,
             ),
         )
     }
@@ -106,6 +107,7 @@ public object WebAuthnCoreValidator {
             AuthenticationValidationOutput(
                 credentialId = input.response.credentialId,
                 signCount = input.response.authenticatorData.signCount,
+                extensions = input.response.extensions,
             ),
         )
     }

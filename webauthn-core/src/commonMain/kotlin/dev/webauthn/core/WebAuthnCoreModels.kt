@@ -53,12 +53,15 @@ public data class AuthenticationValidationInput(
 public data class RegistrationValidationOutput(
     public val credentialId: CredentialId,
     public val signCount: Long,
+    public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
 
 public data class AuthenticationValidationOutput(
     public val credentialId: CredentialId,
     public val signCount: Long,
+    public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
+
 
 @ExperimentalWebAuthnL3Api
 public interface WebAuthnExtensionHook {

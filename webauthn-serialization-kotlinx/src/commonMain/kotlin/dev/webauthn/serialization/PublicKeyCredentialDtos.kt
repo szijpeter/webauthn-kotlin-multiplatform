@@ -21,6 +21,14 @@ import dev.webauthn.model.WebAuthnValidationError
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * DTO for the /.well-known/webauthn file used by the Related Origins extension.
+ */
+@Serializable
+public data class RelatedOriginsDto(
+    @SerialName("origins") public val origins: List<String>,
+)
+
 @Serializable
 public data class PublicKeyCredentialCreationOptionsDto(
     @SerialName("rp") public val rp: RpEntityDto,
