@@ -27,6 +27,10 @@ This document maps currently implemented validation behavior to normative requir
 | TPM: Attestation signature verification over `certInfo`, `extraData` validation, and cert chain verification. | W3C WebAuthn Level 3, §8.3 TPM Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/TpmAttestationStatementVerifier.kt` | Tests in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/TpmAttestationStatementVerifierTest.kt` |
 | Android SafetyNet: JWS signature verification, nonce validation, `ctsProfileMatch` check, and cert chain verification (trust path). | W3C WebAuthn Level 3, §8.5 Android SafetyNet Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/AndroidSafetyNetAttestationStatementVerifier.kt` | `verifyPassesForValidSafetyNet`, `verifyPassesWithTrustAnchorValidation`, `verifyFailsForInvalidNonce` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/AndroidSafetyNetAttestationStatementVerifierTest.kt` |
 | Related Origins: `clientData.origin` may match the expected RP origin or any origin in the `allowedOrigins` set. | W3C WebAuthn Level 3, Related Origins. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`validateClientData` with `allowedOrigins`) | `clientDataPassesForAllowedOrigin`, `clientDataFailsForOriginNotInAllowedList` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
+| Related Origins acceptance in server finish flows is strict opt-in (`relatedOrigins` extension must be requested for alternate origin acceptance). | W3C WebAuthn Level 3, Related Origins extension processing model. | `webauthn-server-core-jvm/src/main/kotlin/dev/webauthn/server/Services.kt` (`RegistrationService.finish`, `AuthenticationService.finish`) | `registrationFinishFailsWithRelatedOriginWhenNotRequested`, `registrationFinishSucceedsWithRelatedOrigin`, `authenticationFinishFailsWithRelatedOriginWhenNotRequested`, `authenticationFinishSucceedsWithRelatedOrigin` in `webauthn-server-core-jvm/src/test/kotlin/dev/webauthn/server/ServiceSmokeTest.kt` |
+| PRF extension requests must fail validation when required registration/authentication outputs are missing. | W3C WebAuthn Level 3, PRF extension processing semantics. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnExtensionValidator.kt` | `registrationFailsIfPrfRequestedButOutputMissing`, `authenticationFailsIfPrfRequestedButResultsMissing`, `authenticationFailsIfPrfResultsMissingSecondOutput` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnExtensionValidatorTest.kt` |
+| LargeBlob `support: required` must fail validation when authenticator does not report support. | W3C WebAuthn Level 3, Large Blob extension processing semantics. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnExtensionValidator.kt` | `registrationFailsIfLargeBlobRequiredButNotSupported` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnExtensionValidatorTest.kt` |
+| FIDO U2F attestation must verify signature over U2F verification data and validate attestation certificate presence. | W3C WebAuthn Level 3, §8.6 FIDO U2F Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/FidoU2fAttestationStatementVerifier.kt` | `verifyPassesForValidU2fAttestation`, `verifyFailsWhenX5cMissing`, `verifyFailsWhenSigMissing`, `verifyFailsForInvalidSignature`, `verifyFailsForMalformedCosePublicKey` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/FidoU2fAttestationStatementVerifierTest.kt` |
 
 ## Positive-path sanity checks
 
@@ -37,9 +41,12 @@ This document maps currently implemented validation behavior to normative requir
 - `validateRegistrationReturnsCredentialIdAndSignCountForValidInput`
 - `validateAuthenticationReturnsCredentialIdAndSignCountForValidInput`
 - `roundTripEncodesAndDecodesForMultipleLengths`
+- `registrationFinishSucceedsWithRelatedOrigin`
+- `authenticationFinishSucceedsWithRelatedOrigin`
+- `verifyPassesForValidU2fAttestation`
 
 ## Pending coverage
 
 - CBOR/COSE conformance vector expansion (strict negative cases)
-- L3 extension runtime validation (PRF HMAC computation, `largeBlob` storage, Related Origins fetch)
-- Server-side extension processing hooks
+- L3 extension runtime hardening (PRF HMAC computation context, `largeBlob` storage semantics, authenticator interoperability vectors)
+- Server-side extension policy hardening and observability hooks

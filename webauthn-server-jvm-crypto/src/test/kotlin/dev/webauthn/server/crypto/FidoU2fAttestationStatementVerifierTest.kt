@@ -15,70 +15,192 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.MessageDigest
+import java.security.PrivateKey
+import java.security.SecureRandom
 import java.security.Signature
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
+import java.security.interfaces.ECPublicKey
 import java.security.spec.ECGenParameterSpec
+import java.security.spec.PKCS8EncodedKeySpec
+import java.util.Base64
 import kotlin.test.Test
 import kotlin.test.assertTrue
-import kotlin.test.Ignore
 
 class FidoU2fAttestationStatementVerifierTest {
 
-    @Ignore("Manual DER generation for X.509 is brittle and currently failing")
     @Test
     fun verifyPassesForValidU2fAttestation() {
-        val kpAtt = generateES256KeyPair()
-        val attCert = generateSelfSignedAttestationCert(kpAtt)
-        
-        val kpCred = generateES256KeyPair()
-        val x = (kpCred.public as java.security.interfaces.ECPublicKey).w.affineX.toByteArray().ensure32()
-        val y = (kpCred.public as java.security.interfaces.ECPublicKey).w.affineY.toByteArray().ensure32()
-        
+        val credentialKeyPair = generateCredentialKeyPair()
+        val credentialPublicKey = credentialKeyPair.public as ECPublicKey
+        val x = credentialPublicKey.w.affineX.toByteArray().ensure32()
+        val y = credentialPublicKey.w.affineY.toByteArray().ensure32()
+
         val coseKey = cborMap(
-            1 to cborInt(2), // kty EC2
-            3 to cborInt(-7), // alg ES256
-            -1 to cborInt(1), // crv P-256
-            -2 to cborBytes(x), // x
-            -3 to cborBytes(y)  // y
+            1 to cborInt(2),
+            3 to cborInt(-7),
+            -1 to cborInt(1),
+            -2 to cborBytes(x),
+            -3 to cborBytes(y),
         )
 
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x33 })
         val clientDataJson = """{"type":"webauthn.create","challenge":"AQID","origin":"https://example.com"}""".toByteArray()
         val clientDataHash = sha256(clientDataJson)
         val rpIdHash = sha256("example.com".toByteArray())
-        
+
         val publicKeyU2F = byteArrayOf(0x04) + x + y
         val verificationData = byteArrayOf(0x00) + rpIdHash + clientDataHash + credentialId.value.bytes() + publicKeyU2F
-        
-        val sig = signES256(kpAtt.private as java.security.interfaces.ECPrivateKey, verificationData)
 
-        val authData = rpIdHash + byteArrayOf(0x41) + byteArrayOf(0, 0, 0, 1) + ByteArray(16) + 
-                       byteArrayOf(0, 16) + credentialId.value.bytes() + coseKey
+        val attestationPrivateKey = loadAttestationPrivateKey()
+        val signature = Signature.getInstance("SHA256withECDSA")
+        signature.initSign(attestationPrivateKey)
+        signature.update(verificationData)
+        val sig = signature.sign()
+
+        val authData = rpIdHash +
+            byteArrayOf(0x41) +
+            byteArrayOf(0, 0, 0, 1) +
+            ByteArray(16) +
+            byteArrayOf(0, 16) +
+            credentialId.value.bytes() +
+            coseKey
 
         val attestationObject = cborMap(
             "fmt" to cborText("fido-u2f"),
             "authData" to cborBytes(authData),
             "attStmt" to cborMap(
                 "sig" to cborBytes(sig),
-                "x5c" to cborArray(listOf(cborBytes(attCert)))
-            )
+                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+            ),
         )
 
         val verifier = FidoU2fAttestationStatementVerifier()
-        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, coseKey, rpIdHash)
-        
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, coseKey, rpIdHash)
+
         val result = verifier.verify(input)
         assertTrue(result is ValidationResult.Valid, "Expected Valid but got: $result")
+    }
+
+    @Test
+    fun verifyFailsWhenX5cMissing() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val clientDataJson = "{}".toByteArray()
+        val rpIdHash = sha256("example.com".toByteArray())
+        val coseKey = cborMap(1 to cborInt(2), -2 to cborBytes(ByteArray(32) { 1 }), -3 to cborBytes(ByteArray(32) { 2 }))
+
+        val attestationObject = cborMap(
+            "fmt" to cborText("fido-u2f"),
+            "authData" to cborBytes(ByteArray(37)),
+            "attStmt" to cborMap("sig" to cborBytes(byteArrayOf(1, 2, 3))),
+        )
+
+        val result = FidoU2fAttestationStatementVerifier().verify(
+            sampleInput(credentialId, clientDataJson, attestationObject, coseKey, rpIdHash),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun verifyFailsWhenSigMissing() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x22 })
+        val clientDataJson = "{}".toByteArray()
+        val rpIdHash = sha256("example.com".toByteArray())
+        val coseKey = cborMap(1 to cborInt(2), -2 to cborBytes(ByteArray(32) { 1 }), -3 to cborBytes(ByteArray(32) { 2 }))
+
+        val attestationObject = cborMap(
+            "fmt" to cborText("fido-u2f"),
+            "authData" to cborBytes(ByteArray(37)),
+            "attStmt" to cborMap("x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate())))),
+        )
+
+        val result = FidoU2fAttestationStatementVerifier().verify(
+            sampleInput(credentialId, clientDataJson, attestationObject, coseKey, rpIdHash),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun verifyFailsForInvalidSignature() {
+        val credentialKeyPair = generateCredentialKeyPair()
+        val credentialPublicKey = credentialKeyPair.public as ECPublicKey
+        val x = credentialPublicKey.w.affineX.toByteArray().ensure32()
+        val y = credentialPublicKey.w.affineY.toByteArray().ensure32()
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x44 })
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AQID","origin":"https://example.com"}""".toByteArray()
+        val rpIdHash = sha256("example.com".toByteArray())
+
+        val coseKey = cborMap(
+            1 to cborInt(2),
+            3 to cborInt(-7),
+            -1 to cborInt(1),
+            -2 to cborBytes(x),
+            -3 to cborBytes(y),
+        )
+
+        val attestationPrivateKey = loadAttestationPrivateKey()
+        val signature = Signature.getInstance("SHA256withECDSA")
+        signature.initSign(attestationPrivateKey)
+        signature.update(byteArrayOf(9, 9, 9)) // sign wrong payload so verification must fail
+        val wrongSig = signature.sign()
+
+        val authData = rpIdHash +
+            byteArrayOf(0x41) +
+            byteArrayOf(0, 0, 0, 1) +
+            ByteArray(16) +
+            byteArrayOf(0, 16) +
+            credentialId.value.bytes() +
+            coseKey
+
+        val attestationObject = cborMap(
+            "fmt" to cborText("fido-u2f"),
+            "authData" to cborBytes(authData),
+            "attStmt" to cborMap(
+                "sig" to cborBytes(wrongSig),
+                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+            ),
+        )
+
+        val result = FidoU2fAttestationStatementVerifier().verify(
+            sampleInput(credentialId, clientDataJson, attestationObject, coseKey, rpIdHash),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun verifyFailsForMalformedCosePublicKey() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x55 })
+        val clientDataJson = "{}".toByteArray()
+        val rpIdHash = sha256("example.com".toByteArray())
+        val malformedCose = cborMap(
+            1 to cborInt(2),
+            -2 to cborBytes(ByteArray(32) { 1 }),
+        )
+
+        val attestationObject = cborMap(
+            "fmt" to cborText("fido-u2f"),
+            "authData" to cborBytes(ByteArray(37)),
+            "attStmt" to cborMap(
+                "sig" to cborBytes(byteArrayOf(1, 2, 3, 4)),
+                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+            ),
+        )
+
+        val result = FidoU2fAttestationStatementVerifier().verify(
+            sampleInput(credentialId, clientDataJson, attestationObject, malformedCose, rpIdHash),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
     }
 
     private fun sampleInput(
         credentialId: CredentialId,
         clientDataJson: ByteArray,
         attestationObject: ByteArray,
-        authData: ByteArray,
         cosePublicKey: ByteArray,
         rpIdHash: ByteArray,
     ): RegistrationValidationInput {
@@ -96,122 +218,106 @@ class FidoU2fAttestationStatementVerifierTest {
                 rawAuthenticatorData = AuthenticatorData(rpIdHash, 0x41, 1),
                 attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey),
             ),
-            clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16) { 1 }), Origin.parseOrThrow("https://example.com")),
+            clientData = CollectedClientData(
+                "webauthn.create",
+                Challenge.fromBytes(ByteArray(16) { 1 }),
+                Origin.parseOrThrow("https://example.com"),
+            ),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
     }
 
-    private fun sha256(data: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(data)
+    private fun loadAttestationPrivateKey(): PrivateKey {
+        val der = loadFixtureBytes("attestation-key-pkcs8.der.b64")
+        val keySpec = PKCS8EncodedKeySpec(der)
+        return KeyFactory.getInstance("EC").generatePrivate(keySpec)
+    }
 
-    private fun generateES256KeyPair(): java.security.KeyPair {
+    private fun loadAttestationCertificate(): ByteArray {
+        return loadFixtureBytes("attestation-cert.der.b64")
+    }
+
+    private fun loadFixtureBytes(name: String): ByteArray {
+        val resource = checkNotNull(javaClass.getResource("/fido-u2f/$name")) {
+            "Missing fixture resource: $name"
+        }
+        val content = resource.readText().trim()
+        return Base64.getDecoder().decode(content)
+    }
+
+    private fun generateCredentialKeyPair(): java.security.KeyPair {
+        val random = SecureRandom.getInstance("SHA1PRNG")
+        random.setSeed(byteArrayOf(0x01, 0x23, 0x45, 0x67))
         val gen = KeyPairGenerator.getInstance("EC")
-        gen.initialize(ECGenParameterSpec("secp256r1"))
+        gen.initialize(ECGenParameterSpec("secp256r1"), random)
         return gen.generateKeyPair()
     }
 
-    private fun signES256(privateKey: java.security.interfaces.ECPrivateKey, data: ByteArray): ByteArray {
-        val sig = Signature.getInstance("SHA256withECDSA")
-        sig.initSign(privateKey)
-        sig.update(data)
-        return sig.sign()
-    }
+    private fun sha256(data: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(data)
 
-    private fun generateSelfSignedAttestationCert(keyPair: java.security.KeyPair): ByteArray {
-        return generateAttestationCertProperly(keyPair)
-    }
-    
-    // Copy-pasted DER helpers for test isolation
-    private fun generateRawCert(keyPair: java.security.KeyPair): ByteArray {
-        val spki = keyPair.public.encoded
-        val sig = Signature.getInstance("SHA256withECDSA")
-        sig.initSign(keyPair.private)
-        sig.update(spki) // Very fake tbsCert for simplicity
-        val signatureBytes = sig.sign()
-        
-        // Mocked certificate structure
-        return cborTag(0x30, spki + signatureBytes) // THIS IS NOT VALID X.509 but we need it to parse in JCA
-        // Wait, CertificateFactory.generateCertificate needs real X.509.
-        // I will use a real self-signed cert generation.
-    }
-
-    // Since I can't easily reference PackedAttestationStatementVerifierTest's private methods, 
-    // and I shouldn't depend on them, I'll use a pre-calculated test cert or a proper generator.
-    
     private fun ByteArray.ensure32(): ByteArray {
-        return if (this.size == 32) this
-        else if (this.size > 32) this.copyOfRange(this.size - 32, this.size)
-        else ByteArray(32 - this.size) + this
-    }
-
-    // Re-implementing just enough DER to satisfy X.509 parser for self-signed
-    private fun generateAttestationCertProperly(keyPair: java.security.KeyPair): ByteArray {
-        val subjectPublicKeyInfo = keyPair.public.encoded
-        
-        // CN=Test (2.5.4.3)
-        val cnOid = byteArrayOf(0x06, 0x03, 0x55, 0x04, 0x03)
-        val cnValue = derUtf8String("Test")
-        val rdn = derSequence(derSet(derSequence(cnOid, cnValue)))
-        
-        val sigAlgId = derSequence(byteArrayOf(0x06, 0x08, 0x2A, 0x86.toByte(), 0x48, 0xCE.toByte(), 0x3D, 0x04, 0x03, 0x02))
-        
-        val tbs = derSequence(
-            derExplicit(0, derInteger(byteArrayOf(0x02))), // v3
-            derInteger(byteArrayOf(0x01)), // serial
-            sigAlgId,
-            rdn, // issuer
-            derSequence(derUtcTime("260101000000Z"), derUtcTime("270101000000Z")), // validity
-            rdn, // subject
-            derRaw(subjectPublicKeyInfo)
-        )
-        
-        val sig = Signature.getInstance("SHA256withECDSA")
-        sig.initSign(keyPair.private)
-        sig.update(tbs)
-        val sigBytes = sig.sign()
-        
-        return derSequence(tbs, sigAlgId, derBitString(sigBytes))
-    }
-
-    private fun derTag(tag: Int, content: ByteArray): ByteArray {
-        val len = content.size
-        val lenBytes = when {
-            len < 128 -> byteArrayOf(len.toByte())
-            len < 256 -> byteArrayOf(0x81.toByte(), len.toByte())
-            else -> byteArrayOf(0x82.toByte(), (len shr 8).toByte(), (len and 0xFF).toByte())
+        return if (size == 32) {
+            this
+        } else if (size > 32) {
+            copyOfRange(size - 32, size)
+        } else {
+            ByteArray(32 - size) + this
         }
-        return byteArrayOf(tag.toByte()) + lenBytes + content
     }
-    private fun derSequence(vararg items: ByteArray) = derTag(0x30, items.reduce { acc, bytes -> acc + bytes })
-    private fun derSet(vararg items: ByteArray) = derTag(0x31, items.reduce { acc, bytes -> acc + bytes })
-    private fun derInteger(v: ByteArray) = derTag(0x02, v)
-    private fun derBitString(v: ByteArray) = derTag(0x03, byteArrayOf(0) + v)
-    private fun derUtf8String(v: String) = derTag(0x0C, v.toByteArray())
-    private fun derUtcTime(v: String) = derTag(0x17, v.toByteArray())
-    private fun derRaw(v: ByteArray) = v
-    private fun derExplicit(tag: Int, v: ByteArray) = derTag(0xA0 or tag, v)
 
-    // CBOR helpers
     private fun cborMap(vararg entries: Pair<Any, ByteArray>): ByteArray {
-        var res = cborHeader(5, entries.size)
-        entries.forEach { (k, v) ->
-            res += when (k) {
-                is String -> cborText(k)
-                is Int -> cborInt(k.toLong())
-                is Long -> cborInt(k)
-                else -> throw IllegalArgumentException()
+        var result = cborHeader(5, entries.size)
+        for ((key, value) in entries) {
+            result += when (key) {
+                is String -> cborText(key)
+                is Int -> cborInt(key.toLong())
+                is Long -> cborInt(key)
+                else -> error("Unsupported CBOR map key type")
             }
-            res += v
+            result += value
         }
-        return res
+        return result
     }
+
     private fun cborArray(items: List<ByteArray>): ByteArray {
-        var res = cborHeader(4, items.size)
-        items.forEach { res += it }
-        return res
+        var result = cborHeader(4, items.size)
+        for (item in items) {
+            result += item
+        }
+        return result
     }
-    private fun cborText(v: String): ByteArray = byteArrayOf((3 shl 5 or v.length).toByte()) + v.toByteArray()
-    private fun cborBytes(v: ByteArray): ByteArray = cborHeader(2, v.size) + v
-    private fun cborInt(v: Long): ByteArray = if (v >= 0) cborHeader(0, v.toInt()) else cborHeader(1, (-1 - v).toInt())
-    private fun cborHeader(major: Int, len: Int): ByteArray = if (len < 24) byteArrayOf((major shl 5 or len).toByte()) else byteArrayOf((major shl 5 or 24).toByte(), len.toByte())
-    private fun cborTag(tag: Int, v: ByteArray) = byteArrayOf((6 shl 5 or tag).toByte()) + v
+
+    private fun cborText(value: String): ByteArray {
+        val bytes = value.encodeToByteArray()
+        return cborHeader(3, bytes.size) + bytes
+    }
+
+    private fun cborBytes(value: ByteArray): ByteArray = cborHeader(2, value.size) + value
+
+    private fun cborInt(value: Long): ByteArray {
+        return if (value >= 0) {
+            cborHeader(0, value.toInt())
+        } else {
+            cborHeader(1, (-1L - value).toInt())
+        }
+    }
+
+    private fun cborHeader(major: Int, length: Int): ByteArray {
+        return when {
+            length < 24 -> byteArrayOf((major shl 5 or length).toByte())
+            length < 256 -> byteArrayOf((major shl 5 or 24).toByte(), length.toByte())
+            length < 65536 -> byteArrayOf(
+                (major shl 5 or 25).toByte(),
+                ((length shr 8) and 0xFF).toByte(),
+                (length and 0xFF).toByte(),
+            )
+            else -> byteArrayOf(
+                (major shl 5 or 26).toByte(),
+                ((length shr 24) and 0xFF).toByte(),
+                ((length shr 16) and 0xFF).toByte(),
+                ((length shr 8) and 0xFF).toByte(),
+                (length and 0xFF).toByte(),
+            )
+        }
+    }
 }

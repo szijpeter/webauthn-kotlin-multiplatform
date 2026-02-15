@@ -50,6 +50,7 @@ mapfile -t changed_files < "$changed_files_path"
 requires_status_update="false"
 status_updated="false"
 roadmap_updated="false"
+tracker_updated="false"
 
 for file in "${changed_files[@]}"; do
     [[ -z "$file" ]] && continue
@@ -72,6 +73,10 @@ for file in "${changed_files[@]}"; do
     if [[ "$file" == "docs/ROADMAP.md" ]]; then
         roadmap_updated="true"
     fi
+
+    if [[ "$file" == "docs/IMPLEMENTATION_TRACKER.md" ]]; then
+        tracker_updated="true"
+    fi
 done
 
 if [[ "$requires_status_update" != "true" ]]; then
@@ -79,12 +84,12 @@ if [[ "$requires_status_update" != "true" ]]; then
     exit 0
 fi
 
-if [[ "$status_updated" == "true" || "$roadmap_updated" == "true" ]]; then
+if [[ "$status_updated" == "true" || "$roadmap_updated" == "true" || "$tracker_updated" == "true" ]]; then
     echo "Status trace: OK (status docs updated)."
     exit 0
 fi
 
-msg="Status trace required: update docs/IMPLEMENTATION_STATUS.md or docs/ROADMAP.md for core/security-critical module changes."
+msg="Status trace required: update docs/IMPLEMENTATION_STATUS.md, docs/ROADMAP.md, or docs/IMPLEMENTATION_TRACKER.md for core/security-critical module changes."
 if [[ "$strict" == "true" ]]; then
     echo "$msg" >&2
     exit 1

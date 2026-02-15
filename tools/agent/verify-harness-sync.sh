@@ -36,6 +36,8 @@ required_files=(
   "docs/ai/COST_POLICY.md"
   "docs/IMPLEMENTATION_STATUS.md"
   "docs/ROADMAP.md"
+  "docs/IMPLEMENTATION_TRACKER.md"
+  "tools/agent/next-step.sh"
   "tools/agent/status-trace-check.sh"
 )
 

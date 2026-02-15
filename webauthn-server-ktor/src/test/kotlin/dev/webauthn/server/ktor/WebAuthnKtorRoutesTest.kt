@@ -25,6 +25,57 @@ import kotlin.test.assertTrue
 
 class WebAuthnKtorRoutesTest {
     @Test
+    fun registrationStartRouteReturns400ForInvalidExtensions() = testApplication {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        application {
+            install(ContentNegotiation) { json() }
+            installWebAuthnRoutes(registrationService, authenticationService)
+        }
+
+        val response = client.post("/webauthn/registration/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "rpName": "Example",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "userDisplayName": "Alice",
+                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ",
+                  "extensions": {
+                    "largeBlob": {
+                      "support": "invalid"
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
     fun authenticationStartRouteReturns400ForUnknownUser() = testApplication {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
@@ -58,6 +109,71 @@ class WebAuthnKtorRoutesTest {
 
         assertEquals(HttpStatusCode.BadRequest, response.status)
         assertTrue(response.status.description.isNotEmpty())
+    }
+
+    @Test
+    fun authenticationStartRouteReturns400ForInvalidExtensions() = testApplication {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        application {
+            install(ContentNegotiation) { json() }
+            installWebAuthnRoutes(registrationService, authenticationService)
+        }
+
+        // Seed user account via registration start
+        client.post("/webauthn/registration/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "rpName": "Example",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "userDisplayName": "Alice",
+                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ"
+                }
+                """.trimIndent(),
+            )
+        }
+
+        val response = client.post("/webauthn/authentication/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "extensions": {
+                    "largeBlob": {
+                      "write": "not-base64url"
+                    }
+                  }
+                }
+                """.trimIndent(),
+            )
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @Test
@@ -133,4 +249,3 @@ class WebAuthnKtorRoutesTest {
     }
 
 }
-

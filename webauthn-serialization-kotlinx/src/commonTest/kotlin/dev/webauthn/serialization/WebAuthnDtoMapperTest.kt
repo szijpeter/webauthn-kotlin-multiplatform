@@ -28,6 +28,26 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
+    fun creationOptionsRejectInvalidExtensionSupportValue() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = "example.com", name = "Example"),
+            user = UserEntityDto(
+                id = "YWFhYWFhYWFhYWFhYWFhYQ",
+                name = "alice",
+                displayName = "Alice",
+            ),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            extensions = AuthenticationExtensionsClientInputsDto(
+                largeBlob = LargeBlobExtensionInputDto(support = "invalid"),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
     fun authenticationResponseParsesAuthenticatorDataFields() {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val authenticatorData = authenticatorDataBytes(
@@ -162,6 +182,34 @@ class WebAuthnDtoMapperTest {
         val backToDto = WebAuthnDtoMapper.fromModel(result.value)
         assertEquals(dto.clientExtensionResults?.prf?.enabled, backToDto.clientExtensionResults?.prf?.enabled)
         assertEquals(dto.clientExtensionResults?.prf?.results?.first, backToDto.clientExtensionResults?.prf?.results?.first)
+    }
+
+    @Test
+    fun authenticationResponseRejectsInvalidExtensionBase64() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val authenticatorData = authenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x22 },
+            flags = 0x01,
+            signCount = 10,
+        )
+        val dto = AuthenticationResponseDto(
+            id = credentialId.value.encoded(),
+            rawId = credentialId.value.encoded(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                authenticatorData = Base64UrlBytes.fromBytes(authenticatorData).encoded(),
+                signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+            ),
+            clientExtensionResults = AuthenticationExtensionsClientOutputsDto(
+                prf = PrfExtensionOutputDto(
+                    enabled = true,
+                    results = PrfValuesDto(first = "not-base64url"),
+                ),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
     }
 
     @Test

@@ -95,8 +95,12 @@ public class RegistrationService(
             return failure("challenge", "Registration challenge has expired")
         }
 
+        val relatedOriginsRequested = session.extensions?.relatedOrigins != null
         var allowedOrigins = emptySet<dev.webauthn.model.Origin>()
         if (request.clientData.origin != session.origin) {
+            if (!relatedOriginsRequested) {
+                return failure("origin", "Origin mismatch")
+            }
             allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
             if (!allowedOrigins.contains(request.clientData.origin)) {
                 return failure("origin", "Origin mismatch")
@@ -227,8 +231,12 @@ public class AuthenticationService(
             return failure("challenge", "Authentication challenge has expired")
         }
 
+        val relatedOriginsRequested = session.extensions?.relatedOrigins != null
         var allowedOrigins = emptySet<dev.webauthn.model.Origin>()
         if (request.clientData.origin != session.origin) {
+            if (!relatedOriginsRequested) {
+                return failure("origin", "Origin mismatch")
+            }
             allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
             if (!allowedOrigins.contains(request.clientData.origin)) {
                 return failure("origin", "Origin mismatch")

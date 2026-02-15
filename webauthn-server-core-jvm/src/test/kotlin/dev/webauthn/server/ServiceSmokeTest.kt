@@ -1029,6 +1029,9 @@ class ServiceSmokeTest {
             userName = "alice",
             userDisplayName = "Alice",
             userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+            extensions = dev.webauthn.model.AuthenticationExtensionsClientInputs(
+                relatedOrigins = listOf(relatedOrigin.value),
+            ),
         )
         val options = registrationService.start(startRequest)
 
@@ -1062,6 +1065,73 @@ class ServiceSmokeTest {
         )
 
         assertTrue(finish is ValidationResult.Valid, "Should be valid because of Related Origins")
+    }
+
+    @Test
+    fun registrationFinishFailsWithRelatedOriginWhenNotRequested() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val primaryOrigin = Origin.parseOrThrow("https://example.com")
+        val relatedOrigin = Origin.parseOrThrow("https://app.example.com")
+
+        val metadataProvider = object : dev.webauthn.core.OriginMetadataProvider {
+            override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
+                return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
+            }
+        }
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+            originMetadataProvider = metadataProvider,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = primaryOrigin,
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+        )
+        val options = registrationService.start(startRequest)
+
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        val finish = registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = options.challenge,
+                    origin = relatedOrigin,
+                ),
+            ),
+        )
+
+        assertTrue(finish is ValidationResult.Invalid, "Should fail when Related Origins was not requested")
     }
 
     @Test
@@ -1132,7 +1202,14 @@ class ServiceSmokeTest {
 
         // Auth start
         val authStart = authenticationService.start(
-            AuthenticationStartRequest(rpId = startRequest.rpId, origin = primaryOrigin, userName = "alice"),
+            AuthenticationStartRequest(
+                rpId = startRequest.rpId,
+                origin = primaryOrigin,
+                userName = "alice",
+                extensions = dev.webauthn.model.AuthenticationExtensionsClientInputs(
+                    relatedOrigins = listOf(relatedOrigin.value),
+                ),
+            ),
         )
         assertTrue(authStart is ValidationResult.Valid)
 
@@ -1160,6 +1237,113 @@ class ServiceSmokeTest {
         )
 
         assertTrue(result is ValidationResult.Valid, "Should be valid because of Related Origins")
+    }
+
+    @Test
+    fun authenticationFinishFailsWithRelatedOriginWhenNotRequested() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val primaryOrigin = Origin.parseOrThrow("https://example.com")
+        val relatedOrigin = Origin.parseOrThrow("https://app.example.com")
+
+        val metadataProvider = object : dev.webauthn.core.OriginMetadataProvider {
+            override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
+                return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
+            }
+        }
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = rpIdHasher,
+            originMetadataProvider = metadataProvider,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = primaryOrigin,
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = regOptions.challenge,
+                    origin = primaryOrigin,
+                ),
+            ),
+        )
+
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(
+                rpId = startRequest.rpId,
+                origin = primaryOrigin,
+                userName = "alice",
+            ),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"),
+            flags = 0x01,
+            signCount = 2,
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = authStart.value.challenge,
+                    origin = relatedOrigin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid, "Should fail when Related Origins was not requested")
     }
 
     private fun authenticationAuthenticatorDataBytes(

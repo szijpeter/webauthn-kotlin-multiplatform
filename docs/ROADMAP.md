@@ -66,4 +66,4 @@ Definition of done:
 
 1. Implement attestation verification matrix and trust-path tests.
 2. Expand CBOR/COSE conformance vectors with strict negative cases.
-3. Harden server-core-jvm finish flow and persistence/race behavior tests.
+3. Expand persistence-backed server finish-flow race/replay scenarios beyond in-memory smoke tests.

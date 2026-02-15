@@ -229,6 +229,19 @@ public object WebAuthnDtoMapper {
         val userVerification = UserVerificationRequirement.entries.find {
             it.name.equals(value.userVerification, ignoreCase = true)
         } ?: UserVerificationRequirement.PREFERRED
+        val extensions = value.extensions?.let {
+            when (val parsed = toModelValidated(it, fieldPrefix = "extensions")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    errors += parsed.errors
+                    null
+                }
+            }
+        }
+
+        if (errors.isNotEmpty()) {
+            return ValidationResult.Invalid(errors)
+        }
 
         return ValidationResult.Valid(
             PublicKeyCredentialCreationOptions(
@@ -240,7 +253,7 @@ public object WebAuthnDtoMapper {
                 excludeCredentials = excludeCredentials,
                 residentKey = residentKey,
                 userVerification = userVerification,
-                extensions = value.extensions?.let(::toModel),
+                extensions = extensions,
             ),
         )
     }
@@ -292,6 +305,19 @@ public object WebAuthnDtoMapper {
         val userVerification = UserVerificationRequirement.entries.find {
             it.name.equals(value.userVerification, ignoreCase = true)
         } ?: UserVerificationRequirement.PREFERRED
+        val extensions = value.extensions?.let {
+            when (val parsed = toModelValidated(it, fieldPrefix = "extensions")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    errors += parsed.errors
+                    null
+                }
+            }
+        }
+
+        if (errors.isNotEmpty()) {
+            return ValidationResult.Invalid(errors)
+        }
 
         return ValidationResult.Valid(
             PublicKeyCredentialRequestOptions(
@@ -300,7 +326,7 @@ public object WebAuthnDtoMapper {
                 timeoutMs = value.timeoutMs,
                 allowCredentials = allowCredentials,
                 userVerification = userVerification,
-                extensions = value.extensions?.let(::toModel),
+                extensions = extensions,
             ),
         )
     }
@@ -343,6 +369,12 @@ public object WebAuthnDtoMapper {
                             ),
                         ),
                     )
+                val extensions = value.clientExtensionResults?.let {
+                    when (val parsed = toModelValidated(it, fieldPrefix = "clientExtensionResults")) {
+                        is ValidationResult.Valid -> parsed.value
+                        is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
+                    }
+                }
                 ValidationResult.Valid(
                     RegistrationResponse(
                         credentialId = credentialId.value,
@@ -350,7 +382,7 @@ public object WebAuthnDtoMapper {
                         attestationObject = attestation.value,
                         rawAuthenticatorData = parsedAuthDataValue.authenticatorData,
                         attestedCredentialData = attestedCredentialData,
-                        extensions = value.clientExtensionResults?.let(::toModel),
+                        extensions = extensions,
                     ),
                 )
             }
@@ -406,6 +438,12 @@ public object WebAuthnDtoMapper {
                         }
                     }
                 }
+                val extensions = value.clientExtensionResults?.let {
+                    when (val parsed = toModelValidated(it, fieldPrefix = "clientExtensionResults")) {
+                        is ValidationResult.Valid -> parsed.value
+                        is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
+                    }
+                }
 
                 ValidationResult.Valid(
                     AuthenticationResponse(
@@ -415,7 +453,7 @@ public object WebAuthnDtoMapper {
                         authenticatorData = (parsedAuthData as ValidationResult.Valid).value.authenticatorData,
                         signature = (signature as ValidationResult.Valid).value,
                         userHandle = parsedUserHandle,
-                        extensions = value.clientExtensionResults?.let(::toModel),
+                        extensions = extensions,
                     ),
                 )
             }
@@ -457,22 +495,16 @@ public object WebAuthnDtoMapper {
         )
     }
 
+    @Deprecated(
+        message = "Use toModelValidated(AuthenticationExtensionsClientInputsDto) for error-safe parsing.",
+        replaceWith = ReplaceWith("toModelValidated(value).getOrThrow()"),
+    )
     public fun toModel(value: AuthenticationExtensionsClientInputsDto): dev.webauthn.model.AuthenticationExtensionsClientInputs {
-        return dev.webauthn.model.AuthenticationExtensionsClientInputs(
-            prf = value.prf?.let { prf ->
-                dev.webauthn.model.PrfExtensionInput(
-                    eval = prf.eval?.let(::toModel),
-                    evalByCredential = prf.evalByCredential?.mapValues { toModel(it.value) }
-                )
+        return toModelValidated(value).fold(
+            onValid = { it },
+            onInvalid = { errors ->
+                throw IllegalArgumentException(errors.joinToString("; ") { "${it.field}: ${it.message}" })
             },
-            largeBlob = value.largeBlob?.let { lb ->
-                dev.webauthn.model.LargeBlobExtensionInput(
-                    support = lb.support?.uppercase()?.let { dev.webauthn.model.LargeBlobExtensionInput.LargeBlobSupport.valueOf(it) },
-                    read = lb.read,
-                    write = lb.write?.fromBase64Url()
-                )
-            },
-            relatedOrigins = value.relatedOrigins
         )
     }
 
@@ -494,21 +526,16 @@ public object WebAuthnDtoMapper {
         )
     }
 
+    @Deprecated(
+        message = "Use toModelValidated(AuthenticationExtensionsClientOutputsDto) for error-safe parsing.",
+        replaceWith = ReplaceWith("toModelValidated(value).getOrThrow()"),
+    )
     public fun toModel(value: AuthenticationExtensionsClientOutputsDto): dev.webauthn.model.AuthenticationExtensionsClientOutputs {
-        return dev.webauthn.model.AuthenticationExtensionsClientOutputs(
-            prf = value.prf?.let { prf ->
-                dev.webauthn.model.PrfExtensionOutput(
-                    enabled = prf.enabled,
-                    results = prf.results?.let(::toModel)
-                )
+        return toModelValidated(value).fold(
+            onValid = { it },
+            onInvalid = { errors ->
+                throw IllegalArgumentException(errors.joinToString("; ") { "${it.field}: ${it.message}" })
             },
-            largeBlob = value.largeBlob?.let { lb ->
-                dev.webauthn.model.LargeBlobExtensionOutput(
-                    supported = lb.supported,
-                    blob = lb.blob?.fromBase64Url(),
-                    written = lb.written
-                )
-            }
         )
     }
 
@@ -519,10 +546,173 @@ public object WebAuthnDtoMapper {
         )
     }
 
+    public fun toModelValidated(
+        value: AuthenticationExtensionsClientInputsDto,
+        fieldPrefix: String = "extensions",
+    ): ValidationResult<dev.webauthn.model.AuthenticationExtensionsClientInputs> {
+        val errors = mutableListOf<WebAuthnValidationError>()
+
+        val prf = value.prf?.let { prf ->
+            val eval = prf.eval?.let { prfValues ->
+                when (val parsed = toModelValidated(prfValues, "$fieldPrefix.prf.eval")) {
+                    is ValidationResult.Valid -> parsed.value
+                    is ValidationResult.Invalid -> {
+                        errors += parsed.errors
+                        null
+                    }
+                }
+            }
+            val evalByCredential = prf.evalByCredential?.let { evalMap ->
+                val parsed = mutableMapOf<String, dev.webauthn.model.AuthenticationExtensionsPRFValues>()
+                for ((credentialId, prfValues) in evalMap) {
+                    when (val parsedValue = toModelValidated(prfValues, "$fieldPrefix.prf.evalByCredential.$credentialId")) {
+                        is ValidationResult.Valid -> parsed[credentialId] = parsedValue.value
+                        is ValidationResult.Invalid -> errors += parsedValue.errors
+                    }
+                }
+                parsed
+            }
+            dev.webauthn.model.PrfExtensionInput(eval = eval, evalByCredential = evalByCredential)
+        }
+
+        val largeBlob = value.largeBlob?.let { lb ->
+            val support = lb.support?.let {
+                val parsedSupport = dev.webauthn.model.LargeBlobExtensionInput.LargeBlobSupport.entries
+                    .find { entry -> entry.name.equals(it, ignoreCase = true) }
+                if (parsedSupport == null) {
+                    errors += WebAuthnValidationError.InvalidValue(
+                        field = "$fieldPrefix.largeBlob.support",
+                        message = "Unknown support value: $it",
+                    )
+                }
+                parsedSupport
+            }
+            val write = lb.write?.let {
+                when (val parsed = parseBase64Url(it, "$fieldPrefix.largeBlob.write")) {
+                    is ValidationResult.Valid -> parsed.value
+                    is ValidationResult.Invalid -> {
+                        errors += parsed.errors
+                        null
+                    }
+                }
+            }
+            dev.webauthn.model.LargeBlobExtensionInput(
+                support = support,
+                read = lb.read,
+                write = write,
+            )
+        }
+
+        return if (errors.isEmpty()) {
+            ValidationResult.Valid(
+                dev.webauthn.model.AuthenticationExtensionsClientInputs(
+                    prf = prf,
+                    largeBlob = largeBlob,
+                    relatedOrigins = value.relatedOrigins,
+                ),
+            )
+        } else {
+            ValidationResult.Invalid(errors)
+        }
+    }
+
+    public fun toModelValidated(
+        value: AuthenticationExtensionsClientOutputsDto,
+        fieldPrefix: String = "clientExtensionResults",
+    ): ValidationResult<dev.webauthn.model.AuthenticationExtensionsClientOutputs> {
+        val errors = mutableListOf<WebAuthnValidationError>()
+
+        val prf = value.prf?.let { prf ->
+            val results = prf.results?.let { prfValues ->
+                when (val parsed = toModelValidated(prfValues, "$fieldPrefix.prf.results")) {
+                    is ValidationResult.Valid -> parsed.value
+                    is ValidationResult.Invalid -> {
+                        errors += parsed.errors
+                        null
+                    }
+                }
+            }
+            dev.webauthn.model.PrfExtensionOutput(enabled = prf.enabled, results = results)
+        }
+
+        val largeBlob = value.largeBlob?.let { lb ->
+            val blob = lb.blob?.let {
+                when (val parsed = parseBase64Url(it, "$fieldPrefix.largeBlob.blob")) {
+                    is ValidationResult.Valid -> parsed.value
+                    is ValidationResult.Invalid -> {
+                        errors += parsed.errors
+                        null
+                    }
+                }
+            }
+            dev.webauthn.model.LargeBlobExtensionOutput(
+                supported = lb.supported,
+                blob = blob,
+                written = lb.written,
+            )
+        }
+
+        return if (errors.isEmpty()) {
+            ValidationResult.Valid(
+                dev.webauthn.model.AuthenticationExtensionsClientOutputs(
+                    prf = prf,
+                    largeBlob = largeBlob,
+                ),
+            )
+        } else {
+            ValidationResult.Invalid(errors)
+        }
+    }
+
+    private fun toModelValidated(
+        value: PrfValuesDto,
+        fieldPrefix: String,
+    ): ValidationResult<dev.webauthn.model.AuthenticationExtensionsPRFValues> {
+        val errors = mutableListOf<WebAuthnValidationError>()
+
+        val first = when (val parsed = parseBase64Url(value.first, "$fieldPrefix.first")) {
+            is ValidationResult.Valid -> parsed.value
+            is ValidationResult.Invalid -> {
+                errors += parsed.errors
+                null
+            }
+        }
+
+        val second = value.second?.let {
+            when (val parsed = parseBase64Url(it, "$fieldPrefix.second")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    errors += parsed.errors
+                    null
+                }
+            }
+        }
+
+        return if (first != null && errors.isEmpty()) {
+            ValidationResult.Valid(
+                dev.webauthn.model.AuthenticationExtensionsPRFValues(
+                    first = first,
+                    second = second,
+                ),
+            )
+        } else {
+            ValidationResult.Invalid(errors)
+        }
+    }
+
+    private fun parseBase64Url(value: String, field: String): ValidationResult<ByteArray> {
+        return dev.webauthn.model.Base64UrlBytes.parse(value, field).fold(
+            onValid = { ValidationResult.Valid(it.bytes()) },
+            onInvalid = { ValidationResult.Invalid(it) },
+        )
+    }
+
     private fun toModel(value: PrfValuesDto): dev.webauthn.model.AuthenticationExtensionsPRFValues {
-        return dev.webauthn.model.AuthenticationExtensionsPRFValues(
-            first = value.first.fromBase64Url(),
-            second = value.second?.fromBase64Url()
+        return toModelValidated(value, "extensions.prf").fold(
+            onValid = { it },
+            onInvalid = { errors ->
+                throw IllegalArgumentException(errors.joinToString("; ") { "${it.field}: ${it.message}" })
+            },
         )
     }
 

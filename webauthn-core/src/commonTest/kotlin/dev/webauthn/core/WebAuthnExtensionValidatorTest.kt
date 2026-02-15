@@ -67,6 +67,36 @@ class WebAuthnExtensionValidatorTest {
     }
 
     @Test
+    fun registrationFailsIfPrfRequestedButOutputMissing() {
+        val inputs = AuthenticationExtensionsClientInputs(
+            prf = dev.webauthn.model.PrfExtensionInput(
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1)),
+            ),
+        )
+
+        val result = WebAuthnExtensionValidator.validateRegistrationExtensions(inputs, outputs = null)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFailsIfPrfRequestedButResultsMissing() {
+        val inputs = AuthenticationExtensionsClientInputs(
+            prf = dev.webauthn.model.PrfExtensionInput(
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1)),
+            ),
+        )
+        val outputs = AuthenticationExtensionsClientOutputs(
+            prf = dev.webauthn.model.PrfExtensionOutput(
+                enabled = true,
+                results = null,
+            ),
+        )
+
+        val result = WebAuthnExtensionValidator.validateAuthenticationExtensions(inputs, outputs)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
     fun authenticationFailsIfPrfResultsMissingSecondOutput() {
         val inputs = AuthenticationExtensionsClientInputs(
             prf = dev.webauthn.model.PrfExtensionInput(

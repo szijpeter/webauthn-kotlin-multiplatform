@@ -39,6 +39,22 @@ Use for cross-cutting changes:
 tools/agent/quality-gate.sh --mode strict --scope full --block true
 ```
 
+## Next-Step Agent Workflow
+
+1. Get the next queued implementation prompt:
+
+```bash
+tools/agent/next-step.sh --format prompt
+```
+
+2. Run the prompt with your agent and implement the scoped change.
+3. Update `docs/IMPLEMENTATION_TRACKER.md` status for touched items.
+4. Validate with strict changed-scope gate:
+
+```bash
+tools/agent/quality-gate.sh --mode strict --scope changed --block true
+```
+
 ## Onboarding Workflow
 
 1. Install repo hooks:

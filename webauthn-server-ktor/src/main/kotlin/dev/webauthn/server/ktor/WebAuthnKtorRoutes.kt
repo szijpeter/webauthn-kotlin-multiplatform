@@ -77,6 +77,15 @@ public fun Route.webAuthnRoutes(
     route("/webauthn") {
         post("/registration/start") {
             val payload = call.receive<RegistrationStartPayload>()
+            val extensions = payload.extensions?.let {
+                when (val parsed = WebAuthnDtoMapper.toModelValidated(it, fieldPrefix = "extensions")) {
+                    is dev.webauthn.model.ValidationResult.Valid -> parsed.value
+                    is dev.webauthn.model.ValidationResult.Invalid -> {
+                        call.respond(HttpStatusCode.BadRequest, mapOf("errors" to parsed.errors.map { err -> err.message }))
+                        return@post
+                    }
+                }
+            }
             val options = registrationService.start(
                 RegistrationStartRequest(
                     rpId = RpId.parseOrThrow(payload.rpId),
@@ -85,7 +94,7 @@ public fun Route.webAuthnRoutes(
                     userName = payload.userName,
                     userDisplayName = payload.userDisplayName,
                     userHandle = UserHandle.parse(payload.userHandle).getOrThrow(),
-                    extensions = payload.extensions?.let { WebAuthnDtoMapper.toModel(it) },
+                    extensions = extensions,
                 ),
             )
             call.respond(HttpStatusCode.OK, WebAuthnDtoMapper.fromModel(options))
@@ -114,12 +123,21 @@ public fun Route.webAuthnRoutes(
 
         post("/authentication/start") {
             val payload = call.receive<AuthenticationStartPayload>()
+            val extensions = payload.extensions?.let {
+                when (val parsed = WebAuthnDtoMapper.toModelValidated(it, fieldPrefix = "extensions")) {
+                    is dev.webauthn.model.ValidationResult.Valid -> parsed.value
+                    is dev.webauthn.model.ValidationResult.Invalid -> {
+                        call.respond(HttpStatusCode.BadRequest, mapOf("errors" to parsed.errors.map { err -> err.message }))
+                        return@post
+                    }
+                }
+            }
             val result = authenticationService.start(
                 AuthenticationStartRequest(
                     rpId = RpId.parseOrThrow(payload.rpId),
                     origin = Origin.parseOrThrow(payload.origin),
                     userName = payload.userName,
-                    extensions = payload.extensions?.let { WebAuthnDtoMapper.toModel(it) },
+                    extensions = extensions,
                 ),
             )
             when (result) {
