@@ -36,5 +36,4 @@ This document maps currently implemented validation behavior to normative requir
 
 - Remaining attestation statement formats (`tpm`, `android-key`, `android-safetynet`, `apple`) with trust path checks
 - Packed attestation AAGUID extension validation (OID `1.3.6.1.4.1.45724.1.1.4`)
-- CBOR/COSE structural parsing against RFC 8949 and RFC 9052/9053 vectors
 - Level 3 extension-specific checks (PRF, `largeBlob`, Related Origins)

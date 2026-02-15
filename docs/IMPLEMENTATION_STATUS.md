@@ -49,7 +49,6 @@ Pending high-impact coverage:
 
 - remaining attestation statement formats (`tpm`, `android-key`, `android-safetynet`, `apple`)
 - packed attestation AAGUID extension validation
-- CBOR/COSE structural/vector conformance
 - L3 extension-specific checks (PRF, `largeBlob`, Related Origins)
 
 ## Current Quality Gates
