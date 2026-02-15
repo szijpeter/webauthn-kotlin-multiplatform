@@ -136,6 +136,19 @@ public class PackedAttestationStatementVerifier(
             )
         }
 
+        // Verify AAGUID if extension present and authData has it (AT flag set)
+        // flags at offset 32. AT flag is 0x40.
+        val flags = signatureBase[32]
+        val hasAt = (flags.toInt() and 0x40) != 0
+        
+        if (hasAt && signatureBase.size >= 53) {
+             val aaguid = signatureBase.copyOfRange(37, 37 + 16)
+             val aaguidCheck = AaguidMismatchVerifier.verify(attCert, aaguid)
+             if (aaguidCheck is ValidationResult.Invalid) {
+                 return aaguidCheck
+             }
+        }
+        
         return ValidationResult.Valid(Unit)
     }
 

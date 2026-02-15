@@ -277,6 +277,9 @@ class PackedAttestationStatementVerifierTest {
     private fun derInteger(value: ByteArray): ByteArray =
         derTag(0x02, value)
 
+    private fun derOctetString(value: ByteArray): ByteArray =
+        derTag(0x04, value)
+    
     private fun derBitString(value: ByteArray): ByteArray =
         derTag(0x03, concat(byteArrayOf(0x00), value)) // 0 unused bits
 
@@ -482,5 +485,86 @@ class PackedAttestationStatementVerifierTest {
             offset += chunk.size
         }
         return result
+    }
+    @Test
+    fun fullAttestationFailsForAaguidMismatch() {
+        val kp = generateES256KeyPair()
+        val aaguidInCert = ByteArray(16) { 0xAA.toByte() }
+        val attCert = generateAttestationCertWithAaguid(kp, aaguidInCert)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        
+        // AuthData has different AAGUID
+        val authDataAaguid = ByteArray(16) { 0xBB.toByte() }
+        val authData = sampleAuthDataBytesWithAaguid(authDataAaguid)
+        
+        val clientDataHash = sha256(clientDataJson)
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+
+        val attestationObject = buildPackedAttestationObject(
+            authData = authData,
+            alg = CoseAlgorithm.ES256.code.toLong(),
+            sig = sig,
+            x5c = listOf(attCert),
+        )
+
+        val verifier = PackedAttestationStatementVerifier(
+            signatureVerifier = spkiSignatureVerifier(),
+        )
+
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, ByteArray(32))
+        val result = verifier.verify(input)
+
+        assertTrue(result is ValidationResult.Invalid)
+        val error = (result as ValidationResult.Invalid).errors.first()
+        assertTrue(error.message.contains("AAGUID"), "Expected AAGUID error, got: ${error.message}")
+    }
+
+    private fun sampleAuthDataBytesWithAaguid(aaguid: ByteArray = ByteArray(16) { 0x22 }): ByteArray {
+        val rpIdHash = ByteArray(32) { 0x10 }
+        val flags = byteArrayOf(0x41) // UP + AT
+        val signCount = byteArrayOf(0, 0, 0, 1)
+        return rpIdHash + flags + signCount + aaguid + ByteArray(2) + ByteArray(32) // aaguid + credentialIdLen + credentialId... (dummy tail)
+    }
+
+    private fun generateAttestationCertWithAaguid(keyPair: java.security.KeyPair, aaguid: ByteArray): ByteArray {
+        val subjectPublicKeyInfo = keyPair.public.encoded
+        
+        // Extensions
+        // 1.3.6.1.4.1.45724.1.1.4
+        val aaguidOid = byteArrayOf(0x2B, 0x06, 0x01, 0x04, 0x01, 0x82.toByte(), 0xE5.toByte(), 0x1C, 0x01, 0x01, 0x04)
+        // Value: OCTET STRING(aaguid)
+        val extValue = derOctetString(aaguid)
+        // Extension sequence: OID, OCTET STRING(extValue)
+        val extension = derSequence(derOid(aaguidOid), derOctetString(extValue))
+        
+        val extensions = derSequence(extension)
+        val tbsExtensions = derExplicit(3, extensions)
+
+        // DN
+        val rdnSequence = derSequence(derSet(derSequence(derOid(OID_ORG_UNIT), derUtf8String("Authenticator Attestation"))))
+        
+        val tbsCert = derSequence(
+            derExplicit(0, derInteger(byteArrayOf(0x02))), // v3
+            derInteger(byteArrayOf(0x02)), 
+            derSequence(derOid(OID_SHA256_WITH_ECDSA)),
+            rdnSequence,
+            derSequence(derUtcTime("260101000000Z"), derUtcTime("270101000000Z")),
+            rdnSequence,
+            derRaw(subjectPublicKeyInfo),
+            tbsExtensions
+        )
+        
+        val sig = Signature.getInstance("SHA256withECDSA")
+        sig.initSign(keyPair.private)
+        sig.update(tbsCert)
+        val signatureBytes = sig.sign()
+
+        return derSequence(
+            derRaw(tbsCert),
+            derSequence(derOid(OID_SHA256_WITH_ECDSA)),
+            derBitString(signatureBytes),
+        )
     }
 }
