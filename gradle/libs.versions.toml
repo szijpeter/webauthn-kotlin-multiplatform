@@ -34,7 +34,7 @@ androidx-credentials = { module = "androidx.credentials:credentials", version.re
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.11.4" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.3" }
 junit4 = { module = "junit:junit", version = "4.13.2" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.11.1" }
 mockk = { module = "io.mockk:mockk", version = "1.13.10" }
