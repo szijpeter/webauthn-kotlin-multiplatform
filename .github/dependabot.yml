@@ -7,6 +7,10 @@ updates:
       day: monday
       time: "06:00"
       timezone: Etc/UTC
+    ignore:
+      - dependency-name: "org.jetbrains.kotlinx:kotlinx-datetime"
+        versions:
+          - "0.7.1-0.6.x-compat"
     open-pull-requests-limit: 5
     labels:
       - dependencies
