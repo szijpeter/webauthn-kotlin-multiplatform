@@ -25,12 +25,6 @@ jobs:
         include:
           - language: actions
             build-mode: none
-            run-codeql: true
-          # Keep this matrix entry so required workflow policies that still
-          # reference it continue to receive a successful status.
-          - language: java-kotlin
-            build-mode: autobuild
-            run-codeql: false
 
     steps:
       - uses: actions/checkout@v4
