@@ -362,6 +362,7 @@ class PackedAttestationStatementVerifierTest {
                     signCount = 1,
                 ),
                 attestedCredentialData = AttestedCredentialData(
+                    aaguid = ByteArray(16),
                     credentialId = credentialId,
                     cosePublicKey = cosePublicKey,
                 ),

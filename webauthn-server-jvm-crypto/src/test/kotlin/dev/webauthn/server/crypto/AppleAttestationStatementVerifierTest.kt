@@ -253,7 +253,7 @@ class AppleAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(credentialId, credentialPublicKey)
+                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, credentialPublicKey)
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

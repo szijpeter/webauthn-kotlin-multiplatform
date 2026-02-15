@@ -64,8 +64,42 @@ class AndroidKeyAttestationStatementVerifierTest {
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
 
         val result = verifier.verify(input)
-        println("Debug result: $result")
         assertTrue(result is ValidationResult.Valid, "Expected Valid, got $result")
+    }
+
+    @Test
+    fun verifyPassesWithTrustAnchorValidation() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), derSequence(), derSequence()
+        )
+        val extensionValue = derOctetString(extensionValueSeq)
+        val attCert = generateAttestationCert(kp, extensionValue)
+        
+        // Use the cert itself as the trust anchor
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> listOf(attCert) }
+        
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+
+        val attestationObject = buildAndroidKeyAttestationObject(
+            authData = authData,
+            alg = -7,
+            sig = sig,
+            x5c = listOf(attCert),
+        )
+
+        val verifier = AndroidKeyAttestationStatementVerifier(trustAnchorSource = trustSource)
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+
+        val result = verifier.verify(input)
+        assertTrue(result is ValidationResult.Valid, "Expected Valid with trust anchor, got $result")
     }
 
     @Test
@@ -386,7 +420,7 @@ class AndroidKeyAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(credentialId, ByteArray(0))
+                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, ByteArray(0))
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

@@ -75,6 +75,7 @@ public data class AuthenticatorData(
 )
 
 public data class AttestedCredentialData(
+    public val aaguid: ByteArray,
     public val credentialId: CredentialId,
     public val cosePublicKey: ByteArray,
 )

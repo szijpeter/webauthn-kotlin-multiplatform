@@ -81,6 +81,7 @@ class NoneAttestationStatementVerifierTest {
                     signCount = 0,
                 ),
                 attestedCredentialData = AttestedCredentialData(
+                    aaguid = ByteArray(16),
                     credentialId = credentialId,
                     cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
                 ),

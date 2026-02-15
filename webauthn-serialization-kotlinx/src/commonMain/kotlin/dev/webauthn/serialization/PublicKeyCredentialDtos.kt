@@ -378,7 +378,8 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
                 ),
             )
         }
-        offset += 16 // AAGUID
+        val aaguid = bytes.copyOfRange(offset, offset + 16)
+        offset += 16
         val credentialIdLength = bytes.readUint16(offset)
         offset += 2
         if (bytes.size < offset + credentialIdLength) {
@@ -403,6 +404,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
                 ),
             )
         AttestedCredentialData(
+            aaguid = aaguid,
             credentialId = CredentialId.fromBytes(credentialId),
             cosePublicKey = bytes.copyOfRange(offset, coseEnd),
         )

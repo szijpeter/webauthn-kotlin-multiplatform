@@ -7,6 +7,7 @@ import dev.webauthn.crypto.CoseKeyParser
 import dev.webauthn.crypto.ParsedCosePublicKey
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.crypto.SignatureVerifier
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.security.KeyFactory
@@ -62,8 +63,9 @@ public class JvmCoseKeyParser(
 
 public class StrictAttestationVerifier(
     signatureVerifier: SignatureVerifier? = null,
+    trustAnchorSource: TrustAnchorSource? = null,
 ) : AttestationVerifier {
-    private val delegate = CompositeAttestationVerifier(signatureVerifier)
+    private val delegate = CompositeAttestationVerifier(signatureVerifier, trustAnchorSource)
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         return delegate.verify(input)

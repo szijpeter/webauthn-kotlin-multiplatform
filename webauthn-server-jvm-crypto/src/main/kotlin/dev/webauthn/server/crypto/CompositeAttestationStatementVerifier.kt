@@ -3,11 +3,13 @@ package dev.webauthn.server.crypto
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.SignatureVerifier
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
 public class CompositeAttestationVerifier(
     signatureVerifier: SignatureVerifier? = null,
+    trustAnchorSource: TrustAnchorSource? = null,
 ) : AttestationVerifier {
 
     private val packedVerifier = signatureVerifier?.let { PackedAttestationStatementVerifier(it) }
@@ -15,9 +17,9 @@ public class CompositeAttestationVerifier(
     private val verifiers = mapOf(
         "none" to NoneAttestationStatementVerifier(),
         // packed handled separately
-        "android-key" to AndroidKeyAttestationStatementVerifier(),
-        "tpm" to TpmAttestationStatementVerifier(),
-        "apple" to AppleAttestationStatementVerifier(),
+        "android-key" to AndroidKeyAttestationStatementVerifier(trustAnchorSource),
+        "tpm" to TpmAttestationStatementVerifier(), // TODO: add trust source
+        "apple" to AppleAttestationStatementVerifier(), // TODO: add trust source
         "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(),
     )
 

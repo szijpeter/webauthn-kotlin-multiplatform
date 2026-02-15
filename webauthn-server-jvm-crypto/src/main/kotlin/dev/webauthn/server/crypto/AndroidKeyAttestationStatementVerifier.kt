@@ -1,7 +1,6 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
-import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
@@ -10,7 +9,12 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.Arrays
 
-internal class AndroidKeyAttestationStatementVerifier : AttestationVerifier {
+import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.TrustAnchorSource
+
+internal class AndroidKeyAttestationStatementVerifier(
+    private val trustAnchorSource: TrustAnchorSource? = null,
+) : AttestationVerifier {
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
@@ -66,18 +70,32 @@ internal class AndroidKeyAttestationStatementVerifier : AttestationVerifier {
             )
         }
         
-        // 4. Verify certificate chain (basic)
-        try {
-            // Verify each cert is signed by the next issuer
-            for (i in 0 until certs.size - 1) {
-                val subject = certs[i]
-                val issuer = certs[i + 1]
-                subject.verify(issuer.publicKey)
+        // 4. Verify certificate chain
+        if (trustAnchorSource != null) {
+            val chainVerifier = TrustChainVerifier(trustAnchorSource)
+            // AAGUID for android-key is in checked later in extension or via authData.
+            // Android Key Attestation doesn't strictly depend on AAGUID for root selection (it's Google Root).
+            // But we can pass it if we have it from authData.
+            // Actually, AttestedCredentialData has AAGUID.
+            val aaguid = input.response.attestedCredentialData.aaguid
+            val chainResult = chainVerifier.verify(certs, aaguid)
+            if (chainResult is ValidationResult.Invalid) {
+                return chainResult
             }
-        } catch (e: Exception) {
-             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Certificate chain validation failed: ${e.message}")),
-            )
+        } else {
+             // Fallback to basic integrity check if no trust source provided
+            try {
+                // Verify each cert is signed by the next issuer
+                for (i in 0 until certs.size - 1) {
+                    val subject = certs[i]
+                    val issuer = certs[i + 1]
+                    subject.verify(issuer.publicKey)
+                }
+            } catch (e: Exception) {
+                 return ValidationResult.Invalid(
+                    listOf(WebAuthnValidationError.InvalidValue("x5c", "Certificate chain validation failed: ${e.message}")),
+                )
+            }
         }
 
         // 5. Verify Android Key Attestation Extension
