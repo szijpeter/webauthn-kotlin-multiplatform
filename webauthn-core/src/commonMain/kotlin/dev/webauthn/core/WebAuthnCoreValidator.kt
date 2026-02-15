@@ -7,6 +7,12 @@ import dev.webauthn.model.Origin
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
+public enum class UserVerificationPolicy {
+    REQUIRED,
+    PREFERRED,
+    DISCOURAGED,
+}
+
 public object WebAuthnCoreValidator {
     public fun validateClientData(
         clientData: CollectedClientData,
@@ -55,7 +61,11 @@ public object WebAuthnCoreValidator {
             return clientDataResult
         }
 
-        val authDataResult = validateAuthenticatorData(input.response.rawAuthenticatorData, 0L)
+        val authDataResult = validateAuthenticatorData(
+            data = input.response.rawAuthenticatorData,
+            previousSignCount = 0L,
+            uvPolicy = input.userVerificationPolicy,
+        )
         if (authDataResult is ValidationResult.Invalid) {
             return authDataResult
         }
@@ -79,7 +89,11 @@ public object WebAuthnCoreValidator {
             return clientDataResult
         }
 
-        val authDataResult = validateAuthenticatorData(input.response.authenticatorData, input.previousSignCount)
+        val authDataResult = validateAuthenticatorData(
+            data = input.response.authenticatorData,
+            previousSignCount = input.previousSignCount,
+            uvPolicy = input.userVerificationPolicy,
+        )
         if (authDataResult is ValidationResult.Invalid) {
             return authDataResult
         }
@@ -95,6 +109,7 @@ public object WebAuthnCoreValidator {
     public fun validateAuthenticatorData(
         data: AuthenticatorData,
         previousSignCount: Long,
+        uvPolicy: UserVerificationPolicy = UserVerificationPolicy.PREFERRED,
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
@@ -110,6 +125,25 @@ public object WebAuthnCoreValidator {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "authenticatorData.flags",
                 message = "User presence flag must be set",
+            )
+        }
+
+        if (uvPolicy == UserVerificationPolicy.REQUIRED) {
+            val uvSet = (data.flags and USER_VERIFICATION_FLAG) != 0
+            if (!uvSet) {
+                errors += WebAuthnValidationError.InvalidValue(
+                    field = "authenticatorData.flags",
+                    message = "User verification flag must be set when UV is required",
+                )
+            }
+        }
+
+        val beSet = (data.flags and BACKUP_ELIGIBLE_FLAG) != 0
+        val bsSet = (data.flags and BACKUP_STATE_FLAG) != 0
+        if (bsSet && !beSet) {
+            errors += WebAuthnValidationError.InvalidValue(
+                field = "authenticatorData.flags",
+                message = "Backup state flag must not be set when backup eligible flag is clear",
             )
         }
 
@@ -150,4 +184,6 @@ public object WebAuthnCoreValidator {
 
     public const val USER_PRESENCE_FLAG: Int = 0x01
     public const val USER_VERIFICATION_FLAG: Int = 0x04
+    public const val BACKUP_ELIGIBLE_FLAG: Int = 0x08
+    public const val BACKUP_STATE_FLAG: Int = 0x10
 }

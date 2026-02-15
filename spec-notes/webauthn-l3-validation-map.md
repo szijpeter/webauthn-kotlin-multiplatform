@@ -14,6 +14,10 @@ This document maps currently implemented validation behavior to normative requir
 | Signature counter non-increase is treated as invalid when both prior and current counters are non-zero. | W3C WebAuthn Level 3, Signature Counter guidance. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`validateAuthenticatorData`) | `authenticatorDataFailsForNonIncreasingSignCount` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
 | Unpadded base64url input must reject padding and invalid alphabet; impossible unpadded length (`len % 4 == 1`) is rejected. | RFC 4648 (`base64url` alphabet and padding behavior). | `webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlBytes.kt`, `webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlCodec.kt` | `parseRejectsPadding`, `parseRejectsInvalidAlphabetCharacter`, `parseRejectsImpossibleUnpaddedLength`, `parseRejectsWhitespace` in `webauthn-model/src/commonTest/kotlin/dev/webauthn/model/Base64UrlBytesTest.kt` |
 | Assertion credential must be in `allowCredentials` if `allowCredentials` is non-empty. | W3C WebAuthn Level 3 assertion verification semantics. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`requireAllowedCredential`) | `requireAllowedCredentialFailsForCredentialOutsideAllowList` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
+| User Verification (UV) flag must be set when RP policy is `REQUIRED`. | W3C WebAuthn Level 3, Authenticator Data flags and RP UV requirement. | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`validateAuthenticatorData` with `UserVerificationPolicy`) | `authenticatorDataFailsWhenUvRequiredButNotSet`, `authenticatorDataPassesWhenUvRequiredAndSet`, `authenticatorDataPassesWhenUvPreferredAndNotSet` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
+| Backup State (BS) flag must not be set when Backup Eligible (BE) flag is clear. | W3C WebAuthn Level 3, Authenticator Data flags (BE/BS semantics). | `webauthn-core/src/commonMain/kotlin/dev/webauthn/core/WebAuthnCoreValidator.kt` (`validateAuthenticatorData`) | `authenticatorDataFailsWhenBackupStateSetWithoutBackupEligible`, `authenticatorDataPassesWhenBackupStateAndEligibleBothSet` in `webauthn-core/src/commonTest/kotlin/dev/webauthn/core/WebAuthnCoreValidatorTest.kt` |
+| `authenticatorData.rpIdHash` must match RP ID during registration. | W3C WebAuthn Level 3, registration ceremony verification procedure. | `webauthn-server-core-jvm/src/main/kotlin/dev/webauthn/server/Services.kt` (`RegistrationService.finish`) | `registrationFinishFailsForRpIdHashMismatch` in `webauthn-server-core-jvm/src/test/kotlin/dev/webauthn/server/ServiceSmokeTest.kt` |
+| Attestation statement `fmt: "none"` must have empty `attStmt`. | W3C WebAuthn Level 3, §8.7 None Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/NoneAttestationStatementVerifier.kt` | `verifyPassesForNoneFmtWithEmptyAttStmt`, `verifyFailsForNoneFmtWithNonEmptyAttStmt`, `verifyFailsForUnsupportedFmt` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/NoneAttestationStatementVerifierTest.kt` |
 
 ## Positive-path sanity checks
 
@@ -27,7 +31,6 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Pending coverage
 
-- Full attestation statement format verification (`packed`, `tpm`, `android-key`, `android-safetynet`, `apple`, `none`) with trust path checks
+- Full attestation statement format verification (`packed`, `tpm`, `android-key`, `android-safetynet`, `apple`) with trust path checks
 - CBOR/COSE structural parsing against RFC 8949 and RFC 9052/9053 vectors
-- Backup eligibility/state flags and UV-required policy branching
 - Level 3 extension-specific checks (PRF, `largeBlob`, Related Origins)

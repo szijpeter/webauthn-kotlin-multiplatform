@@ -31,6 +31,7 @@ public data class RegistrationValidationInput(
     public val response: RegistrationResponse,
     public val clientData: CollectedClientData,
     public val expectedOrigin: Origin,
+    public val userVerificationPolicy: UserVerificationPolicy = UserVerificationPolicy.PREFERRED,
 )
 
 public data class AuthenticationValidationInput(
@@ -39,6 +40,7 @@ public data class AuthenticationValidationInput(
     public val clientData: CollectedClientData,
     public val expectedOrigin: Origin,
     public val previousSignCount: Long,
+    public val userVerificationPolicy: UserVerificationPolicy = UserVerificationPolicy.PREFERRED,
 )
 
 public data class RegistrationValidationOutput(

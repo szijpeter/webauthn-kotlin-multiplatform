@@ -61,9 +61,11 @@ public class JvmCoseKeyParser(
 }
 
 public class StrictAttestationVerifier : AttestationVerifier {
+    private val noneVerifier = NoneAttestationStatementVerifier()
+
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
-        return if (input.response.attestationObject.bytes().isEmpty()) {
-            ValidationResult.Invalid(
+        if (input.response.attestationObject.bytes().isEmpty()) {
+            return ValidationResult.Invalid(
                 listOf(
                     WebAuthnValidationError.InvalidValue(
                         field = "attestationObject",
@@ -71,8 +73,10 @@ public class StrictAttestationVerifier : AttestationVerifier {
                     ),
                 ),
             )
-        } else {
-            ValidationResult.Valid(Unit)
         }
+
+        // Delegate to the none-format verifier. When additional attestation format
+        // verifiers are added (packed, tpm, etc.), dispatch based on parsed fmt here.
+        return noneVerifier.verify(input)
     }
 }

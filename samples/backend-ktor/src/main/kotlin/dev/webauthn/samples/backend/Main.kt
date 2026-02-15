@@ -26,6 +26,7 @@ public fun main(): Unit {
         credentialStore = credentialStore,
         userAccountStore = userStore,
         attestationVerifier = StrictAttestationVerifier(),
+        rpIdHasher = JvmRpIdHasher(),
         attestationPolicy = AttestationPolicy.Strict,
     )
 

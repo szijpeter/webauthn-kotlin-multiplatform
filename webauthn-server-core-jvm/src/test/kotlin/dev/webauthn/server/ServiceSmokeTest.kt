@@ -23,11 +23,13 @@ import kotlin.test.assertTrue
 class ServiceSmokeTest {
     @Test
     fun registrationStartIssuesChallengeAndParams() = runBlocking {
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = InMemoryChallengeStore(),
             credentialStore = InMemoryCredentialStore(),
             userAccountStore = InMemoryUserAccountStore(),
             attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
 
@@ -51,11 +53,13 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
             attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
 
@@ -71,6 +75,7 @@ class ServiceSmokeTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
         val attestationObject = attestationObjectWithAuthData(
             registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
                 flags = 0x41,
                 signCount = 1,
                 credentialId = credentialId.value.bytes(),
@@ -105,14 +110,15 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
             attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
             credentialStore = credentialStore,
@@ -133,6 +139,7 @@ class ServiceSmokeTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
         val attestationObject = attestationObjectWithAuthData(
             registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
                 flags = 0x41,
                 signCount = 1,
                 credentialId = credentialId.value.bytes(),
@@ -217,6 +224,62 @@ class ServiceSmokeTest {
         assertTrue(result is ValidationResult.Invalid)
     }
 
+    @Test
+    fun registrationFinishFailsForRpIdHashMismatch() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+            attestationPolicy = AttestationPolicy.Strict,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+        )
+        val options = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = ByteArray(32) { 0xFF.toByte() },
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        val finish = registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = options.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(finish is ValidationResult.Invalid)
+    }
+
     private fun authenticationAuthenticatorDataBytes(
         rpIdHash: ByteArray,
         flags: Int,
@@ -230,13 +293,14 @@ class ServiceSmokeTest {
     }
 
     private fun registrationAuthenticatorDataBytes(
+        rpIdHash: ByteArray = ByteArray(32) { 0x10 },
         flags: Int,
         signCount: Long,
         credentialId: ByteArray,
         cosePublicKey: ByteArray,
     ): ByteArray {
         return concat(
-            ByteArray(32) { 0x10 },
+            rpIdHash,
             byteArrayOf(flags.toByte()),
             uint32(signCount),
             ByteArray(16) { 0x22 },

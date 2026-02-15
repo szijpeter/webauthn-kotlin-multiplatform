@@ -155,6 +155,81 @@ class WebAuthnCoreValidatorTest {
     }
 
     @Test
+    fun authenticatorDataFailsWhenUvRequiredButNotSet() {
+        val result = WebAuthnCoreValidator.validateAuthenticatorData(
+            data = AuthenticatorData(
+                rpIdHash = ByteArray(32),
+                flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
+                signCount = 1,
+            ),
+            previousSignCount = 0,
+            uvPolicy = UserVerificationPolicy.REQUIRED,
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticatorDataPassesWhenUvRequiredAndSet() {
+        val result = WebAuthnCoreValidator.validateAuthenticatorData(
+            data = AuthenticatorData(
+                rpIdHash = ByteArray(32),
+                flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG or WebAuthnCoreValidator.USER_VERIFICATION_FLAG,
+                signCount = 1,
+            ),
+            previousSignCount = 0,
+            uvPolicy = UserVerificationPolicy.REQUIRED,
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+    }
+
+    @Test
+    fun authenticatorDataPassesWhenUvPreferredAndNotSet() {
+        val result = WebAuthnCoreValidator.validateAuthenticatorData(
+            data = AuthenticatorData(
+                rpIdHash = ByteArray(32),
+                flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
+                signCount = 1,
+            ),
+            previousSignCount = 0,
+            uvPolicy = UserVerificationPolicy.PREFERRED,
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+    }
+
+    @Test
+    fun authenticatorDataFailsWhenBackupStateSetWithoutBackupEligible() {
+        val result = WebAuthnCoreValidator.validateAuthenticatorData(
+            data = AuthenticatorData(
+                rpIdHash = ByteArray(32),
+                flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG or WebAuthnCoreValidator.BACKUP_STATE_FLAG,
+                signCount = 1,
+            ),
+            previousSignCount = 0,
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticatorDataPassesWhenBackupStateAndEligibleBothSet() {
+        val result = WebAuthnCoreValidator.validateAuthenticatorData(
+            data = AuthenticatorData(
+                rpIdHash = ByteArray(32),
+                flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG or
+                    WebAuthnCoreValidator.BACKUP_ELIGIBLE_FLAG or
+                    WebAuthnCoreValidator.BACKUP_STATE_FLAG,
+                signCount = 1,
+            ),
+            previousSignCount = 0,
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+    }
+
+    @Test
     fun requireAllowedCredentialPassesWhenAllowListIsEmpty() {
         val result = WebAuthnCoreValidator.requireAllowedCredential(
             response = sampleAuthenticationResponse(sampleCredentialId(1)),

@@ -22,11 +22,11 @@ Last updated: 2026-02-15
 | Module | Maturity | Implemented | Gaps / Risks |
 |---|---|---|---|
 | `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests | Continued edge-case coverage for uncommon protocol combinations |
-| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/signCount/allowCredentials), broad negative-path tests | Additional L3 extensions and UV/BE/BS policy branching hardening |
+| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), broad negative-path tests | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Abstraction interfaces in place | Additional implementations and cross-provider behavior parity |
-| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + tests | Broader algorithm/trust edge coverage |
-| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + in-memory stores + smoke tests | Stronger replay/failure-path and persistence integration scenarios |
+| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none` attestation format verification + tests | Broader algorithm/trust edge coverage, additional attestation formats |
+| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + smoke tests | Stronger replay/failure-path and persistence integration scenarios |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
 | `webauthn-client-android` | Scaffold/Beta | Credential Manager integration scaffold and sample buildability | Runtime passkey behavior hardening across device/API variations |
@@ -47,9 +47,8 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 Pending high-impact coverage:
 
-- full attestation statement verification matrix
+- full attestation statement verification matrix (`packed`, `tpm`, `android-key`, `android-safetynet`, `apple`)
 - CBOR/COSE structural/vector conformance
-- backup eligibility/state and UV branching
 - L3 extension-specific checks (PRF, `largeBlob`, Related Origins)
 
 ## Current Quality Gates

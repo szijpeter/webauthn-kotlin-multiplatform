@@ -26,6 +26,7 @@ public class RegistrationService(
     private val credentialStore: CredentialStore,
     private val userAccountStore: UserAccountStore,
     private val attestationVerifier: AttestationVerifier,
+    private val rpIdHasher: RpIdHasher,
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
@@ -115,6 +116,11 @@ public class RegistrationService(
 
         if (validation is ValidationResult.Invalid) {
             return validation
+        }
+
+        val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
+        if (!response.rawAuthenticatorData.rpIdHash.contentEquals(rpHashExpected)) {
+            return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
 
         val attestationResult = attestationPolicy.verify(

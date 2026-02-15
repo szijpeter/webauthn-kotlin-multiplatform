@@ -34,6 +34,7 @@ class WebAuthnKtorRoutesTest {
             credentialStore = credentialStore,
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = JvmRpIdHasher(),
             attestationPolicy = AttestationPolicy.Strict,
         )
 
