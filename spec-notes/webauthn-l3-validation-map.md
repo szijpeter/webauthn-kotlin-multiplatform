@@ -23,6 +23,8 @@ This document maps currently implemented validation behavior to normative requir
 | Packed attestation must reject `ecdaaKeyId` (ECDAA not supported in Level 3). | W3C WebAuthn Level 3, §8.2 Packed Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifier.kt` | `ecdaaPresenceRejected` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifierTest.kt` |
 | Packed attestation: AAGUID extension in `attCert` must match `authData` if present. | W3C WebAuthn Level 3, §8.2 Packed Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifier.kt` | `fullAttestationFailsForAaguidMismatch` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/PackedAttestationStatementVerifierTest.kt` |
 | Android Key: `attestationChallenge` extension matching and cert chain verification (trust path). | W3C WebAuthn Level 3, §8.4 Android Key Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/AndroidKeyAttestationStatementVerifier.kt` | `verifyPassesWithTrustAnchorValidation`, `verifyFailsForChallengeMismatch` in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/AndroidKeyAttestationStatementVerifierTest.kt` |
+| Apple: `x5c` cert chain verification. | W3C WebAuthn Level 3, §8.8 Apple Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/AppleAttestationStatementVerifier.kt` | Tests in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/AppleAttestationStatementVerifierTest.kt` |
+| TPM: Attestation signature verification over `certInfo`, `extraData` validation, and cert chain verification. | W3C WebAuthn Level 3, §8.3 TPM Attestation Statement Format. | `webauthn-server-jvm-crypto/src/main/kotlin/dev/webauthn/server/crypto/TpmAttestationStatementVerifier.kt` | Tests in `webauthn-server-jvm-crypto/src/test/kotlin/dev/webauthn/server/crypto/TpmAttestationStatementVerifierTest.kt` |
 
 ## Positive-path sanity checks
 
@@ -36,6 +38,6 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Pending coverage
 
-- Remaining attestation statement formats (`tpm`, `android-safetynet`, `apple`) with trust path checks
+- Remaining attestation statement formats (`android-safetynet`) with trust path checks
 
 - Level 3 extension-specific checks (PRF, `largeBlob`, Related Origins)

@@ -2,6 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.io.ByteArrayInputStream
@@ -10,7 +11,9 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.Arrays
 
-internal class TpmAttestationStatementVerifier : AttestationVerifier {
+internal class TpmAttestationStatementVerifier(
+    private val trustAnchorSource: TrustAnchorSource? = null,
+) : AttestationVerifier {
 
     companion object {
         private const val TPM_GENERATED_VALUE = 0xFF544347.toInt()
@@ -22,6 +25,8 @@ internal class TpmAttestationStatementVerifier : AttestationVerifier {
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")),
             )
+
+        // ... fmt, ver, fields checks ...
 
         if (attestationObject.fmt != "tpm") {
             return ValidationResult.Invalid(
@@ -36,16 +41,12 @@ internal class TpmAttestationStatementVerifier : AttestationVerifier {
             )
         }
 
-        // 2. Verify "alg" (if present, checked during signature verification mostly) and "sig", "certInfo", "pubArea"
-        // Spec says: "The pubArea field is OPTIONAL."
-        // We need certInfo, sig, x5c.
         if (attestationObject.certInfo == null || attestationObject.sig == null || attestationObject.x5c.isNullOrEmpty()) {
              return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("attStmt", "certInfo, sig, and x5c are required")),
             )
         }
         
-        // 3. Verify ecdaaKeyId is NOT present
         if (attestationObject.ecdaaKeyId != null) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("ecdaaKeyId", "ECDAA not supported")),
@@ -53,16 +54,28 @@ internal class TpmAttestationStatementVerifier : AttestationVerifier {
         }
 
         // 4. Verify signature over certInfo using x5c[0]
-        val x5c = attestationObject.x5c!!
+        val x5c = attestationObject.x5c
         val certFactory = CertificateFactory.getInstance("X.509")
         val leafCert: X509Certificate
+        val certs: List<X509Certificate>
         try {
-            leafCert = certFactory.generateCertificate(ByteArrayInputStream(x5c[0])) as X509Certificate
+            certs = x5c.map { certFactory.generateCertificate(ByteArrayInputStream(it)) as X509Certificate }
+            leafCert = certs[0]
         } catch (e: Exception) {
              return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")),
             )
         }
+        
+        if (trustAnchorSource != null) {
+            val chainVerifier = TrustChainVerifier(trustAnchorSource)
+            val aaguid = input.response.attestedCredentialData.aaguid
+            val chainResult = chainVerifier.verify(certs, aaguid)
+            if (chainResult is ValidationResult.Invalid) {
+                return chainResult
+            }
+        }
+
 
         val alg = attestationObject.alg ?: -7 // Default ES256 if missing? But map can have it. If missing, COSE alg usually inferred or required.
         // Usually alg is present in attStmt for TPM.

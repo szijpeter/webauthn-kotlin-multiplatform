@@ -2,6 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.io.ByteArrayInputStream
@@ -10,7 +11,9 @@ import java.security.cert.X509Certificate
 import java.security.interfaces.ECPublicKey
 import java.util.Arrays
 
-internal class AppleAttestationStatementVerifier : AttestationVerifier {
+internal class AppleAttestationStatementVerifier(
+    private val trustAnchorSource: TrustAnchorSource? = null,
+) : AttestationVerifier {
 
     companion object {
         private const val APPLE_EXTENSION_OID = "1.2.840.113635.100.8.2"
@@ -37,13 +40,30 @@ internal class AppleAttestationStatementVerifier : AttestationVerifier {
 
         val certFactory = CertificateFactory.getInstance("X.509")
         val leafCert: X509Certificate
+        val certs: List<X509Certificate>
         try {
-            leafCert = certFactory.generateCertificate(ByteArrayInputStream(attestationObject.x5c[0])) as X509Certificate
+            certs = attestationObject.x5c.map { 
+                certFactory.generateCertificate(ByteArrayInputStream(it)) as X509Certificate 
+            }
+            leafCert = certs[0]
         } catch (e: Exception) {
              return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")),
             )
         }
+        
+        if (trustAnchorSource != null) {
+            val chainVerifier = TrustChainVerifier(trustAnchorSource)
+            // Apple attestation doesn't bind to AAGUID in the same way, but we can pass it.
+            // Actually, Apple's anonymous attestation often uses 00..00 AAGUID in authData? 
+            // We pass what we have.
+            val aaguid = input.response.attestedCredentialData.aaguid
+            val chainResult = chainVerifier.verify(certs, aaguid)
+            if (chainResult is ValidationResult.Invalid) {
+                return chainResult
+            }
+        }
+
 
         // 2. Verify nonce
         // nonce = SHA-256(authData || clientDataHash)
