@@ -26,7 +26,7 @@ Last updated: 2026-02-15
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Abstraction interfaces in place | Additional implementations and cross-provider behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none` and `packed` attestation format verification (self + full/x5c) + shared CBOR parser + tests | Additional attestation formats (`tpm`, `android-key`, etc.), AAGUID extension validation, trust-chain depth |
-| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + smoke tests | Stronger replay/failure-path and persistence integration scenarios |
+| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + persistence race tests (double-consume, overwrite, sign-count propagation) | Persistence integration scenarios with external stores |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
 | `webauthn-client-android` | Scaffold/Beta | Credential Manager integration scaffold and sample buildability | Runtime passkey behavior hardening across device/API variations |

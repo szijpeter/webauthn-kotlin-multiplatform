@@ -280,6 +280,647 @@ class ServiceSmokeTest {
         assertTrue(finish is ValidationResult.Invalid)
     }
 
+    @Test
+    fun registrationFinishFailsForExpiredChallenge() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        var currentTime = 1000L
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+            attestationPolicy = AttestationPolicy.Strict,
+            nowEpochMs = { currentTime },
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+            timeoutMs = 60_000,
+        )
+        val options = registrationService.start(startRequest)
+
+        // Jump time well past the 60s timeout
+        currentTime = 1000L + 120_000L
+
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        val result = registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = options.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun registrationFinishFailsForOriginMismatch() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+        )
+        val options = registrationService.start(startRequest)
+
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        val result = registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = options.challenge,
+                    origin = Origin.parseOrThrow("https://evil.com"), // wrong origin
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun registrationFinishFailsForChallengeReplay() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+        )
+        val options = registrationService.start(startRequest)
+
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        val finishRequest = RegistrationFinishRequest(
+            responseDto = RegistrationResponseDto(
+                id = credentialId.value.encoded(),
+                rawId = credentialId.value.encoded(),
+                response = RegistrationResponsePayloadDto(
+                    clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                    attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                ),
+            ),
+            clientData = CollectedClientData(
+                type = "webauthn.create",
+                challenge = options.challenge,
+                origin = startRequest.origin,
+            ),
+        )
+
+        val first = registrationService.finish(finishRequest)
+        assertTrue(first is ValidationResult.Valid)
+
+        // Second call with same challenge should fail (consumed)
+        val second = registrationService.finish(finishRequest)
+        assertTrue(second is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFinishFailsForExpiredChallenge() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        var currentTime = 1000L
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+            nowEpochMs = { currentTime },
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = rpIdHasher,
+            nowEpochMs = { currentTime },
+        )
+
+        // Register first
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = regOptions.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        // Start auth
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(
+                rpId = startRequest.rpId,
+                origin = startRequest.origin,
+                userName = startRequest.userName,
+                timeoutMs = 60_000,
+            ),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+        val authChallenge = authStart.value.challenge
+
+        // Expire the challenge
+        currentTime = 1000L + 120_000L
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"),
+            flags = 0x01,
+            signCount = 2,
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = authChallenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFinishFailsForOriginMismatch() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = rpIdHasher,
+        )
+
+        // Register
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41, signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        // Auth start
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(rpId = startRequest.rpId, origin = startRequest.origin, userName = "alice"),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"), flags = 0x01, signCount = 2,
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = authStart.value.challenge,
+                    origin = Origin.parseOrThrow("https://evil.com"), // wrong origin
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFinishFailsForUnknownCredential() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = rpIdHasher,
+        )
+
+        // Register with one credential
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41, signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        // Auth start
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(rpId = startRequest.rpId, origin = startRequest.origin, userName = "alice"),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+
+        // Try to auth with a DIFFERENT (unknown) credential ID
+        val unknownCredId = CredentialId.fromBytes(ByteArray(16) { 0xFF.toByte() })
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"), flags = 0x01, signCount = 2,
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = unknownCredId.value.encoded(), rawId = unknownCredId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = authStart.value.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFinishFailsForSignatureVerificationFailure() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> false }, // always fails
+            rpIdHasher = rpIdHasher,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41, signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(rpId = startRequest.rpId, origin = startRequest.origin, userName = "alice"),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"), flags = 0x01, signCount = 2,
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = authStart.value.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFinishFailsForChallengeReplay() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = rpIdHasher,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41, signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(rpId = startRequest.rpId, origin = startRequest.origin, userName = "alice"),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"), flags = 0x01, signCount = 2,
+        )
+
+        val authFinishRequest = AuthenticationFinishRequest(
+            responseDto = AuthenticationResponseDto(
+                id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                response = AuthenticationResponsePayloadDto(
+                    clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                    authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                    signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                    userHandle = null,
+                ),
+            ),
+            clientData = CollectedClientData(
+                type = "webauthn.get",
+                challenge = authStart.value.challenge,
+                origin = startRequest.origin,
+            ),
+        )
+
+        val first = authenticationService.finish(authFinishRequest)
+        assertTrue(first is ValidationResult.Valid)
+
+        // Second call with same challenge should fail
+        val second = authenticationService.finish(authFinishRequest)
+        assertTrue(second is ValidationResult.Invalid)
+    }
+
     private fun authenticationAuthenticatorDataBytes(
         rpIdHash: ByteArray,
         flags: Int,
