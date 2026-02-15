@@ -32,6 +32,17 @@ This repository is currently a V1 scaffold with strict validation foundations, m
 
 See `spec-notes/` for implemented rule mapping.
 
+## Security
+
+- Vulnerability reports: see `SECURITY.md` and use GitHub private vulnerability reporting.
+- CI is configured for least privilege and explicit major-version action references in `.github/workflows/ci.yml`.
+- Automated dependency update checks are configured in `.github/dependabot.yml`.
+
+## Branching
+
+- Default branch for active development: `main`.
+- Release hardening and security launch checklist: `docs/PUBLIC_LAUNCH_CHECKLIST.md`.
+
 ## AI Harness
 
 Repository AI steering is centralized in `docs/ai/STEERING.md`.
@@ -57,3 +68,4 @@ Related docs:
 - `docs/ai/SKILLS.md`
 - `docs/IMPLEMENTATION_STATUS.md`
 - `docs/ROADMAP.md`
+- `docs/PUBLIC_LAUNCH_CHECKLIST.md`

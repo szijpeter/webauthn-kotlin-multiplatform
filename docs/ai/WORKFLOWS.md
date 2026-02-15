@@ -31,6 +31,30 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block true
 
 For docs-only changes, gates intentionally skip heavy compile/test tasks.
 
+## Public Security Hygiene Workflow
+
+1. Run targeted tracked-file secret scan:
+
+```bash
+git ls-files -z | xargs -0 rg -n -S '(?i)(api[_-]?key|secret[_-]?key|private[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|BEGIN (RSA|EC|OPENSSH|PGP) PRIVATE KEY)'
+```
+
+2. Verify harness and policy wiring:
+
+```bash
+tools/agent/verify-harness-sync.sh
+```
+
+3. Run required gates:
+
+```bash
+tools/agent/quality-gate.sh --mode fast --scope changed --block false
+tools/agent/quality-gate.sh --mode strict --scope changed --block true
+```
+
+4. Confirm public hardening checklist items:
+- `docs/PUBLIC_LAUNCH_CHECKLIST.md`
+
 ## Full Validation Workflow
 
 Use for cross-cutting changes:

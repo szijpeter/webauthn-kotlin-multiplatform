@@ -13,6 +13,9 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library.
 3. Preserve strict layering and KMP boundaries (`webauthn-model` and `webauthn-core` remain free of platform/network dependencies).
 4. Keep changes economic: smallest sufficient scope, minimal context load, targeted checks first.
 5. Do not claim done without tests and quality gates matching impacted surface.
+6. Public repo hygiene is mandatory: no credentials/secrets in tracked files or committed history.
+7. Workflow security defaults are mandatory: least-privilege permissions and explicit action version references (major tags or pinned SHAs).
+8. Security-facing workflow/policy changes require synchronized docs updates (`SECURITY.md`, public launch checklist, and affected workflow docs).
 
 ## Module Criticality Map
 
@@ -78,6 +81,7 @@ A change is done only when all apply:
 4. If core/security-critical modules changed, `docs/IMPLEMENTATION_STATUS.md`, `docs/ROADMAP.md`, or `docs/IMPLEMENTATION_TRACKER.md` is updated.
 5. CI parity command for impacted area has been run locally or explicitly called out as not run.
 6. Documentation updated when workflow/contracts changed.
+7. If CI/security posture changed, `SECURITY.md` and `docs/PUBLIC_LAUNCH_CHECKLIST.md` are updated in the same change.
 
 ## Quality Gate Contract
 
@@ -120,3 +124,5 @@ Stop and ask before continuing when:
 - Tracker: `docs/IMPLEMENTATION_TRACKER.md`
 - Validation mapping: `spec-notes/webauthn-l3-validation-map.md`
 - CI baseline: `.github/workflows/ci.yml`
+- Security policy: `SECURITY.md`
+- Public launch checklist: `docs/PUBLIC_LAUNCH_CHECKLIST.md`
