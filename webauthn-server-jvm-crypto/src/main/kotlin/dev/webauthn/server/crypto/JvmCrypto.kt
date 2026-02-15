@@ -63,7 +63,7 @@ public class JvmCoseKeyParser(
 
 public class StrictAttestationVerifier(
     signatureVerifier: SignatureVerifier? = null,
-    trustAnchorSource: TrustAnchorSource? = null,
+    trustAnchorSource: TrustAnchorSource? = ResourceTrustAnchorSource(),
 ) : AttestationVerifier {
     private val delegate = CompositeAttestationVerifier(signatureVerifier, trustAnchorSource)
 
