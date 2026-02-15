@@ -16,6 +16,7 @@ internal data class ParsedAttestationObject(
     val ecdaaKeyId: ByteArray? = null,
     val ver: String? = null,
     val certInfo: ByteArray? = null,
+    val response: ByteArray? = null,
 )
 
 internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? {
@@ -33,6 +34,7 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
     var ecdaaKeyId: ByteArray? = null
     var ver: String? = null
     var certInfo: ByteArray? = null
+    var response: ByteArray? = null
 
     repeat(mapHeader.length.toInt()) {
         val key = readCborText(bytes, offset) ?: return null
@@ -94,6 +96,11 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
                             certInfo = infoVal.first
                             offset = infoVal.second
                         }
+                        "response" -> {
+                            val respVal = readCborBytes(bytes, offset) ?: return null
+                            response = respVal.first
+                            offset = respVal.second
+                        }
 
                         else -> {
                             offset = skipCborItem(bytes, offset) ?: return null
@@ -118,6 +125,7 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
             ecdaaKeyId = ecdaaKeyId,
             ver = ver,
             certInfo = certInfo,
+            response = response,
         )
     } else {
         null
