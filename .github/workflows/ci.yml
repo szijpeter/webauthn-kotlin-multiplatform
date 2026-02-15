@@ -29,7 +29,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
       - name: JVM Checks
         run: ./gradlew check --stacktrace
 
@@ -44,7 +44,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: android-actions/setup-android@v3
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
       - name: Android Build
         run: ./gradlew :webauthn-client-android:assemble :samples:android-passkey:assemble --stacktrace
 
@@ -58,6 +58,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
       - name: iOS Compile
         run: ./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace
