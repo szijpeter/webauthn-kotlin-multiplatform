@@ -22,7 +22,7 @@ Last updated: 2026-02-15
 | Module | Maturity | Implemented | Gaps / Risks |
 |---|---|---|---|
 | `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests | Continued edge-case coverage for uncommon protocol combinations |
-| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), broad negative-path tests | Additional L3 extensions hardening |
+| `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), broad negative-path tests (incl. AAGUID model updates) | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Abstraction interfaces in place | Additional implementations and cross-provider behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key`/`apple`/`tpm` trust-path (Google/Apple roots configured) + `android-safetynet` scaffold + dispatcher integration | Additional attestation formats (`android-safetynet`), `android-key` depth |

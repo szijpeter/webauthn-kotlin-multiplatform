@@ -391,6 +391,7 @@ class WebAuthnCoreValidatorTest {
                 signCount = signCount,
             ),
             attestedCredentialData = AttestedCredentialData(
+                aaguid = ByteArray(16),
                 credentialId = credentialId,
                 cosePublicKey = byteArrayOf(9, 8, 7),
             ),
