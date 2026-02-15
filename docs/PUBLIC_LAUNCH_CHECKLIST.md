@@ -23,9 +23,10 @@ Use this checklist when moving from private to public operation.
    - Dependabot security updates
    - Secret scanning
    - Secret scanning push protection
-   - Code scanning
-5. Enable private vulnerability reporting.
-6. Confirm GitHub Actions repository settings are least privilege.
+   - Code scanning (CodeQL for workflow files; Java/Kotlin scan may be temporarily disabled when upstream tooling compatibility lags)
+5. Ensure dependency review checks run on pull requests (`.github/workflows/dependency-review.yml`).
+6. Enable private vulnerability reporting.
+7. Confirm GitHub Actions repository settings are least privilege.
 
 ## Post-Launch Verification
 
