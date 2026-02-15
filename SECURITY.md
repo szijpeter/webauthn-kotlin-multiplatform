@@ -29,3 +29,9 @@ Please do not open public issues for suspected vulnerabilities.
 ## Scope Notes
 
 When reporting, include affected module(s), threat model assumptions, and whether behavior conflicts with WebAuthn/RFC requirements. This helps triage quickly for security-sensitive validation and attestation paths.
+
+## Automated Security Checks
+
+- CodeQL runs on GitHub Actions workflow files (`language: actions`).
+- Java/Kotlin CodeQL scanning is temporarily disabled while the current CodeQL CLI toolchain does not support Kotlin `2.3.10`.
+- Dependency risk is enforced on pull requests via `actions/dependency-review-action`.
