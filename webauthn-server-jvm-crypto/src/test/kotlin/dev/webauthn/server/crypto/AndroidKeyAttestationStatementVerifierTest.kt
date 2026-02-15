@@ -184,6 +184,124 @@ class AndroidKeyAttestationStatementVerifierTest {
         assertTrue(error.message.contains("Key origin is not GENERATED"))
     }
 
+    @Test
+    fun verifyFailsForWrongFmt() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        
+        // Use "packed" format but with android-key structure
+        val attestationObject = cborMap(
+            "fmt" to cborText("packed"),
+            "authData" to cborBytes(authData),
+            "attStmt" to cborMap(
+                "alg" to cborInt(-7),
+                "sig" to cborBytes(ByteArray(64)),
+                "x5c" to cborArray(listOf(cborBytes(ByteArray(0))))
+            )
+        )
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        val error = (result as ValidationResult.Invalid).errors.first()
+        assertTrue(error.message.contains("Format must be android-key"))
+    }
+
+    @Test
+    fun verifyFailsForMissingExtension() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+
+        // Generate cert WITHOUT extension (pass null)
+        val attCert = generateAttestationCert(kp, null)
+        
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+
+        assertTrue(result is ValidationResult.Invalid)
+        val error = (result as ValidationResult.Invalid).errors.first()
+        assertTrue(error.message.contains("Android Key Attestation extension missing"))
+    }
+
+    @Test
+    fun verifyFailsForInvalidSignature() {
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        
+        // Generate valid cert
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(sha256(clientDataJson)), derOctetString(ByteArray(0)), derSequence(), derSequence()
+        )
+        val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
+        
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        // Use garbage signature
+        val sig = ByteArray(64) { 0xFF.toByte() }
+        
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        val result = verifier.verify(input)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("Invalid signature") || it.message.contains("Signature verification error") })
+    }
+
+    @Test
+    fun verifyFailsForMissingAlg() {
+         val authData = sampleAuthDataBytes()
+         val attestationObject = cborMap(
+            "fmt" to cborText("android-key"),
+            "authData" to cborBytes(authData),
+            "attStmt" to cborMap(
+                // "alg" missing
+                "sig" to cborBytes(ByteArray(64)),
+                "x5c" to cborArray(listOf(cborBytes(ByteArray(0))))
+            )
+        )
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), ByteArray(0), attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("alg, sig, and x5c are required"))
+    }
+
+     @Test
+    fun verifyFailsForMissingX5c() {
+         val authData = sampleAuthDataBytes()
+         val attestationObject = cborMap(
+            "fmt" to cborText("android-key"),
+            "authData" to cborBytes(authData),
+            "attStmt" to cborMap(
+                "alg" to cborInt(-7),
+                "sig" to cborBytes(ByteArray(64))
+                // "x5c" missing
+            )
+        )
+        val verifier = AndroidKeyAttestationStatementVerifier()
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), ByteArray(0), attestationObject, authData)
+        val result = verifier.verify(input)
+        
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("alg, sig, and x5c are required"))
+    }
+
 
     // ---- Helpers ----
 
