@@ -2,7 +2,7 @@
 kotlin = "2.3.10"
 agp = "9.0.1"
 ktor = "3.4.0"
-serialization = "1.9.0"
+serialization = "1.10.0"
 coroutines = "1.10.2"
 datetime = "0.7.1"
 bcv = "0.18.1"
@@ -35,8 +35,8 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit4 = { module = "junit:junit", version = "4.13.2" }
-robolectric = { module = "org.robolectric:robolectric", version = "4.11.1" }
-mockk = { module = "io.mockk:mockk", version = "1.13.10" }
+robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
+mockk = { module = "io.mockk:mockk", version = "1.14.9" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
