@@ -52,10 +52,9 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 - signCount non-increase invalid case
 - strict base64url parsing guarantees
 - allowCredentials membership enforcement
+- CBOR/COSE conformance vector expansion (strict minimal encoding rejection + deterministic SPKI conversion)
 
 Pending high-impact coverage:
-
-- CBOR/COSE conformance vector expansion (Support for real COSE_Key in JvmCoseKeyParser)
 - Platform client response parsing and success-path behavior validation
 - L3 extension runtime hardening (PRF HMAC computation context hooks and richer authenticator interoperability vectors)
 

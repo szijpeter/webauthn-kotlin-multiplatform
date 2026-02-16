@@ -835,7 +835,7 @@ private fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     val initial = bytes[offset].toInt() and 0xFF
     val majorType = (initial ushr 5) and 0x07
     val additionalInfo = initial and 0x1F
-    val lengthResult = readCborLength(bytes, offset + 1, additionalInfo) ?: return null
+    val lengthResult = readCborLength(bytes, offset + 1, majorType, additionalInfo) ?: return null
     return CborHeader(
         majorType = majorType,
         additionalInfo = additionalInfo,
@@ -844,33 +844,33 @@ private fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     )
 }
 
-private fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
+private fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additionalInfo: Int): Pair<Long?, Int>? {
     return when {
-        additionalInfo in 0..23 -> additionalInfo.toLong() to offset
-        additionalInfo == 24 -> if (offset + 1 <= bytes.size) {
-            (bytes[offset].toInt() and 0xFF).toLong() to (offset + 1)
-        } else {
-            null
+        additionalInfo < 24 -> additionalInfo.toLong() to offset
+        additionalInfo == 24 -> {
+            if (offset + 1 > bytes.size) return null
+            val value = (bytes[offset].toInt() and 0xFF).toLong()
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 24) return null // Non-minimal
+            value to (offset + 1)
         }
-
-        additionalInfo == 25 -> if (offset + 2 <= bytes.size) {
-            bytes.readUint16(offset).toLong() to (offset + 2)
-        } else {
-            null
+        additionalInfo == 25 -> {
+            if (offset + 2 > bytes.size) return null
+            val value = bytes.readUint16(offset).toLong()
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 256) return null // Non-minimal
+            value to (offset + 2)
         }
-
-        additionalInfo == 26 -> if (offset + 4 <= bytes.size) {
-            bytes.readUint32(offset) to (offset + 4)
-        } else {
-            null
+        additionalInfo == 26 -> {
+            if (offset + 4 > bytes.size) return null
+            val value = bytes.readUint32(offset)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 65536) return null // Non-minimal
+            value to (offset + 4)
         }
-
-        additionalInfo == 27 -> if (offset + 8 <= bytes.size) {
-            bytes.readInt64(offset) to (offset + 8)
-        } else {
-            null
+        additionalInfo == 27 -> {
+            if (offset + 8 > bytes.size) return null
+            val value = bytes.readInt64(offset)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 4294967296L && value >= 0) return null // Non-minimal
+            value to (offset + 8)
         }
-
         additionalInfo == 31 -> null to offset
         else -> null
     }

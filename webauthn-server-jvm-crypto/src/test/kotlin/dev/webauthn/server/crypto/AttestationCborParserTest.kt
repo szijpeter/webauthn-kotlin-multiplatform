@@ -560,6 +560,56 @@ class AttestationCborParserTest {
         assertEquals(0, result.first.size)
     }
 
+    // ---- Minimal Encoding Tests ----
+
+    @Test
+    fun readCborLengthRejectsNonMinimalOneByteLengthInt() {
+        // Value 23 encoded as 1-byte length (0x18 0x17) instead of directly (0x17)
+        // 0x18 = additional info 24
+        // readCborLength expects offset to point to the length bytes (index 1)
+        assertNull(readCborLength(byteArrayOf(0x18, 0x17), 1, 0, 24))
+    }
+
+    @Test
+    fun readCborLengthRejectsNonMinimalTwoByteLengthInt() {
+        // Value 255 encoded as 2-byte length (0x19 0x00 0xFF) instead of 1-byte length (0x18 0xFF)
+        // 0x19 = additional info 25
+        assertNull(readCborLength(byteArrayOf(0x19, 0x00, 0xFF.toByte()), 1, 0, 25))
+    }
+
+    @Test
+    fun readCborLengthRejectsNonMinimalFourByteLengthInt() {
+        // Value 65535 encoded as 4-byte length (0x1A 0x00 0x00 0xFF 0xFF) instead of 2-byte length
+        // 0x1A = additional info 26
+        assertNull(readCborLength(byteArrayOf(0x1A, 0x00, 0x00, 0xFF.toByte(), 0xFF.toByte()), 1, 0, 26))
+    }
+
+    @Test
+    fun readCborLengthRejectsNonMinimalEightByteLengthInt() {
+        // Value 4294967295 encoded as 8-byte length instead of 4-byte length
+        // 0x1B = additional info 27 which is not 27 in readCborLength but passed as arg
+        // But for testing purposes we use 27. Note: 0x1B is major type 0 + add info 27.
+        // 4294967295L = 0x00000000FFFFFFFF
+        val bytes = byteArrayOf(
+            0x00, 0x00, 0x00, 0x00,
+            0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte()
+        )
+        assertNull(readCborLength(bytes, 0, 0, 27))
+    }
+
+    @Test
+    fun readCborLengthAcceptsSmallFloatValues() {
+        // Major Type 7 (Float/Simple)
+        // Half-Precision Float (0.0) -> 0xF9 00 00
+        // Additional Info 25 (2 bytes)
+        // Value 0x0000 is < 256, but should be accepted for Major Type 7
+        val bytes = byteArrayOf(0x00, 0x00)
+        val result = readCborLength(bytes, 0, 7, 25)
+        assertNotNull(result)
+        assertEquals(0L, result.first)
+        assertEquals(2, result.second)
+    }
+
     // ---- CBOR builders for tests ----
 
     private fun cborMap(vararg entries: Pair<String, ByteArray>): ByteArray {
