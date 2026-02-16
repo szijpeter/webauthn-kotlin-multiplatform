@@ -35,7 +35,7 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit4 = { module = "junit:junit", version = "4.13.2" }
-robolectric = { module = "org.robolectric:robolectric", version = "4.11.1" }
+robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 mockk = { module = "io.mockk:mockk", version = "1.13.10" }
 
 [plugins]
