@@ -2,13 +2,13 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.CertificateInspector
+import dev.webauthn.crypto.CertificateSignatureVerifier
 import dev.webauthn.crypto.CoseAlgorithm
+import dev.webauthn.crypto.DigestService
 import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import java.security.MessageDigest
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
 
 /**
  * Verifies the "packed" attestation statement format per WebAuthn L3 §8.2.
@@ -20,6 +20,9 @@ import java.security.cert.X509Certificate
  */
 public class PackedAttestationStatementVerifier(
     private val signatureVerifier: SignatureVerifier,
+    private val digestService: DigestService = JvmDigestService(),
+    private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
+    private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -48,8 +51,7 @@ public class PackedAttestationStatementVerifier(
         }
 
         // Build signatureBase = authData || SHA-256(clientDataJSON)
-        val clientDataHash = MessageDigest.getInstance("SHA-256")
-            .digest(input.response.clientDataJson.bytes())
+        val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
         val signatureBase = authDataBytes + clientDataHash
 
         val coseAlgorithm = coseAlgorithmFromCode(alg.toInt())
@@ -100,35 +102,24 @@ public class PackedAttestationStatementVerifier(
         val attCertDer = x5c.firstOrNull()
             ?: return invalid("attestationObject.attStmt.x5c", "x5c chain is empty")
 
-        val attCert = try {
-            val factory = CertificateFactory.getInstance("X.509")
-            factory.generateCertificate(attCertDer.inputStream()) as X509Certificate
+        val certMetadata = try {
+            certificateInspector.inspect(attCertDer)
         } catch (_: Exception) {
             return invalid("attestationObject.attStmt.x5c", "Invalid X.509 certificate in x5c")
         }
 
-        // Verify the signature using the attCert's public key
-        val jcaAlgorithm = when (coseAlgorithm) {
-            CoseAlgorithm.ES256 -> "SHA256withECDSA"
-            CoseAlgorithm.RS256 -> "SHA256withRSA"
-            CoseAlgorithm.EdDSA -> "Ed25519"
-        }
-
-        val verified = try {
-            val jcaSig = java.security.Signature.getInstance(jcaAlgorithm)
-            jcaSig.initVerify(attCert.publicKey)
-            jcaSig.update(signatureBase)
-            jcaSig.verify(sig)
-        } catch (_: Exception) {
-            false
-        }
-
+        val verified = certificateSignatureVerifier.verify(
+            algorithm = coseAlgorithm,
+            certificateDer = attCertDer,
+            data = signatureBase,
+            signature = sig,
+        )
         if (!verified) {
             return invalid("attestationObject.attStmt.sig", "Full attestation signature verification failed")
         }
 
         // Validate attCert subject OU = "Authenticator Attestation"
-        val subjectDN = attCert.subjectX500Principal.name
+        val subjectDN = certMetadata.subjectDistinguishedName
         if (!subjectDN.contains("OU=Authenticator Attestation")) {
             return invalid(
                 "attestationObject.attStmt.x5c",
@@ -143,7 +134,7 @@ public class PackedAttestationStatementVerifier(
         
         if (hasAt && signatureBase.size >= 53) {
              val aaguid = signatureBase.copyOfRange(37, 37 + 16)
-             val aaguidCheck = AaguidMismatchVerifier.verify(attCert, aaguid)
+             val aaguidCheck = AaguidMismatchVerifier.verify(attCertDer, aaguid, certificateInspector)
              if (aaguidCheck is ValidationResult.Invalid) {
                  return aaguidCheck
              }

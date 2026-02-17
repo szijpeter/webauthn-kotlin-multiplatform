@@ -5,6 +5,13 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ValidationResult
 
+/**
+ * Verifies signatures using an authenticator credential public key.
+ *
+ * Migration note:
+ * This interface remains the credential/self-attestation verifier.
+ * For x5c certificate-based signature verification in attestation statement verifiers, prefer [CertificateSignatureVerifier].
+ */
 public fun interface SignatureVerifier {
     public fun verify(
         algorithm: CoseAlgorithm,
@@ -14,6 +21,13 @@ public fun interface SignatureVerifier {
     ): Boolean
 }
 
+/**
+ * Parses COSE public keys into a platform-specific verification representation.
+ *
+ * Migration note:
+ * Existing implementations can stay source-compatible.
+ * New call sites should prefer [CosePublicKeyDecoder] and [CosePublicKeyNormalizer] to keep attestation verifiers platform-neutral.
+ */
 public fun interface CoseKeyParser {
     public fun parsePublicKey(coseKey: ByteArray): ParsedCosePublicKey
 }

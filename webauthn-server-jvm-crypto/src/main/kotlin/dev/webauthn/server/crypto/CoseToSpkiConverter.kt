@@ -1,28 +1,23 @@
 package dev.webauthn.server.crypto
 
-internal data class CoseKeyMetadata(
-    val kty: Long,
-    val alg: Long?,
-    val crv: Long? = null,
-    val x: ByteArray? = null,
-    val y: ByteArray? = null,
-    val n: ByteArray? = null,
-    val e: ByteArray? = null,
-)
+import dev.webauthn.crypto.CosePublicKeyMaterial
 
 internal object CoseToSpkiConverter {
 
     fun convert(coseKey: ByteArray): ByteArray? {
-        val metadata = parseCoseKey(coseKey) ?: return null
+        val material = parseCoseKey(coseKey) ?: return null
+        return convert(material)
+    }
 
-        return when (metadata.kty) {
-            2L -> convertEc2(metadata)
-            3L -> convertRsa(metadata)
+    fun convert(material: CosePublicKeyMaterial): ByteArray? {
+        return when (material.kty) {
+            2L -> convertEc2(material)
+            3L -> convertRsa(material)
             else -> null
         }
     }
 
-    fun parseCoseKey(coseKey: ByteArray): CoseKeyMetadata? {
+    fun parseCoseKey(coseKey: ByteArray): CosePublicKeyMaterial? {
         val map = parseCoseMap(coseKey) ?: return null
         val kty = map[1L] as? Long ?: return null
         val alg = map[3L] as? Long
@@ -36,7 +31,7 @@ internal object CoseToSpkiConverter {
         val n = map[-1L] as? ByteArray
         val e = map[-2L] as? ByteArray
 
-        return CoseKeyMetadata(
+        return CosePublicKeyMaterial(
             kty = kty,
             alg = alg,
             crv = crv,
@@ -47,10 +42,10 @@ internal object CoseToSpkiConverter {
         )
     }
 
-    private fun convertEc2(metadata: CoseKeyMetadata): ByteArray? {
-        val crv = metadata.crv ?: return null
-        val x = metadata.x ?: return null
-        val y = metadata.y ?: return null
+    private fun convertEc2(material: CosePublicKeyMaterial): ByteArray? {
+        val crv = material.crv ?: return null
+        val x = material.x ?: return null
+        val y = material.y ?: return null
 
         if (crv != 1L) return null // Only P-256 supported for now
 
@@ -67,9 +62,9 @@ internal object CoseToSpkiConverter {
         )
     }
 
-    private fun convertRsa(metadata: CoseKeyMetadata): ByteArray? {
-        val n = metadata.n ?: return null
-        val e = metadata.e ?: return null
+    private fun convertRsa(material: CosePublicKeyMaterial): ByteArray? {
+        val n = material.n ?: return null
+        val e = material.e ?: return null
 
         // RSA public key: SEQUENCE { INTEGER(n), INTEGER(e) }
         val rsaPubKey = derSequence(
