@@ -51,11 +51,10 @@ public class SignumSignatureVerifier(
         data: ByteArray,
         signature: ByteArray,
     ): Boolean {
-        val material = cosePublicKeyDecoder.decode(publicKeyCose)
-        val parsedAlgorithm = material?.alg?.toInt()?.let { code ->
-            dev.webauthn.crypto.coseAlgorithmFromCode(code)
-        } ?: algorithm
-        val spki = material?.let { cosePublicKeyNormalizer.toSubjectPublicKeyInfo(it) } ?: publicKeyCose
+        val material = cosePublicKeyDecoder.decode(publicKeyCose) ?: return false
+        val spki = cosePublicKeyNormalizer.toSubjectPublicKeyInfo(material) ?: return false
+        val parsedAlgorithm = material.alg?.toInt()?.let { dev.webauthn.crypto.coseAlgorithmFromCode(it) }
+            ?: algorithm
 
         val provider = signumProviderOrNull()
         val keyFactory = if (provider != null) {

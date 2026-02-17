@@ -8,7 +8,10 @@ import dev.webauthn.crypto.CertificateSignatureVerifier
 import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.CoseKeyParser
+import dev.webauthn.crypto.CoseParseFailure
+import dev.webauthn.crypto.CoseParseResult
 import dev.webauthn.crypto.CosePublicKeyDecoder
+import dev.webauthn.crypto.CosePublicKeyMaterial
 import dev.webauthn.crypto.CosePublicKeyNormalizer
 import dev.webauthn.crypto.DigestService
 import dev.webauthn.crypto.ParsedCosePublicKey
@@ -60,15 +63,43 @@ public class JvmCoseKeyParser(
     private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
     private val cosePublicKeyNormalizer: CosePublicKeyNormalizer = JvmCosePublicKeyNormalizer(),
 ) : CoseKeyParser {
-    override fun parsePublicKey(coseKey: ByteArray): ParsedCosePublicKey {
+    override fun parsePublicKey(coseKey: ByteArray): CoseParseResult {
         val material = cosePublicKeyDecoder.decode(coseKey)
-        val spki = material?.let(cosePublicKeyNormalizer::toSubjectPublicKeyInfo) ?: coseKey
-        val algorithm = material?.alg?.toInt()?.let(::coseAlgorithmFromCode)
+            ?: return CoseParseResult.Failure(CoseParseFailure.MalformedCbor("Invalid or malformed COSE key"))
+        val spki = cosePublicKeyNormalizer.toSubjectPublicKeyInfo(material)
+            ?: return CoseParseResult.Failure(conversionFailureReason(material))
+        val algorithm = material.alg?.toInt()?.let(::coseAlgorithmFromCode)
             ?: defaultAlgorithm
-        return ParsedCosePublicKey(
-            algorithm = algorithm,
-            x509SubjectPublicKeyInfo = spki,
+        return CoseParseResult.Success(
+            ParsedCosePublicKey(
+                algorithm = algorithm,
+                x509SubjectPublicKeyInfo = spki,
+            )
         )
+    }
+
+    private fun conversionFailureReason(material: CosePublicKeyMaterial): CoseParseFailure {
+        val kty = material.kty
+        return when (kty) {
+            2L -> {
+                val crv = material.crv
+                when {
+                    crv == null -> CoseParseFailure.MissingRequiredParameter("crv")
+                    crv != 1L -> CoseParseFailure.UnsupportedCurve(crv)
+                    material.x == null -> CoseParseFailure.MissingRequiredParameter("x")
+                    material.y == null -> CoseParseFailure.MissingRequiredParameter("y")
+                    else -> CoseParseFailure.MalformedCbor("EC2 key missing required coordinates")
+                }
+            }
+            3L -> {
+                when {
+                    material.n == null -> CoseParseFailure.MissingRequiredParameter("n")
+                    material.e == null -> CoseParseFailure.MissingRequiredParameter("e")
+                    else -> CoseParseFailure.MalformedCbor("RSA key missing required parameters")
+                }
+            }
+            else -> CoseParseFailure.UnsupportedKeyType(kty)
+        }
     }
 }
 

@@ -3,6 +3,7 @@ package dev.webauthn.server.crypto
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CertificateInspector
+import dev.webauthn.crypto.CosePublicKeyDecoder
 import dev.webauthn.crypto.CertificateSignatureVerifier
 import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.crypto.CoseAlgorithm
@@ -24,6 +25,7 @@ public class PackedAttestationStatementVerifier(
     private val digestService: DigestService = JvmDigestService(),
     private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
     private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
+    private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
 ) : AttestationVerifier {
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -71,8 +73,17 @@ public class PackedAttestationStatementVerifier(
         coseAlgorithm: CoseAlgorithm,
         input: RegistrationValidationInput,
     ): ValidationResult<Unit> {
-        // For self-attestation, alg must match the credential's algorithm
         val credentialPublicKey = input.response.attestedCredentialData.cosePublicKey
+        val material = cosePublicKeyDecoder.decode(credentialPublicKey)
+            ?: return invalid("attestationObject", "Credential COSE public key is malformed or unsupported")
+        val keyAlgorithm = material.alg?.toInt()?.let(::coseAlgorithmFromCode)
+            ?: return invalid("attestationObject", "Credential key algorithm is missing or unsupported")
+        if (keyAlgorithm != coseAlgorithm) {
+            return invalid(
+                "attestationObject.attStmt.alg",
+                "Attestation algorithm ($coseAlgorithm) does not match credential key algorithm ($keyAlgorithm)",
+            )
+        }
 
         val verified = try {
             signatureVerifier.verify(

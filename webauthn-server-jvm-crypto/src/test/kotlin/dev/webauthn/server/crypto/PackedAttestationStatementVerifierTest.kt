@@ -31,7 +31,7 @@ class PackedAttestationStatementVerifierTest {
     @Test
     fun selfAttestationPassesForValidES256Signature() {
         val kp = generateES256KeyPair()
-        val spki = kp.public.encoded
+        val cosePublicKey = TestCoseHelpers.coseBytesFromPublicKey(kp.public)
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val authData = sampleAuthDataBytes()
@@ -50,7 +50,7 @@ class PackedAttestationStatementVerifierTest {
             signatureVerifier = spkiSignatureVerifier(),
         )
 
-        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, spki)
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, cosePublicKey)
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Valid, "Expected Valid but got: $result")
@@ -59,7 +59,7 @@ class PackedAttestationStatementVerifierTest {
     @Test
     fun selfAttestationFailsForSignatureMismatch() {
         val kp = generateES256KeyPair()
-        val spki = kp.public.encoded
+        val cosePublicKey = TestCoseHelpers.coseBytesFromPublicKey(kp.public)
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val authData = sampleAuthDataBytes()
@@ -74,7 +74,7 @@ class PackedAttestationStatementVerifierTest {
             signatureVerifier = spkiSignatureVerifier(),
         )
 
-        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, spki)
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, cosePublicKey)
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
@@ -83,7 +83,7 @@ class PackedAttestationStatementVerifierTest {
     @Test
     fun selfAttestationFailsForAlgorithmMismatch() {
         val kp = generateES256KeyPair()
-        val spki = kp.public.encoded
+        val cosePublicKey = TestCoseHelpers.coseBytesFromPublicKey(kp.public)
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val authData = sampleAuthDataBytes()
@@ -102,7 +102,7 @@ class PackedAttestationStatementVerifierTest {
             signatureVerifier = spkiSignatureVerifier(),
         )
 
-        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, spki)
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, cosePublicKey)
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
@@ -578,7 +578,7 @@ class PackedAttestationStatementVerifierTest {
             certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateES256KeyPair()
-        val spki = kp.public.encoded
+        val cosePublicKey = TestCoseHelpers.coseBytesFromPublicKey(kp.public)
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val authData = sampleAuthDataBytes()
@@ -586,11 +586,11 @@ class PackedAttestationStatementVerifierTest {
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
         val attestationObject = buildPackedAttestationObject(authData = authData, alg = CoseAlgorithm.ES256.code.toLong(), sig = sig)
-        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, spki)
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, cosePublicKey)
         assertTrue(verifier.verify(input) is ValidationResult.Valid)
 
         val invalidAttestation = buildPackedAttestationObject(authData = authData, alg = CoseAlgorithm.ES256.code.toLong(), sig = ByteArray(64) { 0xFF.toByte() })
-        val invalidInput = sampleInput(credentialId, clientDataJson, invalidAttestation, authData, spki)
+        val invalidInput = sampleInput(credentialId, clientDataJson, invalidAttestation, authData, cosePublicKey)
         assertTrue(verifier.verify(invalidInput) is ValidationResult.Invalid)
     }
 }

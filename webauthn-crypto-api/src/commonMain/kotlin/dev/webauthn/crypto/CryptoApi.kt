@@ -23,13 +23,32 @@ public fun interface SignatureVerifier {
 
 /**
  * Parses COSE public keys into a platform-specific verification representation.
+ * Returns [CoseParseResult]; unsupported or malformed keys fail deterministically (no raw-byte fallback).
  *
  * Migration note:
- * Existing implementations can stay source-compatible.
  * New call sites should prefer [CosePublicKeyDecoder] and [CosePublicKeyNormalizer] to keep attestation verifiers platform-neutral.
  */
 public fun interface CoseKeyParser {
-    public fun parsePublicKey(coseKey: ByteArray): ParsedCosePublicKey
+    public fun parsePublicKey(coseKey: ByteArray): CoseParseResult
+}
+
+/**
+ * Result of parsing a COSE public key. Success carries [ParsedCosePublicKey]; failure carries a [CoseParseFailure] reason.
+ */
+public sealed interface CoseParseResult {
+    public data class Success(public val parsed: ParsedCosePublicKey) : CoseParseResult
+    public data class Failure(public val reason: CoseParseFailure) : CoseParseResult
+}
+
+/**
+ * Structured reason for COSE parse failure. Unsupported key shapes and malformed input fail deterministically.
+ */
+public sealed interface CoseParseFailure {
+    public data class MalformedCbor(public val message: String) : CoseParseFailure
+    public data class UnsupportedKeyType(public val kty: Long) : CoseParseFailure
+    public data class UnsupportedCurve(public val crv: Long) : CoseParseFailure
+    public data class MissingRequiredParameter(public val label: String) : CoseParseFailure
+    public data class UnsupportedAlgorithm(public val alg: Long) : CoseParseFailure
 }
 
 public fun interface AttestationVerifier {

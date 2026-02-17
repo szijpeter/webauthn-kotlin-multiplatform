@@ -5,7 +5,7 @@ import dev.webauthn.crypto.CosePublicKeyMaterial
 internal object CoseToSpkiConverter {
 
     fun convert(coseKey: ByteArray): ByteArray? {
-        val material = parseCoseKey(coseKey) ?: return null
+        val material = JvmCoseParser.parseCoseKey(coseKey) ?: return null
         return convert(material)
     }
 
@@ -17,30 +17,8 @@ internal object CoseToSpkiConverter {
         }
     }
 
-    fun parseCoseKey(coseKey: ByteArray): CosePublicKeyMaterial? {
-        val map = parseCoseMap(coseKey) ?: return null
-        val kty = map[1L] as? Long ?: return null
-        val alg = map[3L] as? Long
-        
-        // EC2 specific
-        val crv = map[-1L] as? Long
-        val x = map[-2L] as? ByteArray
-        val y = map[-3L] as? ByteArray
-
-        // RSA specific
-        val n = map[-1L] as? ByteArray
-        val e = map[-2L] as? ByteArray
-
-        return CosePublicKeyMaterial(
-            kty = kty,
-            alg = alg,
-            crv = crv,
-            x = x,
-            y = y,
-            n = n,
-            e = e
-        )
-    }
+    fun parseCoseKey(coseKey: ByteArray): CosePublicKeyMaterial? =
+        JvmCoseParser.parseCoseKey(coseKey)
 
     private fun convertEc2(material: CosePublicKeyMaterial): ByteArray? {
         val crv = material.crv ?: return null
@@ -80,38 +58,6 @@ internal object CoseToSpkiConverter {
             ),
             derBitString(rsaPubKey)
         )
-    }
-
-    private fun parseCoseMap(bytes: ByteArray): Map<Long, Any>? {
-        var offset = 0
-        val header = readCborHeader(bytes, offset) ?: return null
-        if (header.majorType != MAJOR_MAP || header.length == null) return null
-        offset = header.nextOffset
-        
-        val result = mutableMapOf<Long, Any>()
-        repeat(header.length.toInt()) {
-            val keyResult = readCborInt(bytes, offset) ?: return null
-            val key = keyResult.first
-            offset = keyResult.second
-            
-            val valueHeader = readCborHeader(bytes, offset) ?: return null
-            when (valueHeader.majorType) {
-                MAJOR_UNSIGNED_INT, MAJOR_NEGATIVE_INT -> {
-                    val v = readCborInt(bytes, offset) ?: return null
-                    result[key] = v.first
-                    offset = v.second
-                }
-                MAJOR_BYTE_STRING -> {
-                    val v = readCborBytes(bytes, offset) ?: return null
-                    result[key] = v.first
-                    offset = v.second
-                }
-                else -> {
-                    offset = skipCborItem(bytes, offset) ?: return null
-                }
-            }
-        }
-        return result
     }
 
     // ASN.1 helpers (mini version)

@@ -29,7 +29,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = kp.public.encoded, // SPKI
+            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
             data = data,
             signature = sig,
         )
@@ -52,7 +52,7 @@ class JvmSignatureVerifierTest {
         val tampered = "tampered data".encodeToByteArray()
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = kp.public.encoded,
+            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
             data = tampered,
             signature = sig,
         )
@@ -78,7 +78,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = kp2.public.encoded, // wrong key
+            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp2.public), // wrong key
             data = data,
             signature = sig,
         )
@@ -102,7 +102,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.RS256,
-            publicKeyCose = kp.public.encoded,
+            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
             data = data,
             signature = sig,
         )
@@ -125,7 +125,7 @@ class JvmSignatureVerifierTest {
         val tampered = "tampered data".encodeToByteArray()
         val result = verifier.verify(
             algorithm = CoseAlgorithm.RS256,
-            publicKeyCose = kp.public.encoded,
+            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
             data = tampered,
             signature = sig,
         )

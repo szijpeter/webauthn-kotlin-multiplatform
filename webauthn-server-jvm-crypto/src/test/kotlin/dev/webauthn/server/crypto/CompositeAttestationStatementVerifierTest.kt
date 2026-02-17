@@ -85,11 +85,11 @@ class CompositeAttestationVerifierTest {
             "attStmt" to cborMap("alg" to cborInt(-7), "sig" to cborBytes(ByteArray(64))),
             "authData" to cborBytes(ByteArray(37)) // minimal
         )
-        // Mock SignatureVerifier that returns true
+        // Mock SignatureVerifier that returns true. Credential key must be valid COSE so packed verifier reaches the mock.
         val sigVerifier = SignatureVerifier { _, _, _, _ -> true }
-        
+        val minimalCoseKey = minimalCoseEc2P256()
         val verifier = CompositeAttestationVerifier(signatureVerifier = sigVerifier)
-        val input = sampleInput(attestationObject)
+        val input = sampleInput(attestationObject, minimalCoseKey)
         val result = verifier.verify(input)
         
         // PackedVerifier checks sig. If returns true, result is valid.
@@ -97,7 +97,25 @@ class CompositeAttestationVerifierTest {
     }
 
     // Helpers
-    private fun sampleInput(attestationObject: ByteArray): RegistrationValidationInput {
+    private fun minimalCoseEc2P256(): ByteArray {
+        val x = ByteArray(32) { it.toByte() }
+        val y = ByteArray(32) { (it + 32).toByte() }
+        return cborMapInt(
+            1L to cborInt(2L),
+            3L to cborInt(-7L),
+            -1L to cborInt(1L),
+            -2L to cborBytes(x),
+            -3L to cborBytes(y),
+        )
+    }
+
+    private fun cborMapInt(vararg entries: Pair<Long, ByteArray>): ByteArray {
+        var res = cborHeader(5, entries.size)
+        entries.forEach { (k, v) -> res = concat(res, cborInt(k), v) }
+        return res
+    }
+
+    private fun sampleInput(attestationObject: ByteArray, cosePublicKey: ByteArray = ByteArray(0)): RegistrationValidationInput {
          val clientDataJson = ByteArray(0)
          val credentialId = CredentialId.fromBytes(ByteArray(16))
          return RegistrationValidationInput(
@@ -112,7 +130,7 @@ class CompositeAttestationVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, ByteArray(0))
+                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey)
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
