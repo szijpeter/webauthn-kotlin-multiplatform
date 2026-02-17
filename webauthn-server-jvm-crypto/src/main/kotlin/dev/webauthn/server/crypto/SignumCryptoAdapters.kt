@@ -53,24 +53,22 @@ public class SignumSignatureVerifier(
     ): Boolean {
         val material = cosePublicKeyDecoder.decode(publicKeyCose)
         val parsedAlgorithm = material?.alg?.toInt()?.let { code ->
-            CoseAlgorithm.entries.find { it.code == code }
+            dev.webauthn.crypto.coseAlgorithmFromCode(code)
         } ?: algorithm
         val spki = material?.let { cosePublicKeyNormalizer.toSubjectPublicKeyInfo(it) } ?: publicKeyCose
 
         val provider = signumProviderOrNull()
-
-        val keyFactory = when (parsedAlgorithm) {
-            CoseAlgorithm.ES256 -> if (provider != null) KeyFactory.getInstance("EC", provider) else KeyFactory.getInstance("EC")
-            CoseAlgorithm.RS256 -> if (provider != null) KeyFactory.getInstance("RSA", provider) else KeyFactory.getInstance("RSA")
-            CoseAlgorithm.EdDSA -> if (provider != null) KeyFactory.getInstance("Ed25519", provider) else KeyFactory.getInstance("Ed25519")
+        val keyFactory = if (provider != null) {
+            KeyFactory.getInstance(JcaAlgorithmMapper.keyFactoryAlgorithm(parsedAlgorithm), provider)
+        } else {
+            KeyFactory.getInstance(JcaAlgorithmMapper.keyFactoryAlgorithm(parsedAlgorithm))
         }
-
         val publicKey = keyFactory.generatePublic(X509EncodedKeySpec(spki))
 
-        val signatureInstance = when (parsedAlgorithm) {
-            CoseAlgorithm.ES256 -> if (provider != null) Signature.getInstance("SHA256withECDSA", provider) else Signature.getInstance("SHA256withECDSA")
-            CoseAlgorithm.RS256 -> if (provider != null) Signature.getInstance("SHA256withRSA", provider) else Signature.getInstance("SHA256withRSA")
-            CoseAlgorithm.EdDSA -> if (provider != null) Signature.getInstance("Ed25519", provider) else Signature.getInstance("Ed25519")
+        val signatureInstance = if (provider != null) {
+            Signature.getInstance(JcaAlgorithmMapper.signatureAlgorithm(parsedAlgorithm), provider)
+        } else {
+            Signature.getInstance(JcaAlgorithmMapper.signatureAlgorithm(parsedAlgorithm))
         }
 
         signatureInstance.initVerify(publicKey)

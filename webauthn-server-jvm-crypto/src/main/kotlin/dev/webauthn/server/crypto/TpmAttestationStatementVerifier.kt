@@ -5,6 +5,7 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CertificateChainValidator
 import dev.webauthn.crypto.CertificateInspector
 import dev.webauthn.crypto.CertificateSignatureVerifier
+import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.DigestService
 import dev.webauthn.crypto.TrustAnchorSource
@@ -74,7 +75,7 @@ internal class TpmAttestationStatementVerifier(
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("alg", "Algorithm identifier missing")),
             )
-        val coseAlg = CoseAlgorithm.entries.find { it.code == algId.toInt() }
+        val coseAlg = coseAlgorithmFromCode(algId.toInt())
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: $algId")),
             )

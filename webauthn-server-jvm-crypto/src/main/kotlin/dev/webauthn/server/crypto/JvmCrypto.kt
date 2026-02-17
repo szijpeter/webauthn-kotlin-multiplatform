@@ -5,6 +5,7 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CertificateChainValidator
 import dev.webauthn.crypto.CertificateInspector
 import dev.webauthn.crypto.CertificateSignatureVerifier
+import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.CoseKeyParser
 import dev.webauthn.crypto.CosePublicKeyDecoder
@@ -62,9 +63,8 @@ public class JvmCoseKeyParser(
     override fun parsePublicKey(coseKey: ByteArray): ParsedCosePublicKey {
         val material = cosePublicKeyDecoder.decode(coseKey)
         val spki = material?.let(cosePublicKeyNormalizer::toSubjectPublicKeyInfo) ?: coseKey
-        val algorithm = material?.alg?.toInt()?.let { code ->
-            CoseAlgorithm.entries.find { it.code == code }
-        } ?: defaultAlgorithm
+        val algorithm = material?.alg?.toInt()?.let(::coseAlgorithmFromCode)
+            ?: defaultAlgorithm
         return ParsedCosePublicKey(
             algorithm = algorithm,
             x509SubjectPublicKeyInfo = spki,

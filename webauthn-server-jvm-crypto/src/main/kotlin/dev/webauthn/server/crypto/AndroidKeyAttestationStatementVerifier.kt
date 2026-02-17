@@ -5,6 +5,7 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CertificateChainValidator
 import dev.webauthn.crypto.CertificateInspector
 import dev.webauthn.crypto.CertificateSignatureVerifier
+import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.CosePublicKeyDecoder
 import dev.webauthn.crypto.CosePublicKeyMaterial
@@ -67,7 +68,7 @@ internal class AndroidKeyAttestationStatementVerifier(
 
         val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
         val signedData = authData + clientDataHash
-        val coseAlgorithm = toCoseAlgorithm(attestationObject.alg)
+        val coseAlgorithm = coseAlgorithmFromCode(attestationObject.alg.toInt())
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: ${attestationObject.alg}")),
             )
@@ -222,9 +223,5 @@ internal class AndroidKeyAttestationStatementVerifier(
     private fun parseIntTag(value: ByteArray?, missingMessage: String): Int {
         val bytes = value ?: throw IllegalArgumentException(missingMessage)
         return BigInteger(DerParser(bytes).readInteger()).toInt()
-    }
-
-    private fun toCoseAlgorithm(alg: Long): CoseAlgorithm? {
-        return CoseAlgorithm.entries.find { it.code == alg.toInt() }
     }
 }

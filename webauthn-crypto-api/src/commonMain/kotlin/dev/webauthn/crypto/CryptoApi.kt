@@ -50,6 +50,13 @@ public enum class CoseAlgorithm(public val code: Int) {
     EdDSA(-8),
 }
 
+/**
+ * Shared COSE algorithm mapper. Use this instead of duplicating
+ * [CoseAlgorithm].entries.find { it.code == code } in verifiers and adapters.
+ */
+public fun coseAlgorithmFromCode(code: Int): CoseAlgorithm? =
+    CoseAlgorithm.entries.find { it.code == code }
+
 public data class ParsedCosePublicKey(
     public val algorithm: CoseAlgorithm,
     public val x509SubjectPublicKeyInfo: ByteArray,

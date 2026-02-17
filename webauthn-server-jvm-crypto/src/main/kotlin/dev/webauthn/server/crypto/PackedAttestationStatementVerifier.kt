@@ -4,6 +4,7 @@ import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CertificateInspector
 import dev.webauthn.crypto.CertificateSignatureVerifier
+import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.DigestService
 import dev.webauthn.crypto.SignatureVerifier
@@ -141,10 +142,6 @@ public class PackedAttestationStatementVerifier(
         }
         
         return ValidationResult.Valid(Unit)
-    }
-
-    private fun coseAlgorithmFromCode(code: Int): CoseAlgorithm? {
-        return CoseAlgorithm.entries.find { it.code == code }
     }
 
     private fun invalid(field: String, message: String): ValidationResult<Unit> {

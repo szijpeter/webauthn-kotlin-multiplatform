@@ -568,4 +568,29 @@ class PackedAttestationStatementVerifierTest {
             derBitString(signatureBytes),
         )
     }
+
+    @Test
+    fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
+        val verifier = PackedAttestationStatementVerifier(
+            signatureVerifier = spkiSignatureVerifier(),
+            digestService = JvmDigestService(),
+            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
+            certificateInspector = JvmCertificateInspector(),
+        )
+        val kp = generateES256KeyPair()
+        val spki = kp.public.encoded
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val authData = sampleAuthDataBytes()
+        val clientDataHash = sha256(clientDataJson)
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+        val attestationObject = buildPackedAttestationObject(authData = authData, alg = CoseAlgorithm.ES256.code.toLong(), sig = sig)
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData, spki)
+        assertTrue(verifier.verify(input) is ValidationResult.Valid)
+
+        val invalidAttestation = buildPackedAttestationObject(authData = authData, alg = CoseAlgorithm.ES256.code.toLong(), sig = ByteArray(64) { 0xFF.toByte() })
+        val invalidInput = sampleInput(credentialId, clientDataJson, invalidAttestation, authData, spki)
+        assertTrue(verifier.verify(invalidInput) is ValidationResult.Invalid)
+    }
 }

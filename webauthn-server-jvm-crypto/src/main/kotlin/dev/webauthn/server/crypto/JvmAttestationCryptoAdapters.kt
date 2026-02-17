@@ -54,11 +54,7 @@ public class JvmCertificateSignatureVerifier : CertificateSignatureVerifier {
         signature: ByteArray,
     ): Boolean {
         val cert = parseCertificate(certificateDer) ?: return false
-        val jcaAlgorithm = when (algorithm) {
-            CoseAlgorithm.ES256 -> "SHA256withECDSA"
-            CoseAlgorithm.RS256 -> "SHA256withRSA"
-            CoseAlgorithm.EdDSA -> "Ed25519"
-        }
+        val jcaAlgorithm = JcaAlgorithmMapper.signatureAlgorithm(algorithm)
 
         return try {
             val verifier = Signature.getInstance(jcaAlgorithm)

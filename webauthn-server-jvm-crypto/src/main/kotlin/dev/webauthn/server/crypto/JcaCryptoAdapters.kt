@@ -36,23 +36,14 @@ public class JcaSignatureVerifier(
     ): Boolean {
         val material = cosePublicKeyDecoder.decode(publicKeyCose)
         val parsedAlgorithm = material?.alg?.toInt()?.let { code ->
-            CoseAlgorithm.entries.find { it.code == code }
+            dev.webauthn.crypto.coseAlgorithmFromCode(code)
         } ?: algorithm
         val spki = material?.let { cosePublicKeyNormalizer.toSubjectPublicKeyInfo(it) } ?: publicKeyCose
 
-        val keyFactory = when (parsedAlgorithm) {
-            CoseAlgorithm.ES256 -> KeyFactory.getInstance("EC")
-            CoseAlgorithm.RS256 -> KeyFactory.getInstance("RSA")
-            CoseAlgorithm.EdDSA -> KeyFactory.getInstance("Ed25519")
-        }
-
+        val keyFactory = KeyFactory.getInstance(JcaAlgorithmMapper.keyFactoryAlgorithm(parsedAlgorithm))
         val publicKey = keyFactory.generatePublic(X509EncodedKeySpec(spki))
 
-        val signatureInstance = when (parsedAlgorithm) {
-            CoseAlgorithm.ES256 -> Signature.getInstance("SHA256withECDSA")
-            CoseAlgorithm.RS256 -> Signature.getInstance("SHA256withRSA")
-            CoseAlgorithm.EdDSA -> Signature.getInstance("Ed25519")
-        }
+        val signatureInstance = Signature.getInstance(JcaAlgorithmMapper.signatureAlgorithm(parsedAlgorithm))
 
         signatureInstance.initVerify(publicKey)
         signatureInstance.update(data)

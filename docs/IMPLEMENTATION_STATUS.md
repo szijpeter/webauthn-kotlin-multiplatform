@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-02-17
+Last updated: 2026-02-18
 
 ## Status Legend
 
@@ -15,7 +15,7 @@ Last updated: 2026-02-17
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - JVM server flow is implemented with ceremony orchestration and smoke tests.
 - Attestation verification now includes hardened TPM and Android Key policy checks with expanded tests.
-- Attestation statement verifiers now consume KMP-safe crypto abstractions (digest/COSE/certificate services) instead of direct JCA types.
+- Attestation statement verifiers consume KMP-safe crypto abstractions (digest/COSE/certificate services) and a shared algorithm mapper; JVM layer uses a single JCA algorithm mapper for signature/key factory names.
 - Platform clients (Android/iOS) have deterministic error mapping coverage, with response parsing still pending.
 - CI lanes cover JVM checks, Android assemble, and iOS compile.
 
@@ -33,8 +33,8 @@ Last updated: 2026-02-17
 | `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins) | Continued edge-case coverage for uncommon protocol combinations |
 | `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests (incl. AAGUID model updates), extension processing hooks, LargeBlob validation, PRF missing-output checks | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
-| `webauthn-crypto-api` | Beta | Abstraction interfaces in place, including KMP-safe attestation crypto services (digest, COSE decode/normalize, certificate signature/inspection/chain validation) and neutral DTOs | Additional implementations and cross-provider behavior parity |
-| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + `none`/`packed`/`android-key` (hardened policy checks)/`apple`/`tpm` (hardened)/`android-safetynet`/`fido-u2f` trust-path (Google/Apple roots configured) + dispatcher integration + attestation verifiers migrated to crypto-api abstractions | Broader attestation vector and trust-anchor coverage depth |
+| `webauthn-crypto-api` | Beta | Abstraction interfaces plus shared `coseAlgorithmFromCode` mapper; KMP-safe attestation crypto services (digest, COSE decode/normalize, certificate signature/inspection/chain validation) and neutral DTOs | Additional implementations and cross-provider behavior parity |
+| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + shared `JcaAlgorithmMapper` for signature/key factory names + `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers using crypto-api abstractions and shared algorithm mapper + dispatcher integration | Broader attestation vector and trust-anchor coverage depth |
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + comprehensive persistence race tests (concurrent double-consume, sign-count propagation, replay protection) | Persistence integration scenarios with external stores |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |

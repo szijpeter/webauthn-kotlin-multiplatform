@@ -484,4 +484,31 @@ class TpmAttestationStatementVerifierTest {
              }
          }
     }
+
+    @Test
+    fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
+        val verifier = TpmAttestationStatementVerifier(
+            digestService = JvmDigestService(),
+            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
+            certificateInspector = JvmCertificateInspector(),
+            certificateChainValidator = JvmCertificateChainValidator(),
+        )
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val concatHash = sha256(authData + clientDataHash)
+        val certInfo = createCertInfo(magic = 0xFF544347.toInt(), type = 0x8017.toShort(), extraData = concatHash, signerName = ByteArray(10) { 0xFF.toByte() })
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, certInfo)
+        val attCert = generateAttestationCert(kp)
+        val attestationObject = buildTpmAttestationObject(ver = "2.0", alg = -7L, sig = sig, certInfo = certInfo, pubArea = ByteArray(10), x5c = listOf(attCert))
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
+        assertTrue(verifier.verify(input) is ValidationResult.Valid)
+
+        val wrongVerObject = buildTpmAttestationObject(ver = "1.0", alg = -7L, sig = ByteArray(64), certInfo = ByteArray(10), pubArea = ByteArray(10), x5c = listOf(ByteArray(0)))
+        val invalidInput = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, wrongVerObject, authData)
+        val invalidResult = verifier.verify(invalidInput)
+        assertTrue(invalidResult is ValidationResult.Invalid)
+        assertTrue((invalidResult as ValidationResult.Invalid).errors.any { it.message.contains("TPM version must be 2.0") })
+    }
 }

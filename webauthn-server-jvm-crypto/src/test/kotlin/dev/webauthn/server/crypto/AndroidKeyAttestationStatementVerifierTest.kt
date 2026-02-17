@@ -585,6 +585,46 @@ class AndroidKeyAttestationStatementVerifierTest {
         assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key origin missing"))
     }
 
+    @Test
+    fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
+        val verifier = AndroidKeyAttestationStatementVerifier(
+            digestService = JvmDigestService(),
+            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
+            certificateInspector = JvmCertificateInspector(),
+            certificateChainValidator = JvmCertificateChainValidator(),
+            cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
+        )
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val validTags = derSequence(
+            derTag(0xA1, derSet(derInteger(byteArrayOf(2)))),
+            derTag(0xA2, derInteger(byteArrayOf(3))),
+            derTag(0xA3, derInteger(byteArrayOf(1, 0))),
+            derTag(0xA5, derSet(derInteger(byteArrayOf(4)))),
+            derTag(0xAA, derInteger(byteArrayOf(1))),
+            derTag(0xBF853E, derInteger(byteArrayOf(0))),
+        )
+        val extensionValueSeq = derSequence(
+            derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
+            derOctetString(clientDataHash), derOctetString(ByteArray(0)), validTags, derSequence(),
+        )
+        val extensionValue = derOctetString(extensionValueSeq)
+        val attCert = generateAttestationCert(kp, extensionValue)
+        val signatureBase = authData + clientDataHash
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
+        assertTrue(verifier.verify(input) is ValidationResult.Valid)
+
+        val badSigAttestation = buildAndroidKeyAttestationObject(authData, -7, ByteArray(64) { 0x00 }, listOf(attCert))
+        val invalidInput = sampleInput(credentialId, clientDataJson, badSigAttestation, authData)
+        val invalidResult = verifier.verify(invalidInput)
+        assertTrue(invalidResult is ValidationResult.Invalid)
+        assertTrue((invalidResult as ValidationResult.Invalid).errors.any { it.message.contains("Invalid signature") })
+    }
 
     // ---- Helpers ----
 
