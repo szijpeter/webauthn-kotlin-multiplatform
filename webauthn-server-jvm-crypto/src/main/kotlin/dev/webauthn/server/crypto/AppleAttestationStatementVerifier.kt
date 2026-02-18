@@ -2,20 +2,17 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
-import dev.webauthn.crypto.CertificateChainValidator
 import dev.webauthn.crypto.CertificateInspector
 import dev.webauthn.crypto.CosePublicKeyDecoder
 import dev.webauthn.crypto.DigestService
-import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
 
 internal class AppleAttestationStatementVerifier(
-    private val trustAnchorSource: TrustAnchorSource? = null,
+    private val trustChainVerifier: TrustChainVerifier? = null,
     private val digestService: DigestService = JvmDigestService(),
     private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
-    private val certificateChainValidator: CertificateChainValidator = JvmCertificateChainValidator(),
     private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
 ) : AttestationVerifier {
 
@@ -44,10 +41,9 @@ internal class AppleAttestationStatementVerifier(
         val certsDer = attestationObject.x5c
         val leafCertDer = certsDer[0]
 
-        if (trustAnchorSource != null) {
-            val chainVerifier = TrustChainVerifier(trustAnchorSource, certificateChainValidator)
+        if (trustChainVerifier != null) {
             val aaguid = input.response.attestedCredentialData.aaguid
-            val chainResult = chainVerifier.verify(certsDer, aaguid)
+            val chainResult = trustChainVerifier.verify(certsDer, aaguid)
             if (chainResult is ValidationResult.Invalid) {
                 return chainResult
             }

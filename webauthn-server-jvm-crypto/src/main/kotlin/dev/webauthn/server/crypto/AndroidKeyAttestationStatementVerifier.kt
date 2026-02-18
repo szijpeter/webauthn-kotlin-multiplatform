@@ -10,14 +10,13 @@ import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.CosePublicKeyDecoder
 import dev.webauthn.crypto.CosePublicKeyMaterial
 import dev.webauthn.crypto.DigestService
-import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.math.BigInteger
 import java.util.Arrays
 
 internal class AndroidKeyAttestationStatementVerifier(
-    private val trustAnchorSource: TrustAnchorSource? = null,
+    private val trustChainVerifier: TrustChainVerifier? = null,
     private val digestService: DigestService = JvmDigestService(),
     private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
     private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
@@ -84,10 +83,9 @@ internal class AndroidKeyAttestationStatementVerifier(
             )
         }
 
-        if (trustAnchorSource != null) {
-            val chainVerifier = TrustChainVerifier(trustAnchorSource, certificateChainValidator)
+        if (trustChainVerifier != null) {
             val aaguid = input.response.attestedCredentialData.aaguid
-            val chainResult = chainVerifier.verify(certsDer, aaguid)
+            val chainResult = trustChainVerifier.verify(certsDer, aaguid)
             if (chainResult is ValidationResult.Invalid) {
                 return chainResult
             }

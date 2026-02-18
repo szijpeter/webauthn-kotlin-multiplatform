@@ -491,7 +491,6 @@ class TpmAttestationStatementVerifierTest {
             digestService = JvmDigestService(),
             certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
             certificateInspector = JvmCertificateInspector(),
-            certificateChainValidator = JvmCertificateChainValidator(),
         )
         val kp = generateES256KeyPair()
         val authData = sampleAuthDataBytes()

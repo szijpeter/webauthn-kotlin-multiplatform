@@ -5,20 +5,17 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.CosePublicKeyDecoder
 import dev.webauthn.crypto.CosePublicKeyNormalizer
-import dev.webauthn.crypto.CertificateChainValidator
 import dev.webauthn.crypto.CertificateSignatureVerifier
 import dev.webauthn.crypto.DigestService
-import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
 public class FidoU2fAttestationStatementVerifier(
-    private val trustAnchorSource: TrustAnchorSource? = null,
+    private val trustChainVerifier: TrustChainVerifier? = null,
     private val digestService: DigestService = JvmDigestService(),
     private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
     private val cosePublicKeyNormalizer: CosePublicKeyNormalizer = JvmCosePublicKeyNormalizer(),
     private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-    private val certificateChainValidator: CertificateChainValidator = JvmCertificateChainValidator(),
 ) : AttestationVerifier {
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -58,9 +55,8 @@ public class FidoU2fAttestationStatementVerifier(
         }
 
         // 4. Optionally verify trust anchor
-        if (trustAnchorSource != null) {
-            val chainVerifier = TrustChainVerifier(trustAnchorSource, certificateChainValidator)
-            val result = chainVerifier.verify(x5c, attestedData.aaguid)
+        if (trustChainVerifier != null) {
+            val result = trustChainVerifier.verify(x5c, attestedData.aaguid)
             if (result is ValidationResult.Invalid) return result
         }
 

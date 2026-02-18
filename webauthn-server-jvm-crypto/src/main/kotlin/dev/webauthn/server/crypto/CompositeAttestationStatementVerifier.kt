@@ -24,9 +24,14 @@ public class CompositeAttestationVerifier(
     certificateChainValidator: CertificateChainValidator = JvmCertificateChainValidator(),
 ) : AttestationVerifier {
 
+    private val trustChainVerifier: TrustChainVerifier? = trustAnchorSource?.let {
+        TrustChainVerifier(it, certificateChainValidator)
+    }
+
     private val packedVerifier = signatureVerifier?.let {
         PackedAttestationStatementVerifier(
             signatureVerifier = it,
+            trustChainVerifier = trustChainVerifier,
             digestService = digestService,
             certificateSignatureVerifier = certificateSignatureVerifier,
             certificateInspector = certificateInspector,
@@ -37,7 +42,7 @@ public class CompositeAttestationVerifier(
         "none" to NoneAttestationStatementVerifier(),
         // packed handled separately
         "android-key" to AndroidKeyAttestationStatementVerifier(
-            trustAnchorSource = trustAnchorSource,
+            trustChainVerifier = trustChainVerifier,
             digestService = digestService,
             certificateSignatureVerifier = certificateSignatureVerifier,
             certificateInspector = certificateInspector,
@@ -45,33 +50,29 @@ public class CompositeAttestationVerifier(
             cosePublicKeyDecoder = cosePublicKeyDecoder,
         ),
         "tpm" to TpmAttestationStatementVerifier(
-            trustAnchorSource = trustAnchorSource,
+            trustChainVerifier = trustChainVerifier,
             digestService = digestService,
             certificateSignatureVerifier = certificateSignatureVerifier,
             certificateInspector = certificateInspector,
-            certificateChainValidator = certificateChainValidator,
         ),
         "apple" to AppleAttestationStatementVerifier(
-            trustAnchorSource = trustAnchorSource,
+            trustChainVerifier = trustChainVerifier,
             digestService = digestService,
             certificateInspector = certificateInspector,
-            certificateChainValidator = certificateChainValidator,
             cosePublicKeyDecoder = cosePublicKeyDecoder,
         ),
         "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(
-            trustAnchorSource = trustAnchorSource,
+            trustChainVerifier = trustChainVerifier,
             digestService = digestService,
             certificateSignatureVerifier = certificateSignatureVerifier,
             certificateInspector = certificateInspector,
-            certificateChainValidator = certificateChainValidator,
         ),
         "fido-u2f" to FidoU2fAttestationStatementVerifier(
-            trustAnchorSource = trustAnchorSource,
+            trustChainVerifier = trustChainVerifier,
             digestService = digestService,
             cosePublicKeyDecoder = cosePublicKeyDecoder,
             cosePublicKeyNormalizer = cosePublicKeyNormalizer,
             certificateSignatureVerifier = certificateSignatureVerifier,
-            certificateChainValidator = certificateChainValidator,
         ),
     )
 

@@ -71,6 +71,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         
         // Use the cert itself as the trust anchor
         val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> listOf(certBytes) }
+        val chainVerifier = TrustChainVerifier(trustSource)
 
         val headerJson = """{"alg":"RS256","x5c":["$certB64"]}"""
         val payloadJson = """{"nonce":"${Base64.getEncoder().encodeToString(nonce)}","ctsProfileMatch":true,"timestampMs":1234567890}"""
@@ -86,7 +87,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val verifier = AndroidSafetyNetAttestationStatementVerifier(trustAnchorSource = trustSource)
+        val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         
@@ -100,7 +101,6 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
             digestService = JvmDigestService(),
             certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
             certificateInspector = JvmCertificateInspector(),
-            certificateChainValidator = JvmCertificateChainValidator(),
         )
         val kp = generateRSA2048KeyPair()
         val authData = sampleAuthDataBytes()

@@ -110,7 +110,6 @@ class AppleAttestationStatementVerifierTest {
         val verifier = AppleAttestationStatementVerifier(
             digestService = JvmDigestService(),
             certificateInspector = JvmCertificateInspector(),
-            certificateChainValidator = JvmCertificateChainValidator(),
             cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
         )
         val kp = generateES256KeyPair()

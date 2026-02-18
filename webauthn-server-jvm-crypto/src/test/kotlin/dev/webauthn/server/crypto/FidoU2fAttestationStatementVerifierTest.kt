@@ -234,7 +234,6 @@ class FidoU2fAttestationStatementVerifierTest {
             cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
             cosePublicKeyNormalizer = JvmCosePublicKeyNormalizer(),
             certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-            certificateChainValidator = JvmCertificateChainValidator(),
         )
         val credentialKeyPair = generateCredentialKeyPair()
         val credentialPublicKey = credentialKeyPair.public as ECPublicKey

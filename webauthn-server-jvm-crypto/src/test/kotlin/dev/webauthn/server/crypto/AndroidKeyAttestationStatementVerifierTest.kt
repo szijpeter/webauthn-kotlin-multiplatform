@@ -115,7 +115,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             x5c = listOf(attCert),
         )
 
-        val verifier = AndroidKeyAttestationStatementVerifier(trustAnchorSource = trustSource)
+        val verifier = AndroidKeyAttestationStatementVerifier(trustChainVerifier = TrustChainVerifier(trustSource))
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
 
         val result = verifier.verify(input)
@@ -591,7 +591,6 @@ class AndroidKeyAttestationStatementVerifierTest {
             digestService = JvmDigestService(),
             certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
             certificateInspector = JvmCertificateInspector(),
-            certificateChainValidator = JvmCertificateChainValidator(),
             cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
         )
         val kp = generateES256KeyPair()

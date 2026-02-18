@@ -12,6 +12,7 @@ import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
+
 /**
  * Verifies the "packed" attestation statement format per WebAuthn L3 §8.2.
  *
@@ -22,6 +23,7 @@ import dev.webauthn.model.WebAuthnValidationError
  */
 public class PackedAttestationStatementVerifier(
     private val signatureVerifier: SignatureVerifier,
+    private val trustChainVerifier: TrustChainVerifier? = null,
     private val digestService: DigestService = JvmDigestService(),
     private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
     private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
@@ -151,7 +153,20 @@ public class PackedAttestationStatementVerifier(
                  return aaguidCheck
              }
         }
-        
+
+        // Trust chain verification (optional)
+        if (trustChainVerifier != null) {
+            val aaguid = if (hasAt && signatureBase.size >= 53) {
+                signatureBase.copyOfRange(37, 37 + 16)
+            } else {
+                null
+            }
+            val chainResult = trustChainVerifier.verify(x5c, aaguid)
+            if (chainResult is ValidationResult.Invalid) {
+                return chainResult
+            }
+        }
+
         return ValidationResult.Valid(Unit)
     }
 
