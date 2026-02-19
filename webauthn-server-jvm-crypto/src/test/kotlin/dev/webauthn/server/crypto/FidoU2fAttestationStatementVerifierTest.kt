@@ -227,6 +227,49 @@ class FidoU2fAttestationStatementVerifierTest {
         )
     }
 
+    @Test
+    fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
+        val verifier = FidoU2fAttestationStatementVerifier()
+        val credentialKeyPair = generateCredentialKeyPair()
+        val credentialPublicKey = credentialKeyPair.public as ECPublicKey
+        val x = credentialPublicKey.w.affineX.toByteArray().ensure32()
+        val y = credentialPublicKey.w.affineY.toByteArray().ensure32()
+        val coseKey = cborMap(
+            1 to cborInt(2), 3 to cborInt(-7), -1 to cborInt(1),
+            -2 to cborBytes(x), -3 to cborBytes(y),
+        )
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x33 })
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AQID","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val rpIdHash = sha256("example.com".toByteArray())
+        val publicKeyU2F = byteArrayOf(0x04) + x + y
+        val verificationData = byteArrayOf(0x00) + rpIdHash + clientDataHash + credentialId.value.bytes() + publicKeyU2F
+        val attestationPrivateKey = loadAttestationPrivateKey()
+        val signature = Signature.getInstance("SHA256withECDSA")
+        signature.initSign(attestationPrivateKey)
+        signature.update(verificationData)
+        val sig = signature.sign()
+        val authData = rpIdHash + byteArrayOf(0x41) + byteArrayOf(0, 0, 0, 1) + ByteArray(16) + byteArrayOf(0, 16) + credentialId.value.bytes() + coseKey
+        val attestationObject = cborMap(
+            "fmt" to cborText("fido-u2f"),
+            "authData" to cborBytes(authData),
+            "attStmt" to cborMap(
+                "sig" to cborBytes(sig),
+                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+            ),
+        )
+        val input = sampleInput(credentialId, clientDataJson, attestationObject, coseKey, rpIdHash)
+        assertTrue(verifier.verify(input) is ValidationResult.Valid)
+
+        val attestationObjectMissingX5c = cborMap(
+            "fmt" to cborText("fido-u2f"),
+            "authData" to cborBytes(ByteArray(37)),
+            "attStmt" to cborMap("sig" to cborBytes(byteArrayOf(1, 2, 3))),
+        )
+        val invalidResult = verifier.verify(sampleInput(credentialId, clientDataJson, attestationObjectMissingX5c, coseKey, rpIdHash))
+        assertTrue(invalidResult is ValidationResult.Invalid)
+    }
+
     private fun loadAttestationPrivateKey(): PrivateKey {
         val der = loadFixtureBytes("attestation-key-pkcs8.der.b64")
         val keySpec = PKCS8EncodedKeySpec(der)

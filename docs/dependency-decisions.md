@@ -1,22 +1,35 @@
 # Dependency Decisions
 
-## Policy
+## Current State
 
-1. Prefer Kotlin and Kotlinx libraries first.
-2. Add third-party dependencies only when Kotlin/Kotlinx cannot satisfy a requirement.
-3. Keep `webauthn-model` and `webauthn-core` free of platform/network dependencies.
+`webauthn-server-jvm-crypto` is Signum-first:
 
-## Current baseline
+- `at.asitplus.signum:supreme-jvm:0.11.3`
+- `at.asitplus.signum:indispensable-cosef-jvm:3.19.3`
+- `at.asitplus.signum:indispensable-josef-jvm:3.19.3`
 
-- Kotlin `2.2.20`
-- AGP `9.0.0`
-- Ktor `3.3.0`
-- kotlinx.serialization `1.9.0`
-- kotlinx.coroutines `1.10.2`
-- kotlinx.datetime `0.7.1`
+These power runtime hashing, COSE decoding, signature parsing/verification, and SafetyNet JWS decoding.
 
-## Notes
+## Remaining JCA Boundary
 
-- JVM crypto currently uses JCA/JCE from the JDK.
-- No external crypto provider is used in V1 scaffold.
-- Optional MDS support uses Ktor client + Kotlinx serialization only.
+JCA/JDK APIs are intentionally used only for PKI trust duties:
+
+1. X.509 certificate parsing and extension access.
+2. Trust-anchor loading.
+3. PKIX path validation (`CertPathValidator`, `PKIXParameters`, `TrustAnchor`).
+
+No runtime provider toggle or legacy crypto path is kept.
+
+## API Boundary
+
+`webauthn-crypto-api` stays library-owned and Signum-agnostic. Current public surface:
+
+- `SignatureVerifier`
+- `AttestationVerifier`
+- `TrustAnchorSource`
+- `RpIdHasher`
+- `CoseAlgorithm`
+- `coseAlgorithmFromCode`
+- payload models
+
+This keeps core/server contracts stable and independent from any single crypto vendor type system.

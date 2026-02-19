@@ -10,6 +10,8 @@ dokka = "2.1.0"
 junit = "5.11.4"
 androidx-credentials = "1.5.0"
 androidx-core = "1.17.0"
+signum = "0.11.3"
+signum-indispensable = "3.19.3"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -37,6 +39,10 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 junit4 = { module = "junit:junit", version = "4.13.2" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 mockk = { module = "io.mockk:mockk", version = "1.14.9" }
+
+signum-supreme-jvm = { module = "at.asitplus.signum:supreme-jvm", version.ref = "signum" }
+signum-indispensable-cosef-jvm = { module = "at.asitplus.signum:indispensable-cosef-jvm", version.ref = "signum-indispensable" }
+signum-indispensable-josef-jvm = { module = "at.asitplus.signum:indispensable-josef-jvm", version.ref = "signum-indispensable" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

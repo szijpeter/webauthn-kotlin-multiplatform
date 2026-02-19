@@ -17,9 +17,9 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
-import dev.webauthn.model.WebAuthnValidationError
+import java.security.KeyPairGenerator
+import java.security.spec.ECGenParameterSpec
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CompositeAttestationVerifierTest {
@@ -85,11 +85,11 @@ class CompositeAttestationVerifierTest {
             "attStmt" to cborMap("alg" to cborInt(-7), "sig" to cborBytes(ByteArray(64))),
             "authData" to cborBytes(ByteArray(37)) // minimal
         )
-        // Mock SignatureVerifier that returns true
+        // Mock SignatureVerifier that returns true. Credential key must be valid COSE so packed verifier reaches the mock.
         val sigVerifier = SignatureVerifier { _, _, _, _ -> true }
-        
+        val minimalCoseKey = minimalCoseEc2P256()
         val verifier = CompositeAttestationVerifier(signatureVerifier = sigVerifier)
-        val input = sampleInput(attestationObject)
+        val input = sampleInput(attestationObject, minimalCoseKey)
         val result = verifier.verify(input)
         
         // PackedVerifier checks sig. If returns true, result is valid.
@@ -97,7 +97,20 @@ class CompositeAttestationVerifierTest {
     }
 
     // Helpers
-    private fun sampleInput(attestationObject: ByteArray): RegistrationValidationInput {
+    private fun minimalCoseEc2P256(): ByteArray {
+        val keyPairGenerator = KeyPairGenerator.getInstance("EC")
+        keyPairGenerator.initialize(ECGenParameterSpec("secp256r1"))
+        val keyPair = keyPairGenerator.generateKeyPair()
+        return TestCoseHelpers.coseBytesFromPublicKey(keyPair.public)
+    }
+
+    private fun cborMapInt(vararg entries: Pair<Long, ByteArray>): ByteArray {
+        var res = cborHeader(5, entries.size)
+        entries.forEach { (k, v) -> res = concat(res, cborInt(k), v) }
+        return res
+    }
+
+    private fun sampleInput(attestationObject: ByteArray, cosePublicKey: ByteArray = ByteArray(0)): RegistrationValidationInput {
          val clientDataJson = ByteArray(0)
          val credentialId = CredentialId.fromBytes(ByteArray(16))
          return RegistrationValidationInput(
@@ -112,7 +125,7 @@ class CompositeAttestationVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, ByteArray(0))
+                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey)
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

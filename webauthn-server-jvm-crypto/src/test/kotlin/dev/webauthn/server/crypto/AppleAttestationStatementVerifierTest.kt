@@ -106,6 +106,29 @@ class AppleAttestationStatementVerifierTest {
     }
 
     @Test
+    fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
+        val verifier = AppleAttestationStatementVerifier(
+            certificateInspector = JvmCertificateInspector(),
+        )
+        val kp = generateES256KeyPair()
+        val authData = sampleAuthDataBytes()
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val clientDataHash = sha256(clientDataJson)
+        val nonce = sha256(authData + clientDataHash)
+        val attCert = generateAppleAttestationCert(kp, nonce)
+        val coseKey = generateCoseKey(kp.public as ECPublicKey)
+        val attestationObject = buildAppleAttestationObject(x5c = listOf(attCert))
+        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
+        assertTrue(verifier.verify(input) is ValidationResult.Valid)
+
+        val attestationObjectEmptyX5c = buildAppleAttestationObject(x5c = emptyList())
+        val invalidInput = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObjectEmptyX5c, authData, ByteArray(0))
+        val invalidResult = verifier.verify(invalidInput)
+        assertTrue(invalidResult is ValidationResult.Invalid)
+        assertTrue((invalidResult as ValidationResult.Invalid).errors.any { it.message.contains("x5c is required") })
+    }
+
+    @Test
     fun verifyFailsForPublicKeyMismatch() {
         val kp = generateES256KeyPair()
         val kp2 = generateES256KeyPair() // Different key

@@ -4,23 +4,27 @@ import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.SignatureVerifier
+import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import java.security.MessageDigest
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
 
 /**
  * Verifies the "packed" attestation statement format per WebAuthn L3 §8.2.
- *
- * Supports:
- * - **Self-attestation**: `sig` verified using the credential's own public key
- * - **Full attestation** (`x5c`): `sig` verified using the attestation certificate's public key
- * - **ECDAA**: rejected (not supported in Level 3)
  */
-public class PackedAttestationStatementVerifier(
+public class PackedAttestationStatementVerifier internal constructor(
     private val signatureVerifier: SignatureVerifier,
+    private val trustChainVerifier: TrustChainVerifier? = null,
+    private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
+
+    public constructor(
+        signatureVerifier: SignatureVerifier,
+        trustChainVerifier: TrustChainVerifier? = null,
+    ) : this(
+        signatureVerifier = signatureVerifier,
+        trustChainVerifier = trustChainVerifier,
+        certificateInspector = JvmCertificateInspector(),
+    )
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationBytes = input.response.attestationObject.bytes()
@@ -42,21 +46,18 @@ public class PackedAttestationStatementVerifier(
         val authDataBytes = parsed.authDataBytes
             ?: return invalid("attestationObject.authData", "Missing authData in attestation object")
 
-        // Reject ECDAA
         if (parsed.ecdaaKeyId != null) {
             return invalid("attestationObject.attStmt.ecdaaKeyId", "ECDAA is not supported")
         }
 
-        // Build signatureBase = authData || SHA-256(clientDataJSON)
-        val clientDataHash = MessageDigest.getInstance("SHA-256")
-            .digest(input.response.clientDataJson.bytes())
+        val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
         val signatureBase = authDataBytes + clientDataHash
 
         val coseAlgorithm = coseAlgorithmFromCode(alg.toInt())
             ?: return invalid("attestationObject.attStmt.alg", "Unsupported COSE algorithm: $alg")
 
-        return if (parsed.x5c != null && parsed.x5c.isNotEmpty()) {
-            verifyFullAttestation(parsed.x5c, sig, signatureBase, coseAlgorithm, input)
+        return if (!parsed.x5c.isNullOrEmpty()) {
+            verifyFullAttestation(parsed.x5c, sig, signatureBase, coseAlgorithm)
         } else {
             verifySelfAttestation(sig, signatureBase, coseAlgorithm, input)
         }
@@ -68,8 +69,18 @@ public class PackedAttestationStatementVerifier(
         coseAlgorithm: CoseAlgorithm,
         input: RegistrationValidationInput,
     ): ValidationResult<Unit> {
-        // For self-attestation, alg must match the credential's algorithm
         val credentialPublicKey = input.response.attestedCredentialData.cosePublicKey
+        val material = SignumPrimitives.decodeCoseMaterial(credentialPublicKey)
+            ?: return invalid("attestationObject", "Credential COSE public key is malformed or unsupported")
+        val keyAlgorithm = SignumPrimitives.coseAlgorithmFromMaterial(material)
+            ?: return invalid("attestationObject", "Credential key algorithm is missing or unsupported")
+
+        if (keyAlgorithm != coseAlgorithm) {
+            return invalid(
+                "attestationObject.attStmt.alg",
+                "Attestation algorithm ($coseAlgorithm) does not match credential key algorithm ($keyAlgorithm)",
+            )
+        }
 
         val verified = try {
             signatureVerifier.verify(
@@ -94,41 +105,27 @@ public class PackedAttestationStatementVerifier(
         sig: ByteArray,
         signatureBase: ByteArray,
         coseAlgorithm: CoseAlgorithm,
-        input: RegistrationValidationInput,
     ): ValidationResult<Unit> {
-        // Extract the leaf certificate (attCert)
         val attCertDer = x5c.firstOrNull()
             ?: return invalid("attestationObject.attStmt.x5c", "x5c chain is empty")
 
-        val attCert = try {
-            val factory = CertificateFactory.getInstance("X.509")
-            factory.generateCertificate(attCertDer.inputStream()) as X509Certificate
+        val certMetadata = try {
+            certificateInspector.inspect(attCertDer)
         } catch (_: Exception) {
             return invalid("attestationObject.attStmt.x5c", "Invalid X.509 certificate in x5c")
         }
 
-        // Verify the signature using the attCert's public key
-        val jcaAlgorithm = when (coseAlgorithm) {
-            CoseAlgorithm.ES256 -> "SHA256withECDSA"
-            CoseAlgorithm.RS256 -> "SHA256withRSA"
-            CoseAlgorithm.EdDSA -> "Ed25519"
-        }
-
-        val verified = try {
-            val jcaSig = java.security.Signature.getInstance(jcaAlgorithm)
-            jcaSig.initVerify(attCert.publicKey)
-            jcaSig.update(signatureBase)
-            jcaSig.verify(sig)
-        } catch (_: Exception) {
-            false
-        }
-
+        val verified = SignumPrimitives.verifyWithCertificate(
+            algorithm = coseAlgorithm,
+            certificateDer = attCertDer,
+            data = signatureBase,
+            signature = sig,
+        )
         if (!verified) {
             return invalid("attestationObject.attStmt.sig", "Full attestation signature verification failed")
         }
 
-        // Validate attCert subject OU = "Authenticator Attestation"
-        val subjectDN = attCert.subjectX500Principal.name
+        val subjectDN = certMetadata.subjectDistinguishedName
         if (!subjectDN.contains("OU=Authenticator Attestation")) {
             return invalid(
                 "attestationObject.attStmt.x5c",
@@ -136,24 +133,30 @@ public class PackedAttestationStatementVerifier(
             )
         }
 
-        // Verify AAGUID if extension present and authData has it (AT flag set)
-        // flags at offset 32. AT flag is 0x40.
         val flags = signatureBase[32]
         val hasAt = (flags.toInt() and 0x40) != 0
-        
-        if (hasAt && signatureBase.size >= 53) {
-             val aaguid = signatureBase.copyOfRange(37, 37 + 16)
-             val aaguidCheck = AaguidMismatchVerifier.verify(attCert, aaguid)
-             if (aaguidCheck is ValidationResult.Invalid) {
-                 return aaguidCheck
-             }
-        }
-        
-        return ValidationResult.Valid(Unit)
-    }
 
-    private fun coseAlgorithmFromCode(code: Int): CoseAlgorithm? {
-        return CoseAlgorithm.entries.find { it.code == code }
+        if (hasAt && signatureBase.size >= 53) {
+            val aaguid = signatureBase.copyOfRange(37, 37 + 16)
+            val aaguidCheck = AaguidMismatchVerifier.verify(attCertDer, aaguid, certificateInspector)
+            if (aaguidCheck is ValidationResult.Invalid) {
+                return aaguidCheck
+            }
+        }
+
+        if (trustChainVerifier != null) {
+            val aaguid = if (hasAt && signatureBase.size >= 53) {
+                signatureBase.copyOfRange(37, 37 + 16)
+            } else {
+                null
+            }
+            val chainResult = trustChainVerifier.verify(x5c, aaguid)
+            if (chainResult is ValidationResult.Invalid) {
+                return chainResult
+            }
+        }
+
+        return ValidationResult.Valid(Unit)
     }
 
     private fun invalid(field: String, message: String): ValidationResult<Unit> {

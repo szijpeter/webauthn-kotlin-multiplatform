@@ -17,6 +17,13 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library.
 7. Workflow security defaults are mandatory: least-privilege permissions and explicit action version references (major tags or pinned SHAs).
 8. Security-facing workflow/policy changes require synchronized docs updates (`SECURITY.md`, public launch checklist, and affected workflow docs).
 
+## Crypto Backend Policy
+
+1. Signum is the default crypto backend across JVM/Android/iOS where capability exists.
+2. Avoid parallel local crypto implementations when Signum already provides the needed primitive/parser/verification path.
+3. Keep `webauthn-crypto-api` vendor-agnostic; do not expose Signum-specific types in public cross-module contracts.
+4. If a target needs fallback to platform-native crypto because Signum capability is missing, keep fallback minimal and document the exact gap in `docs/dependency-decisions.md`.
+
 ## Module Criticality Map
 
 Core-critical:

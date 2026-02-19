@@ -14,10 +14,6 @@ public fun interface SignatureVerifier {
     ): Boolean
 }
 
-public fun interface CoseKeyParser {
-    public fun parsePublicKey(coseKey: ByteArray): ParsedCosePublicKey
-}
-
 public fun interface AttestationVerifier {
     public fun verify(input: RegistrationValidationInput): ValidationResult<Unit>
 }
@@ -36,10 +32,8 @@ public enum class CoseAlgorithm(public val code: Int) {
     EdDSA(-8),
 }
 
-public data class ParsedCosePublicKey(
-    public val algorithm: CoseAlgorithm,
-    public val x509SubjectPublicKeyInfo: ByteArray,
-)
+public fun coseAlgorithmFromCode(code: Int): CoseAlgorithm? =
+    CoseAlgorithm.entries.find { it.code == code }
 
 public data class SignedAuthenticationPayload(
     public val authenticatorData: AuthenticatorData,

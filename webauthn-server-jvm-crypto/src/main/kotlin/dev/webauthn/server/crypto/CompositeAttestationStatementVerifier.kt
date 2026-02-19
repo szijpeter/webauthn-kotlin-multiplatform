@@ -7,21 +7,50 @@ import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
-public class CompositeAttestationVerifier(
+public class CompositeAttestationVerifier internal constructor(
     signatureVerifier: SignatureVerifier? = null,
     trustAnchorSource: TrustAnchorSource? = null,
+    certificateChainValidator: JvmCertificateChainValidator = JvmCertificateChainValidator(),
 ) : AttestationVerifier {
 
-    private val packedVerifier = signatureVerifier?.let { PackedAttestationStatementVerifier(it) }
-    
+    public constructor(
+        signatureVerifier: SignatureVerifier? = null,
+        trustAnchorSource: TrustAnchorSource? = null,
+    ) : this(
+        signatureVerifier = signatureVerifier,
+        trustAnchorSource = trustAnchorSource,
+        certificateChainValidator = JvmCertificateChainValidator(),
+    )
+
+    private val trustChainVerifier: TrustChainVerifier? = trustAnchorSource?.let {
+        TrustChainVerifier(it, certificateChainValidator)
+    }
+
+    private val packedVerifier = signatureVerifier?.let {
+        PackedAttestationStatementVerifier(
+            signatureVerifier = it,
+            trustChainVerifier = trustChainVerifier,
+        )
+    }
+
     private val verifiers = mapOf(
         "none" to NoneAttestationStatementVerifier(),
-        // packed handled separately
-        "android-key" to AndroidKeyAttestationStatementVerifier(trustAnchorSource),
-        "tpm" to TpmAttestationStatementVerifier(trustAnchorSource),
-        "apple" to AppleAttestationStatementVerifier(trustAnchorSource),
-        "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(trustAnchorSource),
-        "fido-u2f" to FidoU2fAttestationStatementVerifier(trustAnchorSource),
+        "android-key" to AndroidKeyAttestationStatementVerifier(
+            trustChainVerifier = trustChainVerifier,
+            certificateChainValidator = certificateChainValidator,
+        ),
+        "tpm" to TpmAttestationStatementVerifier(
+            trustChainVerifier = trustChainVerifier,
+        ),
+        "apple" to AppleAttestationStatementVerifier(
+            trustChainVerifier = trustChainVerifier,
+        ),
+        "android-safetynet" to AndroidSafetyNetAttestationStatementVerifier(
+            trustChainVerifier = trustChainVerifier,
+        ),
+        "fido-u2f" to FidoU2fAttestationStatementVerifier(
+            trustChainVerifier = trustChainVerifier,
+        ),
     )
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -42,6 +71,7 @@ public class CompositeAttestationVerifier(
                 ?: ValidationResult.Invalid(
                     listOf(WebAuthnValidationError.InvalidValue("attestationObject.fmt", "Packed attestation not supported: no SignatureVerifier configured")),
                 )
+
             else -> verifiers[parsed.fmt]?.verify(input)
                 ?: ValidationResult.Invalid(
                     listOf(WebAuthnValidationError.InvalidValue("attestationObject.fmt", "Unsupported attestation format: ${parsed.fmt}")),
