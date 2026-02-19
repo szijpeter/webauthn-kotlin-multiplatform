@@ -11,6 +11,7 @@ import at.asitplus.signum.indispensable.asn1.Asn1Exception
 import at.asitplus.signum.indispensable.asn1.Asn1Integer
 import at.asitplus.signum.indispensable.cosef.CoseKey
 import at.asitplus.signum.indispensable.cosef.CoseKeyType
+import at.asitplus.signum.indispensable.cosef.io.coseCompliantSerializer
 import at.asitplus.signum.indispensable.toCryptoPublicKey
 import at.asitplus.signum.supreme.hash.digest
 import at.asitplus.signum.supreme.sign.verify
@@ -21,6 +22,8 @@ import java.io.ByteArrayInputStream
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromByteArray
 
 internal object SignumPrimitives {
     fun sha256(input: ByteArray): ByteArray = Digest.SHA256.digest(input)
@@ -88,7 +91,7 @@ internal object SignumPrimitives {
         }
 
     private fun decodeCoseMaterialResult(coseKey: ByteArray): KmmResult<CosePublicKeyMaterial> =
-        CoseKey.deserialize(coseKey).transform { decoded ->
+        decodeCoseKey(coseKey).transform { decoded ->
             decoded.toCryptoPublicKey().transform { publicKey ->
                 toCoseMaterialResult(
                     keyType = decoded.type,
@@ -99,7 +102,11 @@ internal object SignumPrimitives {
         }
 
     private fun decodeCosePublicKeyResult(coseKey: ByteArray): KmmResult<CryptoPublicKey> =
-        CoseKey.deserialize(coseKey).transform { it.toCryptoPublicKey() }
+        decodeCoseKey(coseKey).transform { it.toCryptoPublicKey() }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private fun decodeCoseKey(coseKey: ByteArray): KmmResult<CoseKey> =
+        catching { coseCompliantSerializer.decodeFromByteArray<CoseKey>(coseKey) }
 
     private fun toCoseMaterialResult(
         keyType: CoseKeyType,

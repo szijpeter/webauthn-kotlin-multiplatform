@@ -63,7 +63,7 @@ Pending high-impact coverage:
 
 Resolved (COSE gap):
 
-- COSE decode/normalization now delegates to Signum COSEF (`CoseKey.deserialize` + `toCryptoPublicKey`) through `SignumPrimitives`; dedicated local parser/converter ownership was removed. Unsupported/malformed keys fail deterministically and signature verification still returns `false` on decode/normalization failure (no raw-byte fallback).
+- COSE decode/normalization now delegates to Signum COSEF (`coseCompliantSerializer.decodeFromByteArray<CoseKey>(...)` + `toCryptoPublicKey`) through `SignumPrimitives`; dedicated local parser/converter ownership was removed. Unsupported/malformed keys fail deterministically and signature verification still returns `false` on decode/normalization failure (no raw-byte fallback).
 
 ## Current Quality Gates
 
