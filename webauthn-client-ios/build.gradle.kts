@@ -10,6 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":webauthn-client-core"))
+            implementation(project(":webauthn-serialization-kotlinx"))
             implementation(libs.kotlinx.coroutines.core)
         }
     }

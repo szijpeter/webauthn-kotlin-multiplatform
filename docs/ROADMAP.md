@@ -34,8 +34,8 @@ Definition of done:
 
 ## Phase 3: Platform Runtime Hardening
 
-1. Android Credential Manager lifecycle/error edge handling (error mapping done; response parsing pending).
-2. iOS AuthenticationServices delegate lifecycle/error handling (NSError mapping done; delegate runtime handling pending).
+1. Android Credential Manager lifecycle/error edge handling (error mapping done; response parsing done).
+2. iOS AuthenticationServices delegate lifecycle/error handling (NSError mapping done; delegate runtime + response parsing done).
 3. Cross-platform client-core policy consistency.
 
 Definition of done:
@@ -66,4 +66,3 @@ Definition of done:
 
 1. Implement remaining attestation trust-path hardening (`android-safetynet`, `apple`) and vector coverage.
 2. Expand CBOR/COSE conformance vectors with strict malformed-input rejection cases.
-3. Implement platform client response parsing and end-to-end success-path tests on Android/iOS.

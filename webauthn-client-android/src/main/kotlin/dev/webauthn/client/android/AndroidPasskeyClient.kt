@@ -22,12 +22,18 @@ import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import androidx.credentials.CreatePublicKeyCredentialResponse
+import androidx.credentials.PublicKeyCredential
+import dev.webauthn.serialization.AuthenticationResponseDto
+import dev.webauthn.serialization.RegistrationResponseDto
+import dev.webauthn.model.ValidationResult
 
 public class AndroidPasskeyClient(
     private val context: Context,
     private val credentialManager: CredentialManager = CredentialManager.create(context),
 ) : PasskeyClient {
     private val requestJson = Json { encodeDefaults = false }
+    private val responseJson = Json { ignoreUnknownKeys = true }
 
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
         if (options.pubKeyCredParams.isEmpty()) {
@@ -41,10 +47,26 @@ public class AndroidPasskeyClient(
                     WebAuthnDtoMapper.fromModel(options),
                 ),
             )
-            credentialManager.createCredential(context, request)
-            PasskeyResult.Failure(
-                PasskeyClientError.Platform("Credential Manager registration response parsing is not implemented yet"),
-            )
+            val response = credentialManager.createCredential(context, request)
+            if (response !is CreatePublicKeyCredentialResponse) {
+                return PasskeyResult.Failure(
+                    PasskeyClientError.Platform("Unexpected response type: ${response::class.simpleName}"),
+                )
+            }
+
+            val dto = try {
+                responseJson.decodeFromString(RegistrationResponseDto.serializer(), response.registrationResponseJson)
+            } catch (e: Exception) {
+                return PasskeyResult.Failure(PasskeyClientError.Platform("Failed to parse registration response JSON: ${e.message}", e))
+            }
+
+            return when (val modelResult = WebAuthnDtoMapper.toModel(dto)) {
+                is ValidationResult.Valid -> PasskeyResult.Success(modelResult.value)
+                is ValidationResult.Invalid -> {
+                    val firstError = modelResult.errors.first()
+                    PasskeyResult.Failure(PasskeyClientError.Platform("${firstError.field}: ${firstError.message}"))
+                }
+            }
         } catch (e: CreateCredentialException) {
             PasskeyResult.Failure(e.toPasskeyClientError())
         } catch (e: Throwable) {
@@ -60,10 +82,25 @@ public class AndroidPasskeyClient(
                     WebAuthnDtoMapper.fromModel(options),
                 ),
             )
-            credentialManager.getCredential(context, GetCredentialRequest(listOf(request)))
-            PasskeyResult.Failure(
-                PasskeyClientError.Platform("Credential Manager assertion response parsing is not implemented yet"),
-            )
+            val response = credentialManager.getCredential(context, GetCredentialRequest(listOf(request)))
+            val credential = response.credential
+            if (credential !is PublicKeyCredential) {
+                return PasskeyResult.Failure(PasskeyClientError.Platform("Unexpected credential type: ${credential::class.simpleName}"))
+            }
+
+            val dto = try {
+                responseJson.decodeFromString(AuthenticationResponseDto.serializer(), credential.authenticationResponseJson)
+            } catch (e: Exception) {
+                return PasskeyResult.Failure(PasskeyClientError.Platform("Failed to parse authentication response JSON: ${e.message}", e))
+            }
+
+            return when (val modelResult = WebAuthnDtoMapper.toModel(dto)) {
+                is ValidationResult.Valid -> PasskeyResult.Success(modelResult.value)
+                is ValidationResult.Invalid -> {
+                    val firstError = modelResult.errors.first()
+                    PasskeyResult.Failure(PasskeyClientError.Platform("${firstError.field}: ${firstError.message}"))
+                }
+            }
         } catch (e: GetCredentialException) {
             PasskeyResult.Failure(e.toPasskeyClientError())
         } catch (e: Throwable) {

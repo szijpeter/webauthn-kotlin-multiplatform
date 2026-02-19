@@ -18,7 +18,7 @@ Last updated: 2026-02-19
 - JVM crypto moved to a Signum-first implementation (`supreme` + `indispensable-cosef` + `indispensable-josef`) for hashing, COSE decode, signature material handling, and signature verification.
 - JCA usage in JVM crypto is now intentionally limited to X.509/PKIX trust-chain duties.
 - `SignumPrimitives` error handling now uses internal `KmmResult` pipelines and explicit expected-failure mapping, while preserving existing outward `null`/`false` behavior at module boundaries.
-- Platform clients (Android/iOS) have deterministic error mapping coverage, with response parsing still pending.
+- Platform clients (Android/iOS) have deterministic error mapping, complete response parsing, and end-to-end success propagation.
 - CI lanes cover JVM checks, Android assemble, and iOS compile.
 
 ## Plan Progress (Estimated)
@@ -40,8 +40,8 @@ Last updated: 2026-02-19
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + comprehensive persistence race tests (concurrent double-consume, sign-count propagation, replay protection) | Persistence integration scenarios with external stores |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
-| `webauthn-client-android` | Scaffold/Beta | Credential Manager request serialization wired from model DTOs + deterministic cancellation/platform error mapping tests | Response parsing and full success-path propagation |
-| `webauthn-client-ios` | Scaffold/Beta | NSError-to-PasskeyClientError mapping with unit coverage + AuthenticationServices scaffold/compile path | Delegate lifecycle handling and response parsing |
+| `webauthn-client-android` | Beta | Credential Manager request serialization wired from model DTOs + deterministic error mapping + response parsing | Active lifecycle edge hardening |
+| `webauthn-client-ios` | Beta | AuthenticationServices bridge wired + NSError-to-PasskeyClientError mapping + response parsing | Additional delegate runtime scenarios |
 | `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher | Retry/error policy hardening |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
 | `samples:*` | Scaffold/Beta | Runnable backend/android/ios sample structure | End-to-end realistic passkey flows and docs depth |
@@ -58,7 +58,6 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 Pending high-impact coverage:
 
-- Platform client response parsing and success-path behavior validation
 - L3 extension runtime hardening (PRF HMAC computation context hooks and richer authenticator interoperability vectors)
 
 Resolved (COSE gap):
