@@ -26,6 +26,9 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block true
 - `spec-notes/webauthn-l3-validation-map.md` is updated.
 5. If core/security-critical modules changed, ensure:
 - `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md` is updated.
+6. If API models or error boundaries were modified, manually verify:
+- Use `KmmResult` as a default for internal sequential pipelines, but keep structured multi-error validation flows on `ValidationResult`.
+- Pipeline results (`KmmResult`) must not leak into public contracts (`ValidationResult`, `PasskeyResult`, exceptions).
 
 ## Docs-Only Workflow
 

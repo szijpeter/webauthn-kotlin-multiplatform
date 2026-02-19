@@ -33,3 +33,9 @@ No runtime provider toggle or legacy crypto path is kept.
 - payload models
 
 This keeps core/server contracts stable and independent from any single crypto vendor type system.
+
+## Internal Result Pipelines
+
+`at.asitplus:kmmresult` is approved for targeted internal pipeline ergonomics.
+- **Role:** Helps internal sequential success/failure mapping (`catching`, `.transform`) where a single failure cause is expected.
+- **Rule:** `KmmResult` remains an internal implementation detail and must never be exposed in public API contracts. External callers depend on domain-specific result wrappers (for example `PasskeyResult`, `ValidationResult`).

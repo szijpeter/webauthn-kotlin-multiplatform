@@ -16,6 +16,7 @@ android {
 dependencies {
     api(project(":webauthn-client-core"))
     implementation(project(":webauthn-serialization-kotlinx"))
+    implementation(libs.kmmresult)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.serialization.json)

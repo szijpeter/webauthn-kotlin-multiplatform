@@ -53,6 +53,13 @@ Reference/samples:
 - `docs/*`
 - `spec-notes/*`
 
+## Error Handling Policy
+
+1. Prefer `KmmResult` (`at.asitplus.catching`, `.transform`, `.fold`) for internal sequential pipelines where failures are singular (for example adapter/interop/crypto steps).
+2. Keep `ValidationResult` in validation-heavy paths that intentionally aggregate multiple field-level errors.
+3. Public API boundaries (for example `PasskeyClient`, `AttestationVerifier`) must use project domain result models (`PasskeyResult`, `ValidationResult`).
+4. `KmmResult` usage must not leak into cross-module public contracts.
+
 ## Decision Ladder (Cheap -> Expensive)
 
 1. Read changed files.
