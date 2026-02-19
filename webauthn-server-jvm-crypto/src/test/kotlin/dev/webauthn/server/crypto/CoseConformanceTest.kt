@@ -1,8 +1,6 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.CoseParseFailure
-import dev.webauthn.crypto.CoseParseResult
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -14,30 +12,27 @@ import kotlin.test.assertTrue
  */
 class CoseConformanceTest {
 
-    private val decoder = JvmCosePublicKeyDecoder()
-    private val normalizer = JvmCosePublicKeyNormalizer()
-    private val parser = JvmCoseKeyParser()
     private val verifier = JvmSignatureVerifier()
 
     // ---- Malformed CBOR ----
 
     @Test
     fun malformedCbor_emptyInput_decodeReturnsNull() {
-        assertNull(decoder.decode(byteArrayOf()))
+        assertNull(SignumPrimitives.decodeCoseMaterial(byteArrayOf()))
     }
 
     @Test
     fun malformedCbor_truncatedMap_decodeReturnsNull() {
         // Map with length 2 but only one byte after header
         val truncated = byteArrayOf(0xA2.toByte()) // map of 2 pairs
-        assertNull(decoder.decode(truncated))
+        assertNull(SignumPrimitives.decodeCoseMaterial(truncated))
     }
 
     @Test
     fun malformedCbor_wrongMajorType_decodeReturnsNull() {
         // Array (major 4) instead of map (major 5)
         val arrayHeader = byteArrayOf(0x83.toByte()) // array of 3
-        assertNull(decoder.decode(arrayHeader))
+        assertNull(SignumPrimitives.decodeCoseMaterial(arrayHeader))
     }
 
     @Test
@@ -48,14 +43,12 @@ class CoseConformanceTest {
             0x01, // key 1
             0x58, 0x64, // bstr length 100 (no 100 bytes following)
         )
-        assertNull(decoder.decode(badBstr))
+        assertNull(SignumPrimitives.decodeCoseMaterial(badBstr))
     }
 
     @Test
     fun malformedCbor_parsePublicKeyReturnsFailure() {
-        val result = parser.parsePublicKey(byteArrayOf(0xFF.toByte()))
-        assertTrue(result is CoseParseResult.Failure)
-        assertTrue((result as CoseParseResult.Failure).reason is CoseParseFailure.MalformedCbor)
+        assertNull(SignumPrimitives.decodeCoseMaterial(byteArrayOf(0xFF.toByte())))
     }
 
     @Test
@@ -68,9 +61,7 @@ class CoseConformanceTest {
             -1L to cborInt(6L),  // crv=Ed25519
             -2L to cborBytes(x),
         )
-        val material = decoder.decode(cose)
-        assertTrue(material != null && material.kty == 1L)
-        assertNull(normalizer.toSubjectPublicKeyInfo(requireNotNull(material)))
+        assertNull(SignumPrimitives.decodeCoseMaterial(cose))
     }
 
     // ---- Unsupported key shapes ----
@@ -84,10 +75,7 @@ class CoseConformanceTest {
             -1L to cborInt(6L),
             -2L to cborBytes(x),
         )
-        val result = parser.parsePublicKey(cose)
-        assertTrue(result is CoseParseResult.Failure)
-        val reason = (result as CoseParseResult.Failure).reason
-        assertTrue(reason is CoseParseFailure.UnsupportedKeyType && (reason as CoseParseFailure.UnsupportedKeyType).kty == 1L)
+        assertNull(SignumPrimitives.decodeCoseMaterial(cose))
     }
 
     @Test
@@ -101,9 +89,7 @@ class CoseConformanceTest {
             -2L to cborBytes(x),
             -3L to cborBytes(y),
         )
-        val material = decoder.decode(cose)
-        assertTrue(material != null)
-        assertNull(normalizer.toSubjectPublicKeyInfo(requireNotNull(material)))
+        assertNull(SignumPrimitives.decodeCoseMaterial(cose))
     }
 
     @Test
@@ -117,10 +103,7 @@ class CoseConformanceTest {
             -2L to cborBytes(x),
             -3L to cborBytes(y),
         )
-        val result = parser.parsePublicKey(cose)
-        assertTrue(result is CoseParseResult.Failure)
-        val reason = (result as CoseParseResult.Failure).reason
-        assertTrue(reason is CoseParseFailure.UnsupportedCurve && (reason as CoseParseFailure.UnsupportedCurve).crv == 2L)
+        assertNull(SignumPrimitives.decodeCoseMaterial(cose))
     }
 
     @Test
@@ -133,10 +116,7 @@ class CoseConformanceTest {
             -2L to cborBytes(x),
             // -3 (y) missing
         )
-        val result = parser.parsePublicKey(cose)
-        assertTrue(result is CoseParseResult.Failure)
-        val reason = (result as CoseParseResult.Failure).reason
-        assertTrue(reason is CoseParseFailure.MissingRequiredParameter && (reason as CoseParseFailure.MissingRequiredParameter).label == "y")
+        assertNull(SignumPrimitives.decodeCoseMaterial(cose))
     }
 
     // ---- Strict rejection: SignatureVerifier returns false ----

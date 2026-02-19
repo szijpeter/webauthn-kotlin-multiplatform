@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-02-18
+Last updated: 2026-02-19
 
 ## Status Legend
 
@@ -15,7 +15,8 @@ Last updated: 2026-02-18
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - JVM server flow is implemented with ceremony orchestration and smoke tests.
 - Attestation verification now includes hardened TPM and Android Key policy checks with expanded tests.
-- Attestation statement verifiers consume KMP-safe crypto abstractions (digest/COSE/certificate services) and a shared algorithm mapper; JVM layer uses a single JCA algorithm mapper for signature/key factory names.
+- JVM crypto moved to a Signum-first implementation (`supreme` + `indispensable-cosef` + `indispensable-josef`) for hashing, COSE decode, signature material handling, and signature verification.
+- JCA usage in JVM crypto is now intentionally limited to X.509/PKIX trust-chain duties.
 - Platform clients (Android/iOS) have deterministic error mapping coverage, with response parsing still pending.
 - CI lanes cover JVM checks, Android assemble, and iOS compile.
 
@@ -33,8 +34,8 @@ Last updated: 2026-02-18
 | `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins) | Continued edge-case coverage for uncommon protocol combinations |
 | `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests (incl. AAGUID model updates), extension processing hooks, LargeBlob validation, PRF missing-output checks | Additional L3 extensions hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
-| `webauthn-crypto-api` | Beta | Abstraction interfaces plus shared `coseAlgorithmFromCode` mapper; KMP-safe attestation crypto services (digest, COSE decode/normalize, certificate signature/inspection/chain validation) and neutral DTOs | Additional implementations and cross-provider behavior parity |
-| `webauthn-server-jvm-crypto` | Beta | JCA/JCE crypto baseline + shared `JcaAlgorithmMapper` + dedicated COSE parser (`JvmCoseParser`, `CoseToSpkiConverter`) with documented support matrix (EC2 P-256, RSA; OKP/Ed25519 unsupported) + deterministic failure (no raw-byte fallback) + P1-006 malformed/unsupported COSE conformance vectors + `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers + unified `TrustChainVerifier` injection across all formats + deterministic JSON-based JWS parsing for SafetyNet | Broader attestation vector and trust-anchor coverage depth |
+| `webauthn-crypto-api` | Beta | Lean cross-module contracts (`SignatureVerifier`, `AttestationVerifier`, `TrustAnchorSource`, `RpIdHasher`, `CoseAlgorithm`, `coseAlgorithmFromCode`, payload models) | Additional implementations and cross-platform behavior parity |
+| `webauthn-server-jvm-crypto` | Beta | Signum-first crypto path (digest, COSE decode, signature verification, JOSE SafetyNet decode) via `SignumPrimitives`; `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers; deterministic malformed/unsupported COSE rejection vectors; unified trust-chain flow through `TrustChainVerifier` | Broader attestation vector and trust-anchor coverage depth |
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + comprehensive persistence race tests (concurrent double-consume, sign-count propagation, replay protection) | Persistence integration scenarios with external stores |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
@@ -61,7 +62,7 @@ Pending high-impact coverage:
 
 Resolved (COSE gap):
 
-- COSE parsing is in a dedicated component (`JvmCoseParser`); support matrix documented in `webauthn-server-jvm-crypto/COSE_SUPPORT.md` (EC2 P-256, RSA supported; Ed25519/OKP unsupported). Unsupported/malformed keys fail deterministically; P1-006 conformance vectors added (malformed CBOR, unsupported key shapes, strict rejection). `CoseKeyParser.parsePublicKey` returns `CoseParseResult` (Success/Failure); Jca/Signum signature verifiers return `false` when decode or SPKI conversion fails (no raw-byte fallback).
+- COSE decode/normalization now delegates to Signum COSEF (`CoseKey.deserialize` + `toCryptoPublicKey`) through `SignumPrimitives`; dedicated local parser/converter ownership was removed. Unsupported/malformed keys fail deterministically and signature verification still returns `false` on decode/normalization failure (no raw-byte fallback).
 
 ## Current Quality Gates
 

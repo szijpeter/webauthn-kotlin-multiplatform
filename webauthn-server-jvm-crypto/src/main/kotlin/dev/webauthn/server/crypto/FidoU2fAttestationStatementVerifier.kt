@@ -3,19 +3,11 @@ package dev.webauthn.server.crypto
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.CosePublicKeyDecoder
-import dev.webauthn.crypto.CosePublicKeyNormalizer
-import dev.webauthn.crypto.CertificateSignatureVerifier
-import dev.webauthn.crypto.DigestService
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
 public class FidoU2fAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
-    private val digestService: DigestService = JvmDigestService(),
-    private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
-    private val cosePublicKeyNormalizer: CosePublicKeyNormalizer = JvmCosePublicKeyNormalizer(),
-    private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
 ) : AttestationVerifier {
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -31,14 +23,10 @@ public class FidoU2fAttestationStatementVerifier(
         val x5c = parsed.x5c ?: return failure("x5c", "Missing attestation certificate")
         if (x5c.isEmpty()) return failure("x5c", "Attestation certificate list is empty")
 
-        // 1. Verify that x5c contains at least one element. Let attCert be the first element.
         val attCertDer = x5c[0]
-
         val attestedData = input.response.attestedCredentialData
+        val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
 
-        val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
-        
-        // publicKeyU2F must be 65 bytes: 0x04 || X || Y
         val publicKeyU2F = extractRawPublicKey(attestedData.cosePublicKey)
             ?: return failure("cosePublicKey", "Could not extract U2F public key from COSE")
 
@@ -47,14 +35,13 @@ public class FidoU2fAttestationStatementVerifier(
             input.response.rawAuthenticatorData.rpIdHash,
             clientDataHash,
             attestedData.credentialId.value.bytes(),
-            publicKeyU2F
+            publicKeyU2F,
         )
 
-        if (!certificateSignatureVerifier.verify(CoseAlgorithm.ES256, attCertDer, verificationData, sig)) {
+        if (!SignumPrimitives.verifyWithCertificate(CoseAlgorithm.ES256, attCertDer, verificationData, sig)) {
             return failure("sig", "Invalid fido-u2f attestation signature")
         }
 
-        // 4. Optionally verify trust anchor
         if (trustChainVerifier != null) {
             val result = trustChainVerifier.verify(x5c, attestedData.aaguid)
             if (result is ValidationResult.Invalid) return result
@@ -64,13 +51,13 @@ public class FidoU2fAttestationStatementVerifier(
     }
 
     private fun extractRawPublicKey(coseKey: ByteArray): ByteArray? {
-        val material = cosePublicKeyDecoder.decode(coseKey) ?: return null
-        if (material.kty != 2L) return null // Only EC2 (P-256) supported for U2F
-        return cosePublicKeyNormalizer.toUncompressedEcPoint(material)
+        val material = SignumPrimitives.decodeCoseMaterial(coseKey) ?: return null
+        if (material.kty != 2L) return null
+        return SignumPrimitives.toUncompressedEcPoint(material)
     }
 
     private fun failure(field: String, message: String) = ValidationResult.Invalid(
-        listOf(WebAuthnValidationError.InvalidValue("attestationObject.$field", message))
+        listOf(WebAuthnValidationError.InvalidValue("attestationObject.$field", message)),
     )
 
     private fun concat(vararg chunks: ByteArray): ByteArray {

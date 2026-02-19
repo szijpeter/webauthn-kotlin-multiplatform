@@ -17,9 +17,9 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
-import dev.webauthn.model.WebAuthnValidationError
+import java.security.KeyPairGenerator
+import java.security.spec.ECGenParameterSpec
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CompositeAttestationVerifierTest {
@@ -98,15 +98,10 @@ class CompositeAttestationVerifierTest {
 
     // Helpers
     private fun minimalCoseEc2P256(): ByteArray {
-        val x = ByteArray(32) { it.toByte() }
-        val y = ByteArray(32) { (it + 32).toByte() }
-        return cborMapInt(
-            1L to cborInt(2L),
-            3L to cborInt(-7L),
-            -1L to cborInt(1L),
-            -2L to cborBytes(x),
-            -3L to cborBytes(y),
-        )
+        val keyPairGenerator = KeyPairGenerator.getInstance("EC")
+        keyPairGenerator.initialize(ECGenParameterSpec("secp256r1"))
+        val keyPair = keyPairGenerator.generateKeyPair()
+        return TestCoseHelpers.coseBytesFromPublicKey(keyPair.public)
     }
 
     private fun cborMapInt(vararg entries: Pair<Long, ByteArray>): ByteArray {

@@ -108,9 +108,7 @@ class AppleAttestationStatementVerifierTest {
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = AppleAttestationStatementVerifier(
-            digestService = JvmDigestService(),
             certificateInspector = JvmCertificateInspector(),
-            cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
         )
         val kp = generateES256KeyPair()
         val authData = sampleAuthDataBytes()

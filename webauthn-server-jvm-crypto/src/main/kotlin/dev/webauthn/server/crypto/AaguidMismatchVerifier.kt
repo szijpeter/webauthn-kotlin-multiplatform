@@ -1,6 +1,4 @@
 package dev.webauthn.server.crypto
-
-import dev.webauthn.crypto.CertificateInspector
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
@@ -11,7 +9,7 @@ internal object AaguidMismatchVerifier {
     fun verify(
         certificateDer: ByteArray,
         aaguid: ByteArray,
-        certificateInspector: CertificateInspector = JvmCertificateInspector(),
+        certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
     ): ValidationResult<Unit> {
         val extensionValue = certificateInspector.extensionValue(certificateDer, AAGUID_OID)
             ?: return ValidationResult.Valid(Unit)

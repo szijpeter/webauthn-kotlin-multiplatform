@@ -229,12 +229,7 @@ class FidoU2fAttestationStatementVerifierTest {
 
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
-        val verifier = FidoU2fAttestationStatementVerifier(
-            digestService = JvmDigestService(),
-            cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
-            cosePublicKeyNormalizer = JvmCosePublicKeyNormalizer(),
-            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-        )
+        val verifier = FidoU2fAttestationStatementVerifier()
         val credentialKeyPair = generateCredentialKeyPair()
         val credentialPublicKey = credentialKeyPair.public as ECPublicKey
         val x = credentialPublicKey.w.affineX.toByteArray().ensure32()

@@ -9,8 +9,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class JvmCertificateSignatureVerifierTest {
-    private val verifier = JvmCertificateSignatureVerifier()
-
     @Test
     fun verifiesEs256UsingDerCertificate() {
         val keyPair = KeyPairGenerator.getInstance("EC").apply {
@@ -25,7 +23,7 @@ class JvmCertificateSignatureVerifierTest {
         }
 
         assertTrue(
-            verifier.verify(CoseAlgorithm.ES256, cert, data, signature),
+            SignumPrimitives.verifyWithCertificate(CoseAlgorithm.ES256, cert, data, signature),
             "Expected ES256 signature to verify with certificate public key",
         )
     }
@@ -42,7 +40,7 @@ class JvmCertificateSignatureVerifierTest {
         }
 
         assertTrue(
-            verifier.verify(CoseAlgorithm.RS256, cert, data, signature),
+            SignumPrimitives.verifyWithCertificate(CoseAlgorithm.RS256, cert, data, signature),
             "Expected RS256 signature to verify with certificate public key",
         )
     }
@@ -58,7 +56,7 @@ class JvmCertificateSignatureVerifierTest {
         }
 
         assertFalse(
-            verifier.verify(CoseAlgorithm.RS256, cert, "tampered".encodeToByteArray(), signature),
+            SignumPrimitives.verifyWithCertificate(CoseAlgorithm.RS256, cert, "tampered".encodeToByteArray(), signature),
             "Expected tampered payload verification to fail",
         )
     }

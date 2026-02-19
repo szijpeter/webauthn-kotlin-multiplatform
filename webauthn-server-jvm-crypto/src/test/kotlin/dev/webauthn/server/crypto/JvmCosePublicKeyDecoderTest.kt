@@ -1,96 +1,68 @@
 package dev.webauthn.server.crypto
 
+import java.security.KeyPairGenerator
+import java.security.interfaces.ECPublicKey
+import java.security.interfaces.RSAPublicKey
+import java.security.spec.ECGenParameterSpec
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class JvmCosePublicKeyDecoderTest {
-    private val decoder = JvmCosePublicKeyDecoder()
-    private val normalizer = JvmCosePublicKeyNormalizer()
-
     @Test
     fun decodesEc2AndNormalizes() {
-        val x = ByteArray(32) { (it + 1).toByte() }
-        val y = ByteArray(32) { (it + 33).toByte() }
-        val cose = cborMap(
-            1L to cborInt(2L), // kty=EC2
-            3L to cborInt(-7L), // alg=ES256
-            -1L to cborInt(1L), // crv=P-256
-            -2L to cborBytes(x),
-            -3L to cborBytes(y),
-        )
+        val keyPairGenerator = KeyPairGenerator.getInstance("EC")
+        keyPairGenerator.initialize(ECGenParameterSpec("secp256r1"))
+        val keyPair = keyPairGenerator.generateKeyPair()
+        val publicKey = keyPair.public as ECPublicKey
+        val cose = TestCoseHelpers.coseBytesFromEcPublicKey(publicKey)
+        val x = publicKey.w.affineX.toByteArray().ensureUnsignedFixedLength(32)
+        val y = publicKey.w.affineY.toByteArray().ensureUnsignedFixedLength(32)
 
-        val material = assertNotNull(decoder.decode(cose))
+        val material = assertNotNull(SignumPrimitives.decodeCoseMaterial(cose))
         assertEquals(2L, material.kty)
         assertEquals(-7L, material.alg)
         assertEquals(1L, material.crv)
         assertContentEquals(x, material.x)
         assertContentEquals(y, material.y)
 
-        val spki = assertNotNull(normalizer.toSubjectPublicKeyInfo(material))
+        val spki = assertNotNull(SignumPrimitives.toSubjectPublicKeyInfo(material))
         assertEquals(0x30, spki[0].toInt() and 0xFF)
 
-        val uncompressed = assertNotNull(normalizer.toUncompressedEcPoint(material))
+        val uncompressed = assertNotNull(SignumPrimitives.toUncompressedEcPoint(material))
         assertEquals(65, uncompressed.size)
         assertEquals(0x04, uncompressed[0].toInt() and 0xFF)
     }
 
     @Test
     fun decodesRsaAndNormalizesSpki() {
-        val modulus = ByteArray(256) { (it + 1).toByte() }
-        val exponent = byteArrayOf(0x01, 0x00, 0x01) // 65537
-        val cose = cborMap(
-            1L to cborInt(3L), // kty=RSA
-            3L to cborInt(-257L), // alg=RS256
-            -1L to cborBytes(modulus),
-            -2L to cborBytes(exponent),
-        )
+        val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
+        keyPairGenerator.initialize(2048)
+        val keyPair = keyPairGenerator.generateKeyPair()
+        val publicKey = keyPair.public as RSAPublicKey
+        val cose = TestCoseHelpers.coseBytesFromRsaPublicKey(publicKey)
+        val modulus = publicKey.modulus.toByteArray().ensureUnsignedFixedLength((publicKey.modulus.bitLength() + 7) / 8)
+        val exponent = publicKey.publicExponent.toByteArray().ensureUnsignedFixedLength((publicKey.publicExponent.bitLength() + 7) / 8)
 
-        val material = assertNotNull(decoder.decode(cose))
+        val material = assertNotNull(SignumPrimitives.decodeCoseMaterial(cose))
         assertEquals(3L, material.kty)
         assertEquals(-257L, material.alg)
         assertContentEquals(modulus, material.n)
         assertContentEquals(exponent, material.e)
 
-        val spki = assertNotNull(normalizer.toSubjectPublicKeyInfo(material))
+        val spki = assertNotNull(SignumPrimitives.toSubjectPublicKeyInfo(material))
         assertEquals(0x30, spki[0].toInt() and 0xFF)
     }
 
-    private fun cborMap(vararg entries: Pair<Long, ByteArray>): ByteArray {
-        var result = cborHeader(majorType = 5, length = entries.size)
-        for ((key, value) in entries) {
-            result += cborInt(key)
-            result += value
+    private fun ByteArray.ensureUnsignedFixedLength(length: Int): ByteArray {
+        if (size == length) return this
+        if (size == length + 1 && first() == 0.toByte()) return copyOfRange(1, size)
+        if (size < length) {
+            val out = ByteArray(length)
+            copyInto(out, destinationOffset = length - size)
+            return out
         }
-        return result
-    }
-
-    private fun cborBytes(bytes: ByteArray): ByteArray = cborHeader(2, bytes.size) + bytes
-
-    private fun cborInt(value: Long): ByteArray {
-        return if (value >= 0) cborHeaderLong(0, value) else cborHeaderLong(1, -1L - value)
-    }
-
-    private fun cborHeader(majorType: Int, length: Int): ByteArray = cborHeaderLong(majorType, length.toLong())
-
-    private fun cborHeaderLong(majorType: Int, length: Long): ByteArray {
-        val prefix = majorType shl 5
-        return when {
-            length < 24 -> byteArrayOf((prefix or length.toInt()).toByte())
-            length < 256 -> byteArrayOf((prefix or 24).toByte(), length.toByte())
-            length < 65536 -> byteArrayOf(
-                (prefix or 25).toByte(),
-                (length shr 8).toByte(),
-                length.toByte(),
-            )
-            else -> byteArrayOf(
-                (prefix or 26).toByte(),
-                (length shr 24).toByte(),
-                (length shr 16).toByte(),
-                (length shr 8).toByte(),
-                length.toByte(),
-            )
-        }
+        return copyOfRange(size - length, size)
     }
 }

@@ -2,14 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
-import dev.webauthn.crypto.CertificateChainValidator
-import dev.webauthn.crypto.CertificateInspector
-import dev.webauthn.crypto.CertificateSignatureVerifier
 import dev.webauthn.crypto.coseAlgorithmFromCode
-import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.CosePublicKeyDecoder
-import dev.webauthn.crypto.CosePublicKeyMaterial
-import dev.webauthn.crypto.DigestService
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.math.BigInteger
@@ -17,11 +10,8 @@ import java.util.Arrays
 
 internal class AndroidKeyAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
-    private val digestService: DigestService = JvmDigestService(),
-    private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-    private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
-    private val certificateChainValidator: CertificateChainValidator = JvmCertificateChainValidator(),
-    private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
+    private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
+    private val certificateChainValidator: JvmCertificateChainValidator = JvmCertificateChainValidator(),
 ) : AttestationVerifier {
     companion object {
         private const val TAG_PURPOSE = 0xA1
@@ -65,13 +55,14 @@ internal class AndroidKeyAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
             )
 
-        val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
+        val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
         val signedData = authData + clientDataHash
         val coseAlgorithm = coseAlgorithmFromCode(attestationObject.alg.toInt())
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: ${attestationObject.alg}")),
             )
-        val signatureValid = certificateSignatureVerifier.verify(
+
+        val signatureValid = SignumPrimitives.verifyWithCertificate(
             algorithm = coseAlgorithm,
             certificateDer = leafCertDer,
             data = signedData,
@@ -104,7 +95,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             listOf(WebAuthnValidationError.MissingValue("x5c", "Android Key Attestation extension missing")),
         )
 
-        val metadata = cosePublicKeyDecoder.decode(input.response.attestedCredentialData.cosePublicKey)
+        val metadata = SignumPrimitives.decodeCoseMaterial(input.response.attestedCredentialData.cosePublicKey)
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("coseKey", "Failed to parse COSE key")),
             )
@@ -116,10 +107,10 @@ internal class AndroidKeyAttestationStatementVerifier(
             val parser = DerParser(seqBytes)
             val sequence = parser.readSequence()
 
-            sequence.readInteger() // attestationVersion
-            sequence.readInteger() // attestationSecurityLevel
-            sequence.readInteger() // keymasterVersion
-            sequence.readInteger() // keymasterSecurityLevel
+            sequence.readInteger()
+            sequence.readInteger()
+            sequence.readInteger()
+            sequence.readInteger()
             val challenge = sequence.readOctetString()
 
             if (!Arrays.equals(challenge, clientDataHash)) {
@@ -128,7 +119,7 @@ internal class AndroidKeyAttestationStatementVerifier(
                 )
             }
 
-            sequence.readOctetString() // uniqueId
+            sequence.readOctetString()
             val swEnforcedSeq = sequence.readSequence()
             val swTags = parseAuthorizationList(swEnforcedSeq)
             val teeEnforcedSeq = sequence.readSequence()
@@ -204,6 +195,7 @@ internal class AndroidKeyAttestationStatementVerifier(
                     throw IllegalArgumentException("Attestation curve $curve is not P-256")
                 }
             }
+
             3L -> {
                 if (alg != KM_ALGORITHM_RSA) {
                     throw IllegalArgumentException("Attestation alg $alg does not match RSA key")
@@ -214,6 +206,7 @@ internal class AndroidKeyAttestationStatementVerifier(
                     throw IllegalArgumentException("Attestation key size $size does not match RSA modulus size $modulusBits")
                 }
             }
+
             else -> throw IllegalArgumentException("Unsupported COSE key type for Android Key attestation: ${key.kty}")
         }
     }

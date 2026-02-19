@@ -2,18 +2,13 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
-import dev.webauthn.crypto.CertificateInspector
-import dev.webauthn.crypto.CosePublicKeyDecoder
-import dev.webauthn.crypto.DigestService
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
 
 internal class AppleAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
-    private val digestService: DigestService = JvmDigestService(),
-    private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
-    private val cosePublicKeyDecoder: CosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
+    private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 
     companion object {
@@ -53,8 +48,8 @@ internal class AppleAttestationStatementVerifier(
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
             )
-        val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
-        val nonce = digestService.sha256(authDataBytes + clientDataHash)
+        val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
+        val nonce = SignumPrimitives.sha256(authDataBytes + clientDataHash)
 
         val extensionValue = try {
             certificateInspector.extensionValue(leafCertDer, APPLE_EXTENSION_OID)
@@ -85,7 +80,7 @@ internal class AppleAttestationStatementVerifier(
 
         val credPubKeyBytes = input.response.attestedCredentialData.cosePublicKey
         if (credPubKeyBytes.isNotEmpty()) {
-            val metadata = cosePublicKeyDecoder.decode(credPubKeyBytes)
+            val metadata = SignumPrimitives.decodeCoseMaterial(credPubKeyBytes)
             if (metadata != null && metadata.kty == 2L) {
                 val certMetadata = try {
                     certificateInspector.inspect(leafCertDer)

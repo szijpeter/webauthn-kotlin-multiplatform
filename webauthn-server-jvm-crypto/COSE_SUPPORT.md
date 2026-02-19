@@ -1,15 +1,25 @@
-# COSE Key Support Matrix (JVM crypto)
+# COSE Key Support Matrix (JVM Crypto)
 
-COSE public key parsing and SPKI conversion in this module support the following key shapes. Unsupported or malformed inputs fail deterministically (no raw-byte fallback).
+COSE decoding is delegated to Signum COSEF via `SignumPrimitives`:
+
+- `CoseKey.deserialize(...)`
+- `CoseKey.toCryptoPublicKey()`
+
+Unsupported or malformed inputs are rejected deterministically (decode returns `null`; verification returns `false`).
 
 | Key type | kty | Parameters | Supported | Notes |
-|----------|-----|------------|-----------|--------|
-| **EC2 P-256** | 2 | crv=1, x, y (labels -1, -2, -3) | Yes | Converts to X.509 SPKI (id-ecPublicKey, secp256r1). |
-| **RSA** | 3 | n, e (labels -1, -2) | Yes | Converts to X.509 SPKI (rsaEncryption). |
-| **OKP / Ed25519** | 1 | crv, x (alg=-8) | No | Fails with structured [CoseParseFailure.UnsupportedKeyType]. |
+|---|---|---|---|---|
+| EC2 P-256 | `2` | `crv=1`, `x`, `y` | Yes | Normalized to SPKI and uncompressed EC point when needed. |
+| RSA | `3` | `n`, `e` | Yes | Normalized to SPKI for verification/interoperability paths. |
+| OKP / Ed25519 | `1` | `crv`, `x` | No | Rejected by current JVM verifier path. |
 
-- **Malformed CBOR** (truncated map, wrong major type, invalid length, etc.): decode returns `null`; `CoseKeyParser.parsePublicKey` returns `CoseParseResult.Failure` with `CoseParseFailure.MalformedCbor`.
-- **Unsupported curve** (e.g. EC2 with crv ≠ 1): conversion returns `null`; parse returns `CoseParseResult.Failure` with `CoseParseFailure.UnsupportedCurve` or `UnsupportedKeyType`.
-- **Missing required parameters**: `CoseParseResult.Failure` with `CoseParseFailure.MissingRequiredParameter`.
+## Behavior Guarantees
 
-Single parser component: `JvmCoseParser`; conversion: `CoseToSpkiConverter`.
+1. Malformed CBOR COSE bytes are rejected.
+2. Unsupported key types/curves are rejected.
+3. Missing required parameters are rejected.
+4. No raw-byte verification fallback exists.
+
+## Local Ownership Boundary
+
+There is no dedicated local COSE parser/converter class in main source anymore. All COSE key parsing in runtime path goes through Signum COSEF.

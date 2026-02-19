@@ -98,8 +98,6 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = AndroidSafetyNetAttestationStatementVerifier(
-            digestService = JvmDigestService(),
-            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
             certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateRSA2048KeyPair()

@@ -2,11 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
-import dev.webauthn.crypto.CertificateInspector
-import dev.webauthn.crypto.CertificateSignatureVerifier
 import dev.webauthn.crypto.coseAlgorithmFromCode
-import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.DigestService
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.nio.ByteBuffer
@@ -14,9 +10,7 @@ import java.util.Arrays
 
 internal class TpmAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
-    private val digestService: DigestService = JvmDigestService(),
-    private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-    private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
+    private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 
     companion object {
@@ -76,7 +70,7 @@ internal class TpmAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: $algId")),
             )
 
-        val signatureValid = certificateSignatureVerifier.verify(
+        val signatureValid = SignumPrimitives.verifyWithCertificate(
             algorithm = coseAlg,
             certificateDer = leafCertDer,
             data = attestationObject.certInfo,
@@ -122,8 +116,8 @@ internal class TpmAttestationStatementVerifier(
                 ?: return ValidationResult.Invalid(
                     listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
                 )
-            val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
-            val expectedHash = digestService.sha256(authDataBytes + clientDataHash)
+            val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
+            val expectedHash = SignumPrimitives.sha256(authDataBytes + clientDataHash)
             if (!Arrays.equals(extraData, expectedHash)) {
                 return ValidationResult.Invalid(
                     listOf(WebAuthnValidationError.InvalidValue("certInfo", "extraData mismatch")),

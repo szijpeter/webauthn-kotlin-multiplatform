@@ -588,10 +588,7 @@ class AndroidKeyAttestationStatementVerifierTest {
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = AndroidKeyAttestationStatementVerifier(
-            digestService = JvmDigestService(),
-            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
             certificateInspector = JvmCertificateInspector(),
-            cosePublicKeyDecoder = JvmCosePublicKeyDecoder(),
         )
         val kp = generateES256KeyPair()
         val authData = sampleAuthDataBytes()
@@ -717,15 +714,10 @@ class AndroidKeyAttestationStatementVerifierTest {
     }
 
     private fun validCoseEcKeyBytes(): ByteArray {
-        val x = ByteArray(32) { 0x01 }
-        val y = ByteArray(32) { 0x02 }
-        return cborMapInt(
-            1L to 2L, // kty: EC2
-            3L to -7L, // alg: ES256
-            -1L to 1L, // crv: P-256
-            -2L to x,
-            -3L to y
-        )
+        val keyPairGenerator = KeyPairGenerator.getInstance("EC")
+        keyPairGenerator.initialize(ECGenParameterSpec("secp256r1"))
+        val keyPair = keyPairGenerator.generateKeyPair()
+        return TestCoseHelpers.coseBytesFromPublicKey(keyPair.public)
     }
 
     private fun cborMapInt(vararg entries: Pair<Long, Any>): ByteArray {

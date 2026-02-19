@@ -1,21 +1,33 @@
 package dev.webauthn.server.crypto
 
+import at.asitplus.signum.indispensable.josef.JwsAlgorithm
+import at.asitplus.signum.indispensable.josef.JwsSigned
+import at.asitplus.signum.supreme.sign.verify
+import at.asitplus.signum.supreme.sign.verifierFor
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
-import dev.webauthn.crypto.CertificateInspector
-import dev.webauthn.crypto.CertificateSignatureVerifier
-import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.DigestService
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.util.Base64
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+
+internal data class SafetyNetJwsPayload(
+    val nonce: String,
+    val ctsProfileMatch: Boolean? = null,
+)
 
 internal class AndroidSafetyNetAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
-    private val digestService: DigestService = JvmDigestService(),
-    private val certificateSignatureVerifier: CertificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-    private val certificateInspector: CertificateInspector = JvmCertificateInspector(),
+    private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
@@ -29,43 +41,28 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             )
         }
 
-        if (attestationObject.response == null) {
-            return ValidationResult.Invalid(
+        val responseBytes = attestationObject.response
+            ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("attStmt", "response is required")),
             )
-        }
 
-        val jws = attestationObject.response.decodeToString()
-        val parts = jws.split(".")
-        if (parts.size != 3) {
-            return ValidationResult.Invalid(
+        val parsedJws = JwsSigned.deserialize(responseBytes.decodeToString()).getOrNull()
+            ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("response", "Invalid JWS format")),
             )
-        }
 
-        val headerB64 = parts[0]
-        val payloadB64 = parts[1]
-        val signatureB64 = parts[2]
-        val headerJson = String(Base64.getUrlDecoder().decode(headerB64), Charsets.UTF_8)
-
-        val certsB64 = extractJsonStringArray(headerJson, "x5c")
+        val certificateChain = parsedJws.header.certificateChain
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("x5c", "x5c missing in JWS header")),
             )
 
-        if (certsB64.isEmpty()) {
+        if (certificateChain.isEmpty()) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("x5c", "No certificates in JWS header")),
             )
         }
 
-        val certsDer = try {
-            certsB64.map { Base64.getDecoder().decode(it) }
-        } catch (e: Exception) {
-            return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to decode certificate: ${e.message}")),
-            )
-        }
+        val certsDer = certificateChain.map { it.encodeToDer() }
         val leafCertDer = certsDer.first()
 
         try {
@@ -83,37 +80,53 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             }
         }
 
-        val sigBytes = try {
-            Base64.getUrlDecoder().decode(signatureB64)
-        } catch (e: Exception) {
+        val algorithm = parsedJws.header.algorithm
+        if (algorithm !is JwsAlgorithm.Signature.RSA || algorithm != JwsAlgorithm.Signature.RS256) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "Invalid JWS signature encoding: ${e.message}")),
+                listOf(WebAuthnValidationError.InvalidValue("response", "Unsupported JWS algorithm: ${algorithm.identifier}")),
             )
         }
-        val signedData = "$headerB64.$payloadB64".toByteArray(Charsets.UTF_8)
-        if (!certificateSignatureVerifier.verify(CoseAlgorithm.RS256, leafCertDer, signedData, sigBytes)) {
+
+        val publicKey = parsedJws.header.publicKey
+            ?: return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("response", "No public key found in JWS header")),
+            )
+
+        val verifier = algorithm.verifierFor(publicKey).getOrNull()
+            ?: return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("response", "JWS verifier initialization failed")),
+            )
+
+        if (verifier.verify(parsedJws.plainSignatureInput, parsedJws.signature).isFailure) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("response", "JWS signature verification failed")),
             )
         }
 
-        val payloadJson = String(Base64.getUrlDecoder().decode(payloadB64), Charsets.UTF_8)
-        val nonceValue = extractJsonString(payloadJson, "nonce")
-            ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("nonce", "Nonce missing in payload")),
+        val payload = try {
+            val payloadObject = json.parseToJsonElement(parsedJws.payload.decodeToString()).jsonObject
+            SafetyNetJwsPayload(
+                nonce = payloadObject["nonce"]?.jsonPrimitive?.contentOrNull
+                    ?: throw IllegalArgumentException("nonce missing from JWS payload"),
+                ctsProfileMatch = payloadObject["ctsProfileMatch"]?.jsonPrimitive?.booleanOrNull,
             )
+        } catch (e: Exception) {
+            return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("response", "Failed to parse JWS payload: ${e.message}")),
+            )
+        }
 
         val authData = attestationObject.authDataBytes
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
             )
-        val clientDataHash = digestService.sha256(input.response.clientDataJson.bytes())
-        val expectedNonce = digestService.sha256(authData + clientDataHash)
+        val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
+        val expectedNonce = SignumPrimitives.sha256(authData + clientDataHash)
 
         val jwsNonceBytes = try {
-            Base64.getDecoder().decode(nonceValue)
+            Base64.getDecoder().decode(payload.nonce)
         } catch (_: IllegalArgumentException) {
-            Base64.getUrlDecoder().decode(nonceValue)
+            Base64.getUrlDecoder().decode(payload.nonce)
         }
         if (!jwsNonceBytes.contentEquals(expectedNonce)) {
             return ValidationResult.Invalid(
@@ -121,114 +134,12 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             )
         }
 
-        val ctsMatch = extractJsonBoolean(payloadJson, "ctsProfileMatch")
-        if (ctsMatch != true) {
+        if (payload.ctsProfileMatch != true) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("ctsProfileMatch", "Device not compatible (ctsProfileMatch false)")),
             )
         }
 
         return ValidationResult.Valid(Unit)
-    }
-
-    // ---- Deterministic JSON helpers (no regex) ----
-
-    /**
-     * Extracts a JSON string array value for the given [key].
-     * Searches for `"key":[` and parses quoted string elements until `]`.
-     */
-    private fun extractJsonStringArray(json: String, key: String): List<String>? {
-        val searchKey = "\"$key\""
-        var idx = json.indexOf(searchKey)
-        if (idx == -1) return null
-        idx += searchKey.length
-        idx = skipWhitespace(json, idx)
-        if (idx >= json.length || json[idx] != ':') return null
-        idx = skipWhitespace(json, idx + 1)
-        if (idx >= json.length || json[idx] != '[') return null
-        idx++ // skip '['
-        val result = mutableListOf<String>()
-        while (idx < json.length) {
-            idx = skipWhitespace(json, idx)
-            if (idx >= json.length) return null
-            if (json[idx] == ']') return result
-            if (json[idx] == ',') {
-                idx++
-                continue
-            }
-            if (json[idx] == '"') {
-                val strResult = readJsonString(json, idx) ?: return null
-                result.add(strResult.first)
-                idx = strResult.second
-            } else {
-                return null // unexpected token
-            }
-        }
-        return null // unterminated array
-    }
-
-    /**
-     * Extracts a JSON string value for the given [key].
-     * Searches for `"key":"value"`.
-     */
-    private fun extractJsonString(json: String, key: String): String? {
-        val searchKey = "\"$key\""
-        var idx = json.indexOf(searchKey)
-        if (idx == -1) return null
-        idx += searchKey.length
-        idx = skipWhitespace(json, idx)
-        if (idx >= json.length || json[idx] != ':') return null
-        idx = skipWhitespace(json, idx + 1)
-        if (idx >= json.length || json[idx] != '"') return null
-        val strResult = readJsonString(json, idx) ?: return null
-        return strResult.first
-    }
-
-    /**
-     * Extracts a JSON boolean value for the given [key].
-     */
-    private fun extractJsonBoolean(json: String, key: String): Boolean? {
-        val searchKey = "\"$key\""
-        var idx = json.indexOf(searchKey)
-        if (idx == -1) return null
-        idx += searchKey.length
-        idx = skipWhitespace(json, idx)
-        if (idx >= json.length || json[idx] != ':') return null
-        idx = skipWhitespace(json, idx + 1)
-        return when {
-            json.startsWith("true", idx) -> true
-            json.startsWith("false", idx) -> false
-            else -> null
-        }
-    }
-
-    /**
-     * Reads a JSON string starting at the opening quote at [start].
-     * Returns (string value, index after closing quote) or null on error.
-     */
-    private fun readJsonString(json: String, start: Int): Pair<String, Int>? {
-        if (start >= json.length || json[start] != '"') return null
-        val sb = StringBuilder()
-        var i = start + 1
-        while (i < json.length) {
-            val c = json[i]
-            if (c == '\\') {
-                i++
-                if (i >= json.length) return null
-                sb.append(json[i])
-            } else if (c == '"') {
-                return sb.toString() to (i + 1)
-            } else {
-                sb.append(c)
-            }
-            i++
-        }
-        return null // unterminated string
-    }
-
-    private fun skipWhitespace(json: String, start: Int): Int {
-        var i = start
-        while (i < json.length && json[i].isWhitespace()) i++
-        return i
     }
 }

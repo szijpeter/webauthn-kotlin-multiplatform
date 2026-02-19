@@ -1,14 +1,19 @@
 package dev.webauthn.server.crypto
 
-import dev.webauthn.crypto.CertificateChainValidator
 import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
-public class TrustChainVerifier(
+public class TrustChainVerifier internal constructor(
     private val trustAnchorSource: TrustAnchorSource,
-    private val certificateChainValidator: CertificateChainValidator = JvmCertificateChainValidator(),
+    private val certificateChainValidator: JvmCertificateChainValidator = JvmCertificateChainValidator(),
 ) {
+
+    public constructor(trustAnchorSource: TrustAnchorSource) : this(
+        trustAnchorSource = trustAnchorSource,
+        certificateChainValidator = JvmCertificateChainValidator(),
+    )
+
     public fun verify(chainDer: List<ByteArray>, aaguid: ByteArray? = null): ValidationResult<Unit> {
         if (chainDer.isEmpty()) {
             return ValidationResult.Invalid(

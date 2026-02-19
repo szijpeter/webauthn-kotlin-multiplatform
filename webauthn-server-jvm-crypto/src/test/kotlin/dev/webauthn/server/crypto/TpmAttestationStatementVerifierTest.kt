@@ -488,8 +488,6 @@ class TpmAttestationStatementVerifierTest {
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = TpmAttestationStatementVerifier(
-            digestService = JvmDigestService(),
-            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
             certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateES256KeyPair()

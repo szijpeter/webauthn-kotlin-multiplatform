@@ -573,9 +573,6 @@ class PackedAttestationStatementVerifierTest {
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = PackedAttestationStatementVerifier(
             signatureVerifier = spkiSignatureVerifier(),
-            digestService = JvmDigestService(),
-            certificateSignatureVerifier = JvmCertificateSignatureVerifier(),
-            certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateES256KeyPair()
         val cosePublicKey = TestCoseHelpers.coseBytesFromPublicKey(kp.public)
