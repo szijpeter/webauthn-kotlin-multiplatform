@@ -17,6 +17,7 @@ Last updated: 2026-02-19
 - Attestation verification now includes hardened TPM and Android Key policy checks with expanded tests.
 - JVM crypto moved to a Signum-first implementation (`supreme` + `indispensable-cosef` + `indispensable-josef`) for hashing, COSE decode, signature material handling, and signature verification.
 - JCA usage in JVM crypto is now intentionally limited to X.509/PKIX trust-chain duties.
+- `SignumPrimitives` error handling now uses internal `KmmResult` pipelines and explicit expected-failure mapping, while preserving existing outward `null`/`false` behavior at module boundaries.
 - Platform clients (Android/iOS) have deterministic error mapping coverage, with response parsing still pending.
 - CI lanes cover JVM checks, Android assemble, and iOS compile.
 
