@@ -1,5 +1,7 @@
 package dev.webauthn.server.crypto
 
+import at.asitplus.KmmResult
+import at.asitplus.catching
 import at.asitplus.signum.indispensable.CryptoPublicKey
 import at.asitplus.signum.indispensable.CryptoSignature
 import at.asitplus.signum.indispensable.Digest
@@ -23,73 +25,14 @@ import java.security.cert.X509Certificate
 internal object SignumPrimitives {
     fun sha256(input: ByteArray): ByteArray = Digest.SHA256.digest(input)
 
-    fun decodeCoseMaterial(coseKey: ByteArray): CosePublicKeyMaterial? {
-        val decoded = CoseKey.deserialize(coseKey).getOrNull() ?: return null
-        val publicKey = decoded.toCryptoPublicKey().getOrNull() ?: return null
-        val alg = decoded.algorithm?.coseValue?.toLong()
-
-        return when (decoded.type) {
-            CoseKeyType.EC2 -> {
-                val ecKey = publicKey as? CryptoPublicKey.EC ?: return null
-                CosePublicKeyMaterial(
-                    kty = 2L,
-                    alg = alg,
-                    crv = ecCurveToCoseCurve(ecKey.curve),
-                    x = ecKey.xBytes,
-                    y = ecKey.yBytes,
-                )
-            }
-
-            CoseKeyType.RSA -> {
-                val rsaKey = publicKey as? CryptoPublicKey.RSA ?: return null
-                CosePublicKeyMaterial(
-                    kty = 3L,
-                    alg = alg,
-                    n = rsaKey.n.magnitude,
-                    e = rsaKey.e.magnitude,
-                )
-            }
-
-            else -> null
-        }
-    }
+    fun decodeCoseMaterial(coseKey: ByteArray): CosePublicKeyMaterial? =
+        decodeCoseMaterialResult(coseKey).getOrNull()
 
     fun decodeCosePublicKey(coseKey: ByteArray): CryptoPublicKey? =
-        CoseKey.deserialize(coseKey).getOrNull()?.toCryptoPublicKey()?.getOrNull()
+        decodeCosePublicKeyResult(coseKey).getOrNull()
 
-    fun toSubjectPublicKeyInfo(material: CosePublicKeyMaterial): ByteArray? {
-        return when (material.kty) {
-            2L -> {
-                val curve = coseCurveToEcCurve(material.crv ?: return null) ?: return null
-                val x = material.x ?: return null
-                val y = material.y ?: return null
-                try {
-                    CryptoPublicKey.EC.fromUncompressed(curve, x, y).encodeToDer()
-                } catch (_: IllegalArgumentException) {
-                    null
-                } catch (_: Asn1Exception) {
-                    null
-                }
-            }
-
-            3L -> {
-                val n = material.n ?: return null
-                val e = material.e ?: return null
-                try {
-                    CryptoPublicKey.RSA(
-                        n = Asn1Integer.fromUnsignedByteArray(n),
-                        e = Asn1Integer.fromUnsignedByteArray(e),
-                    ).encodeToDer()
-                } catch (_: IllegalArgumentException) {
-                    null
-                } catch (_: Asn1Exception) {
-                    null
-                }
-            }
-
-            else -> null
-        }
-    }
+    fun toSubjectPublicKeyInfo(material: CosePublicKeyMaterial): ByteArray? =
+        toSubjectPublicKeyInfoResult(material).getOrNull()
 
     fun toUncompressedEcPoint(material: CosePublicKeyMaterial): ByteArray? {
         val x = material.x ?: return null
@@ -122,14 +65,8 @@ internal object SignumPrimitives {
         return verifyWithPublicKey(algorithm, publicKey, data, signature)
     }
 
-    fun parseCertificate(certificateDer: ByteArray): X509Certificate? = try {
-        CertificateFactory.getInstance("X.509")
-            .generateCertificate(ByteArrayInputStream(certificateDer)) as X509Certificate
-    } catch (_: CertificateException) {
-        null
-    } catch (_: ClassCastException) {
-        null
-    }
+    fun parseCertificate(certificateDer: ByteArray): X509Certificate? =
+        parseCertificateResult(certificateDer).getOrNull()
 
     private fun decodeCertificatePublicKey(certificateDer: ByteArray): CryptoPublicKey? {
         val cert = parseCertificate(certificateDer) ?: return null
@@ -141,12 +78,7 @@ internal object SignumPrimitives {
         publicKey: CryptoPublicKey,
         data: ByteArray,
         signature: ByteArray,
-    ): Boolean {
-        val signumAlgorithm = toSignumAlgorithm(algorithm) ?: return false
-        val verifier = signumAlgorithm.verifierFor(publicKey).getOrNull() ?: return false
-        val cryptoSignature = parseSignature(algorithm, signature) ?: return false
-        return verifier.verify(data, cryptoSignature).isSuccess
-    }
+    ): Boolean = verifyWithPublicKeyResult(algorithm, publicKey, data, signature).isSuccess
 
     private fun toSignumAlgorithm(algorithm: CoseAlgorithm): SignatureAlgorithm? =
         when (algorithm) {
@@ -155,18 +87,135 @@ internal object SignumPrimitives {
             CoseAlgorithm.EdDSA -> null
         }
 
-    private fun parseSignature(algorithm: CoseAlgorithm, signature: ByteArray): CryptoSignature? =
-        when (algorithm) {
-            CoseAlgorithm.ES256 -> try {
-                CryptoSignature.EC.decodeFromDer(signature)
-            } catch (_: IllegalArgumentException) {
-                null
-            } catch (_: Asn1Exception) {
-                null
+    private fun decodeCoseMaterialResult(coseKey: ByteArray): KmmResult<CosePublicKeyMaterial> =
+        CoseKey.deserialize(coseKey).transform { decoded ->
+            decoded.toCryptoPublicKey().transform { publicKey ->
+                toCoseMaterialResult(
+                    keyType = decoded.type,
+                    algorithm = decoded.algorithm?.coseValue?.toLong(),
+                    publicKey = publicKey,
+                )
             }
-            CoseAlgorithm.RS256 -> CryptoSignature.RSA(signature)
-            CoseAlgorithm.EdDSA -> null
         }
+
+    private fun decodeCosePublicKeyResult(coseKey: ByteArray): KmmResult<CryptoPublicKey> =
+        CoseKey.deserialize(coseKey).transform { it.toCryptoPublicKey() }
+
+    private fun toCoseMaterialResult(
+        keyType: CoseKeyType,
+        algorithm: Long?,
+        publicKey: CryptoPublicKey,
+    ): KmmResult<CosePublicKeyMaterial> =
+        when (keyType) {
+            CoseKeyType.EC2 -> {
+                val ecKey = publicKey as? CryptoPublicKey.EC
+                    ?: return failureResult("COSE EC2 key could not be decoded as an EC public key")
+                KmmResult(
+                    CosePublicKeyMaterial(
+                        kty = 2L,
+                        alg = algorithm,
+                        crv = ecCurveToCoseCurve(ecKey.curve),
+                        x = ecKey.xBytes,
+                        y = ecKey.yBytes,
+                    ),
+                )
+            }
+
+            CoseKeyType.RSA -> {
+                val rsaKey = publicKey as? CryptoPublicKey.RSA
+                    ?: return failureResult("COSE RSA key could not be decoded as an RSA public key")
+                KmmResult(
+                    CosePublicKeyMaterial(
+                        kty = 3L,
+                        alg = algorithm,
+                        n = rsaKey.n.magnitude,
+                        e = rsaKey.e.magnitude,
+                    ),
+                )
+            }
+
+            else -> failureResult("Unsupported COSE key type: $keyType")
+        }
+
+    private fun toSubjectPublicKeyInfoResult(material: CosePublicKeyMaterial): KmmResult<ByteArray> =
+        when (material.kty) {
+            2L -> {
+                val curve = coseCurveToEcCurve(material.crv ?: return failureResult("EC COSE key is missing curve id"))
+                    ?: return failureResult("Unsupported EC curve id: ${material.crv}")
+                val x = material.x ?: return failureResult("EC COSE key is missing x-coordinate")
+                val y = material.y ?: return failureResult("EC COSE key is missing y-coordinate")
+                catchingAsn1OrIllegalArgument {
+                    CryptoPublicKey.EC.fromUncompressed(curve, x, y).encodeToDer()
+                }
+            }
+
+            3L -> {
+                val n = material.n ?: return failureResult("RSA COSE key is missing modulus")
+                val e = material.e ?: return failureResult("RSA COSE key is missing exponent")
+                catchingAsn1OrIllegalArgument {
+                    CryptoPublicKey.RSA(
+                        n = Asn1Integer.fromUnsignedByteArray(n),
+                        e = Asn1Integer.fromUnsignedByteArray(e),
+                    ).encodeToDer()
+                }
+            }
+
+            else -> failureResult("Unsupported COSE key type: ${material.kty}")
+        }
+
+    private fun parseCertificateResult(certificateDer: ByteArray): KmmResult<X509Certificate> =
+        catchingCertificateParse {
+            CertificateFactory.getInstance("X.509")
+                .generateCertificate(ByteArrayInputStream(certificateDer)) as X509Certificate
+        }
+
+    private fun verifyWithPublicKeyResult(
+        algorithm: CoseAlgorithm,
+        publicKey: CryptoPublicKey,
+        data: ByteArray,
+        signature: ByteArray,
+    ): KmmResult<*> {
+        val signumAlgorithm = toSignumAlgorithm(algorithm)
+            ?: return failureResult<Any?>("Unsupported COSE algorithm: $algorithm")
+
+        return signumAlgorithm.verifierFor(publicKey).transform { verifier ->
+            parseSignatureResult(algorithm, signature).transform { cryptoSignature ->
+                verifier.verify(data, cryptoSignature)
+            }
+        }
+    }
+
+    private fun parseSignatureResult(algorithm: CoseAlgorithm, signature: ByteArray): KmmResult<CryptoSignature> =
+        when (algorithm) {
+            CoseAlgorithm.ES256 -> catchingAsn1OrIllegalArgument {
+                CryptoSignature.EC.decodeFromDer(signature)
+            }
+            CoseAlgorithm.RS256 -> KmmResult(CryptoSignature.RSA(signature))
+            CoseAlgorithm.EdDSA -> failureResult("Unsupported COSE algorithm: $algorithm")
+        }
+
+    private inline fun <T> catchingAsn1OrIllegalArgument(block: () -> T): KmmResult<T> =
+        catching(block).mapFailure(::expectAsn1OrIllegalArgument)
+
+    private inline fun <T> catchingCertificateParse(block: () -> T): KmmResult<T> =
+        catching(block).mapFailure(::expectCertificateParseFailure)
+
+    private fun expectAsn1OrIllegalArgument(throwable: Throwable): Throwable =
+        when (throwable) {
+            is Asn1Exception,
+            is IllegalArgumentException -> throwable
+            else -> throw throwable
+        }
+
+    private fun expectCertificateParseFailure(throwable: Throwable): Throwable =
+        when (throwable) {
+            is CertificateException,
+            is ClassCastException -> throwable
+            else -> throw throwable
+        }
+
+    private fun <T> failureResult(message: String): KmmResult<T> =
+        KmmResult(IllegalArgumentException(message))
 
     private fun ecCurveToCoseCurve(curve: ECCurve): Long =
         when (curve) {
