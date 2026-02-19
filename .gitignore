@@ -33,6 +33,7 @@ replay_pid*
 **/build/
 local.properties
 .idea/
+.vscode/settings.json
 
 # Environment secrets and overrides
 .env
