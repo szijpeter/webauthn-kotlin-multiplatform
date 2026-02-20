@@ -25,7 +25,7 @@ Definition of done:
 ## Phase 2: Server Robustness and Store Semantics
 
 1. Strengthen registration/authentication finish-path invariants.
-2. Add replay, race, and persistence-oriented scenarios (in-memory done; external-store contracts pending).
+2. Add replay, race, and persistence-oriented scenarios (in-memory and H2-backed store contracts done).
 3. Expand server-ktor integration coverage.
 
 Definition of done:

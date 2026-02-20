@@ -11,4 +11,5 @@ dependencies {
     testImplementation(project(":webauthn-server-jvm-crypto"))
     testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.h2)
 }

@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-02-19
+Last updated: 2026-02-20
 
 ## Status Legend
 
@@ -37,7 +37,7 @@ Last updated: 2026-02-19
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + authData parsing, round-trip tests | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Lean cross-module contracts (`SignatureVerifier`, `AttestationVerifier`, `TrustAnchorSource`, `RpIdHasher`, `CoseAlgorithm`, `coseAlgorithmFromCode`, payload models) | Additional implementations and cross-platform behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | Signum-first crypto path (digest, COSE decode, signature verification, JOSE SafetyNet decode) via `SignumPrimitives`; `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers; deterministic malformed/unsupported COSE rejection vectors; unified trust-chain flow through `TrustChainVerifier` | Broader attestation vector and trust-anchor coverage depth |
-| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + comprehensive persistence race tests (concurrent double-consume, sign-count propagation, replay protection) | Persistence integration scenarios with external stores |
+| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification for both ceremonies + in-memory stores + finish-flow failure-path tests (expired challenge, origin mismatch, challenge replay, unknown credential, signature failure) + comprehensive persistence race tests (concurrent double-consume, sign-count propagation, replay protection) + shared store-contract tests validated on in-memory and H2-backed stores | Broader external store implementations beyond the H2 contract adapter |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Scaffold/Beta | Shared contracts and error model | Richer policy semantics + transport/runtime edge handling |
 | `webauthn-client-android` | Beta | Credential Manager request serialization wired from model DTOs + deterministic error mapping + response parsing | Active lifecycle edge hardening |
