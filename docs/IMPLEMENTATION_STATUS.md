@@ -21,10 +21,11 @@ Last updated: 2026-03-01
 - Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
 - Network interop now supports both native library routes and external `PASSKEY_ENCRYPTION_POC` profile routes.
+- Samples now include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against `temp.server`.
 
 ## Plan Progress (Estimated)
 
-- Phase 1 (Client readiness/interoperability): ~65% complete.
+- Phase 1 (Client readiness/interoperability): ~75% complete.
 - Phase 2 (Conformance/Security): ~75% complete.
 - Phase 3 (Server robustness): ~70% complete.
 - Phase 4-5 (DX/release): mostly pending.
@@ -47,7 +48,7 @@ Last updated: 2026-03-01
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation | More runtime/device matrix coverage |
 | `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, backend profile interop (`LIBRARY_ROUTES`, `PASSKEY_ENCRYPTION_POC`) | Retry/error policy hardening and broader profile fixtures |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
-| `samples:*` | Scaffold/Beta | Runnable backend/android/ios sample structure | End-to-end realistic passkey flows and docs depth |
+| `samples:*` | Beta | Runnable backend/android/ios structure, JVM interop demo, and Compose KMP readiness sample wired to `temp.server` | More real-device matrix coverage and extension-focused end-to-end examples |
 
 ## Validation Coverage Status
 

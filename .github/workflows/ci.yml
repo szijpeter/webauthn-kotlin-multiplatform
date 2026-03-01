@@ -46,7 +46,7 @@ jobs:
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v5
       - name: Android Build
-        run: ./gradlew :webauthn-client-android:assemble :samples:android-passkey:assemble --stacktrace
+        run: ./gradlew :webauthn-client-android:assemble :samples:android-passkey:assemble :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace
 
   ios-compile:
     runs-on: macos-latest
@@ -60,4 +60,4 @@ jobs:
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v5
       - name: iOS Compile
-        run: ./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace
+        run: ./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 :samples:ios-passkey:compileKotlinIosSimulatorArm64 :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace

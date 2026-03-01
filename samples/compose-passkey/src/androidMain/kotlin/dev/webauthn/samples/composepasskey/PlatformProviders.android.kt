@@ -1,0 +1,59 @@
+package dev.webauthn.samples.composepasskey
+
+import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import dev.webauthn.client.PasskeyClient
+import dev.webauthn.client.android.AndroidPasskeyClient
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
+
+@Composable
+public actual fun rememberPlatformPasskeyClient(): PasskeyClient {
+    val context = LocalContext.current
+    return remember(context) { AndroidPasskeyClient(context = context) }
+}
+
+@Composable
+public actual fun rememberPlatformHttpClient(): HttpClient {
+    return remember {
+        HttpClient(OkHttp) {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        encodeDefaults = false
+                    },
+                )
+            }
+            install(Logging) {
+                level = LogLevel.INFO
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        DefaultPasskeyDemoDiagnostics.trace(
+                            event = "http.engine",
+                            fields = mapOf("line" to sanitizeNetworkLogLine(message)),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+public actual fun platformDefaultEndpointBase(): String = "http://10.0.2.2:8787"
+
+public actual fun platformDebugLog(tag: String, message: String, throwable: Throwable?) {
+    if (throwable == null) {
+        Log.d(tag, message)
+    } else {
+        Log.e(tag, message, throwable)
+    }
+}

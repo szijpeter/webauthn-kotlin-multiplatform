@@ -222,6 +222,15 @@ for file in "${changed_files[@]}"; do
             mark_module "samples:ios-passkey"
             mark_category "ios"
             ;;
+        samples/compose-passkey/*)
+            mark_module "samples:compose-passkey"
+            mark_category "android"
+            mark_category "ios"
+            ;;
+        samples/compose-passkey-android/*)
+            mark_module "samples:compose-passkey-android"
+            mark_category "android"
+            ;;
         docs/*|spec-notes/*)
             mark_category "docs"
             ;;

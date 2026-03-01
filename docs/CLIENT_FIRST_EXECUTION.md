@@ -1,6 +1,6 @@
 # Client-First Execution
 
-Date: 2026-02-28
+Date: 2026-03-01
 
 Goal: keep Android and iOS client implementation moving even when our first-party backend is not yet release-ready.
 
@@ -50,6 +50,17 @@ cd temp.server && npm start
 ./gradlew :samples:client-interop-jvm:run
 ```
 
+UI demo (Compose KMP readiness flow):
+
+```bash
+cd temp.server && npm start
+# in another shell
+./gradlew :samples:compose-passkey-android:installDebug
+```
+
+The shared Compose module also exposes `MainViewController()` for iOS host integration.
+The Compose sample includes structured debug logging (`PasskeyDemo` tag), sanitized network traces, and a readiness runbook at `samples/compose-passkey/READINESS_CHECKLIST.md`.
+
 ### Option C: First-party backend routes
 
 Use `WebAuthnBackendProfile.LIBRARY_ROUTES` with our in-repo server route contract when those paths are ready for your integration target.
@@ -85,6 +96,7 @@ val jsonClient = typedClient.withJsonSupport()
 - `:webauthn-client-core`
 - `:webauthn-client-json-core`
 - `androidx.credentials`
+- `androidx.credentials:credentials-play-services-auth` (required for Google Play provider integration on Android)
 - `androidx.core:core-ktx`
 
 ### `webauthn-client-ios`
