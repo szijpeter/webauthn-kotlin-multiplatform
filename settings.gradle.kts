@@ -37,5 +37,6 @@ include(
     ":webauthn-attestation-mds",
     ":samples:backend-ktor",
     ":samples:android-passkey",
-    ":samples:ios-passkey"
+    ":samples:ios-passkey",
+    ":samples:client-interop-jvm"
 )

@@ -11,11 +11,13 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library.
 1. Standards first: align behavior with W3C WebAuthn L3 + RFC 4648 + RFC 8949 + RFC 9052/9053.
 2. Security critical paths must not regress (challenge/origin/type checks, flags, counters, attestation validation behavior).
 3. Preserve strict layering and KMP boundaries (`webauthn-model` and `webauthn-core` remain free of platform/network dependencies).
-4. Keep changes economic: smallest sufficient scope, minimal context load, targeted checks first.
-5. Do not claim done without tests and quality gates matching impacted surface.
-6. Public repo hygiene is mandatory: no credentials/secrets in tracked files or committed history.
-7. Workflow security defaults are mandatory: least-privilege permissions and explicit action version references (major tags or pinned SHAs).
-8. Security-facing workflow/policy changes require synchronized docs updates (`SECURITY.md`, public launch checklist, and affected workflow docs).
+4. Client-first execution: unblock client implementations early, even when first-party backend hardening is still in progress.
+5. `webauthn-client-core` owns shared client business logic; platform modules remain thin bridges to OS APIs.
+6. Keep changes economic: smallest sufficient scope, minimal context load, targeted checks first.
+7. Do not claim done without tests and quality gates matching impacted surface.
+8. Public repo hygiene is mandatory: no credentials/secrets in tracked files or committed history.
+9. Workflow security defaults are mandatory: least-privilege permissions and explicit action version references (major tags or pinned SHAs).
+10. Security-facing workflow/policy changes require synchronized docs updates (`SECURITY.md`, public launch checklist, and affected workflow docs).
 
 ## Crypto Backend Policy
 
@@ -43,6 +45,11 @@ Adapter/transport/platform:
 - `webauthn-client-android`
 - `webauthn-client-ios`
 
+Client acceleration helpers:
+
+- `temp.server/*` (temporary local backend scaffolding only; never production source of truth)
+- `spec-cache/*` (cached standards references)
+
 Optional trust source:
 
 - `webauthn-attestation-mds`
@@ -59,6 +66,19 @@ Reference/samples:
 2. Keep `ValidationResult` in validation-heavy paths that intentionally aggregate multiple field-level errors.
 3. Public API boundaries (for example `PasskeyClient`, `AttestationVerifier`) must use project domain result models (`PasskeyResult`, `ValidationResult`).
 4. `KmmResult` usage must not leak into cross-module public contracts.
+
+## Client API and Interop Policy
+
+1. Public client APIs must be benchmarked against ecosystem SDK ergonomics (for example Twilio Verify Passkeys, react-native-passkey, and SimpleWebAuthn browser) while staying standards-first.
+2. Extension support targets for client APIs include at least PRF and Large Blob request/response transport.
+3. Client transport must support interoperating with non-repo backend profiles for development validation.
+4. Backend profile adapters are allowed when they reduce client unblock time and are kept explicit (no hidden fallback behavior).
+
+## Standards Source Policy
+
+1. The WebAuthn specification is the primary source of truth for behavior and public API contracts.
+2. Keep local snapshots/links under `spec-cache/` to reduce context switching during implementation.
+3. Cached spec artifacts are reference material only; normative tie-breaker remains the latest upstream W3C publication/editor draft.
 
 ## Decision Ladder (Cheap -> Expensive)
 
@@ -96,6 +116,7 @@ A change is done only when all apply:
 5. CI parity command for impacted area has been run locally or explicitly called out as not run.
 6. Documentation updated when workflow/contracts changed.
 7. If CI/security posture changed, `SECURITY.md` and `docs/PUBLIC_LAUNCH_CHECKLIST.md` are updated in the same change.
+8. If client contracts or backend interop profiles change, update client-facing status docs and tracker entries in the same change.
 
 ## Quality Gate Contract
 
@@ -137,6 +158,9 @@ Stop and ask before continuing when:
 - Roadmap: `docs/ROADMAP.md`
 - Tracker: `docs/IMPLEMENTATION_TRACKER.md`
 - Validation mapping: `spec-notes/webauthn-l3-validation-map.md`
+- Client-first execution: `docs/CLIENT_FIRST_EXECUTION.md`
+- Client API benchmark notes: `docs/CLIENT_API_BENCHMARKS.md`
+- Spec cache index: `spec-cache/README.md`
 - CI baseline: `.github/workflows/ci.yml`
 - Security policy: `SECURITY.md`
 - Public launch checklist: `docs/PUBLIC_LAUNCH_CHECKLIST.md`

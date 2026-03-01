@@ -1,0 +1,86 @@
+# Client-First Execution
+
+Date: 2026-02-28
+
+Goal: keep Android and iOS client implementation moving even when our first-party backend is not yet release-ready.
+
+## Principle
+
+1. Client work must not block on server hardening.
+2. Use explicit backend profiles for interop testing.
+3. Keep shared ceremony logic in `webauthn-client-core`; platform modules only bridge OS APIs.
+
+## Backend Options for Client Bring-Up
+
+### Option A: External backend profile (`PASSKEY_ENCRYPTION_POC`)
+
+Use `WebAuthnInteropKtorClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC` to call:
+
+- `POST /register/options`
+- `POST /register/verify`
+- `POST /authenticate/options`
+- `POST /authenticate/verify`
+
+Example:
+
+```kotlin
+val interop = WebAuthnInteropKtorClient(
+    httpClient = client,
+    endpointBase = "https://your-host",
+    profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
+)
+```
+
+If you have the sibling repo locally, `../passkey-encryption-poc` already includes these routes and associated-domain endpoints.
+
+### Option B: Local temporary backend (`temp.server`)
+
+Use the local development backend in `temp.server/` when you need a fast, disposable endpoint for mobile client iteration.
+
+- No production guarantees
+- In-memory state only
+- Returns WebAuthn-shaped JSON for registration/authentication
+- Serves association files at `/.well-known/assetlinks.json` and `/.well-known/apple-app-site-association`
+
+Quick demo (transport + interop profile round-trip):
+
+```bash
+cd temp.server && npm start
+# in another shell
+./gradlew :samples:client-interop-jvm:run
+```
+
+### Option C: First-party backend routes
+
+Use `WebAuthnBackendProfile.LIBRARY_ROUTES` with our in-repo server route contract when those paths are ready for your integration target.
+
+## Client Dependencies Required
+
+### `webauthn-client-core`
+
+- `:webauthn-model`
+- `at.asitplus:kmmresult`
+- `kotlinx-coroutines-core`
+- No direct JSON dependency; serialization is injected via `PasskeyJsonCodec`
+
+### `webauthn-client-android`
+
+- `:webauthn-client-core`
+- `:webauthn-serialization-kotlinx`
+- `androidx.credentials`
+- `androidx.core:core-ktx`
+
+### `webauthn-client-ios`
+
+- `:webauthn-client-core`
+- `:webauthn-serialization-kotlinx`
+- `kotlinx-coroutines-core`
+
+## Association File Requirement
+
+Passkey platform APIs still require domain association for realistic end-to-end testing.
+
+- Android: `https://<host>/.well-known/assetlinks.json`
+- iOS: `https://<host>/.well-known/apple-app-site-association`
+
+The `temp.server` backend exposes both endpoints for local/ngrok workflows.

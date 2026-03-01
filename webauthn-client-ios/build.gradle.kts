@@ -13,6 +13,7 @@ kotlin {
             implementation(project(":webauthn-serialization-kotlinx"))
             implementation(libs.kmmresult)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

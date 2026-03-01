@@ -1,0 +1,13 @@
+{
+  "name": "webauthn-temp-server",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Development-only temporary WebAuthn backend for client bring-up",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

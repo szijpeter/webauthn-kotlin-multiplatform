@@ -23,6 +23,7 @@ internal data class IosRegistrationPayload(
     val rawId: ByteArray,
     val attestationObject: ByteArray,
     val clientDataJson: ByteArray,
+    val authenticatorAttachment: String? = null,
 )
 
 internal data class IosAuthenticationPayload(
@@ -32,6 +33,7 @@ internal data class IosAuthenticationPayload(
     val signature: ByteArray,
     val clientDataJson: ByteArray,
     val userHandle: ByteArray?,
+    val authenticatorAttachment: String? = null,
 )
 
 internal interface IosAuthorizationBridge {
@@ -48,6 +50,8 @@ internal class AuthenticationServicesAuthorizationBridge(
         return suspendCancellableCoroutine { continuation ->
             val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
             val request = provider.createCredentialRegistrationRequestWithChallenge(options.challenge.value.bytes().toNSData(), options.user.name, options.user.id.value.bytes().toNSData())
+            request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+            options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
             
             val controller = ASAuthorizationController(listOf(request))
             var retainedDelegate: Any? = null
@@ -70,7 +74,8 @@ internal class AuthenticationServicesAuthorizationBridge(
                                 credentialId = credential.credentialID.toByteArray(),
                                 rawId = credential.credentialID.toByteArray(),
                                 attestationObject = credential.rawAttestationObject?.toByteArray() ?: ByteArray(0),
-                                clientDataJson = credential.rawClientDataJSON.toByteArray()
+                                clientDataJson = credential.rawClientDataJSON.toByteArray(),
+                                authenticatorAttachment = "platform",
                             )
                             releaseDelegate()
                             if (continuation.isActive) {
@@ -114,6 +119,7 @@ internal class AuthenticationServicesAuthorizationBridge(
         return suspendCancellableCoroutine { continuation ->
             val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rpId.value)
             val request = provider.createCredentialAssertionRequestWithChallenge(options.challenge.value.bytes().toNSData())
+            request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
             
             val controller = ASAuthorizationController(listOf(request))
             var retainedDelegate: Any? = null
@@ -140,7 +146,8 @@ internal class AuthenticationServicesAuthorizationBridge(
                                 signature = credential.signature?.toByteArray()
                                     ?: throw IllegalStateException("Missing signature in assertion response"),
                                 clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                                userHandle = credential.userID?.toByteArray()
+                                userHandle = credential.userID?.toByteArray(),
+                                authenticatorAttachment = "platform",
                             )
                             releaseDelegate()
                             if (continuation.isActive) {
@@ -179,4 +186,24 @@ internal class AuthenticationServicesAuthorizationBridge(
             controller.performRequests()
         }
     }
+}
+
+private fun dev.webauthn.model.UserVerificationRequirement.toPreferenceValue(): String {
+    return when (this) {
+        dev.webauthn.model.UserVerificationRequirement.REQUIRED -> "required"
+        dev.webauthn.model.UserVerificationRequirement.PREFERRED -> "preferred"
+        dev.webauthn.model.UserVerificationRequirement.DISCOURAGED -> "discouraged"
+    }
+}
+
+private fun dev.webauthn.model.ResidentKeyRequirement.toPreferenceValue(): String {
+    return when (this) {
+        dev.webauthn.model.ResidentKeyRequirement.REQUIRED -> "required"
+        dev.webauthn.model.ResidentKeyRequirement.PREFERRED -> "preferred"
+        dev.webauthn.model.ResidentKeyRequirement.DISCOURAGED -> "discouraged"
+    }
+}
+
+private fun dev.webauthn.model.AttestationConveyancePreference.toPreferenceValue(): String {
+    return name.lowercase()
 }

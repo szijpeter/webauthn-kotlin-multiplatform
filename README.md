@@ -11,17 +11,19 @@ Standards-first WebAuthn Level 3 foundation for Kotlin Multiplatform with modula
 - `webauthn-server-jvm-crypto`: JCA-based crypto primitives for backend
 - `webauthn-server-core-jvm`: registration/authentication services + stores
 - `webauthn-server-ktor`: optional Ktor adapters
-- `webauthn-client-core`: shared client contracts
-- `webauthn-client-android`: Android Credential Manager scaffold
-- `webauthn-client-ios`: iOS AuthenticationServices scaffold
+- `webauthn-client-core`: shared client orchestration (typed + JSON APIs)
+- `webauthn-client-android`: Android Credential Manager bridge on shared core
+- `webauthn-client-ios`: iOS AuthenticationServices bridge on shared core
 - `webauthn-network-ktor-client`: optional client transport helpers
 - `webauthn-attestation-mds`: optional FIDO metadata trust source
 - `platform:bom`: aligned dependency coordinates
 - `samples:*`: backend/android/ios usage examples
+- `temp.server/*`: temporary local backend for client bring-up (development-only)
+- `spec-cache/*`: local standards cache/index for implementation work
 
 ## Status
 
-This repository is currently a V1 scaffold with strict validation foundations, module boundaries, and service contracts in place. Some platform adapter and attestation paths are intentionally scaffolded for iterative hardening.
+This repository is in active beta: core/server validation paths are production-leaning, while client and attestation surfaces continue hardening. Client development is now explicitly unblocked through shared client-core orchestration plus backend interop and temporary backend options.
 
 ## Standards
 
@@ -66,6 +68,8 @@ Related docs:
 - `docs/ai/WORKFLOWS.md`
 - `docs/ai/COST_POLICY.md`
 - `docs/ai/SKILLS.md`
+- `docs/CLIENT_FIRST_EXECUTION.md`
+- `docs/CLIENT_API_BENCHMARKS.md`
 - `docs/IMPLEMENTATION_STATUS.md`
 - `docs/ROADMAP.md`
 - `docs/PUBLIC_LAUNCH_CHECKLIST.md`

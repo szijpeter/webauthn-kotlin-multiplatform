@@ -11,8 +11,11 @@ import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import kotlinx.serialization.Serializable
 
 public class WebAuthnKtorClient(
@@ -22,6 +25,7 @@ public class WebAuthnKtorClient(
     public suspend fun startRegistration(request: RegistrationStartPayload): ValidationResult<PublicKeyCredentialCreationOptions> {
         val dto: PublicKeyCredentialCreationOptionsDto =
             httpClient.post("$endpointBase/webauthn/registration/start") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(request)
             }.body()
 
@@ -31,6 +35,7 @@ public class WebAuthnKtorClient(
     public suspend fun finishRegistration(request: RegistrationFinishPayload): Boolean {
         val response: FinishPayloadResponse =
             httpClient.post("$endpointBase/webauthn/registration/finish") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(request)
             }.body()
 
@@ -40,6 +45,7 @@ public class WebAuthnKtorClient(
     public suspend fun startAuthentication(request: AuthenticationStartPayload): ValidationResult<PublicKeyCredentialRequestOptions> {
         val dto: PublicKeyCredentialRequestOptionsDto =
             httpClient.post("$endpointBase/webauthn/authentication/start") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(request)
             }.body()
 
@@ -49,6 +55,7 @@ public class WebAuthnKtorClient(
     public suspend fun finishAuthentication(request: AuthenticationFinishPayload): Boolean {
         val response: FinishPayloadResponse =
             httpClient.post("$endpointBase/webauthn/authentication/finish") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(request)
             }.body()
 

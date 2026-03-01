@@ -39,3 +39,15 @@ This keeps core/server contracts stable and independent from any single crypto v
 `at.asitplus:kmmresult` is approved for targeted internal pipeline ergonomics.
 - **Role:** Helps internal sequential success/failure mapping (`catching`, `.transform`) where a single failure cause is expected.
 - **Rule:** `KmmResult` remains an internal implementation detail and must never be exposed in public API contracts. External callers depend on domain-specific result wrappers (for example `PasskeyResult`, `ValidationResult`).
+
+## Client Runtime Dependencies
+
+`webauthn-client-core` is serializer-agnostic and does not depend on `kotlinx-serialization-json` or `:webauthn-serialization-kotlinx`.
+JSON encoding/decoding is injected through `PasskeyJsonCodec`, implemented by platform modules.
+
+Policy:
+
+1. Keep platform wrappers thin (`webauthn-client-android`, `webauthn-client-ios`) and avoid moving shared logic back into target-specific modules.
+2. Keep the API boundary domain-owned (`PasskeyClient`, `PasskeyResult`, `PasskeyClientError`) even when platform SDK errors are richer.
+3. Prefer additive capability flags (`PasskeyCapabilities`) over target-specific branching in public API signatures.
+4. Keep serialization strategy replaceable through `PasskeyJsonCodec` so alternative codecs can be used without core API changes.
