@@ -167,6 +167,7 @@ else
                 ;;
             samples:compose-passkey-android)
                 run_list+=("./gradlew :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
+                ;;
             temp.server)
                 run_list+=("cd temp.server && npm test")
                 ;;
