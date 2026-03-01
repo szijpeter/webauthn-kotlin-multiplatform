@@ -47,7 +47,7 @@ internal class AndroidPasskeyPlatformBridge(
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
         return runTypedCeremony(
             options = options,
-            encodeOptions = { codec, value -> codec.encodeCreationOptionsOrThrowInvalid(value) },
+            encodeOptions = jsonCodec::encodeCreationOptionsOrThrowInvalid,
             executeRequest = { requestJson ->
                 credentialManager.createCredential(
                     context = context,
@@ -55,14 +55,14 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
-            decodePayload = { codec, payload -> codec.decodeRegistrationResponseOrThrowPlatform(payload) },
+            decodePayload = jsonCodec::decodeRegistrationResponseOrThrowPlatform,
         )
     }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
         return runTypedCeremony(
             options = options,
-            encodeOptions = { codec, value -> codec.encodeAssertionOptionsOrThrowInvalid(value) },
+            encodeOptions = jsonCodec::encodeAssertionOptionsOrThrowInvalid,
             executeRequest = { requestJson ->
                 credentialManager.getCredential(
                     context,
@@ -70,7 +70,7 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requirePublicKeyCredential(response).authenticationResponseJson },
-            decodePayload = { codec, payload -> codec.decodeAuthenticationResponseOrThrowPlatform(payload) },
+            decodePayload = jsonCodec::decodeAuthenticationResponseOrThrowPlatform,
         )
     }
 
@@ -108,15 +108,14 @@ internal class AndroidPasskeyPlatformBridge(
 
     private suspend fun <TOptions, TPlatformResponse, TModel> runTypedCeremony(
         options: TOptions,
-        encodeOptions: (PasskeyJsonCodec, TOptions) -> String,
+        encodeOptions: (TOptions) -> String,
         executeRequest: suspend (String) -> TPlatformResponse,
         extractPayload: (TPlatformResponse) -> String,
-        decodePayload: (PasskeyJsonCodec, String) -> TModel,
+        decodePayload: (String) -> TModel,
     ): TModel {
-        val requestJson = encodeOptions(jsonCodec, options)
+        val requestJson = encodeOptions(options)
         val platformResponse = executeRequest(requestJson)
         val responseJson = extractPayload(platformResponse)
-        return decodePayload(jsonCodec, responseJson)
+        return decodePayload(responseJson)
     }
-
 }

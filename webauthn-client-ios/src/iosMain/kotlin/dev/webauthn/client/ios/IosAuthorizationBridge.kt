@@ -101,22 +101,32 @@ internal class AuthenticationServicesAuthorizationBridge(
         )
     }
 
-    private suspend fun <TRequest, TPayload> runAuthorizationRequest(
-        buildRequest: () -> TRequest,
+    private suspend fun <TPayload> runAuthorizationRequest(
+        buildRequest: () -> Any,
         extractPayload: (Any?) -> TPayload,
     ): TPayload {
         return suspendCancellableCoroutine { continuation ->
             val request = buildRequest()
             val controller = ASAuthorizationController(listOf(request))
             var retainedDelegate: Any? = null
-            val releaseDelegate: () -> Unit = {
+            fun releaseDelegate() {
                 retainedDelegate?.let {
                     activeDelegates.remove(it)
                     retainedDelegate = null
                 }
             }
-            val delegate = object : NSObject(), ASAuthorizationControllerDelegateProtocol,
-                ASAuthorizationControllerPresentationContextProvidingProtocol {
+            fun complete(payload: TPayload? = null, error: Throwable? = null) {
+                releaseDelegate()
+                if (!continuation.isActive) return
+                if (error != null) {
+                    continuation.resumeWithException(error)
+                } else {
+                    @Suppress("UNCHECKED_CAST")
+                    continuation.resume(payload as TPayload)
+                }
+            }
+
+            val delegate = object : NSObject(), ASAuthorizationControllerDelegateProtocol, ASAuthorizationControllerPresentationContextProvidingProtocol {
                 override fun presentationAnchorForAuthorizationController(controller: ASAuthorizationController): UIWindow {
                     return windowProvider()
                 }
@@ -126,16 +136,9 @@ internal class AuthenticationServicesAuthorizationBridge(
                     didCompleteWithAuthorization: ASAuthorization,
                 ) {
                     try {
-                        val payload = extractPayload(didCompleteWithAuthorization.credential)
-                        releaseDelegate()
-                        if (continuation.isActive) {
-                            continuation.resume(payload)
-                        }
+                        complete(payload = extractPayload(didCompleteWithAuthorization.credential))
                     } catch (error: Exception) {
-                        releaseDelegate()
-                        if (continuation.isActive) {
-                            continuation.resumeWithException(error)
-                        }
+                        complete(error = error)
                     }
                 }
 
@@ -143,10 +146,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     controller: ASAuthorizationController,
                     didCompleteWithError: NSError,
                 ) {
-                    releaseDelegate()
-                    if (continuation.isActive) {
-                        continuation.resumeWithException(NSErrorException(didCompleteWithError))
-                    }
+                    complete(error = NSErrorException(didCompleteWithError))
                 }
             }
             retainedDelegate = delegate
@@ -161,26 +161,20 @@ internal class AuthenticationServicesAuthorizationBridge(
         }
     }
 
-    private fun unknownAuthorizationError(): NSErrorException {
-        val error = NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null)
-        return NSErrorException(error)
-    }
+    private fun unknownAuthorizationError(): NSErrorException =
+        NSErrorException(NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null))
 }
 
-private fun dev.webauthn.model.UserVerificationRequirement.toPreferenceValue(): String {
-    return when (this) {
-        dev.webauthn.model.UserVerificationRequirement.REQUIRED -> "required"
-        dev.webauthn.model.UserVerificationRequirement.PREFERRED -> "preferred"
-        dev.webauthn.model.UserVerificationRequirement.DISCOURAGED -> "discouraged"
-    }
+private fun dev.webauthn.model.UserVerificationRequirement.toPreferenceValue(): String = when (this) {
+    dev.webauthn.model.UserVerificationRequirement.REQUIRED -> "required"
+    dev.webauthn.model.UserVerificationRequirement.PREFERRED -> "preferred"
+    dev.webauthn.model.UserVerificationRequirement.DISCOURAGED -> "discouraged"
 }
 
-private fun dev.webauthn.model.ResidentKeyRequirement.toPreferenceValue(): String {
-    return when (this) {
-        dev.webauthn.model.ResidentKeyRequirement.REQUIRED -> "required"
-        dev.webauthn.model.ResidentKeyRequirement.PREFERRED -> "preferred"
-        dev.webauthn.model.ResidentKeyRequirement.DISCOURAGED -> "discouraged"
-    }
+private fun dev.webauthn.model.ResidentKeyRequirement.toPreferenceValue(): String = when (this) {
+    dev.webauthn.model.ResidentKeyRequirement.REQUIRED -> "required"
+    dev.webauthn.model.ResidentKeyRequirement.PREFERRED -> "preferred"
+    dev.webauthn.model.ResidentKeyRequirement.DISCOURAGED -> "discouraged"
 }
 
 private fun dev.webauthn.model.AttestationConveyancePreference.toPreferenceValue(): String {

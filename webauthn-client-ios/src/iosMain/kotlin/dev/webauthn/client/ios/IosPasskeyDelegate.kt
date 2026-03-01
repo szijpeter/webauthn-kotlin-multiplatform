@@ -45,43 +45,43 @@ internal class IosPasskeyPlatformBridge(
         ignoreUnknownKeys = true
     }
 
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
-        val payload = bridge.createCredential(options)
-        return jsonCodec.decodeRegistrationResponseOrThrowPlatform(payload.toRegistrationResponseJson())
-    }
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse =
+        jsonCodec.decodeRegistrationResponseOrThrowPlatform(
+            bridge.createCredential(options).toRegistrationResponseJson(),
+        )
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
-        val payload = bridge.getAssertion(options)
-        return jsonCodec.decodeAuthenticationResponseOrThrowPlatform(payload.toAuthenticationResponseJson())
-    }
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse =
+        jsonCodec.decodeAuthenticationResponseOrThrowPlatform(
+            bridge.getAssertion(options).toAuthenticationResponseJson(),
+        )
 
     private fun IosRegistrationPayload.toRegistrationResponseJson(): String = json.encodeToString(
-            RegistrationResponseDto.serializer(),
-            RegistrationResponseDto(
-                id = credentialId.toBase64Url(),
-                rawId = rawId.toBase64Url(),
-                response = RegistrationResponsePayloadDto(
-                    clientDataJson = clientDataJson.toBase64Url(),
-                    attestationObject = attestationObject.toBase64Url(),
-                ),
-                authenticatorAttachment = authenticatorAttachment,
+        RegistrationResponseDto.serializer(),
+        RegistrationResponseDto(
+            id = credentialId.toBase64Url(),
+            rawId = rawId.toBase64Url(),
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = clientDataJson.toBase64Url(),
+                attestationObject = attestationObject.toBase64Url(),
             ),
-        )
+            authenticatorAttachment = authenticatorAttachment,
+        ),
+    )
 
     private fun IosAuthenticationPayload.toAuthenticationResponseJson(): String = json.encodeToString(
-            AuthenticationResponseDto.serializer(),
-            AuthenticationResponseDto(
-                id = credentialId.toBase64Url(),
-                rawId = rawId.toBase64Url(),
-                response = AuthenticationResponsePayloadDto(
-                    clientDataJson = clientDataJson.toBase64Url(),
-                    authenticatorData = authenticatorData.toBase64Url(),
-                    signature = signature.toBase64Url(),
-                    userHandle = userHandle?.toBase64Url(),
-                ),
-                authenticatorAttachment = authenticatorAttachment,
+        AuthenticationResponseDto.serializer(),
+        AuthenticationResponseDto(
+            id = credentialId.toBase64Url(),
+            rawId = rawId.toBase64Url(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = clientDataJson.toBase64Url(),
+                authenticatorData = authenticatorData.toBase64Url(),
+                signature = signature.toBase64Url(),
+                userHandle = userHandle?.toBase64Url(),
             ),
-        )
+            authenticatorAttachment = authenticatorAttachment,
+        ),
+    )
 
     private fun ByteArray.toBase64Url(): String = Base64UrlBytes.fromBytes(this).encoded()
 
