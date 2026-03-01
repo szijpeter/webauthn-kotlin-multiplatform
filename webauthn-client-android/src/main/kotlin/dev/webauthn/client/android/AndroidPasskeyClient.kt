@@ -45,26 +45,32 @@ internal class AndroidPasskeyPlatformBridge(
     private val jsonCodec: PasskeyJsonCodec = KotlinxPasskeyJsonCodec(),
 ) : PasskeyPlatformBridge {
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
-        val requestJson = jsonCodec.encodeCreationOptionsOrThrowInvalid(options)
-        val response = credentialManager.createCredential(
-            context = context,
-            request = CreatePublicKeyCredentialRequest(requestJson),
-        )
-
-        return jsonCodec.decodeRegistrationResponseOrThrowPlatform(
-            requireCreatePublicKeyResponse(response).registrationResponseJson,
+        return runTypedCeremony(
+            options = options,
+            encodeOptions = { codec, value -> codec.encodeCreationOptionsOrThrowInvalid(value) },
+            executeRequest = { requestJson ->
+                credentialManager.createCredential(
+                    context = context,
+                    request = CreatePublicKeyCredentialRequest(requestJson),
+                )
+            },
+            extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
+            decodePayload = { codec, payload -> codec.decodeRegistrationResponseOrThrowPlatform(payload) },
         )
     }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
-        val requestJson = jsonCodec.encodeAssertionOptionsOrThrowInvalid(options)
-        val response = credentialManager.getCredential(
-            context,
-            GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson))),
-        )
-
-        return jsonCodec.decodeAuthenticationResponseOrThrowPlatform(
-            requirePublicKeyCredential(response).authenticationResponseJson,
+        return runTypedCeremony(
+            options = options,
+            encodeOptions = { codec, value -> codec.encodeAssertionOptionsOrThrowInvalid(value) },
+            executeRequest = { requestJson ->
+                credentialManager.getCredential(
+                    context,
+                    GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson))),
+                )
+            },
+            extractPayload = { response -> requirePublicKeyCredential(response).authenticationResponseJson },
+            decodePayload = { codec, payload -> codec.decodeAuthenticationResponseOrThrowPlatform(payload) },
         )
     }
 
@@ -98,6 +104,19 @@ internal class AndroidPasskeyPlatformBridge(
         val credential = response.credential
         return credential as? PublicKeyCredential
             ?: throw IllegalStateException("Unexpected credential type: ${credential::class.simpleName}")
+    }
+
+    private suspend fun <TOptions, TPlatformResponse, TModel> runTypedCeremony(
+        options: TOptions,
+        encodeOptions: (PasskeyJsonCodec, TOptions) -> String,
+        executeRequest: suspend (String) -> TPlatformResponse,
+        extractPayload: (TPlatformResponse) -> String,
+        decodePayload: (PasskeyJsonCodec, String) -> TModel,
+    ): TModel {
+        val requestJson = encodeOptions(jsonCodec, options)
+        val platformResponse = executeRequest(requestJson)
+        val responseJson = extractPayload(platformResponse)
+        return decodePayload(jsonCodec, responseJson)
     }
 
 }

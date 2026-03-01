@@ -47,12 +47,66 @@ internal class AuthenticationServicesAuthorizationBridge(
     private val activeDelegates = mutableSetOf<Any>()
 
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+        return runAuthorizationRequest(
+            buildRequest = {
+                val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
+                val request = provider.createCredentialRegistrationRequestWithChallenge(
+                    options.challenge.value.bytes().toNSData(),
+                    options.user.name,
+                    options.user.id.value.bytes().toNSData(),
+                )
+                request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+                options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
+                request
+            },
+            extractPayload = { credential ->
+                val registration = credential as? ASAuthorizationPlatformPublicKeyCredentialRegistration
+                    ?: throw unknownAuthorizationError()
+                IosRegistrationPayload(
+                    credentialId = registration.credentialID.toByteArray(),
+                    rawId = registration.credentialID.toByteArray(),
+                    attestationObject = registration.rawAttestationObject?.toByteArray() ?: ByteArray(0),
+                    clientDataJson = registration.rawClientDataJSON.toByteArray(),
+                    authenticatorAttachment = "platform",
+                )
+            },
+        )
+    }
+
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload {
+        return runAuthorizationRequest(
+            buildRequest = {
+                val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rpId.value)
+                val request = provider.createCredentialAssertionRequestWithChallenge(
+                    options.challenge.value.bytes().toNSData(),
+                )
+                request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+                request
+            },
+            extractPayload = { credential ->
+                val assertion = credential as? ASAuthorizationPlatformPublicKeyCredentialAssertion
+                    ?: throw unknownAuthorizationError()
+                IosAuthenticationPayload(
+                    credentialId = assertion.credentialID.toByteArray(),
+                    rawId = assertion.credentialID.toByteArray(),
+                    authenticatorData = assertion.rawAuthenticatorData?.toByteArray()
+                        ?: throw IllegalStateException("Missing rawAuthenticatorData in assertion response"),
+                    signature = assertion.signature?.toByteArray()
+                        ?: throw IllegalStateException("Missing signature in assertion response"),
+                    clientDataJson = assertion.rawClientDataJSON.toByteArray(),
+                    userHandle = assertion.userID?.toByteArray(),
+                    authenticatorAttachment = "platform",
+                )
+            },
+        )
+    }
+
+    private suspend fun <TRequest, TPayload> runAuthorizationRequest(
+        buildRequest: () -> TRequest,
+        extractPayload: (Any?) -> TPayload,
+    ): TPayload {
         return suspendCancellableCoroutine { continuation ->
-            val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
-            val request = provider.createCredentialRegistrationRequestWithChallenge(options.challenge.value.bytes().toNSData(), options.user.name, options.user.id.value.bytes().toNSData())
-            request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-            options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
-            
+            val request = buildRequest()
             val controller = ASAuthorizationController(listOf(request))
             var retainedDelegate: Any? = null
             val releaseDelegate: () -> Unit = {
@@ -61,42 +115,34 @@ internal class AuthenticationServicesAuthorizationBridge(
                     retainedDelegate = null
                 }
             }
-            val delegate = object : NSObject(), ASAuthorizationControllerDelegateProtocol, ASAuthorizationControllerPresentationContextProvidingProtocol {
+            val delegate = object : NSObject(), ASAuthorizationControllerDelegateProtocol,
+                ASAuthorizationControllerPresentationContextProvidingProtocol {
                 override fun presentationAnchorForAuthorizationController(controller: ASAuthorizationController): UIWindow {
                     return windowProvider()
                 }
 
-                override fun authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization: ASAuthorization) {
-                    val credential = didCompleteWithAuthorization.credential
-                    if (credential is ASAuthorizationPlatformPublicKeyCredentialRegistration) {
-                        try {
-                            val payload = IosRegistrationPayload(
-                                credentialId = credential.credentialID.toByteArray(),
-                                rawId = credential.credentialID.toByteArray(),
-                                attestationObject = credential.rawAttestationObject?.toByteArray() ?: ByteArray(0),
-                                clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                                authenticatorAttachment = "platform",
-                            )
-                            releaseDelegate()
-                            if (continuation.isActive) {
-                                continuation.resume(payload)
-                            }
-                        } catch (e: Exception) {
-                            releaseDelegate()
-                            if (continuation.isActive) {
-                                continuation.resumeWithException(e)
-                            }
-                        }
-                    } else {
-                        val error = NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null)
+                override fun authorizationController(
+                    controller: ASAuthorizationController,
+                    didCompleteWithAuthorization: ASAuthorization,
+                ) {
+                    try {
+                        val payload = extractPayload(didCompleteWithAuthorization.credential)
                         releaseDelegate()
                         if (continuation.isActive) {
-                            continuation.resumeWithException(NSErrorException(error))
+                            continuation.resume(payload)
+                        }
+                    } catch (error: Exception) {
+                        releaseDelegate()
+                        if (continuation.isActive) {
+                            continuation.resumeWithException(error)
                         }
                     }
                 }
 
-                override fun authorizationController(controller: ASAuthorizationController, didCompleteWithError: NSError) {
+                override fun authorizationController(
+                    controller: ASAuthorizationController,
+                    didCompleteWithError: NSError,
+                ) {
                     releaseDelegate()
                     if (continuation.isActive) {
                         continuation.resumeWithException(NSErrorException(didCompleteWithError))
@@ -115,76 +161,9 @@ internal class AuthenticationServicesAuthorizationBridge(
         }
     }
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload {
-        return suspendCancellableCoroutine { continuation ->
-            val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rpId.value)
-            val request = provider.createCredentialAssertionRequestWithChallenge(options.challenge.value.bytes().toNSData())
-            request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-            
-            val controller = ASAuthorizationController(listOf(request))
-            var retainedDelegate: Any? = null
-            val releaseDelegate: () -> Unit = {
-                retainedDelegate?.let {
-                    activeDelegates.remove(it)
-                    retainedDelegate = null
-                }
-            }
-            val delegate = object : NSObject(), ASAuthorizationControllerDelegateProtocol, ASAuthorizationControllerPresentationContextProvidingProtocol {
-                override fun presentationAnchorForAuthorizationController(controller: ASAuthorizationController): UIWindow {
-                    return windowProvider()
-                }
-
-                override fun authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization: ASAuthorization) {
-                    val credential = didCompleteWithAuthorization.credential
-                    if (credential is ASAuthorizationPlatformPublicKeyCredentialAssertion) {
-                        try {
-                            val payload = IosAuthenticationPayload(
-                                credentialId = credential.credentialID.toByteArray(),
-                                rawId = credential.credentialID.toByteArray(),
-                                authenticatorData = credential.rawAuthenticatorData?.toByteArray()
-                                    ?: throw IllegalStateException("Missing rawAuthenticatorData in assertion response"),
-                                signature = credential.signature?.toByteArray()
-                                    ?: throw IllegalStateException("Missing signature in assertion response"),
-                                clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                                userHandle = credential.userID?.toByteArray(),
-                                authenticatorAttachment = "platform",
-                            )
-                            releaseDelegate()
-                            if (continuation.isActive) {
-                                continuation.resume(payload)
-                            }
-                        } catch (e: Exception) {
-                            releaseDelegate()
-                            if (continuation.isActive) {
-                                continuation.resumeWithException(e)
-                            }
-                        }
-                    } else {
-                        val error = NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null)
-                        releaseDelegate()
-                        if (continuation.isActive) {
-                            continuation.resumeWithException(NSErrorException(error))
-                        }
-                    }
-                }
-
-                override fun authorizationController(controller: ASAuthorizationController, didCompleteWithError: NSError) {
-                    releaseDelegate()
-                    if (continuation.isActive) {
-                        continuation.resumeWithException(NSErrorException(didCompleteWithError))
-                    }
-                }
-            }
-            retainedDelegate = delegate
-            activeDelegates += delegate
-            controller.delegate = delegate
-            controller.presentationContextProvider = delegate
-            continuation.invokeOnCancellation {
-                releaseDelegate()
-                controller.cancel()
-            }
-            controller.performRequests()
-        }
+    private fun unknownAuthorizationError(): NSErrorException {
+        val error = NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null)
+        return NSErrorException(error)
     }
 }
 

@@ -44,7 +44,7 @@ public class DefaultJsonPasskeyClient(
     override suspend fun createCredentialJson(requestJson: String): PasskeyResult<String> {
         return runJsonCeremony(
             requestJson = requestJson,
-            decodeOptions = ::decodeCreationOptions,
+            decodeOptions = { payload -> jsonCodec.decodeCreationOptionsOrThrowInvalid(payload) },
             execute = { options -> passkeyClient.createCredential(options) },
             encodeResponse = { response -> jsonCodec.encodeRegistrationResponse(response) },
             encodeErrorMessage = "Failed to encode registration response JSON",
@@ -54,7 +54,7 @@ public class DefaultJsonPasskeyClient(
     override suspend fun getAssertionJson(requestJson: String): PasskeyResult<String> {
         return runJsonCeremony(
             requestJson = requestJson,
-            decodeOptions = ::decodeAssertionOptions,
+            decodeOptions = { payload -> jsonCodec.decodeAssertionOptionsOrThrowInvalid(payload) },
             execute = { options -> passkeyClient.getAssertion(options) },
             encodeResponse = { response -> jsonCodec.encodeAuthenticationResponse(response) },
             encodeErrorMessage = "Failed to encode authentication response JSON",
@@ -95,14 +95,6 @@ public class DefaultJsonPasskeyClient(
             is PasskeyResult.Failure -> result
         }
     }
-
-    private fun decodeCreationOptions(payload: String): PublicKeyCredentialCreationOptions {
-        return jsonCodec.decodeCreationOptionsOrThrowInvalid(payload)
-    }
-
-    private fun decodeAssertionOptions(payload: String): PublicKeyCredentialRequestOptions {
-        return jsonCodec.decodeAssertionOptionsOrThrowInvalid(payload)
-    }
 }
 
 public fun PasskeyClient.withJsonSupport(codec: PasskeyJsonCodec = KotlinxPasskeyJsonCodec()): JsonPasskeyClient {
@@ -125,55 +117,60 @@ public fun PasskeyJsonCodec.decodeCreationOptionsOrThrowInvalid(payload: String)
     val validation = fromCodecInvalidOptions("Failed to parse registration options JSON") {
         decodeCreationOptions(payload)
     }
-    return validation.toValueOrThrowInvalidOptions()
+    return validation.toValueOrThrow { message -> IllegalArgumentException(message) }
 }
 
 public fun PasskeyJsonCodec.decodeAssertionOptionsOrThrowInvalid(payload: String): PublicKeyCredentialRequestOptions {
     val validation = fromCodecInvalidOptions("Failed to parse authentication options JSON") {
         decodeAssertionOptions(payload)
     }
-    return validation.toValueOrThrowInvalidOptions()
+    return validation.toValueOrThrow { message -> IllegalArgumentException(message) }
 }
 
 public fun PasskeyJsonCodec.decodeRegistrationResponseOrThrowPlatform(payload: String): RegistrationResponse {
     val validation = fromCodecPlatformResponse("Failed to parse registration response JSON") {
         decodeRegistrationResponse(payload)
     }
-    return validation.toValueOrThrowPlatformResponse()
+    return validation.toValueOrThrow { message -> IllegalStateException(message) }
 }
 
 public fun PasskeyJsonCodec.decodeAuthenticationResponseOrThrowPlatform(payload: String): AuthenticationResponse {
     val validation = fromCodecPlatformResponse("Failed to parse authentication response JSON") {
         decodeAuthenticationResponse(payload)
     }
-    return validation.toValueOrThrowPlatformResponse()
+    return validation.toValueOrThrow { message -> IllegalStateException(message) }
 }
 
 private inline fun <T> fromCodecInvalidOptions(message: String, block: () -> T): T {
-    return runCatching(block)
-        .getOrElse { error ->
-            throw IllegalArgumentException("$message: ${error.message ?: "unknown error"}", error)
-        }
-}
-
-private inline fun <T> fromCodecPlatformResponse(message: String, block: () -> T): T {
-    return runCatching(block)
-        .getOrElse { error ->
-            throw IllegalStateException("$message: ${error.message ?: "unknown error"}", error)
-        }
-}
-
-private fun <T> ValidationResult<T>.toValueOrThrowInvalidOptions(): T {
-    return when (this) {
-        is ValidationResult.Valid -> value
-        is ValidationResult.Invalid -> throw IllegalArgumentException(firstValidationErrorMessage())
+    return fromCodec(message, block) { composedMessage, error ->
+        IllegalArgumentException(composedMessage, error)
     }
 }
 
-private fun <T> ValidationResult<T>.toValueOrThrowPlatformResponse(): T {
+private inline fun <T> fromCodecPlatformResponse(message: String, block: () -> T): T {
+    return fromCodec(message, block) { composedMessage, error ->
+        IllegalStateException(composedMessage, error)
+    }
+}
+
+private inline fun <T, TThrowable : Throwable> fromCodec(
+    message: String,
+    block: () -> T,
+    throwableFactory: (String, Throwable) -> TThrowable,
+): T {
+    return runCatching(block)
+        .getOrElse { error ->
+            val composedMessage = "$message: ${error.message ?: "unknown error"}"
+            throw throwableFactory(composedMessage, error)
+        }
+}
+
+private fun <T, TThrowable : Throwable> ValidationResult<T>.toValueOrThrow(
+    throwableFactory: (String) -> TThrowable,
+): T {
     return when (this) {
         is ValidationResult.Valid -> value
-        is ValidationResult.Invalid -> throw IllegalStateException(firstValidationErrorMessage())
+        is ValidationResult.Invalid -> throw throwableFactory(firstValidationErrorMessage())
     }
 }
 
