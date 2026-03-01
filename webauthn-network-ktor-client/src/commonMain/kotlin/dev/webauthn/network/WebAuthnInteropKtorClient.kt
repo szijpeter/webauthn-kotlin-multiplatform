@@ -38,6 +38,7 @@ public class WebAuthnInteropKtorClient(
 ) {
     private val libraryClient = WebAuthnKtorClient(httpClient, endpointBase)
     private val registrationChallengeToUserId: MutableMap<String, String> = mutableMapOf()
+    private val registrationUserNameToUserId: MutableMap<String, String> = mutableMapOf()
 
     public suspend fun startRegistration(request: RegistrationStartPayload): ValidationResult<PublicKeyCredentialCreationOptions> {
         return when (profile) {
@@ -82,6 +83,7 @@ public class WebAuthnInteropKtorClient(
             }.body()
 
         registrationChallengeToUserId[response.challenge] = request.userHandle
+        registrationUserNameToUserId[request.userName] = request.userHandle
 
         val dto = PublicKeyCredentialCreationOptionsDto(
             rp = response.rp,
@@ -116,17 +118,18 @@ public class WebAuthnInteropKtorClient(
                 header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(payload)
             }
-            response.status.isSuccess()
+            response.status.isSuccess() && response.body<PocVerificationResponse>().success
         }.getOrDefault(false)
     }
 
     private suspend fun startAuthenticationAgainstPoc(
         request: AuthenticationStartPayload,
     ): ValidationResult<PublicKeyCredentialRequestOptions> {
+        val stableUserId = request.userHandle ?: registrationUserNameToUserId[request.userName] ?: request.userName
         val response: PocAuthenticationOptionsResponse =
             httpClient.post("$endpointBase/authenticate/options") {
                 header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(PocAuthenticationOptionsRequest(userId = request.userName))
+                setBody(PocAuthenticationOptionsRequest(userId = stableUserId))
             }.body()
 
         val dto = PublicKeyCredentialRequestOptionsDto(
@@ -155,7 +158,7 @@ public class WebAuthnInteropKtorClient(
                 header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(payload)
             }
-            response.status.isSuccess()
+            response.status.isSuccess() && response.body<PocVerificationResponse>().success
         }.getOrDefault(false)
     }
 }
@@ -218,7 +221,6 @@ private data class PocAuthenticationVerifyRequest(
     val clientExtensionResults: dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto? = null,
 )
 
-@Suppress("unused")
 @Serializable
 private data class PocVerificationResponse(
     val success: Boolean,

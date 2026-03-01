@@ -204,7 +204,11 @@ async function handleRequest(request) {
     const body = await readJsonBody(request);
     const queryUserId = url.searchParams.get('userId');
     const normalizedQueryUserId = queryUserId ? normalizeOpaqueId(queryUserId) : null;
-    const clientDataChallenge = parseClientDataChallenge(body?.response?.clientDataJson);
+    const clientDataJson =
+      body?.response?.clientDataJSON ??
+      body?.response?.clientDataJson ??
+      null;
+    const clientDataChallenge = parseClientDataChallenge(clientDataJson);
     const mappedUserId = clientDataChallenge ? registrationChallengeToUserId.get(clientDataChallenge) : null;
     const userId = normalizedQueryUserId || mappedUserId || normalizeOpaqueId('default-user');
 

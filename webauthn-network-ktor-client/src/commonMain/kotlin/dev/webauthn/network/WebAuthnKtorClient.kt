@@ -78,6 +78,7 @@ public data class AuthenticationStartPayload(
     public val rpId: String,
     public val origin: String,
     public val userName: String,
+    public val userHandle: String? = null,
 )
 
 @Serializable
