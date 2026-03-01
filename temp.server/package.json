@@ -5,7 +5,8 @@
   "description": "Development-only temporary WebAuthn backend for client bring-up",
   "type": "module",
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

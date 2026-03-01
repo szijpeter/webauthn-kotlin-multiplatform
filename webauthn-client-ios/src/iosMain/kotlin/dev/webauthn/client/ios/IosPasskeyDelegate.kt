@@ -3,19 +3,21 @@ package dev.webauthn.client.ios
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyJsonCodec
+import dev.webauthn.client.KotlinxPasskeyJsonCodec
+import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
+import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
+import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.client.PasskeyPlatformBridge
-import dev.webauthn.client.SharedPasskeyClient
 import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
-import dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto
-import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import kotlinx.serialization.json.Json
@@ -24,9 +26,8 @@ import platform.UIKit.UIApplication
 
 internal actual class IosPasskeyDelegate(
     private val bridge: IosAuthorizationBridge,
-) : PasskeyClient by SharedPasskeyClient(
+) : PasskeyClient by DefaultPasskeyClient(
     bridge = IosPasskeyPlatformBridge(bridge),
-    jsonCodec = IosKotlinxPasskeyJsonCodec(),
 ) {
     actual constructor() : this(
         AuthenticationServicesAuthorizationBridge {
@@ -37,16 +38,16 @@ internal actual class IosPasskeyDelegate(
 
 internal class IosPasskeyPlatformBridge(
     private val bridge: IosAuthorizationBridge,
+    private val jsonCodec: PasskeyJsonCodec = KotlinxPasskeyJsonCodec(),
 ) : PasskeyPlatformBridge {
     private val json = Json {
         encodeDefaults = false
         ignoreUnknownKeys = true
     }
 
-    override suspend fun createCredential(requestJson: String): String {
-        val options = parseCreationOptions(requestJson)
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
         val payload = bridge.createCredential(options)
-        return json.encodeToString(
+        val responseJson = json.encodeToString(
             RegistrationResponseDto.serializer(),
             RegistrationResponseDto(
                 id = Base64UrlBytes.fromBytes(payload.credentialId).encoded(),
@@ -58,12 +59,12 @@ internal class IosPasskeyPlatformBridge(
                 authenticatorAttachment = payload.authenticatorAttachment,
             ),
         )
+        return jsonCodec.decodeRegistrationResponseOrThrowPlatform(responseJson)
     }
 
-    override suspend fun getAssertion(requestJson: String): String {
-        val options = parseAssertionOptions(requestJson)
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
         val payload = bridge.getAssertion(options)
-        return json.encodeToString(
+        val responseJson = json.encodeToString(
             AuthenticationResponseDto.serializer(),
             AuthenticationResponseDto(
                 id = Base64UrlBytes.fromBytes(payload.credentialId).encoded(),
@@ -77,11 +78,13 @@ internal class IosPasskeyPlatformBridge(
                 authenticatorAttachment = payload.authenticatorAttachment,
             ),
         )
+        return jsonCodec.decodeAuthenticationResponseOrThrowPlatform(responseJson)
     }
 
     override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
         return when (throwable) {
             is NSErrorException -> throwable.error.toPasskeyClientError()
+            is IllegalArgumentException -> PasskeyClientError.InvalidOptions(throwable.message ?: "Invalid options")
             else -> PasskeyClientError.Platform(throwable.message ?: "Unknown platform error", throwable)
         }
     }
@@ -97,27 +100,5 @@ internal class IosPasskeyPlatformBridge(
             supportsSecurityKey = true,
             platformVersionHints = listOf("iosMajor=$major"),
         )
-    }
-
-    private fun parseCreationOptions(payload: String): PublicKeyCredentialCreationOptions {
-        val dto = json.decodeFromString(PublicKeyCredentialCreationOptionsDto.serializer(), payload)
-        return when (val parsed = WebAuthnDtoMapper.toModel(dto)) {
-            is ValidationResult.Valid -> parsed.value
-            is ValidationResult.Invalid -> {
-                val firstError = parsed.errors.first()
-                throw IllegalArgumentException("${firstError.field}: ${firstError.message}")
-            }
-        }
-    }
-
-    private fun parseAssertionOptions(payload: String): PublicKeyCredentialRequestOptions {
-        val dto = json.decodeFromString(PublicKeyCredentialRequestOptionsDto.serializer(), payload)
-        return when (val parsed = WebAuthnDtoMapper.toModel(dto)) {
-            is ValidationResult.Valid -> parsed.value
-            is ValidationResult.Invalid -> {
-                val firstError = parsed.errors.first()
-                throw IllegalArgumentException("${firstError.field}: ${firstError.message}")
-            }
-        }
     }
 }

@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-02-28
+Last updated: 2026-03-01
 
 ## Status Legend
 
@@ -16,8 +16,9 @@ Last updated: 2026-02-28
 - JVM server flow is implemented with ceremony orchestration and store contract coverage.
 - Attestation verification includes hardened TPM and Android Key policy checks with expanded tests.
 - JVM crypto remains Signum-first (`supreme` + `indispensable-cosef` + `indispensable-josef`) with JCA only for PKIX/X.509 trust duties.
-- Client architecture moved to shared orchestration in `webauthn-client-core` (`SharedPasskeyClient`) with thin Android/iOS platform bridges.
-- Client APIs now expose typed and raw JSON ceremony entry points plus capability reporting.
+- Client architecture moved to shared orchestration in `webauthn-client-core` (`DefaultPasskeyClient`) with thin Android/iOS platform bridges.
+- Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
+- Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
 - Network interop now supports both native library routes and external `PASSKEY_ENCRYPTION_POC` profile routes.
 
@@ -39,7 +40,9 @@ Last updated: 2026-02-28
 | `webauthn-server-jvm-crypto` | Beta | Signum-first crypto path (digest, COSE decode, signature verification, JOSE SafetyNet decode), `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers, deterministic malformed/unsupported COSE rejection vectors, unified trust-chain flow through `TrustChainVerifier` | Broader attestation vector and trust-anchor coverage depth |
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores | Broader external store implementations beyond H2 contract adapter |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
-| `webauthn-client-core` | Beta | Shared ceremony orchestration (`SharedPasskeyClient`), typed and raw JSON APIs, response validation/mapping, deterministic invalid-options vs platform error behavior, capability model | More extension-focused policy helpers and fixture coverage |
+| `webauthn-client-core` | Beta | Shared typed ceremony orchestration (`DefaultPasskeyClient`), deterministic invalid-options vs platform error behavior, capability model | More extension-focused policy helpers and fixture coverage |
+| `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable codec contract (`PasskeyJsonCodec`), default kotlinx codec | Additional fixture depth and profile-oriented JSON interop coverage |
+| `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyClientState`) and lightweight operation state model | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, capability reporting, shared-core delegation | Lifecycle and OEM/provider compatibility hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation | More runtime/device matrix coverage |
 | `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, backend profile interop (`LIBRARY_ROUTES`, `PASSKEY_ENCRYPTION_POC`) | Retry/error policy hardening and broader profile fixtures |

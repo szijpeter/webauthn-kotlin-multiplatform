@@ -27,11 +27,12 @@ This note records the client API benchmark inputs used for our client-first desi
 
 ## Decisions for This Repository
 
-1. Keep both typed and raw JSON client entry points in `PasskeyClient`.
-2. Keep shared business logic in `webauthn-client-core` (`SharedPasskeyClient`) so Android/iOS modules stay bridge-thin.
-3. Carry extension-related payloads through existing model/serialization layers so PRF/Large Blob can be surfaced consistently.
-4. Expose `capabilities()` so callers can branch on runtime support (`supportsPrf`, `supportsLargeBlob*`, `supportsSecurityKey`).
-5. Preserve deterministic domain error mapping (`InvalidOptions`, `UserCancelled`, `Platform`, `Transport`).
+1. Keep typed ceremony APIs in `PasskeyClient` and move raw JSON entry points to optional `webauthn-client-json-core`.
+2. Keep shared business logic in `webauthn-client-core` (`DefaultPasskeyClient`) so Android/iOS modules stay bridge-thin.
+3. Keep JSON codec strategy replaceable via `PasskeyJsonCodec` in optional JSON module.
+4. Carry extension-related payloads through existing model/serialization layers so PRF/Large Blob can be surfaced consistently.
+5. Expose `capabilities()` so callers can branch on runtime support (`supportsPrf`, `supportsLargeBlob*`, `supportsSecurityKey`).
+6. Preserve deterministic domain error mapping (`InvalidOptions`, `UserCancelled`, `Platform`, `Transport`).
 
 ## Current Gaps to Close
 

@@ -31,6 +31,8 @@ include(
     ":webauthn-server-core-jvm",
     ":webauthn-server-ktor",
     ":webauthn-client-core",
+    ":webauthn-client-json-core",
+    ":webauthn-client-compose",
     ":webauthn-client-android",
     ":webauthn-client-ios",
     ":webauthn-network-ktor-client",

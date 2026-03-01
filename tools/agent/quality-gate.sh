@@ -99,7 +99,7 @@ run_cmd() {
     if [[ "$format" == "human" ]]; then
         echo "Running: $cmd"
     fi
-    if ! eval "$cmd"; then
+    if ! (eval "$cmd"); then
         return 1
     fi
     return 0
@@ -141,7 +141,7 @@ else
     for module in "${modules[@]}"; do
         [[ -z "$module" ]] && continue
         case "$module" in
-            webauthn-model|webauthn-core|webauthn-serialization-kotlinx|webauthn-crypto-api|webauthn-client-core|webauthn-network-ktor-client)
+            webauthn-model|webauthn-core|webauthn-serialization-kotlinx|webauthn-crypto-api|webauthn-client-core|webauthn-client-json-core|webauthn-client-compose|webauthn-network-ktor-client)
                 run_list+=("./gradlew :$module:allTests --stacktrace")
                 ;;
             webauthn-server-core-jvm|webauthn-server-jvm-crypto|webauthn-server-ktor|webauthn-attestation-mds)
@@ -161,6 +161,9 @@ else
                 ;;
             samples:ios-passkey)
                 run_list+=("./gradlew :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+                ;;
+            temp.server)
+                run_list+=("cd temp.server && npm test")
                 ;;
         esac
     done

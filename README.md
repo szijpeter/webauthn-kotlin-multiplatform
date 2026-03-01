@@ -11,7 +11,9 @@ Standards-first WebAuthn Level 3 foundation for Kotlin Multiplatform with modula
 - `webauthn-server-jvm-crypto`: JCA-based crypto primitives for backend
 - `webauthn-server-core-jvm`: registration/authentication services + stores
 - `webauthn-server-ktor`: optional Ktor adapters
-- `webauthn-client-core`: shared client orchestration (typed + JSON APIs)
+- `webauthn-client-core`: shared typed client orchestration
+- `webauthn-client-json-core`: optional JSON client APIs and codec adapters (`PasskeyClient.withJsonSupport(...)`)
+- `webauthn-client-compose`: Compose integration helpers (`rememberPasskeyClient`, lightweight UI state)
 - `webauthn-client-android`: Android Credential Manager bridge on shared core
 - `webauthn-client-ios`: iOS AuthenticationServices bridge on shared core
 - `webauthn-network-ktor-client`: optional client transport helpers

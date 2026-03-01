@@ -61,20 +61,44 @@ Use `WebAuthnBackendProfile.LIBRARY_ROUTES` with our in-repo server route contra
 - `:webauthn-model`
 - `at.asitplus:kmmresult`
 - `kotlinx-coroutines-core`
-- No direct JSON dependency; serialization is injected via `PasskeyJsonCodec`
+- Typed-only ceremony API surface (no JSON codec requirement)
+
+### `webauthn-client-json-core` (optional)
+
+- `:webauthn-client-core`
+- `:webauthn-serialization-kotlinx`
+- `kotlinx-serialization-json`
+- Provides `JsonPasskeyClient`, `PasskeyJsonCodec`, and `KotlinxPasskeyJsonCodec`
+
+JSON interop wrapper example for a typed client:
+
+```kotlin
+import dev.webauthn.client.withJsonSupport
+import dev.webauthn.client.android.AndroidPasskeyClient
+
+val typedClient = AndroidPasskeyClient(context)
+val jsonClient = typedClient.withJsonSupport()
+```
 
 ### `webauthn-client-android`
 
 - `:webauthn-client-core`
-- `:webauthn-serialization-kotlinx`
+- `:webauthn-client-json-core`
 - `androidx.credentials`
 - `androidx.core:core-ktx`
 
 ### `webauthn-client-ios`
 
 - `:webauthn-client-core`
-- `:webauthn-serialization-kotlinx`
+- `:webauthn-client-json-core`
 - `kotlinx-coroutines-core`
+
+### `webauthn-client-compose` (optional)
+
+- `:webauthn-client-core`
+- `org.jetbrains.compose.runtime:runtime`
+- Android actual: `:webauthn-client-android`
+- iOS actual: `:webauthn-client-ios`
 
 ## Association File Requirement
 

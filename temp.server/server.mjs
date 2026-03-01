@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 
 const port = Number(process.env.PORT || 8787);
 const rpId = process.env.RP_ID || 'localhost';
@@ -102,7 +103,7 @@ function ensureUserCredentials(userId) {
   return userCredentials.get(userId);
 }
 
-async function handleRequest(request) {
+export async function handleRequest(request) {
   const url = new URL(request.url || '/', `http://localhost:${port}`);
 
   if (request.method === 'OPTIONS') {
@@ -218,7 +219,7 @@ async function handleRequest(request) {
 
     const bodyCredentialId = body.id || body.rawId;
     const credentialId = bodyCredentialId
-      ? normalizeOpaqueId(String(bodyCredentialId))
+      ? String(bodyCredentialId)
       : encodeBase64Url(randomBytes(16));
     const credentials = ensureUserCredentials(userId);
     if (!credentials.includes(credentialId)) {
@@ -291,28 +292,38 @@ async function handleRequest(request) {
   });
 }
 
-const server = createServer(async (request, response) => {
-  try {
-    const result = await handleRequest(request);
-    response.writeHead(result.statusCode, result.headers);
-    response.end(result.body);
-  } catch (error) {
-    response.writeHead(500, {
-      'content-type': 'application/json; charset=utf-8',
-      'access-control-allow-origin': '*',
-    });
-    response.end(
-      JSON.stringify({
-        success: false,
-        message: error instanceof Error ? error.message : 'Internal server error',
-      }),
-    );
-  }
-});
+export function resetState() {
+  registrationChallengeToUserId.clear();
+  authenticationChallengeToUserId.clear();
+  userCredentials.clear();
+}
 
-server.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`temp.server listening on http://localhost:${port}`);
-  // eslint-disable-next-line no-console
-  console.log(`RP_ID=${rpId} ORIGIN=${origin}`);
-});
+const isEntrypoint = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isEntrypoint) {
+  const server = createServer(async (request, response) => {
+    try {
+      const result = await handleRequest(request);
+      response.writeHead(result.statusCode, result.headers);
+      response.end(result.body);
+    } catch (error) {
+      response.writeHead(500, {
+        'content-type': 'application/json; charset=utf-8',
+        'access-control-allow-origin': '*',
+      });
+      response.end(
+        JSON.stringify({
+          success: false,
+          message: error instanceof Error ? error.message : 'Internal server error',
+        }),
+      );
+    }
+  });
+
+  server.listen(port, () => {
+    // eslint-disable-next-line no-console
+    console.log(`temp.server listening on http://localhost:${port}`);
+    // eslint-disable-next-line no-console
+    console.log(`RP_ID=${rpId} ORIGIN=${origin}`);
+  });
+}

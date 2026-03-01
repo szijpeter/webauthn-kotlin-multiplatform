@@ -15,19 +15,19 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
-import dev.webauthn.model.ValidationResult
-import dev.webauthn.model.WebAuthnValidationError
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class SharedPasskeyClientTest {
+class DefaultPasskeyClientTest {
     @Test
     fun createCredential_rejects_empty_pub_key_params() = runTest {
-        val client = SharedPasskeyClient(
-            bridge = StaticBridge(createResponse = "{}", assertionResponse = "{}"),
-            jsonCodec = FakeJsonCodec(),
+        val client = DefaultPasskeyClient(
+            bridge = StaticBridge(
+                createResponse = validRegistrationResponse(),
+                assertionResponse = validAuthenticationResponse(),
+            ),
         )
 
         val result = client.createCredential(
@@ -44,42 +44,14 @@ class SharedPasskeyClientTest {
     }
 
     @Test
-    fun createCredentialJson_rejects_invalid_json() = runTest {
-        val client = SharedPasskeyClient(
-            bridge = StaticBridge(createResponse = "{}", assertionResponse = "{}"),
-            jsonCodec = FakeJsonCodec(),
-        )
-
-        val result = client.createCredentialJson("{not-json")
-
-        assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.InvalidOptions)
-        assertTrue(result.error.message.contains("Failed to parse registration options JSON"))
-    }
-
-    @Test
-    fun createCredentialJson_returns_normalized_response_json() = runTest {
-        val client = SharedPasskeyClient(
-            bridge = StaticBridge(
-                createResponse = FakeJsonCodec.BRIDGE_CREATE_RESPONSE,
-                assertionResponse = "{}",
-            ),
-            jsonCodec = FakeJsonCodec(),
-        )
-
-        val result = client.createCredentialJson(FakeJsonCodec.VALID_CREATE_REQUEST_JSON)
-
-        assertTrue(result is PasskeyResult.Success)
-        assertEquals(FakeJsonCodec.NORMALIZED_CREATE_RESPONSE_JSON, result.value)
-    }
-
-    @Test
     fun getAssertion_maps_bridge_failures_with_platform_mapper() = runTest {
-        val client = SharedPasskeyClient(
+        val client = DefaultPasskeyClient(
             bridge = object : PasskeyPlatformBridge {
-                override suspend fun createCredential(requestJson: String): String = error("unused")
+                override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+                    error("unused")
+                }
 
-                override suspend fun getAssertion(requestJson: String): String {
+                override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
                     throw IllegalStateException("boom")
                 }
 
@@ -87,7 +59,6 @@ class SharedPasskeyClientTest {
                     return PasskeyClientError.Transport("mapped", throwable)
                 }
             },
-            jsonCodec = FakeJsonCodec(),
         )
 
         val result = client.getAssertion(
@@ -109,17 +80,41 @@ class SharedPasskeyClientTest {
     }
 
     @Test
+    fun createCredential_maps_illegal_argument_to_invalid_options() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = object : PasskeyPlatformBridge {
+                override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+                    throw IllegalArgumentException("bad options")
+                }
+
+                override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+                    return validAuthenticationResponse()
+                }
+
+                override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
+                    return PasskeyClientError.Platform("unexpected", throwable)
+                }
+            },
+        )
+
+        val result = client.createCredential(validCreationOptions())
+
+        assertTrue(result is PasskeyResult.Failure)
+        assertTrue(result.error is PasskeyClientError.InvalidOptions)
+        assertTrue(result.error.message.contains("bad options"))
+    }
+
+    @Test
     fun capabilities_default_to_bridge_values() = runTest {
-        val client = SharedPasskeyClient(
+        val client = DefaultPasskeyClient(
             bridge = StaticBridge(
-                createResponse = "{}",
-                assertionResponse = "{}",
+                createResponse = validRegistrationResponse(),
+                assertionResponse = validAuthenticationResponse(),
                 capabilities = PasskeyCapabilities(
                     supportsPrf = true,
                     platformVersionHints = listOf("test"),
                 ),
             ),
-            jsonCodec = FakeJsonCodec(),
         )
 
         val capabilities = client.capabilities()
@@ -128,71 +123,19 @@ class SharedPasskeyClientTest {
     }
 
     private class StaticBridge(
-        private val createResponse: String,
-        private val assertionResponse: String,
+        private val createResponse: RegistrationResponse,
+        private val assertionResponse: AuthenticationResponse,
         private val capabilities: PasskeyCapabilities = PasskeyCapabilities(),
     ) : PasskeyPlatformBridge {
-        override suspend fun createCredential(requestJson: String): String = createResponse
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse = createResponse
 
-        override suspend fun getAssertion(requestJson: String): String = assertionResponse
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse = assertionResponse
 
         override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
             return PasskeyClientError.Platform(throwable.message ?: "platform", throwable)
         }
 
         override suspend fun capabilities(): PasskeyCapabilities = capabilities
-    }
-
-    private class FakeJsonCodec : PasskeyJsonCodec {
-        override fun encodeCreationOptions(options: PublicKeyCredentialCreationOptions): String = "encoded-create-options"
-
-        override fun decodeCreationOptions(payload: String): ValidationResult<PublicKeyCredentialCreationOptions> {
-            return when (payload) {
-                VALID_CREATE_REQUEST_JSON -> ValidationResult.Valid(validCreationOptions())
-                else -> throw IllegalArgumentException("Malformed JSON")
-            }
-        }
-
-        override fun encodeAssertionOptions(options: PublicKeyCredentialRequestOptions): String = "encoded-assertion-options"
-
-        override fun decodeAssertionOptions(payload: String): ValidationResult<PublicKeyCredentialRequestOptions> {
-            return ValidationResult.Valid(
-                PublicKeyCredentialRequestOptions(
-                    challenge = Challenge.fromBytes(ByteArray(32) { 3 }),
-                    rpId = RpId.parseOrThrow("example.com"),
-                ),
-            )
-        }
-
-        override fun encodeRegistrationResponse(response: RegistrationResponse): String {
-            return NORMALIZED_CREATE_RESPONSE_JSON
-        }
-
-        override fun decodeRegistrationResponse(payload: String): ValidationResult<RegistrationResponse> {
-            return when (payload) {
-                BRIDGE_CREATE_RESPONSE -> ValidationResult.Valid(validRegistrationResponse())
-                else -> ValidationResult.Invalid(
-                    listOf(
-                        WebAuthnValidationError.InvalidFormat(
-                            field = "registrationResponse",
-                            message = "unexpected payload",
-                        ),
-                    ),
-                )
-            }
-        }
-
-        override fun encodeAuthenticationResponse(response: AuthenticationResponse): String = "normalized-auth-response"
-
-        override fun decodeAuthenticationResponse(payload: String): ValidationResult<AuthenticationResponse> {
-            return ValidationResult.Valid(validAuthenticationResponse())
-        }
-
-        companion object {
-            const val VALID_CREATE_REQUEST_JSON = "valid-create-request-json"
-            const val BRIDGE_CREATE_RESPONSE = "bridge-create-response"
-            const val NORMALIZED_CREATE_RESPONSE_JSON = "{\"id\":\"normalized-credential-id\"}"
-        }
     }
 
     private companion object {

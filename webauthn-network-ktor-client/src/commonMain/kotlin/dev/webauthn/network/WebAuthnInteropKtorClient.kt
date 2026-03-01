@@ -37,7 +37,7 @@ public class WebAuthnInteropKtorClient(
     private val profile: WebAuthnBackendProfile = WebAuthnBackendProfile.LIBRARY_ROUTES,
 ) {
     private val libraryClient = WebAuthnKtorClient(httpClient, endpointBase)
-    private val registrationChallengeToUserId: MutableMap<String, String> = mutableMapOf()
+    private val registrationChallengeToContext: MutableMap<String, PendingPocRegistration> = mutableMapOf()
     private val registrationUserNameToUserId: MutableMap<String, String> = mutableMapOf()
 
     public suspend fun startRegistration(request: RegistrationStartPayload): ValidationResult<PublicKeyCredentialCreationOptions> {
@@ -82,8 +82,10 @@ public class WebAuthnInteropKtorClient(
                 )
             }.body()
 
-        registrationChallengeToUserId[response.challenge] = request.userHandle
-        registrationUserNameToUserId[request.userName] = request.userHandle
+        registrationChallengeToContext[response.challenge] = PendingPocRegistration(
+            userId = request.userHandle,
+            userName = request.userName,
+        )
 
         val dto = PublicKeyCredentialCreationOptionsDto(
             rp = response.rp,
@@ -102,8 +104,8 @@ public class WebAuthnInteropKtorClient(
     }
 
     private suspend fun finishRegistrationAgainstPoc(request: RegistrationFinishPayload): Boolean {
-        val userId = registrationChallengeToUserId.remove(request.challenge)
-        val query = userId?.let { "?userId=$it" }.orEmpty()
+        val context = registrationChallengeToContext.remove(request.challenge)
+        val query = context?.userId?.let { "?userId=$it" }.orEmpty()
 
         val payload = PocRegistrationVerifyRequest(
             id = request.response.id,
@@ -119,6 +121,10 @@ public class WebAuthnInteropKtorClient(
                 setBody(payload)
             }
             response.status.isSuccess() && response.body<PocVerificationResponse>().success
+        }.onSuccess { verified ->
+            if (verified && context != null) {
+                registrationUserNameToUserId[context.userName] = context.userId
+            }
         }.getOrDefault(false)
     }
 
@@ -225,4 +231,9 @@ private data class PocAuthenticationVerifyRequest(
 private data class PocVerificationResponse(
     val success: Boolean,
     val message: String? = null,
+)
+
+private data class PendingPocRegistration(
+    val userId: String,
+    val userName: String,
 )

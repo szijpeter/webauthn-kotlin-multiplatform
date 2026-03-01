@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-02-28
+Last updated: 2026-03-01
 
 ## North-Star Exit Criteria
 
@@ -20,7 +20,7 @@ Last updated: 2026-02-28
 
 ## Phase 1: Client Readiness and Interoperability (Immediate)
 
-1. Land shared client-core orchestration for typed and raw JSON ceremony APIs.
+1. Keep shared typed ceremony orchestration in `webauthn-client-core` and maintain optional JSON APIs in `webauthn-client-json-core`.
 2. Keep Android Credential Manager and iOS AuthenticationServices adapters as thin platform bridges.
 3. Maintain interop paths for external backend profiles (`PASSKEY_ENCRYPTION_POC`) and temporary local backend (`temp.server`).
 4. Verify extension transport and response mapping for PRF and Large Blob semantics.
