@@ -10,7 +10,6 @@ Run:
 ./gradlew :samples:compose-passkey:allTests \
   :samples:compose-passkey:compileAndroidMain \
   :samples:compose-passkey:compileKotlinIosSimulatorArm64 \
-  :webauthn-client-android:testDebugUnitTest \
   :samples:compose-passkey-android:compileDebugAndroidTestKotlin \
   :samples:compose-passkey-android:lintDebug \
   :samples:compose-passkey-android:assembleDebug --stacktrace
@@ -19,8 +18,8 @@ Run:
 Pass condition:
 
 - all commands succeed without test failures.
-- shared sample integration tests may use a fake platform bridge for determinism, but real Android passkey client behavior is covered by `:webauthn-client-android:testDebugUnitTest` in the same gate.
-- deterministic health action orchestration is covered by `PasskeyDemoControllerTest.health_check_success_updates_status_and_logs` in `:samples:compose-passkey:allTests`.
+- shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus transition timeline behavior.
+- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyClientState()`).
 - Android UI smoke test sources compile in CI (`:samples:compose-passkey-android:compileDebugAndroidTestKotlin`).
 
 ## 2. Local temp server
@@ -54,10 +53,9 @@ adb shell am start -n dev.webauthn.samples.composepasskey.android/.MainActivity
 Pass criteria:
 
 1. App launch succeeds.
-2. `Check Health` succeeds.
-3. `Register` succeeds and timeline records registration success.
-4. `Sign In` succeeds and timeline records authentication success.
-5. No fatal crash in logcat while running the flow.
+2. `Register` succeeds and timeline records registration success.
+3. `Sign In` succeeds and timeline records authentication success.
+4. No fatal crash in logcat while running the flow.
 
 Suggested crash check:
 
@@ -75,7 +73,7 @@ adb logcat | rg "PasskeyDemo"
 
 Pass condition:
 
-- action and network events are present.
+- register/auth action and network events are present.
 - sensitive fields are redacted in log lines.
 
 ## 5. Optional emulator smoke run

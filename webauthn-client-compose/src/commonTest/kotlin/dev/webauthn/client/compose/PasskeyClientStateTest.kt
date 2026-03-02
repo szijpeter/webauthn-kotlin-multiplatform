@@ -22,53 +22,120 @@ import dev.webauthn.model.UserHandle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
 
 class PasskeyClientStateTest {
     @Test
-    fun createCredential_updatesStateToSuccess() = runTest {
+    fun register_lifecycle_transitions_to_success() = runTest {
         val state = PasskeyClientState(
             passkeyClient = FakePasskeyClient(
                 createResult = PasskeyResult.Success(validRegistrationResponse()),
             ),
         )
 
-        val result = state.createCredential(validCreationOptions())
+        state.begin(PasskeyAction.REGISTER)
+        assertEquals(
+            PasskeyClientUiState.InProgress(
+                action = PasskeyAction.REGISTER,
+                phase = PasskeyPhase.STARTING,
+            ),
+            state.uiState,
+        )
+        state.setPhase(PasskeyAction.REGISTER, PasskeyPhase.PLATFORM_PROMPT)
 
+        val result = state.createCredential(validCreationOptions())
         assertTrue(result is PasskeyResult.Success)
-        assertFalse(state.uiState.isBusy)
-        assertEquals(PasskeyOperation.CREATE_CREDENTIAL, state.uiState.lastSuccess)
-        assertNull(state.uiState.lastError)
+        state.setPhase(PasskeyAction.REGISTER, PasskeyPhase.FINISHING)
+        state.finishSuccess(PasskeyAction.REGISTER)
+
+        assertEquals(PasskeyClientUiState.Success(PasskeyAction.REGISTER), state.uiState)
     }
 
     @Test
-    fun getAssertion_updatesStateToFailure() = runTest {
-        val error = PasskeyClientError.UserCancelled()
+    fun invalid_transition_rejected_when_action_does_not_match_in_progress() {
+        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
+        state.begin(PasskeyAction.REGISTER)
+
+        assertFailsWith<IllegalStateException> {
+            state.setPhase(PasskeyAction.SIGN_IN, PasskeyPhase.PLATFORM_PROMPT)
+        }
+    }
+
+    @Test
+    fun begin_rejected_while_another_operation_is_active() {
+        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
+        state.begin(PasskeyAction.REGISTER)
+
+        assertFailsWith<IllegalStateException> {
+            state.begin(PasskeyAction.SIGN_IN)
+        }
+    }
+
+    @Test
+    fun terminal_state_persists_until_next_action_or_reset() {
+        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
+
+        state.begin(PasskeyAction.REGISTER)
+        state.finishSuccess(PasskeyAction.REGISTER)
+        assertEquals(PasskeyClientUiState.Success(PasskeyAction.REGISTER), state.uiState)
+
+        state.begin(PasskeyAction.SIGN_IN)
+        assertEquals(
+            PasskeyClientUiState.InProgress(
+                action = PasskeyAction.SIGN_IN,
+                phase = PasskeyPhase.STARTING,
+            ),
+            state.uiState,
+        )
+
+        state.finishFailure(PasskeyAction.SIGN_IN, PasskeyClientError.UserCancelled())
+        assertIs<PasskeyClientUiState.Failure>(state.uiState)
+
+        state.resetToIdle()
+        assertEquals(PasskeyClientUiState.Idle, state.uiState)
+    }
+
+    @Test
+    fun create_credential_throwable_is_mapped_and_can_finish_failure() = runTest {
         val state = PasskeyClientState(
             passkeyClient = FakePasskeyClient(
-                assertionResult = PasskeyResult.Failure(error),
+                createThrowable = IllegalStateException("platform prompt failed"),
             ),
         )
 
-        val result = state.getAssertion(validRequestOptions())
+        state.begin(PasskeyAction.REGISTER)
+        state.setPhase(PasskeyAction.REGISTER, PasskeyPhase.PLATFORM_PROMPT)
+        val result = state.createCredential(validCreationOptions())
+        val failure = assertIs<PasskeyResult.Failure>(result)
+        val error = failure.error
+        assertTrue(error is PasskeyClientError.Platform)
+        assertTrue(error.message.contains("platform prompt failed"))
 
-        assertTrue(result is PasskeyResult.Failure)
-        assertFalse(state.uiState.isBusy)
-        assertEquals(error, state.uiState.lastError)
-        assertNull(state.uiState.activeOperation)
+        state.finishFailure(PasskeyAction.REGISTER, error)
+        assertEquals(
+            PasskeyClientUiState.Failure(
+                action = PasskeyAction.REGISTER,
+                error = error,
+            ),
+            state.uiState,
+        )
     }
 
     private class FakePasskeyClient(
         private val createResult: PasskeyResult<RegistrationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
         private val assertionResult: PasskeyResult<AuthenticationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
+        private val createThrowable: Throwable? = null,
+        private val assertionThrowable: Throwable? = null,
     ) : PasskeyClient {
         override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+            createThrowable?.let { throw it }
             return createResult
         }
 
         override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+            assertionThrowable?.let { throw it }
             return assertionResult
         }
 

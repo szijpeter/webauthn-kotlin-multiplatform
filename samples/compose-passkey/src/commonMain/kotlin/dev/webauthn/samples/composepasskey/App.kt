@@ -24,7 +24,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
@@ -33,9 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +46,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.compose.PasskeyClientUiState
+import dev.webauthn.client.compose.rememberPasskeyClient
+import dev.webauthn.client.compose.rememberPasskeyClientState
 import kotlinx.coroutines.launch
 
 private val EditorialPalette = lightColorScheme(
@@ -81,25 +85,83 @@ private val EditorialTypography = Typography().run {
     )
 }
 
+private const val MAX_LOG_ENTRIES: Int = 40
+
 @Composable
 public fun App() {
-    val passkeyClient = rememberPlatformPasskeyClient()
+    val passkeyClient = rememberPasskeyClient()
+    val passkeyClientState = rememberPasskeyClientState(passkeyClient)
     val httpClient = rememberPlatformHttpClient()
     val diagnostics = remember { DefaultPasskeyDemoDiagnostics }
+    val config = remember { PasskeyDemoConfig() }
+    val scope = rememberCoroutineScope()
+
+    var capabilities by remember { mutableStateOf(PasskeyCapabilities()) }
+    var logs by remember { mutableStateOf(emptyList<PasskeyDemoLogEntry>()) }
+    var nextLogId by remember { mutableStateOf(1L) }
+    var fallbackTick by remember { mutableStateOf(0L) }
+    val uiState = passkeyClientState.uiState
+    var previousUiState by remember { mutableStateOf(uiState) }
+
+    fun nextTimestamp(): String {
+        fallbackTick += 1
+        return "t+$fallbackTick" + "s"
+    }
+
+    fun appendLog(tone: StatusTone, message: String) {
+        val entry = PasskeyDemoLogEntry(
+            id = nextLogId,
+            timestamp = nextTimestamp(),
+            tone = tone,
+            message = message,
+        )
+        nextLogId += 1
+        logs = (listOf(entry) + logs).take(MAX_LOG_ENTRIES)
+    }
+
     DisposableEffect(httpClient) {
         onDispose { httpClient.close() }
     }
 
-    val gateway = remember(passkeyClient, httpClient, diagnostics) {
-        DefaultPasskeyDemoGateway(passkeyClient, httpClient, diagnostics)
+    LaunchedEffect(passkeyClient) {
+        runCatching { passkeyClient.capabilities() }
+            .onSuccess { loaded ->
+                capabilities = loaded
+                appendLog(
+                    tone = StatusTone.IDLE,
+                    message = "Capabilities loaded: PRF=${loaded.supportsPrf}, LargeBlobRead=${loaded.supportsLargeBlobRead}, LargeBlobWrite=${loaded.supportsLargeBlobWrite}, SecurityKey=${loaded.supportsSecurityKey}",
+                )
+            }
+            .onFailure { throwable ->
+                capabilities = PasskeyCapabilities()
+                diagnostics.error(
+                    event = "capabilities.load.failure",
+                    message = throwable.message ?: "Capabilities unavailable; using defaults",
+                    throwable = throwable,
+                )
+                appendLog(
+                    tone = StatusTone.WARNING,
+                    message = "Capabilities unavailable, using safe defaults.",
+                )
+            }
     }
-    val controller = remember(gateway, diagnostics) { PasskeyDemoController(gateway, diagnostics = diagnostics) }
-    val state by controller.state.collectAsState()
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(controller) {
-        controller.bootstrap()
+    LaunchedEffect(uiState) {
+        val transitionEntry = timelineEntryForTransition(
+            previous = previousUiState,
+            current = uiState,
+            id = nextLogId,
+            timestamp = "pending",
+        )
+        if (transitionEntry != null) {
+            nextLogId += 1
+            logs = (listOf(transitionEntry.copy(timestamp = nextTimestamp())) + logs).take(MAX_LOG_ENTRIES)
+        }
+        previousUiState = uiState
     }
+
+    val status = uiState.toStatusPresentation()
+    val actionsEnabled = areCeremonyActionsEnabled(uiState)
 
     MaterialTheme(
         colorScheme = EditorialPalette,
@@ -122,21 +184,37 @@ public fun App() {
                         .padding(horizontal = 20.dp, vertical = 18.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
-                    Header(state = state)
+                    Header(status = status)
 
-                    EndpointCard(
-                        state = state,
-                        dispatch = { intent -> scope.launch { controller.dispatch(intent) } },
+                    CapabilitiesCard(
+                        capabilities = capabilities,
                     )
-
-                    CapabilitiesCard(state = state)
 
                     ActionsCard(
-                        busy = state.isBusy,
-                        dispatch = { intent -> scope.launch { controller.dispatch(intent) } },
+                        actionsEnabled = actionsEnabled,
+                        onRegister = {
+                            scope.launch {
+                                runRegisterCeremony(
+                                    config = config,
+                                    passkeyClientState = passkeyClientState,
+                                    backend = createPasskeyDemoBackend(httpClient, config),
+                                    diagnostics = diagnostics,
+                                )
+                            }
+                        },
+                        onSignIn = {
+                            scope.launch {
+                                runSignInCeremony(
+                                    config = config,
+                                    passkeyClientState = passkeyClientState,
+                                    backend = createPasskeyDemoBackend(httpClient, config),
+                                    diagnostics = diagnostics,
+                                )
+                            }
+                        },
                     )
 
-                    TimelineCard(logs = state.logs)
+                    TimelineCard(logs = logs)
                     Spacer(modifier = Modifier.height(20.dp))
                 }
             }
@@ -145,7 +223,7 @@ public fun App() {
 }
 
 @Composable
-private fun Header(state: PasskeyDemoUiState) {
+private fun Header(status: PasskeyDemoStatus) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -154,47 +232,14 @@ private fun Header(state: PasskeyDemoUiState) {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        text = "Client Readiness",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        text = "Compose Multiplatform sample against temp.server",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = "WebAuthn Kotlin Demo",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
-            StatusPill(state.statusTone, state.statusHeadline)
-            state.statusDetail?.let { detail ->
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                ) {
-                    Text(
-                        text = detail,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 4,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-            Text(
-                text = "Lean flow: check health, register passkey, then sign in.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            StatusPill(status.tone, status.headline)
         }
     }
 }
@@ -229,9 +274,8 @@ private fun StatusPill(tone: StatusTone, text: String) {
 }
 
 @Composable
-private fun EndpointCard(
-    state: PasskeyDemoUiState,
-    dispatch: (PasskeyDemoIntent) -> Unit,
+private fun CapabilitiesCard(
+    capabilities: PasskeyCapabilities,
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -241,86 +285,26 @@ private fun EndpointCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text("Endpoint Configuration", style = MaterialTheme.typography.titleMedium)
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.config.endpointBase,
-                onValueChange = { dispatch(PasskeyDemoIntent.EndpointBaseChanged(it)) },
-                label = { Text("endpointBase") },
-                singleLine = true,
-                enabled = !state.isBusy,
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.config.rpId,
-                onValueChange = { dispatch(PasskeyDemoIntent.RpIdChanged(it)) },
-                label = { Text("rpId") },
-                singleLine = true,
-                enabled = !state.isBusy,
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.config.origin,
-                onValueChange = { dispatch(PasskeyDemoIntent.OriginChanged(it)) },
-                label = { Text("origin") },
-                singleLine = true,
-                enabled = !state.isBusy,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                OutlinedTextField(
-                    modifier = Modifier.weight(1f),
-                    value = state.config.userHandle,
-                    onValueChange = { dispatch(PasskeyDemoIntent.UserHandleChanged(it)) },
-                    label = { Text("userHandle") },
-                    singleLine = true,
-                    enabled = !state.isBusy,
-                )
-                OutlinedTextField(
-                    modifier = Modifier.weight(1f),
-                    value = state.config.userName,
-                    onValueChange = { dispatch(PasskeyDemoIntent.UserNameChanged(it)) },
-                    label = { Text("userName") },
-                    singleLine = true,
-                    enabled = !state.isBusy,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun CapabilitiesCard(state: PasskeyDemoUiState) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text("Runtime Capabilities", style = MaterialTheme.typography.titleMedium)
+            Text("Capabilities", style = MaterialTheme.typography.titleMedium)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("PRF", state.capabilities.supportsPrf)
-                CapabilityChip("Large Blob Read", state.capabilities.supportsLargeBlobRead)
+                CapabilityChip("PRF", capabilities.supportsPrf)
+                CapabilityChip("Large Blob Read", capabilities.supportsLargeBlobRead)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("Large Blob Write", state.capabilities.supportsLargeBlobWrite)
-                CapabilityChip("Security Key", state.capabilities.supportsSecurityKey)
+                CapabilityChip("Large Blob Write", capabilities.supportsLargeBlobWrite)
+                CapabilityChip("Security Key", capabilities.supportsSecurityKey)
             }
             Text(
-                text = if (state.capabilities.platformVersionHints.isEmpty()) {
+                text = if (capabilities.platformVersionHints.isEmpty()) {
                     "No platform hints reported"
                 } else {
-                    state.capabilities.platformVersionHints.joinToString()
+                    capabilities.platformVersionHints.joinToString()
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -358,8 +342,9 @@ private fun CapabilityChip(label: String, enabled: Boolean) {
 
 @Composable
 private fun ActionsCard(
-    busy: Boolean,
-    dispatch: (PasskeyDemoIntent) -> Unit,
+    actionsEnabled: Boolean,
+    onRegister: () -> Unit,
+    onSignIn: () -> Unit,
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -372,22 +357,15 @@ private fun ActionsCard(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Button(
-                onClick = { dispatch(PasskeyDemoIntent.CheckHealth) },
-                enabled = !busy,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text("Check Health")
-            }
-            FilledTonalButton(
-                onClick = { dispatch(PasskeyDemoIntent.Register) },
-                enabled = !busy,
+                onClick = onRegister,
+                enabled = actionsEnabled,
                 modifier = Modifier.weight(1f),
             ) {
                 Text("Register")
             }
             FilledTonalButton(
-                onClick = { dispatch(PasskeyDemoIntent.SignIn) },
-                enabled = !busy,
+                onClick = onSignIn,
+                enabled = actionsEnabled,
                 modifier = Modifier.weight(1f),
             ) {
                 Text("Sign In")
@@ -413,7 +391,7 @@ private fun TimelineCard(logs: List<PasskeyDemoLogEntry>) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (entries.isEmpty()) {
                         Text(
-                            text = "No actions yet. Run a check or ceremony.",
+                            text = "No events yet.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

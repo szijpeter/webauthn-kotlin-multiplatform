@@ -2,8 +2,6 @@ package dev.webauthn.samples.composepasskey
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import dev.webauthn.client.PasskeyClient
-import dev.webauthn.client.ios.IosPasskeyClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -13,11 +11,6 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import platform.Foundation.NSLog
-
-@Composable
-public actual fun rememberPlatformPasskeyClient(): PasskeyClient {
-    return remember { IosPasskeyClient() }
-}
 
 @Composable
 public actual fun rememberPlatformHttpClient(): HttpClient {

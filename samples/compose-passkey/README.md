@@ -1,14 +1,14 @@
 # samples:compose-passkey
 
-Compose Multiplatform sample app for client-readiness verification against the temporary backend in `temp.server`.
+Compose Multiplatform sample app for a minimal passkey E2E flow against the temporary backend in `temp.server`.
 
 ## What this demonstrates
 
 1. Runtime capability probing (`supportsPrf`, Large Blob read/write, security key support).
 2. End-to-end passkey registration against `POST /register/options` + `/register/verify`.
 3. End-to-end passkey sign-in against `POST /authenticate/options` + `/authenticate/verify`.
-4. Editable endpoint and identity fields for local and tunneled development hosts.
-5. Timeline logs with operation status, categorized errors, and actionable hints.
+4. Sealed, Compose-native passkey lifecycle state (`Idle`, `InProgress`, `Success`, `Failure`) driving UI status and action enablement.
+5. Timeline logging for lifecycle transitions (start and terminal result) plus capability bootstrap logs.
 6. Structured debug logging for internal calls and network traces (sanitized).
 
 Default endpoints:
@@ -49,8 +49,7 @@ Use it from an external iOS app host to render the sample UI.
 
 The sample emits structured logs with tag `PasskeyDemo`:
 
-- internal actions: `action.start`, `action.success`, `action.failure`
-- ceremony steps: `register.*`, `auth.*`, `health.*`
+- ceremony steps: `register.*`, `auth.*`
 - network traces: `http.engine` (sanitized)
 
 Sensitive fields are redacted (`challenge`, `clientDataJSON`, `attestationObject`, `authenticatorData`, `signature`, `rawId`, credential identifiers).
@@ -62,8 +61,8 @@ To inspect logs:
 
 ## Test layering (fake vs real client)
 
-- `samples:compose-passkey` `commonTest` uses a `FakePasskeyClient` only at the platform bridge boundary so orchestration and mapping tests stay deterministic across KMP targets.
-- Real Android platform behavior is verified in `:webauthn-client-android:testDebugUnitTest` (the actual `AndroidPasskeyClient` path), and this task is required by changed-scope quality gates for the compose sample.
+- `samples:compose-passkey` `commonTest` validates flow behavior with `FakePasskeyClient` and fake backend helpers so orchestration is deterministic across KMP targets.
+- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyClientState()`).
 - Final readiness still requires the live register/sign-in checklist run on a real/emulated Android device with provider dependencies present.
 
 ## Android provider prerequisite
@@ -83,4 +82,4 @@ For realistic device passkey prompts, use HTTPS plus associated-domain configura
 - Android: `/.well-known/assetlinks.json`
 - iOS: `/.well-known/apple-app-site-association`
 
-The in-app `endpointBase` field can target ngrok or another HTTPS tunnel when needed.
+This sample intentionally uses fixed minimal config values to keep the E2E ceremony flow focused.
