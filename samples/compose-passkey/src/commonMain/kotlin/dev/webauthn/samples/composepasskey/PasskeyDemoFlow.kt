@@ -5,6 +5,7 @@ import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyPhase
+import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
@@ -53,77 +54,61 @@ internal data class PasskeyDemoStatus(
     val detail: String? = null,
 )
 
-internal interface PasskeyDemoBackend {
-    suspend fun startRegistration(config: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialCreationOptions>
-
-    suspend fun finishRegistration(
-        config: PasskeyDemoConfig,
-        response: RegistrationResponse,
-        challenge: String,
-    ): Boolean
-
-    suspend fun startAuthentication(config: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialRequestOptions>
-
-    suspend fun finishAuthentication(
-        config: PasskeyDemoConfig,
-        response: dev.webauthn.model.AuthenticationResponse,
-        challenge: String,
-    ): Boolean
-}
+internal interface PasskeyDemoBackend : PasskeyServerClient<PasskeyDemoConfig, PasskeyDemoConfig>
 
 internal class InteropPasskeyDemoBackend(
     private val interop: WebAuthnInteropKtorClient,
 ) : PasskeyDemoBackend {
-    override suspend fun startRegistration(config: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialCreationOptions> {
+    override suspend fun getRegisterOptions(params: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialCreationOptions> {
         return interop.startRegistration(
             RegistrationStartPayload(
-                rpId = config.rpId,
+                rpId = params.rpId,
                 rpName = "WebAuthn Kotlin MPP Temp Server",
-                origin = config.origin,
-                userName = config.userName,
-                userDisplayName = config.userName,
-                userHandle = config.userHandle,
+                origin = params.origin,
+                userName = params.userName,
+                userDisplayName = params.userName,
+                userHandle = params.userHandle,
             ),
         )
     }
 
-    override suspend fun finishRegistration(
-        config: PasskeyDemoConfig,
+    override suspend fun finishRegister(
+        params: PasskeyDemoConfig,
         response: RegistrationResponse,
-        challenge: String,
+        challengeAsBase64Url: String,
     ): Boolean {
         return interop.finishRegistration(
             RegistrationFinishPayload(
                 response = WebAuthnDtoMapper.fromModel(response),
                 clientDataType = "webauthn.create",
-                challenge = challenge,
-                origin = config.origin,
+                challenge = challengeAsBase64Url,
+                origin = params.origin,
             ),
         )
     }
 
-    override suspend fun startAuthentication(config: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialRequestOptions> {
+    override suspend fun getSignInOptions(params: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialRequestOptions> {
         return interop.startAuthentication(
             AuthenticationStartPayload(
-                rpId = config.rpId,
-                origin = config.origin,
-                userName = config.userName,
-                userHandle = config.userHandle,
+                rpId = params.rpId,
+                origin = params.origin,
+                userName = params.userName,
+                userHandle = params.userHandle,
             ),
         )
     }
 
-    override suspend fun finishAuthentication(
-        config: PasskeyDemoConfig,
+    override suspend fun finishSignIn(
+        params: PasskeyDemoConfig,
         response: dev.webauthn.model.AuthenticationResponse,
-        challenge: String,
+        challengeAsBase64Url: String,
     ): Boolean {
         return interop.finishAuthentication(
             AuthenticationFinishPayload(
                 response = WebAuthnDtoMapper.fromModel(response),
                 clientDataType = "webauthn.get",
-                challenge = challenge,
-                origin = config.origin,
+                challenge = challengeAsBase64Url,
+                origin = params.origin,
             ),
         )
     }
@@ -144,7 +129,7 @@ internal fun createPasskeyDemoBackend(
 
 internal suspend fun runRegisterCeremony(
     config: PasskeyDemoConfig,
-    controller: PasskeyController,
+    controller: PasskeyController<PasskeyDemoConfig, PasskeyDemoConfig>,
     backend: PasskeyDemoBackend,
     diagnostics: PasskeyDemoDiagnostics = DefaultPasskeyDemoDiagnostics,
 ) {
@@ -156,28 +141,15 @@ internal suspend fun runRegisterCeremony(
             "userName" to config.userName,
         ),
     )
-
-    controller.register(
-        getOptions = {
-            runCatching { backend.startRegistration(config) }
-                .onFailure { diagnostics.error("register.options.failure", it.message ?: "startRegistration failed", it) }
-                .getOrThrow()
-        },
-        finish = { response, challenge ->
-            val result = runCatching { backend.finishRegistration(config, response, challenge) }
-                .onFailure { diagnostics.error("register.verify.failure", it.message ?: "finishRegistration failed", it) }
-                .getOrThrow()
-            if (result) {
-                diagnostics.trace(event = "register.success")
-            }
-            result
-        }
-    )
+    
+    // With PasskeyServerClient, the backend is handled within the controller. 
+    // We just pass the config.
+    controller.register(params = config)
 }
 
 internal suspend fun runSignInCeremony(
     config: PasskeyDemoConfig,
-    controller: PasskeyController,
+    controller: PasskeyController<PasskeyDemoConfig, PasskeyDemoConfig>,
     backend: PasskeyDemoBackend,
     diagnostics: PasskeyDemoDiagnostics = DefaultPasskeyDemoDiagnostics,
 ) {
@@ -189,23 +161,9 @@ internal suspend fun runSignInCeremony(
             "userHandle" to config.userHandle,
         ),
     )
-
-    controller.signIn(
-        getOptions = {
-            runCatching { backend.startAuthentication(config) }
-                .onFailure { diagnostics.error("auth.options.failure", it.message ?: "startAuthentication failed", it) }
-                .getOrThrow()
-        },
-        finish = { response, challenge ->
-            val result = runCatching { backend.finishAuthentication(config, response, challenge) }
-                .onFailure { diagnostics.error("auth.verify.failure", it.message ?: "finishAuthentication failed", it) }
-                .getOrThrow()
-            if (result) {
-                diagnostics.trace(event = "auth.success")
-            }
-            result
-        }
-    )
+    // With PasskeyServerClient, the backend is handled within the controller. 
+    // We just pass the config.
+    controller.signIn(params = config)
 }
 
 internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean {

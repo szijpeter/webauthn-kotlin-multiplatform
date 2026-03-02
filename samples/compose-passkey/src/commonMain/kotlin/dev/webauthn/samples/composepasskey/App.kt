@@ -88,11 +88,17 @@ private const val MAX_LOG_ENTRIES: Int = 40
 
 @Composable
 public fun App() {
-    val passkeyClient = rememberPasskeyClient()
-    val passkeyController = rememberPasskeyController(passkeyClient)
     val httpClient = rememberPlatformHttpClient()
-    val diagnostics = remember { DefaultPasskeyDemoDiagnostics }
     val config = remember { PasskeyDemoConfig() }
+    val backend = remember(httpClient, config) { createPasskeyDemoBackend(httpClient, config) }
+    
+    val passkeyClient = rememberPasskeyClient()
+    val passkeyController = rememberPasskeyController(
+        serverClient = backend,
+        passkeyClient = passkeyClient,
+    )
+    
+    val diagnostics = remember { DefaultPasskeyDemoDiagnostics }
     val scope = rememberCoroutineScope()
 
     var capabilities by remember { mutableStateOf(PasskeyCapabilities()) }
@@ -196,7 +202,7 @@ public fun App() {
                                 runRegisterCeremony(
                                     config = config,
                                     controller = passkeyController,
-                                    backend = createPasskeyDemoBackend(httpClient, config),
+                                    backend = backend,
                                     diagnostics = diagnostics,
                                 )
                             }
@@ -206,7 +212,7 @@ public fun App() {
                                 runSignInCeremony(
                                     config = config,
                                     controller = passkeyController,
-                                    backend = createPasskeyDemoBackend(httpClient, config),
+                                    backend = backend,
                                     diagnostics = diagnostics,
                                 )
                             }

@@ -39,8 +39,17 @@ public sealed interface PasskeyControllerState {
     ) : PasskeyControllerState
 }
 
-public class PasskeyController(
+public interface PasskeyServerClient<RegisterParams, SignInParams> {
+    public suspend fun getRegisterOptions(params: RegisterParams): ValidationResult<PublicKeyCredentialCreationOptions>
+    public suspend fun finishRegister(params: RegisterParams, response: RegistrationResponse, challengeAsBase64Url: String): Boolean
+
+    public suspend fun getSignInOptions(params: SignInParams): ValidationResult<PublicKeyCredentialRequestOptions>
+    public suspend fun finishSignIn(params: SignInParams, response: AuthenticationResponse, challengeAsBase64Url: String): Boolean
+}
+
+public class PasskeyController<RegisterParams, SignInParams>(
     private val passkeyClient: PasskeyClient,
+    private val serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
 ) {
     private val _uiState = MutableStateFlow<PasskeyControllerState>(PasskeyControllerState.Idle)
 
@@ -59,38 +68,28 @@ public class PasskeyController(
     /**
      * Triggers a full registration ceremony.
      *
-     * @param getOptions A suspending function that fetches the [PublicKeyCredentialCreationOptions] from the server.
-     * @param finish A suspending function that sends the [RegistrationResponse] to the server for verification,
-     *               along with the original challenge (as a base64url encoded string), and returns true if successful.
+     * @param params Client-specific parameters needed by the server to start/finish registration.
      */
-    public suspend fun register(
-        getOptions: suspend () -> ValidationResult<PublicKeyCredentialCreationOptions>,
-        finish: suspend (response: RegistrationResponse, challengeAsBase64Url: String) -> Boolean,
-    ) {
+    public suspend fun register(params: RegisterParams) {
         runCeremony(
             action = PasskeyAction.REGISTER,
-            getOptions = getOptions,
+            getOptions = { serverClient.getRegisterOptions(params) },
             interactWithPlatform = { options -> passkeyClient.createCredential(options) },
-            finish = finish,
+            finish = { response, challenge -> serverClient.finishRegister(params, response, challenge) },
         )
     }
 
     /**
      * Triggers a full authentication ceremony.
      *
-     * @param getOptions A suspending function that fetches the [PublicKeyCredentialRequestOptions] from the server.
-     * @param finish A suspending function that sends the [AuthenticationResponse] to the server for verification,
-     *               along with the original challenge (as a base64url encoded string), and returns true if successful.
+     * @param params Client-specific parameters needed by the server to start/finish sign in.
      */
-    public suspend fun signIn(
-        getOptions: suspend () -> ValidationResult<PublicKeyCredentialRequestOptions>,
-        finish: suspend (response: AuthenticationResponse, challengeAsBase64Url: String) -> Boolean,
-    ) {
+    public suspend fun signIn(params: SignInParams) {
         runCeremony(
             action = PasskeyAction.SIGN_IN,
-            getOptions = getOptions,
+            getOptions = { serverClient.getSignInOptions(params) },
             interactWithPlatform = { options -> passkeyClient.getAssertion(options) },
-            finish = finish,
+            finish = { response, challenge -> serverClient.finishSignIn(params, response, challenge) },
         )
     }
 

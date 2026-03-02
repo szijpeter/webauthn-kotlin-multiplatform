@@ -32,7 +32,8 @@ class PasskeyControllerTest {
         val fakeClient = FakePasskeyClient(
             createResult = PasskeyResult.Success(validRegistrationResponse()),
         )
-        val controller = PasskeyController(passkeyClient = fakeClient)
+        val serverClient = FakePasskeyServerClient()
+        val controller = PasskeyController(passkeyClient = fakeClient, serverClient = serverClient)
 
         assertEquals(PasskeyControllerState.Idle, controller.uiState.value)
 
@@ -40,10 +41,7 @@ class PasskeyControllerTest {
         val deferredFinish = CompletableDeferred<Boolean>()
 
         val job = launch {
-            controller.register(
-                getOptions = { deferredOptions.await() },
-                finish = { _, _ -> deferredFinish.await() },
-            )
+            controller.register(Unit)
         }
 
         // Before returning options, state should be STARTING
@@ -52,7 +50,7 @@ class PasskeyControllerTest {
             controller.uiState.value,
         )
 
-        deferredOptions.complete(ValidationResult.Valid(validCreationOptions(), emptyList()))
+        serverClient.registerOptionsDeferred.complete(ValidationResult.Valid(validCreationOptions()))
 
         // After returning options, but before platform finishes (Platform finishes instantly because it's synchronous fake),
         // we then enter FINISHING phase because getOptions and platform are done.
@@ -61,7 +59,7 @@ class PasskeyControllerTest {
             controller.uiState.value,
         )
 
-        deferredFinish.complete(true)
+        serverClient.finishRegisterDeferred.complete(true)
 
         // After finish, state should be Success
         assertEquals(
@@ -75,14 +73,13 @@ class PasskeyControllerTest {
     @Test
     fun options_validation_failure_transitions_to_error() = runTest(UnconfinedTestDispatcher()) {
         val fakeClient = FakePasskeyClient()
-        val controller = PasskeyController(fakeClient)
-
-        controller.register(
-            getOptions = { 
-                ValidationResult.Invalid(null, listOf(dev.webauthn.model.ValidationError("field", "bad options"))) 
-            },
-            finish = { _, _ -> true },
+        val serverClient = FakePasskeyServerClient()
+        serverClient.registerOptionsDeferred.complete(
+            ValidationResult.Invalid(listOf(dev.webauthn.model.WebAuthnValidationError.InvalidValue("field", "bad options")))
         )
+        val controller = PasskeyController(fakeClient, serverClient)
+
+        controller.register(Unit)
 
         val finalState = controller.uiState.value
         assertIs<PasskeyControllerState.Failure>(finalState)
@@ -95,12 +92,11 @@ class PasskeyControllerTest {
         val fakeClient = FakePasskeyClient(
             createResult = PasskeyResult.Failure(PasskeyClientError.UserCancelled("cancelled by user"))
         )
-        val controller = PasskeyController(fakeClient)
+        val serverClient = FakePasskeyServerClient()
+        serverClient.registerOptionsDeferred.complete(ValidationResult.Valid(validCreationOptions()))
+        val controller = PasskeyController(fakeClient, serverClient)
 
-        controller.register(
-            getOptions = { ValidationResult.Valid(validCreationOptions(), emptyList()) },
-            finish = { _, _ -> true },
-        )
+        controller.register(Unit)
 
         val finalState = controller.uiState.value
         assertIs<PasskeyControllerState.Failure>(finalState)
@@ -112,12 +108,12 @@ class PasskeyControllerTest {
         val fakeClient = FakePasskeyClient(
             createResult = PasskeyResult.Success(validRegistrationResponse())
         )
-        val controller = PasskeyController(fakeClient)
+        val serverClient = FakePasskeyServerClient()
+        serverClient.registerOptionsDeferred.complete(ValidationResult.Valid(validCreationOptions()))
+        serverClient.finishRegisterDeferred.complete(false) // Backend rejects logic
+        val controller = PasskeyController(fakeClient, serverClient)
 
-        controller.register(
-            getOptions = { ValidationResult.Valid(validCreationOptions(), emptyList()) },
-            finish = { _, _ -> false }, // Backend rejects logic
-        )
+        controller.register(Unit)
 
         val finalState = controller.uiState.value
         assertIs<PasskeyControllerState.Failure>(finalState)
@@ -128,12 +124,12 @@ class PasskeyControllerTest {
     @Test
     fun unknown_exception_is_wrapped() = runTest(UnconfinedTestDispatcher()) {
         val fakeClient = FakePasskeyClient()
-        val controller = PasskeyController(fakeClient)
-
-        controller.signIn(
-            getOptions = { throw IllegalStateException("random crash") },
-            finish = { _, _ -> true },
+        val serverClient = FakePasskeyServerClient(
+            signInOptionsException = IllegalStateException("random crash")
         )
+        val controller = PasskeyController(fakeClient, serverClient)
+
+        controller.signIn(Unit)
 
         val finalState = controller.uiState.value
         assertIs<PasskeyControllerState.Failure>(finalState)
@@ -144,28 +140,40 @@ class PasskeyControllerTest {
     @Test
     fun concurrent_actions_prevented() = runTest(UnconfinedTestDispatcher()) {
         val fakeClient = FakePasskeyClient()
-        val controller = PasskeyController(fakeClient)
-        
-        val deferredOptions = CompletableDeferred<ValidationResult<PublicKeyCredentialRequestOptions>>()
+        val serverClient = FakePasskeyServerClient()
+        val controller = PasskeyController(fakeClient, serverClient)
         
         val firstJob = launch {
-            controller.signIn(getOptions = { deferredOptions.await() }, finish = { _, _ -> true })
+            controller.signIn(Unit)
         }
 
         // State is now STARTING
         assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
 
         // Try to register concurrently
-        controller.register(
-            getOptions = { ValidationResult.Valid(validCreationOptions(), emptyList()) },
-            finish = { _, _ -> true }
-        )
+        controller.register(Unit)
         
         // State should remain SIGN_IN STARTING without throwing exception out of runCeremony, but the register loop silently aborted.
         assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
 
-        deferredOptions.complete(ValidationResult.Invalid(null, listOf()))
+        serverClient.signInOptionsDeferred.complete(ValidationResult.Invalid(emptyList()))
         firstJob.join()
+    }
+
+    private class FakePasskeyServerClient(
+        val registerOptionsDeferred: CompletableDeferred<ValidationResult<PublicKeyCredentialCreationOptions>> = CompletableDeferred(),
+        val finishRegisterDeferred: CompletableDeferred<Boolean> = CompletableDeferred(),
+        val signInOptionsDeferred: CompletableDeferred<ValidationResult<PublicKeyCredentialRequestOptions>> = CompletableDeferred(),
+        val finishSignInDeferred: CompletableDeferred<Boolean> = CompletableDeferred(),
+        val signInOptionsException: Throwable? = null,
+    ) : PasskeyServerClient<Unit, Unit> {
+        override suspend fun getRegisterOptions(params: Unit): ValidationResult<PublicKeyCredentialCreationOptions> = registerOptionsDeferred.await()
+        override suspend fun finishRegister(params: Unit, response: RegistrationResponse, challengeAsBase64Url: String): Boolean = finishRegisterDeferred.await()
+        override suspend fun getSignInOptions(params: Unit): ValidationResult<PublicKeyCredentialRequestOptions> {
+            signInOptionsException?.let { throw it }
+            return signInOptionsDeferred.await()
+        }
+        override suspend fun finishSignIn(params: Unit, response: AuthenticationResponse, challengeAsBase64Url: String): Boolean = finishSignInDeferred.await()
     }
 
     private class FakePasskeyClient(

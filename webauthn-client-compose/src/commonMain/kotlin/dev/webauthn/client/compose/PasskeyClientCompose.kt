@@ -4,12 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyController
+import dev.webauthn.client.PasskeyServerClient
 
 @Composable
-public fun rememberPasskeyController(
+public fun <R, S> rememberPasskeyController(
+    serverClient: PasskeyServerClient<R, S>,
     passkeyClient: PasskeyClient = rememberPasskeyClient(),
-): PasskeyController {
-    return remember(passkeyClient) { PasskeyController(passkeyClient) }
+): PasskeyController<R, S> {
+    return remember(passkeyClient, serverClient) {
+        PasskeyController(passkeyClient, serverClient)
+    }
 }
 
 @Composable
