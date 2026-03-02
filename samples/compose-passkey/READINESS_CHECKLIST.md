@@ -31,6 +31,12 @@ cd temp.server
 npm start
 ```
 
+or for ngrok-based physical device runs:
+
+```bash
+./temp.server/start-server.sh
+```
+
 Pass condition:
 
 - server starts on `http://127.0.0.1:8787`.
@@ -41,7 +47,10 @@ Prerequisites:
 
 - Google Play-enabled emulator/device
 - screen lock configured
-- internet access to temp server host (default emulator host alias is `10.0.2.2`)
+- internet access to temp server host
+- build-time endpoint configured via `WEBAUTHN_DEMO_ENDPOINT` for your target
+  - emulator: `http://10.0.2.2:8787`
+  - physical device: `http://<laptop-lan-ip>:8787`
 
 Run:
 

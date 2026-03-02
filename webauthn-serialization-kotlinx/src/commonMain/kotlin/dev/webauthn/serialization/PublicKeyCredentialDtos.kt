@@ -33,6 +33,14 @@ public data class RelatedOriginsDto(
 )
 
 @Serializable
+public data class AuthenticatorSelectionCriteriaDto(
+    @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
+    @SerialName("residentKey") public val residentKey: String? = null,
+    @SerialName("requireResidentKey") public val requireResidentKey: Boolean? = null,
+    @SerialName("userVerification") public val userVerification: String? = null,
+)
+
+@Serializable
 public data class PublicKeyCredentialCreationOptionsDto(
     @SerialName("rp") public val rp: RpEntityDto,
     @SerialName("user") public val user: UserEntityDto,
@@ -40,9 +48,7 @@ public data class PublicKeyCredentialCreationOptionsDto(
     @SerialName("pubKeyCredParams") public val pubKeyCredParams: List<PublicKeyCredentialParametersDto>,
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("excludeCredentials") public val excludeCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
-    @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
-    @SerialName("residentKey") public val residentKey: String = "preferred",
-    @SerialName("userVerification") public val userVerification: String = "preferred",
+    @SerialName("authenticatorSelection") public val authenticatorSelection: AuthenticatorSelectionCriteriaDto? = null,
     @SerialName("attestation") public val attestation: String? = null,
     @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
@@ -183,9 +189,12 @@ public object WebAuthnDtoMapper {
                     transports = it.transports.map { transport -> transport.toDtoValue() }.ifEmpty { null },
                 )
             },
-            authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
-            residentKey = value.residentKey.name.lowercase(),
-            userVerification = value.userVerification.name.lowercase(),
+            authenticatorSelection = AuthenticatorSelectionCriteriaDto(
+                authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
+                residentKey = value.residentKey.name.lowercase(),
+                requireResidentKey = value.residentKey == ResidentKeyRequirement.REQUIRED,
+                userVerification = value.userVerification.name.lowercase(),
+            ),
             attestation = value.attestation?.toDtoValue(),
             extensions = value.extensions?.let(::fromModel),
         )
@@ -247,12 +256,15 @@ public object WebAuthnDtoMapper {
             return ValidationResult.Invalid(errors)
         }
 
-        val residentKey = ResidentKeyRequirement.entries.find { it.name.equals(value.residentKey, ignoreCase = true) }
-            ?: ResidentKeyRequirement.PREFERRED
-        val userVerification = UserVerificationRequirement.entries.find {
-            it.name.equals(value.userVerification, ignoreCase = true)
+        val residentKey = value.authenticatorSelection?.residentKey?.let { rk ->
+            ResidentKeyRequirement.entries.find { it.name.equals(rk, ignoreCase = true) }
+        } ?: ResidentKeyRequirement.PREFERRED
+        val userVerification = value.authenticatorSelection?.userVerification?.let { uv ->
+            UserVerificationRequirement.entries.find {
+                it.name.equals(uv, ignoreCase = true)
+            }
         } ?: UserVerificationRequirement.PREFERRED
-        val authenticatorAttachment = value.authenticatorAttachment?.let {
+        val authenticatorAttachment = value.authenticatorSelection?.authenticatorAttachment?.let {
             when (val parsed = parseAuthenticatorAttachment(it, "authenticatorAttachment")) {
                 is ValidationResult.Valid -> parsed.value
                 is ValidationResult.Invalid -> {
@@ -388,7 +400,7 @@ public object WebAuthnDtoMapper {
     }
 
     public fun toModel(value: RegistrationResponseDto): ValidationResult<RegistrationResponse> {
-        val credentialId = CredentialId.parse(value.id)
+        val credentialId = CredentialId.parse(value.rawId)
         return when (credentialId) {
             is ValidationResult.Invalid -> credentialId
             is ValidationResult.Valid -> {
@@ -453,9 +465,10 @@ public object WebAuthnDtoMapper {
     }
 
     public fun fromModel(value: RegistrationResponse): RegistrationResponseDto {
+        val credentialId = value.attestedCredentialData.credentialId
         return RegistrationResponseDto(
-            id = value.credentialId.value.encoded(),
-            rawId = value.credentialId.value.encoded(),
+            id = credentialId.value.encoded(),
+            rawId = credentialId.value.encoded(),
             response = RegistrationResponsePayloadDto(
                 clientDataJson = value.clientDataJson.encoded(),
                 attestationObject = value.attestationObject.encoded(),

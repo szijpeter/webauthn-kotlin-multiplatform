@@ -1,6 +1,5 @@
 package dev.webauthn.samples.composepasskey
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import io.ktor.client.HttpClient
@@ -36,15 +35,5 @@ public actual fun rememberPlatformHttpClient(): HttpClient {
                 }
             }
         }
-    }
-}
-
-public actual fun platformDefaultEndpointBase(): String = "http://10.0.2.2:8787"
-
-public actual fun platformDebugLog(tag: String, message: String, throwable: Throwable?) {
-    if (throwable == null) {
-        Log.d(tag, message)
-    } else {
-        Log.e(tag, message, throwable)
     }
 }

@@ -94,9 +94,11 @@ public class WebAuthnInteropKtorClient(
             pubKeyCredParams = response.pubKeyCredParams,
             timeoutMs = response.timeoutMs,
             excludeCredentials = response.excludeCredentials,
-            authenticatorAttachment = response.authenticatorSelection?.authenticatorAttachment,
-            residentKey = response.authenticatorSelection?.residentKey ?: "preferred",
-            userVerification = response.authenticatorSelection?.userVerification ?: "preferred",
+            authenticatorSelection = dev.webauthn.serialization.AuthenticatorSelectionCriteriaDto(
+                authenticatorAttachment = response.authenticatorSelection?.authenticatorAttachment,
+                residentKey = response.authenticatorSelection?.residentKey ?: "preferred",
+                userVerification = response.authenticatorSelection?.userVerification ?: "preferred",
+            ),
             attestation = response.attestation,
             extensions = response.extensions,
         )

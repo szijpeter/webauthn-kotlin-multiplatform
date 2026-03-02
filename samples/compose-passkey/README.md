@@ -11,10 +11,19 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against the temp
 5. Timeline logging for lifecycle transitions (start and terminal result) plus capability bootstrap logs.
 6. Structured debug logging for internal calls and network traces (sanitized).
 
-Default endpoints:
+Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
-- Android: `http://10.0.2.2:8787` (Android Emulator host loopback)
-- iOS: `http://127.0.0.1:8787`
+- `WEBAUTHN_DEMO_ENDPOINT` (default: `http://127.0.0.1:8787`)
+- `WEBAUTHN_DEMO_RP_ID` (default: `localhost`)
+- `WEBAUTHN_DEMO_ORIGIN` (default: `https://localhost`)
+- `WEBAUTHN_DEMO_USER_ID` (default: `demo-user-1`)
+- `WEBAUTHN_DEMO_USER_NAME` (default: `demo@local`)
+
+Examples:
+
+- Android Emulator host alias: `WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8787`
+- Physical phone on LAN: `WEBAUTHN_DEMO_ENDPOINT=http://<laptop-lan-ip>:8787`
+- ngrok tunnel: `WEBAUTHN_DEMO_ENDPOINT=https://<domain>` and set `WEBAUTHN_DEMO_RP_ID/WEBAUTHN_DEMO_ORIGIN` to the same HTTPS domain
 
 ## Run (Android)
 
@@ -25,10 +34,18 @@ cd temp.server
 npm start
 ```
 
+For physical devices, prefer tunnel mode:
+
+```bash
+./temp.server/start-server.sh
+```
+
+This updates root `local.properties` (`WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, `WEBAUTHN_DEMO_ORIGIN`) to match the active ngrok domain.
+
 2. Build and run sample host app:
 
 ```bash
-./gradlew :samples:compose-passkey-android:installDebug
+WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8787 ./gradlew :samples:compose-passkey-android:installDebug
 ```
 
 3. Optional UI smoke test (emulator/device connected):

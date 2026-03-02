@@ -117,7 +117,10 @@ export async function handleRequest(request) {
   if (request.method === 'GET' && url.pathname === '/.well-known/assetlinks.json') {
     return jsonResponse(200, [
       {
-        relation: ['delegate_permission/common.get_login_creds'],
+        relation: [
+          'delegate_permission/common.handle_all_urls',
+          'delegate_permission/common.get_login_creds',
+        ],
         target: {
           namespace: 'android_app',
           package_name: androidPackageName,
@@ -168,13 +171,6 @@ export async function handleRequest(request) {
 
     registrationChallengeToUserId.set(challenge, userId);
 
-    const existingCredentials = ensureUserCredentials(userId);
-    const excludeCredentials = existingCredentials.map((credentialId) => ({
-      type: 'public-key',
-      id: credentialId,
-      transports: ['internal'],
-    }));
-
     return jsonResponse(200, {
       challenge,
       rp: {
@@ -191,7 +187,8 @@ export async function handleRequest(request) {
         { type: 'public-key', alg: -257 },
       ],
       timeout: 60000,
-      excludeCredentials,
+      // Keep demo registration repeatable even with local credentials present.
+      excludeCredentials: [],
       authenticatorSelection: {
         authenticatorAttachment: 'platform',
         residentKey: 'preferred',
@@ -217,19 +214,24 @@ export async function handleRequest(request) {
       registrationChallengeToUserId.delete(clientDataChallenge);
     }
 
-    const bodyCredentialId = body.id || body.rawId;
-    const credentialId = bodyCredentialId
-      ? String(bodyCredentialId)
-      : encodeBase64Url(randomBytes(16));
+    const credentialIdsFromBody = [body?.rawId, body?.id]
+      .filter((value) => typeof value === 'string')
+      .map((value) => String(value).trim())
+      .filter((value) => value.length > 0);
+    if (credentialIdsFromBody.length === 0) {
+      credentialIdsFromBody.push(encodeBase64Url(randomBytes(16)));
+    }
     const credentials = ensureUserCredentials(userId);
-    if (!credentials.includes(credentialId)) {
-      credentials.push(credentialId);
+    for (const credentialId of credentialIdsFromBody) {
+      if (!credentials.includes(credentialId)) {
+        credentials.push(credentialId);
+      }
     }
 
     return jsonResponse(200, {
       success: true,
       userId,
-      credentialId,
+      credentialId: credentialIdsFromBody[0],
       note: 'Development-only verification: signature and attestation are not cryptographically verified.',
     });
   }
@@ -238,21 +240,24 @@ export async function handleRequest(request) {
     const body = await readJsonBody(request);
     const userId = body.userId ? normalizeOpaqueId(String(body.userId)) : null;
 
-    const allowCredentials = [];
+    const allowCredentialIds = new Set();
     if (userId) {
       const credentials = ensureUserCredentials(userId);
       for (const credentialId of credentials) {
-        allowCredentials.push({ type: 'public-key', id: credentialId, transports: ['internal'] });
+        allowCredentialIds.add(credentialId);
       }
     }
-
-    if (!userId) {
+    if (allowCredentialIds.size === 0) {
       for (const credentials of userCredentials.values()) {
         for (const credentialId of credentials) {
-          allowCredentials.push({ type: 'public-key', id: credentialId, transports: ['internal'] });
+          allowCredentialIds.add(credentialId);
         }
       }
     }
+    const allowCredentials = Array.from(allowCredentialIds).map((credentialId) => ({
+      type: 'public-key',
+      id: credentialId,
+    }));
 
     const challenge = randomChallenge();
     authenticationChallengeToUserId.set(challenge, userId || 'anonymous');
@@ -262,6 +267,7 @@ export async function handleRequest(request) {
       rpId,
       timeout: 60000,
       userVerification: 'preferred',
+      // Keep auth robust on Android by returning explicit credential IDs when known.
       allowCredentials,
     });
   }

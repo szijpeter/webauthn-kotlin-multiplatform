@@ -10,7 +10,6 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import platform.Foundation.NSLog
 
 @Composable
 public actual fun rememberPlatformHttpClient(): HttpClient {
@@ -37,11 +36,4 @@ public actual fun rememberPlatformHttpClient(): HttpClient {
             }
         }
     }
-}
-
-public actual fun platformDefaultEndpointBase(): String = "http://127.0.0.1:8787"
-
-public actual fun platformDebugLog(tag: String, message: String, throwable: Throwable?) {
-    val throwableMessage = throwable?.let { " cause=${it.message ?: it::class.simpleName}" }.orEmpty()
-    NSLog("$tag: $message$throwableMessage")
 }

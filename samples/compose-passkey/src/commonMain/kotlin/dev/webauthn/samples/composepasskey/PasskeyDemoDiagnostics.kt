@@ -25,7 +25,6 @@ public class KermitPasskeyDemoDiagnostics(
     ) {
         val output = formatEvent(event = event, fields = fields)
         logger.d { output }
-        platformDebugLog(tag = "PasskeyDemo", message = output)
     }
 
     override fun error(
@@ -38,8 +37,7 @@ public class KermitPasskeyDemoDiagnostics(
             event = event,
             fields = fields + mapOf("message" to message),
         )
-        logger.e { output }
-        platformDebugLog(tag = "PasskeyDemo", message = output, throwable = throwable)
+        logger.e(throwable) { output }
     }
 }
 

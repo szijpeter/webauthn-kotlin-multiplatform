@@ -20,11 +20,17 @@ import dev.webauthn.serialization.WebAuthnDtoMapper
 import io.ktor.client.HttpClient
 
 public data class PasskeyDemoConfig(
-    public val endpointBase: String = platformDefaultEndpointBase(),
-    public val rpId: String = "localhost",
-    public val origin: String = "https://localhost",
-    public val userHandle: String = "demo-user-1",
-    public val userName: String = "demo@local",
+    public val endpointBase: String = PasskeyDemoBuildConfig.ENDPOINT_BASE,
+    public val rpId: String = resolveDefaultRpId(
+        endpointBase = PasskeyDemoBuildConfig.ENDPOINT_BASE,
+        configuredRpId = PasskeyDemoBuildConfig.RP_ID,
+    ),
+    public val origin: String = resolveDefaultOrigin(
+        rpId = rpId,
+        configuredOrigin = PasskeyDemoBuildConfig.ORIGIN,
+    ),
+    public val userHandle: String = PasskeyDemoBuildConfig.USER_ID,
+    public val userName: String = PasskeyDemoBuildConfig.USER_NAME,
 )
 
 public enum class StatusTone {
@@ -416,6 +422,50 @@ private fun PasskeyAction.label(): String {
 
 private fun String.normalizedEndpoint(): String {
     return trim().trimEnd('/')
+}
+
+private fun resolveDefaultRpId(endpointBase: String, configuredRpId: String): String {
+    val candidate = configuredRpId.trim()
+    val endpointHost = endpointBase.endpointHost()
+    val shouldReplaceLocalhost =
+        candidate.equals("localhost", ignoreCase = true) &&
+            endpointHost != null &&
+            endpointHost != "localhost" &&
+            endpointHost != "127.0.0.1"
+    return when {
+        candidate.isNotEmpty() && !shouldReplaceLocalhost -> candidate
+        endpointHost != null -> endpointHost
+        candidate.isNotEmpty() -> candidate
+        else -> "localhost"
+    }
+}
+
+private fun resolveDefaultOrigin(rpId: String, configuredOrigin: String): String {
+    val candidate = configuredOrigin.trim()
+    if (
+        candidate.isNotEmpty() &&
+        !candidate.equals("https://localhost", ignoreCase = true)
+    ) {
+        return candidate
+    }
+
+    val normalizedRpId = rpId.trim()
+    val derived = if (normalizedRpId.isNotEmpty()) "https://$normalizedRpId" else null
+    return derived ?: candidate.ifEmpty { "https://localhost" }
+}
+
+private fun String.endpointHost(): String? {
+    val trimmed = trim()
+    if (trimmed.isEmpty()) return null
+
+    val noScheme = trimmed.substringAfter("://", trimmed)
+    val authority = noScheme
+        .substringBefore('/')
+        .substringBefore('?')
+        .substringBefore('#')
+    if (authority.isEmpty()) return null
+
+    return authority.substringBefore(':').ifBlank { null }
 }
 
 private fun Throwable.toUnexpectedClientError(prefix: String): PasskeyClientError {
