@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +30,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,9 +47,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.webauthn.client.PasskeyCapabilities
-import dev.webauthn.client.compose.PasskeyClientUiState
 import dev.webauthn.client.compose.rememberPasskeyClient
-import dev.webauthn.client.compose.rememberPasskeyClientState
+import dev.webauthn.client.compose.rememberPasskeyController
 import kotlinx.coroutines.launch
 
 private val EditorialPalette = lightColorScheme(
@@ -90,7 +89,7 @@ private const val MAX_LOG_ENTRIES: Int = 40
 @Composable
 public fun App() {
     val passkeyClient = rememberPasskeyClient()
-    val passkeyClientState = rememberPasskeyClientState(passkeyClient)
+    val passkeyController = rememberPasskeyController(passkeyClient)
     val httpClient = rememberPlatformHttpClient()
     val diagnostics = remember { DefaultPasskeyDemoDiagnostics }
     val config = remember { PasskeyDemoConfig() }
@@ -100,8 +99,8 @@ public fun App() {
     var logs by remember { mutableStateOf(emptyList<PasskeyDemoLogEntry>()) }
     var nextLogId by remember { mutableStateOf(1L) }
     var fallbackTick by remember { mutableStateOf(0L) }
-    val uiState = passkeyClientState.uiState
-    var previousUiState by remember { mutableStateOf(uiState) }
+    val uiState by passkeyController.uiState.collectAsState()
+    var previousUiState by remember { mutableStateOf(passkeyController.uiState.value) }
 
     fun nextTimestamp(): String {
         fallbackTick += 1
@@ -196,7 +195,7 @@ public fun App() {
                             scope.launch {
                                 runRegisterCeremony(
                                     config = config,
-                                    passkeyClientState = passkeyClientState,
+                                    controller = passkeyController,
                                     backend = createPasskeyDemoBackend(httpClient, config),
                                     diagnostics = diagnostics,
                                 )
@@ -206,7 +205,7 @@ public fun App() {
                             scope.launch {
                                 runSignInCeremony(
                                     config = config,
-                                    passkeyClientState = passkeyClientState,
+                                    controller = passkeyController,
                                     backend = createPasskeyDemoBackend(httpClient, config),
                                     diagnostics = diagnostics,
                                 )

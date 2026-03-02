@@ -1,11 +1,10 @@
 package dev.webauthn.samples.composepasskey
 
+import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyResult
-import dev.webauthn.client.compose.PasskeyAction
-import dev.webauthn.client.compose.PasskeyClientState
-import dev.webauthn.client.compose.PasskeyClientUiState
-import dev.webauthn.client.compose.PasskeyPhase
+import dev.webauthn.client.PasskeyController
+import dev.webauthn.client.PasskeyControllerState
+import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
@@ -145,11 +144,10 @@ internal fun createPasskeyDemoBackend(
 
 internal suspend fun runRegisterCeremony(
     config: PasskeyDemoConfig,
-    passkeyClientState: PasskeyClientState,
+    controller: PasskeyController,
     backend: PasskeyDemoBackend,
     diagnostics: PasskeyDemoDiagnostics = DefaultPasskeyDemoDiagnostics,
 ) {
-    passkeyClientState.begin(PasskeyAction.REGISTER)
     diagnostics.trace(
         event = "register.start",
         fields = mapOf(
@@ -159,81 +157,30 @@ internal suspend fun runRegisterCeremony(
         ),
     )
 
-    val options = runCatching { backend.startRegistration(config) }
-        .onFailure { throwable ->
-            diagnostics.error(
-                event = "register.options.failure",
-                message = throwable.message ?: "startRegistration failed",
-                throwable = throwable,
-            )
-            passkeyClientState.finishFailure(
-                action = PasskeyAction.REGISTER,
-                error = throwable.toUnexpectedClientError(prefix = "Registration options"),
-            )
-        }
-        .getOrNull()
-        ?: return
-
-    when (options) {
-        is ValidationResult.Valid -> {
-            passkeyClientState.setPhase(PasskeyAction.REGISTER, PasskeyPhase.PLATFORM_PROMPT)
-            val credential = when (val result = passkeyClientState.createCredential(options.value)) {
-                is PasskeyResult.Success -> result.value
-                is PasskeyResult.Failure -> {
-                    diagnostics.trace(
-                        event = "register.platform.failure",
-                        fields = mapOf("message" to result.error.message),
-                    )
-                    passkeyClientState.finishFailure(PasskeyAction.REGISTER, result.error)
-                    return
-                }
-            }
-
-            passkeyClientState.setPhase(PasskeyAction.REGISTER, PasskeyPhase.FINISHING)
-            val verified = runCatching {
-                backend.finishRegistration(
-                    config = config,
-                    response = credential,
-                    challenge = options.value.challenge.value.encoded(),
-                )
-            }.onFailure { throwable ->
-                diagnostics.error(
-                    event = "register.verify.failure",
-                    message = throwable.message ?: "finishRegistration failed",
-                    throwable = throwable,
-                )
-                passkeyClientState.finishFailure(
-                    action = PasskeyAction.REGISTER,
-                    error = throwable.toUnexpectedClientError(prefix = "Registration verification"),
-                )
-            }.getOrNull() ?: return
-
-            if (verified) {
+    controller.register(
+        getOptions = {
+            runCatching { backend.startRegistration(config) }
+                .onFailure { diagnostics.error("register.options.failure", it.message ?: "startRegistration failed", it) }
+                .getOrThrow()
+        },
+        finish = { response, challenge ->
+            val result = runCatching { backend.finishRegistration(config, response, challenge) }
+                .onFailure { diagnostics.error("register.verify.failure", it.message ?: "finishRegistration failed", it) }
+                .getOrThrow()
+            if (result) {
                 diagnostics.trace(event = "register.success")
-                passkeyClientState.finishSuccess(PasskeyAction.REGISTER)
-            } else {
-                passkeyClientState.finishFailure(
-                    action = PasskeyAction.REGISTER,
-                    error = PasskeyClientError.Transport("Registration verification was rejected by the server."),
-                )
             }
+            result
         }
-
-        is ValidationResult.Invalid -> {
-            val message = options.errors.joinToString("; ") { "${it.field}: ${it.message}" }
-            val error = PasskeyClientError.InvalidOptions("startRegistration validation failed: $message")
-            passkeyClientState.finishFailure(PasskeyAction.REGISTER, error)
-        }
-    }
+    )
 }
 
 internal suspend fun runSignInCeremony(
     config: PasskeyDemoConfig,
-    passkeyClientState: PasskeyClientState,
+    controller: PasskeyController,
     backend: PasskeyDemoBackend,
     diagnostics: PasskeyDemoDiagnostics = DefaultPasskeyDemoDiagnostics,
 ) {
-    passkeyClientState.begin(PasskeyAction.SIGN_IN)
     diagnostics.trace(
         event = "auth.start",
         fields = mapOf(
@@ -243,87 +190,37 @@ internal suspend fun runSignInCeremony(
         ),
     )
 
-    val options = runCatching { backend.startAuthentication(config) }
-        .onFailure { throwable ->
-            diagnostics.error(
-                event = "auth.options.failure",
-                message = throwable.message ?: "startAuthentication failed",
-                throwable = throwable,
-            )
-            passkeyClientState.finishFailure(
-                action = PasskeyAction.SIGN_IN,
-                error = throwable.toUnexpectedClientError(prefix = "Authentication options"),
-            )
-        }
-        .getOrNull()
-        ?: return
-
-    when (options) {
-        is ValidationResult.Valid -> {
-            passkeyClientState.setPhase(PasskeyAction.SIGN_IN, PasskeyPhase.PLATFORM_PROMPT)
-            val assertion = when (val result = passkeyClientState.getAssertion(options.value)) {
-                is PasskeyResult.Success -> result.value
-                is PasskeyResult.Failure -> {
-                    diagnostics.trace(
-                        event = "auth.platform.failure",
-                        fields = mapOf("message" to result.error.message),
-                    )
-                    passkeyClientState.finishFailure(PasskeyAction.SIGN_IN, result.error)
-                    return
-                }
-            }
-
-            passkeyClientState.setPhase(PasskeyAction.SIGN_IN, PasskeyPhase.FINISHING)
-            val verified = runCatching {
-                backend.finishAuthentication(
-                    config = config,
-                    response = assertion,
-                    challenge = options.value.challenge.value.encoded(),
-                )
-            }.onFailure { throwable ->
-                diagnostics.error(
-                    event = "auth.verify.failure",
-                    message = throwable.message ?: "finishAuthentication failed",
-                    throwable = throwable,
-                )
-                passkeyClientState.finishFailure(
-                    action = PasskeyAction.SIGN_IN,
-                    error = throwable.toUnexpectedClientError(prefix = "Authentication verification"),
-                )
-            }.getOrNull() ?: return
-
-            if (verified) {
+    controller.signIn(
+        getOptions = {
+            runCatching { backend.startAuthentication(config) }
+                .onFailure { diagnostics.error("auth.options.failure", it.message ?: "startAuthentication failed", it) }
+                .getOrThrow()
+        },
+        finish = { response, challenge ->
+            val result = runCatching { backend.finishAuthentication(config, response, challenge) }
+                .onFailure { diagnostics.error("auth.verify.failure", it.message ?: "finishAuthentication failed", it) }
+                .getOrThrow()
+            if (result) {
                 diagnostics.trace(event = "auth.success")
-                passkeyClientState.finishSuccess(PasskeyAction.SIGN_IN)
-            } else {
-                passkeyClientState.finishFailure(
-                    action = PasskeyAction.SIGN_IN,
-                    error = PasskeyClientError.Transport("Authentication verification was rejected by the server."),
-                )
             }
+            result
         }
-
-        is ValidationResult.Invalid -> {
-            val message = options.errors.joinToString("; ") { "${it.field}: ${it.message}" }
-            val error = PasskeyClientError.InvalidOptions("startAuthentication validation failed: $message")
-            passkeyClientState.finishFailure(PasskeyAction.SIGN_IN, error)
-        }
-    }
+    )
 }
 
-internal fun areCeremonyActionsEnabled(uiState: PasskeyClientUiState): Boolean {
-    return uiState !is PasskeyClientUiState.InProgress
+internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean {
+    return uiState !is PasskeyControllerState.InProgress
 }
 
-internal fun PasskeyClientUiState.toStatusPresentation(): PasskeyDemoStatus {
+internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
     return when (this) {
-        PasskeyClientUiState.Idle -> PasskeyDemoStatus(
+        PasskeyControllerState.Idle -> PasskeyDemoStatus(
             tone = StatusTone.IDLE,
             headline = "Ready",
             detail = "Run Register or Sign In to exercise the E2E flow.",
         )
 
-        is PasskeyClientUiState.InProgress -> PasskeyDemoStatus(
+        is PasskeyControllerState.InProgress -> PasskeyDemoStatus(
             tone = StatusTone.WORKING,
             headline = when (action) {
                 PasskeyAction.REGISTER -> "Register in progress"
@@ -336,7 +233,7 @@ internal fun PasskeyClientUiState.toStatusPresentation(): PasskeyDemoStatus {
             },
         )
 
-        is PasskeyClientUiState.Success -> PasskeyDemoStatus(
+        is PasskeyControllerState.Success -> PasskeyDemoStatus(
             tone = StatusTone.SUCCESS,
             headline = when (action) {
                 PasskeyAction.REGISTER -> "Register complete"
@@ -344,7 +241,7 @@ internal fun PasskeyClientUiState.toStatusPresentation(): PasskeyDemoStatus {
             },
         )
 
-        is PasskeyClientUiState.Failure -> {
+        is PasskeyControllerState.Failure -> {
             val category = error.toCategory()
             PasskeyDemoStatus(
                 tone = when (category) {
@@ -359,13 +256,13 @@ internal fun PasskeyClientUiState.toStatusPresentation(): PasskeyDemoStatus {
 }
 
 internal fun timelineEntryForTransition(
-    previous: PasskeyClientUiState,
-    current: PasskeyClientUiState,
+    previous: PasskeyControllerState,
+    current: PasskeyControllerState,
     id: Long,
     timestamp: String,
 ): PasskeyDemoLogEntry? {
-    return when {
-        previous !is PasskeyClientUiState.InProgress && current is PasskeyClientUiState.InProgress -> {
+    return when (previous) {
+        !is PasskeyControllerState.InProgress if current is PasskeyControllerState.InProgress -> {
             PasskeyDemoLogEntry(
                 id = id,
                 timestamp = timestamp,
@@ -374,7 +271,7 @@ internal fun timelineEntryForTransition(
             )
         }
 
-        previous is PasskeyClientUiState.InProgress && current is PasskeyClientUiState.Success -> {
+        is PasskeyControllerState.InProgress if current is PasskeyControllerState.Success -> {
             PasskeyDemoLogEntry(
                 id = id,
                 timestamp = timestamp,
@@ -383,7 +280,7 @@ internal fun timelineEntryForTransition(
             )
         }
 
-        previous is PasskeyClientUiState.InProgress && current is PasskeyClientUiState.Failure -> {
+        is PasskeyControllerState.InProgress if current is PasskeyControllerState.Failure -> {
             val category = current.error.toCategory()
             PasskeyDemoLogEntry(
                 id = id,
