@@ -16,6 +16,8 @@ dependencies {
         api("${project.group}:webauthn-server-core-jvm:${project.version}")
         api("${project.group}:webauthn-server-ktor:${project.version}")
         api("${project.group}:webauthn-client-core:${project.version}")
+        api("${project.group}:webauthn-client-json-core:${project.version}")
+        api("${project.group}:webauthn-client-compose:${project.version}")
         api("${project.group}:webauthn-client-android:${project.version}")
         api("${project.group}:webauthn-client-ios:${project.version}")
         api("${project.group}:webauthn-network-ktor-client:${project.version}")

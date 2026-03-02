@@ -190,6 +190,14 @@ for file in "${changed_files[@]}"; do
             mark_module "webauthn-client-core"
             mark_category "client"
             ;;
+        webauthn-client-json-core/*)
+            mark_module "webauthn-client-json-core"
+            mark_category "client"
+            ;;
+        webauthn-client-compose/*)
+            mark_module "webauthn-client-compose"
+            mark_category "client"
+            ;;
         webauthn-client-android/*)
             mark_module "webauthn-client-android"
             mark_category "android"
@@ -197,6 +205,10 @@ for file in "${changed_files[@]}"; do
         webauthn-client-ios/*)
             mark_module "webauthn-client-ios"
             mark_category "ios"
+            ;;
+        temp.server/*)
+            mark_module "temp.server"
+            mark_category "client"
             ;;
         samples/android-passkey/*)
             mark_module "samples:android-passkey"

@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-02-15
+Last updated: 2026-03-02
 
 ## North-Star Exit Criteria
 
@@ -11,7 +11,26 @@ Last updated: 2026-02-15
 3. Stable, documented module contracts for KMP consumers across JVM/Android/iOS.
 4. High-signal CI and agent harness with low interruption and low waste.
 
-## Phase 1: Conformance and Security Hardening (Immediate)
+## Immediate Execution Strategy (Client First)
+
+1. Keep client implementation velocity independent from first-party backend hardening.
+2. Use explicit backend profiles and temporary backends for client validation.
+3. Keep shared client business logic in `webauthn-client-core`; platform wrappers stay thin.
+4. Drive all client API and behavior decisions from WebAuthn spec requirements first.
+
+## Phase 1: Client Readiness and Interoperability (Immediate)
+
+1. Keep shared typed ceremony orchestration in `webauthn-client-core` and maintain optional JSON APIs in `webauthn-client-json-core`.
+2. Keep Android Credential Manager and iOS AuthenticationServices adapters as thin platform bridges.
+3. Maintain interop paths for external backend profiles (`PASSKEY_ENCRYPTION_POC`) and temporary local backend (`temp.server`).
+4. Verify extension transport and response mapping for PRF and Large Blob semantics.
+5. Align client API ergonomics against trusted ecosystem SDKs while preserving standards-first behavior.
+
+Definition of done:
+
+- Android/iOS clients are runnable end-to-end against at least one non-repo backend and one local dev backend.
+
+## Phase 2: Conformance and Security Hardening
 
 1. Attestation format matrix hardening (`packed`, `tpm` (done), `android-key` (done), `android-safetynet`, `apple`, `none`).
 2. CBOR/COSE vector-based parser/validator expansion.
@@ -22,7 +41,7 @@ Definition of done:
 
 - Each new rule is reflected in tests and `spec-notes/webauthn-l3-validation-map.md`.
 
-## Phase 2: Server Robustness and Store Semantics
+## Phase 3: Server Robustness and Store Semantics
 
 1. Strengthen registration/authentication finish-path invariants.
 2. Add replay, race, and persistence-oriented scenarios (in-memory and H2-backed store contracts done).
@@ -31,16 +50,6 @@ Definition of done:
 Definition of done:
 
 - JVM server behavior is deterministic under failure/race scenarios with test proof.
-
-## Phase 3: Platform Runtime Hardening
-
-1. Android Credential Manager lifecycle/error edge handling (error mapping done; response parsing done).
-2. iOS AuthenticationServices delegate lifecycle/error handling (NSError mapping done; delegate runtime + response parsing done).
-3. Cross-platform client-core policy consistency.
-
-Definition of done:
-
-- Android/iOS adapters are beyond scaffold-level and validated by realistic flow tests.
 
 ## Phase 4: Developer Experience and API Stability
 
@@ -64,5 +73,7 @@ Definition of done:
 
 ## Active Priorities (Next 3)
 
-1. Implement remaining attestation trust-path hardening (`android-safetynet`, `apple`) and vector coverage.
-2. Expand CBOR/COSE conformance vectors with strict malformed-input rejection cases.
+1. Finish client-first execution docs and sample wiring for external/temporary backend flows.
+2. Expand client extension interop tests (PRF, Large Blob, authenticatorAttachment/transports round-trip).
+3. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
+4. Implement iOS external security-key provider bridging and enable `supportsSecurityKey` only after end-to-end support exists.

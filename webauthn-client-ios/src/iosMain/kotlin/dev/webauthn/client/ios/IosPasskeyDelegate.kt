@@ -1,97 +1,108 @@
 package dev.webauthn.client.ios
 
-import at.asitplus.KmmResult
-import at.asitplus.catching
+import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyResult
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.client.PasskeyJsonCodec
+import dev.webauthn.client.KotlinxPasskeyJsonCodec
+import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
+import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
+import dev.webauthn.client.DefaultPasskeyClient
+import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
+import kotlinx.serialization.json.Json
+import platform.Foundation.NSProcessInfo
 import platform.UIKit.UIApplication
 
 internal actual class IosPasskeyDelegate(
-    private val bridge: IosAuthorizationBridge = AuthenticationServicesAuthorizationBridge {
-        checkNotNull(UIApplication.sharedApplication.keyWindow) { "No key window available" }
-    }
+    private val bridge: IosAuthorizationBridge,
+) : PasskeyClient by DefaultPasskeyClient(
+    bridge = IosPasskeyPlatformBridge(bridge),
 ) {
-    actual constructor() : this(AuthenticationServicesAuthorizationBridge {
-        checkNotNull(UIApplication.sharedApplication.keyWindow) { "No key window available" }
-    })
+    actual constructor() : this(
+        AuthenticationServicesAuthorizationBridge {
+            checkNotNull(UIApplication.sharedApplication.keyWindow) { "No key window available" }
+        },
+    )
+}
 
-    actual suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
-        return catching { bridge.createCredential(options) }
-            .transform(::toRegistrationDto)
-            .transform(::toRegistrationModel)
-            .toPasskeyResult()
+internal class IosPasskeyPlatformBridge(
+    private val bridge: IosAuthorizationBridge,
+    private val jsonCodec: PasskeyJsonCodec = KotlinxPasskeyJsonCodec(),
+) : PasskeyPlatformBridge {
+    private val json = Json {
+        encodeDefaults = false
+        ignoreUnknownKeys = true
     }
 
-    actual suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
-        return catching { bridge.getAssertion(options) }
-            .transform(::toAuthenticationDto)
-            .transform(::toAuthenticationModel)
-            .toPasskeyResult()
-    }
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse =
+        jsonCodec.decodeRegistrationResponseOrThrowPlatform(
+            bridge.createCredential(options).toRegistrationResponseJson(),
+        )
 
-    private fun <T> KmmResult<T>.toPasskeyResult(): PasskeyResult<T> = fold(
-        onSuccess = { PasskeyResult.Success(it) },
-        onFailure = { error ->
-            when (error) {
-                is NSErrorException -> PasskeyResult.Failure(error.error.toPasskeyClientError())
-                else -> PasskeyResult.Failure(PasskeyClientError.Platform(error.message ?: "Unknown platform error", error))
-            }
-        }
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse =
+        jsonCodec.decodeAuthenticationResponseOrThrowPlatform(
+            bridge.getAssertion(options).toAuthenticationResponseJson(),
+        )
+
+    private fun IosRegistrationPayload.toRegistrationResponseJson(): String = json.encodeToString(
+        RegistrationResponseDto.serializer(),
+        RegistrationResponseDto(
+            id = credentialId.toBase64Url(),
+            rawId = rawId.toBase64Url(),
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = clientDataJson.toBase64Url(),
+                attestationObject = attestationObject.toBase64Url(),
+            ),
+            authenticatorAttachment = authenticatorAttachment,
+        ),
     )
 
-    private fun toRegistrationDto(payload: IosRegistrationPayload): KmmResult<RegistrationResponseDto> = catching {
-        RegistrationResponseDto(
-            id = Base64UrlBytes.fromBytes(payload.credentialId).encoded(),
-            rawId = Base64UrlBytes.fromBytes(payload.rawId).encoded(),
-            response = RegistrationResponsePayloadDto(
-                clientDataJson = Base64UrlBytes.fromBytes(payload.clientDataJson).encoded(),
-                attestationObject = Base64UrlBytes.fromBytes(payload.attestationObject).encoded(),
-            ),
-        )
-    }
-
-    private fun toAuthenticationDto(payload: IosAuthenticationPayload): KmmResult<AuthenticationResponseDto> = catching {
+    private fun IosAuthenticationPayload.toAuthenticationResponseJson(): String = json.encodeToString(
+        AuthenticationResponseDto.serializer(),
         AuthenticationResponseDto(
-            id = Base64UrlBytes.fromBytes(payload.credentialId).encoded(),
-            rawId = Base64UrlBytes.fromBytes(payload.rawId).encoded(),
+            id = credentialId.toBase64Url(),
+            rawId = rawId.toBase64Url(),
             response = AuthenticationResponsePayloadDto(
-                clientDataJson = Base64UrlBytes.fromBytes(payload.clientDataJson).encoded(),
-                authenticatorData = Base64UrlBytes.fromBytes(payload.authenticatorData).encoded(),
-                signature = Base64UrlBytes.fromBytes(payload.signature).encoded(),
-                userHandle = payload.userHandle?.let { Base64UrlBytes.fromBytes(it).encoded() },
+                clientDataJson = clientDataJson.toBase64Url(),
+                authenticatorData = authenticatorData.toBase64Url(),
+                signature = signature.toBase64Url(),
+                userHandle = userHandle?.toBase64Url(),
             ),
-        )
+            authenticatorAttachment = authenticatorAttachment,
+        ),
+    )
+
+    private fun ByteArray.toBase64Url(): String = Base64UrlBytes.fromBytes(this).encoded()
+
+    override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
+        return when (throwable) {
+            is NSErrorException -> throwable.error.toPasskeyClientError()
+            is IllegalArgumentException -> PasskeyClientError.InvalidOptions(throwable.message ?: "Invalid options")
+            else -> PasskeyClientError.Platform(throwable.message ?: "Unknown platform error", throwable)
+        }
     }
 
-    private fun toRegistrationModel(dto: RegistrationResponseDto): KmmResult<RegistrationResponse> =
-        when (val modelResult = WebAuthnDtoMapper.toModel(dto)) {
-            is ValidationResult.Valid -> KmmResult(modelResult.value)
-            is ValidationResult.Invalid -> {
-                val firstError = modelResult.errors.first()
-                failureResult("${firstError.field}: ${firstError.message}")
-            }
-        }
-
-    private fun toAuthenticationModel(dto: AuthenticationResponseDto): KmmResult<AuthenticationResponse> =
-        when (val modelResult = WebAuthnDtoMapper.toModel(dto)) {
-            is ValidationResult.Valid -> KmmResult(modelResult.value)
-            is ValidationResult.Invalid -> {
-                val firstError = modelResult.errors.first()
-                failureResult("${firstError.field}: ${firstError.message}")
-            }
-        }
-
-    private fun <T> failureResult(message: String): KmmResult<T> =
-        KmmResult(IllegalArgumentException(message))
+    @OptIn(ExperimentalForeignApi::class)
+    override suspend fun capabilities(): PasskeyCapabilities {
+        val version = NSProcessInfo.processInfo.operatingSystemVersion
+        val major = version.useContents { majorVersion.toInt() }
+        return PasskeyCapabilities(
+            supportsPrf = major >= 18,
+            supportsLargeBlobRead = major >= 17,
+            supportsLargeBlobWrite = major >= 17,
+            supportsSecurityKey = false,
+            platformVersionHints = listOf("iosMajor=$major"),
+        )
+    }
 }

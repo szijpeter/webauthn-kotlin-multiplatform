@@ -13,7 +13,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":webauthn-client-core"))
             api(project(":webauthn-core"))
-            implementation(project(":webauthn-serialization-kotlinx"))
+            api(project(":webauthn-serialization-kotlinx"))
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)

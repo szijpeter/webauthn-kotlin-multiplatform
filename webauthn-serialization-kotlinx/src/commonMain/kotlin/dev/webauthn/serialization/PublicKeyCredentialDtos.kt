@@ -1,7 +1,10 @@
 package dev.webauthn.serialization
 
 import dev.webauthn.model.AttestedCredentialData
+import dev.webauthn.model.AttestationConveyancePreference
 import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.AuthenticatorAttachment
+import dev.webauthn.model.AuthenticatorTransport
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -37,8 +40,10 @@ public data class PublicKeyCredentialCreationOptionsDto(
     @SerialName("pubKeyCredParams") public val pubKeyCredParams: List<PublicKeyCredentialParametersDto>,
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("excludeCredentials") public val excludeCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
+    @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("residentKey") public val residentKey: String = "preferred",
     @SerialName("userVerification") public val userVerification: String = "preferred",
+    @SerialName("attestation") public val attestation: String? = null,
     @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
 
@@ -83,6 +88,7 @@ public data class PublicKeyCredentialParametersDto(
 public data class PublicKeyCredentialDescriptorDto(
     @SerialName("type") public val type: String,
     @SerialName("id") public val id: String,
+    @SerialName("transports") public val transports: List<String>? = null,
 )
 
 @Serializable
@@ -103,6 +109,7 @@ public data class RegistrationResponseDto(
     @SerialName("id") public val id: String,
     @SerialName("rawId") public val rawId: String,
     @SerialName("response") public val response: RegistrationResponsePayloadDto,
+    @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("clientExtensionResults") public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
 )
 
@@ -117,6 +124,7 @@ public data class AuthenticationResponseDto(
     @SerialName("id") public val id: String,
     @SerialName("rawId") public val rawId: String,
     @SerialName("response") public val response: AuthenticationResponsePayloadDto,
+    @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("clientExtensionResults") public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
 )
 
@@ -169,10 +177,16 @@ public object WebAuthnDtoMapper {
             },
             timeoutMs = value.timeoutMs,
             excludeCredentials = value.excludeCredentials.map {
-                PublicKeyCredentialDescriptorDto(type = "public-key", id = it.id.value.encoded())
+                PublicKeyCredentialDescriptorDto(
+                    type = "public-key",
+                    id = it.id.value.encoded(),
+                    transports = it.transports.map { transport -> transport.toDtoValue() }.ifEmpty { null },
+                )
             },
+            authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
             residentKey = value.residentKey.name.lowercase(),
             userVerification = value.userVerification.name.lowercase(),
+            attestation = value.attestation?.toDtoValue(),
             extensions = value.extensions?.let(::fromModel),
         )
     }
@@ -213,10 +227,19 @@ public object WebAuthnDtoMapper {
                     null
                 },
             )
+            val transports = descriptor.transports.orEmpty().mapIndexedNotNull { index, encodedTransport ->
+                when (val parsed = parseAuthenticatorTransport(encodedTransport, "excludeCredentials[$index].transports")) {
+                    is ValidationResult.Valid -> parsed.value
+                    is ValidationResult.Invalid -> {
+                        errors += parsed.errors
+                        null
+                    }
+                }
+            }
             if (id == null) {
                 null
             } else {
-                PublicKeyCredentialDescriptor(type = PublicKeyCredentialType.PUBLIC_KEY, id = id)
+                PublicKeyCredentialDescriptor(type = PublicKeyCredentialType.PUBLIC_KEY, id = id, transports = transports)
             }
         }
 
@@ -229,6 +252,24 @@ public object WebAuthnDtoMapper {
         val userVerification = UserVerificationRequirement.entries.find {
             it.name.equals(value.userVerification, ignoreCase = true)
         } ?: UserVerificationRequirement.PREFERRED
+        val authenticatorAttachment = value.authenticatorAttachment?.let {
+            when (val parsed = parseAuthenticatorAttachment(it, "authenticatorAttachment")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    errors += parsed.errors
+                    null
+                }
+            }
+        }
+        val attestation = value.attestation?.let {
+            when (val parsed = parseAttestationConveyancePreference(it, "attestation")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    errors += parsed.errors
+                    null
+                }
+            }
+        }
         val extensions = value.extensions?.let {
             when (val parsed = toModelValidated(it, fieldPrefix = "extensions")) {
                 is ValidationResult.Valid -> parsed.value
@@ -251,8 +292,10 @@ public object WebAuthnDtoMapper {
                 pubKeyCredParams = params,
                 timeoutMs = value.timeoutMs,
                 excludeCredentials = excludeCredentials,
+                authenticatorAttachment = authenticatorAttachment,
                 residentKey = residentKey,
                 userVerification = userVerification,
+                attestation = attestation,
                 extensions = extensions,
             ),
         )
@@ -264,7 +307,11 @@ public object WebAuthnDtoMapper {
             rpId = value.rpId.value,
             timeoutMs = value.timeoutMs,
             allowCredentials = value.allowCredentials.map {
-                PublicKeyCredentialDescriptorDto(type = "public-key", id = it.id.value.encoded())
+                PublicKeyCredentialDescriptorDto(
+                    type = "public-key",
+                    id = it.id.value.encoded(),
+                    transports = it.transports.map { transport -> transport.toDtoValue() }.ifEmpty { null },
+                )
             },
             userVerification = value.userVerification.name.lowercase(),
             extensions = value.extensions?.let(::fromModel),
@@ -291,10 +338,19 @@ public object WebAuthnDtoMapper {
                     null
                 },
             )
+            val transports = descriptor.transports.orEmpty().mapIndexedNotNull { index, encodedTransport ->
+                when (val parsed = parseAuthenticatorTransport(encodedTransport, "allowCredentials[$index].transports")) {
+                    is ValidationResult.Valid -> parsed.value
+                    is ValidationResult.Invalid -> {
+                        errors += parsed.errors
+                        null
+                    }
+                }
+            }
             if (id == null) {
                 null
             } else {
-                PublicKeyCredentialDescriptor(type = PublicKeyCredentialType.PUBLIC_KEY, id = id)
+                PublicKeyCredentialDescriptor(type = PublicKeyCredentialType.PUBLIC_KEY, id = id, transports = transports)
             }
         }
 
@@ -375,6 +431,12 @@ public object WebAuthnDtoMapper {
                         is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
                     }
                 }
+                val authenticatorAttachment = value.authenticatorAttachment?.let { encodedAttachment ->
+                    when (val parsed = parseAuthenticatorAttachment(encodedAttachment, "authenticatorAttachment")) {
+                        is ValidationResult.Valid -> parsed.value
+                        is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
+                    }
+                }
                 ValidationResult.Valid(
                     RegistrationResponse(
                         credentialId = credentialId.value,
@@ -382,6 +444,7 @@ public object WebAuthnDtoMapper {
                         attestationObject = attestation.value,
                         rawAuthenticatorData = parsedAuthDataValue.authenticatorData,
                         attestedCredentialData = attestedCredentialData,
+                        authenticatorAttachment = authenticatorAttachment,
                         extensions = extensions,
                     ),
                 )
@@ -397,6 +460,7 @@ public object WebAuthnDtoMapper {
                 clientDataJson = value.clientDataJson.encoded(),
                 attestationObject = value.attestationObject.encoded(),
             ),
+            authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
             clientExtensionResults = value.extensions?.let(::fromModel),
         )
     }
@@ -444,6 +508,12 @@ public object WebAuthnDtoMapper {
                         is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
                     }
                 }
+                val authenticatorAttachment = value.authenticatorAttachment?.let { encodedAttachment ->
+                    when (val parsed = parseAuthenticatorAttachment(encodedAttachment, "authenticatorAttachment")) {
+                        is ValidationResult.Valid -> parsed.value
+                        is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
+                    }
+                }
 
                 ValidationResult.Valid(
                     AuthenticationResponse(
@@ -453,6 +523,7 @@ public object WebAuthnDtoMapper {
                         authenticatorData = (parsedAuthData as ValidationResult.Valid).value.authenticatorData,
                         signature = (signature as ValidationResult.Valid).value,
                         userHandle = parsedUserHandle,
+                        authenticatorAttachment = authenticatorAttachment,
                         extensions = extensions,
                     ),
                 )
@@ -470,6 +541,7 @@ public object WebAuthnDtoMapper {
                 signature = value.signature.encoded(),
                 userHandle = value.userHandle?.value?.encoded(),
             ),
+            authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
             clientExtensionResults = value.extensions?.let(::fromModel),
         )
     }
@@ -705,6 +777,94 @@ public object WebAuthnDtoMapper {
             onValid = { ValidationResult.Valid(it.bytes()) },
             onInvalid = { ValidationResult.Invalid(it) },
         )
+    }
+
+    private fun AuthenticatorAttachment.toDtoValue(): String {
+        return when (this) {
+            AuthenticatorAttachment.PLATFORM -> "platform"
+            AuthenticatorAttachment.CROSS_PLATFORM -> "cross-platform"
+        }
+    }
+
+    private fun AttestationConveyancePreference.toDtoValue(): String = name.lowercase()
+
+    private fun AuthenticatorTransport.toDtoValue(): String {
+        return when (this) {
+            AuthenticatorTransport.USB -> "usb"
+            AuthenticatorTransport.NFC -> "nfc"
+            AuthenticatorTransport.BLE -> "ble"
+            AuthenticatorTransport.SMART_CARD -> "smart-card"
+            AuthenticatorTransport.HYBRID -> "hybrid"
+            AuthenticatorTransport.INTERNAL -> "internal"
+        }
+    }
+
+    private fun parseAuthenticatorAttachment(value: String, field: String): ValidationResult<AuthenticatorAttachment> {
+        val parsed = when (value.lowercase()) {
+            "platform" -> AuthenticatorAttachment.PLATFORM
+            "cross-platform" -> AuthenticatorAttachment.CROSS_PLATFORM
+            else -> null
+        }
+
+        return if (parsed != null) {
+            ValidationResult.Valid(parsed)
+        } else {
+            ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        field = field,
+                        message = "Unknown authenticatorAttachment value: $value",
+                    ),
+                ),
+            )
+        }
+    }
+
+    private fun parseAttestationConveyancePreference(
+        value: String,
+        field: String,
+    ): ValidationResult<AttestationConveyancePreference> {
+        val parsed = AttestationConveyancePreference.entries.find { it.name.equals(value, ignoreCase = true) }
+        return if (parsed != null) {
+            ValidationResult.Valid(parsed)
+        } else {
+            ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        field = field,
+                        message = "Unknown attestation value: $value",
+                    ),
+                ),
+            )
+        }
+    }
+
+    private fun parseAuthenticatorTransport(
+        value: String,
+        field: String,
+    ): ValidationResult<AuthenticatorTransport> {
+        val parsed = when (value.lowercase()) {
+            "usb" -> AuthenticatorTransport.USB
+            "nfc" -> AuthenticatorTransport.NFC
+            "ble" -> AuthenticatorTransport.BLE
+            "smart-card" -> AuthenticatorTransport.SMART_CARD
+            "hybrid" -> AuthenticatorTransport.HYBRID
+            "internal" -> AuthenticatorTransport.INTERNAL
+            else -> null
+        }
+
+        return if (parsed != null) {
+            ValidationResult.Valid(parsed)
+        } else {
+            ValidationResult.Invalid(
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        field = field,
+                        message = "Unknown authenticator transport: $value",
+                    ),
+                ),
+            )
+        }
     }
 
     private fun toModel(value: PrfValuesDto): dev.webauthn.model.AuthenticationExtensionsPRFValues {

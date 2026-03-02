@@ -174,6 +174,22 @@ public enum class AuthenticatorAttachment {
     CROSS_PLATFORM,
 }
 
+public enum class AuthenticatorTransport {
+    USB,
+    NFC,
+    BLE,
+    SMART_CARD,
+    HYBRID,
+    INTERNAL,
+}
+
+public enum class AttestationConveyancePreference {
+    NONE,
+    INDIRECT,
+    DIRECT,
+    ENTERPRISE,
+}
+
 public enum class ResidentKeyRequirement {
     REQUIRED,
     PREFERRED,

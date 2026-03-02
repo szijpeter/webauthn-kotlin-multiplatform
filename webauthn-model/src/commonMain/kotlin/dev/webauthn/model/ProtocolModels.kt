@@ -19,6 +19,7 @@ public data class PublicKeyCredentialParameters(
 public data class PublicKeyCredentialDescriptor(
     public val type: PublicKeyCredentialType,
     public val id: CredentialId,
+    public val transports: List<AuthenticatorTransport> = emptyList(),
 )
 
 public data class AuthenticationExtensionsClientInputs(
@@ -76,6 +77,7 @@ public data class PublicKeyCredentialCreationOptions(
     public val authenticatorAttachment: AuthenticatorAttachment? = null,
     public val residentKey: ResidentKeyRequirement = ResidentKeyRequirement.PREFERRED,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
+    public val attestation: AttestationConveyancePreference? = null,
     public val extensions: AuthenticationExtensionsClientInputs? = null,
 )
 
@@ -113,6 +115,7 @@ public data class RegistrationResponse(
     public val attestationObject: Base64UrlBytes,
     public val rawAuthenticatorData: AuthenticatorData,
     public val attestedCredentialData: AttestedCredentialData,
+    public val authenticatorAttachment: AuthenticatorAttachment? = null,
     public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
 
@@ -123,7 +126,7 @@ public data class AuthenticationResponse(
     public val authenticatorData: AuthenticatorData,
     public val signature: Base64UrlBytes,
     public val userHandle: UserHandle? = null,
+    public val authenticatorAttachment: AuthenticatorAttachment? = null,
     public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
-
 
