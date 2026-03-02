@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-03-01
+Last updated: 2026-03-02
 
 ## North-Star Exit Criteria
 
@@ -76,3 +76,4 @@ Definition of done:
 1. Finish client-first execution docs and sample wiring for external/temporary backend flows.
 2. Expand client extension interop tests (PRF, Large Blob, authenticatorAttachment/transports round-trip).
 3. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
+4. Implement iOS external security-key provider bridging and enable `supportsSecurityKey` only after end-to-end support exists.

@@ -101,7 +101,7 @@ internal class IosPasskeyPlatformBridge(
             supportsPrf = major >= 18,
             supportsLargeBlobRead = major >= 17,
             supportsLargeBlobWrite = major >= 17,
-            supportsSecurityKey = true,
+            supportsSecurityKey = false,
             platformVersionHints = listOf("iosMajor=$major"),
         )
     }
