@@ -1,7 +1,5 @@
 package dev.webauthn.client
 
-import at.asitplus.KmmResult
-import at.asitplus.catching
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -12,7 +10,6 @@ import dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto
 import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 public interface PasskeyJsonCodec {
@@ -70,27 +67,27 @@ public class DefaultJsonPasskeyClient(
         encodeResponse: (TResponse) -> String,
         encodeErrorMessage: String,
     ): PasskeyResult<String> {
-        val options = catching { decodeOptions(requestJson) }
-            .getOrElse { error ->
-                return PasskeyResult.Failure(
-                    PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"),
-                )
-            }
+        val options = try {
+            decodeOptions(requestJson)
+        } catch (error: Throwable) {
+            return PasskeyResult.Failure(
+                PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"),
+            )
+        }
 
         return when (val result = execute(options)) {
-            is PasskeyResult.Success -> KmmResult(result.value)
-                .mapCatching(encodeResponse)
-                .fold(
-                    onSuccess = { PasskeyResult.Success(it) },
-                    onFailure = { error ->
-                        PasskeyResult.Failure(
-                            PasskeyClientError.Platform(
-                                "$encodeErrorMessage: ${error.message ?: "unknown error"}",
-                                error,
-                            ),
-                        )
-                    },
-                )
+            is PasskeyResult.Success -> {
+                try {
+                    PasskeyResult.Success(encodeResponse(result.value))
+                } catch (error: Throwable) {
+                    PasskeyResult.Failure(
+                        PasskeyClientError.Platform(
+                            "$encodeErrorMessage: ${error.message ?: "unknown error"}",
+                            error,
+                        ),
+                    )
+                }
+            }
 
             is PasskeyResult.Failure -> result
         }
@@ -152,11 +149,12 @@ private inline fun <T, TThrowable : Throwable> fromCodec(
     block: () -> T,
     throwableFactory: (String, Throwable) -> TThrowable,
 ): T {
-    return catching(block)
-        .getOrElse { error ->
-            val composedMessage = "$message: ${error.message ?: "unknown error"}"
-            throw throwableFactory(composedMessage, error)
-        }
+    return try {
+        block()
+    } catch (error: Throwable) {
+        val composedMessage = "$message: ${error.message ?: "unknown error"}"
+        throw throwableFactory(composedMessage, error)
+    }
 }
 
 private fun <T, TThrowable : Throwable> ValidationResult<T>.toValueOrThrow(

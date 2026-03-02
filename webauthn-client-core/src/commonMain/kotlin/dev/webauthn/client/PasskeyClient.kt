@@ -1,12 +1,11 @@
 package dev.webauthn.client
 
-import at.asitplus.KmmResult
-import at.asitplus.nonFatalOrThrow
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import kotlinx.coroutines.CancellationException
 
 public interface PasskeyClient {
     public suspend fun createCredential(
@@ -64,50 +63,43 @@ public class DefaultPasskeyClient(
     private val bridge: PasskeyPlatformBridge,
 ) : PasskeyClient {
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
-        return runTypedCeremony(
-            options = options,
-            validate = ::requireCreationOptions,
-            operation = bridge::createCredential,
-        )
+        return runWithErrorMapping {
+            requireCreationOptions(options)
+            bridge.createCredential(options)
+        }
     }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
-        return runTypedCeremony(
-            options = options,
-            operation = bridge::getAssertion,
-        )
+        return runWithErrorMapping { bridge.getAssertion(options) }
     }
 
     override suspend fun capabilities(): PasskeyCapabilities {
-        return suspendCatching { bridge.capabilities() }
-            .getOrElse { PasskeyCapabilities() }
-    }
-
-    private suspend fun <TOptions, TResult> runTypedCeremony(
-        options: TOptions,
-        validate: (TOptions) -> Unit = {},
-        operation: suspend (TOptions) -> TResult,
-    ): PasskeyResult<TResult> {
-        return runWithErrorMapping {
-            validate(options)
-            operation(options)
+        return try {
+            bridge.capabilities()
+        } catch (error: Throwable) {
+            when (error) {
+                is CancellationException,
+                is Error -> throw error
+                else -> PasskeyCapabilities()
+            }
         }
     }
 
     private suspend fun <T> runWithErrorMapping(block: suspend () -> T): PasskeyResult<T> {
-        return suspendCatching(block).fold(
-            onSuccess = { PasskeyResult.Success(it) },
-            onFailure = { error ->
-                when (error) {
-                    is InvalidOptionsException,
-                    is IllegalArgumentException -> {
-                        PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
-                    }
+        return try {
+            PasskeyResult.Success(block())
+        } catch (error: Throwable) {
+            when (error) {
+                is CancellationException,
+                is Error -> throw error
+                is InvalidOptionsException,
+                is IllegalArgumentException -> PasskeyResult.Failure(
+                    PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"),
+                )
 
-                    else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
-                }
-            },
-        )
+                else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
+            }
+        }
     }
 
     private fun requireCreationOptions(options: PublicKeyCredentialCreationOptions) {
@@ -116,13 +108,6 @@ public class DefaultPasskeyClient(
         }
     }
 
-    private suspend fun <T> suspendCatching(block: suspend () -> T): KmmResult<T> {
-        return try {
-            KmmResult(block())
-        } catch (error: Throwable) {
-            KmmResult(error.nonFatalOrThrow())
-        }
-    }
 }
 
 private class InvalidOptionsException(
