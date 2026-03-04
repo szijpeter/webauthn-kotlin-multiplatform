@@ -9,7 +9,6 @@ import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
 import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
 import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.client.PasskeyPlatformBridge
-import dev.webauthn.client.deserializeFromJson
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -52,7 +51,9 @@ internal class IosPasskeyPlatformBridge(
         )
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse =
-        bridge.getAssertion(options).toAuthenticationResponseJson().deserializeFromJson(jsonMapper)
+        jsonMapper.decodeAuthenticationResponseOrThrowPlatform(
+            bridge.getAssertion(options).toAuthenticationResponseJson(),
+        )
 
     private fun IosRegistrationPayload.toRegistrationResponseJson(): String = json.encodeToString(
         RegistrationResponseDto.serializer(),
