@@ -2,25 +2,11 @@ package dev.webauthn.samples.composepasskey
 
 import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyPhase
-import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.PublicKeyCredentialCreationOptions
-import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.ValidationResult
-import dev.webauthn.network.AuthenticationFinishPayload
-import dev.webauthn.network.AuthenticationStartPayload
-import dev.webauthn.network.RegistrationFinishPayload
-import dev.webauthn.network.RegistrationStartPayload
-import dev.webauthn.network.WebAuthnBackendProfile
-import dev.webauthn.network.WebAuthnInteropKtorClient
-import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoLogEntry
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.model.StatusTone
-import io.ktor.client.HttpClient
 
 public data class PasskeyDemoConfig(
     public val endpointBase: String = PasskeyDemoBuildConfig.ENDPOINT_BASE,
@@ -35,118 +21,6 @@ public data class PasskeyDemoConfig(
     public val userHandle: String = PasskeyDemoBuildConfig.USER_ID,
     public val userName: String = PasskeyDemoBuildConfig.USER_NAME,
 )
-
-internal interface PasskeyDemoBackend : PasskeyServerClient<PasskeyDemoConfig, PasskeyDemoConfig>
-
-internal class InteropPasskeyDemoBackend(
-    private val interop: WebAuthnInteropKtorClient,
-) : PasskeyDemoBackend {
-    override suspend fun getRegisterOptions(params: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialCreationOptions> {
-        return interop.startRegistration(
-            RegistrationStartPayload(
-                rpId = params.rpId,
-                rpName = "WebAuthn Kotlin MPP Temp Server",
-                origin = params.origin,
-                userName = params.userName,
-                userDisplayName = params.userName,
-                userHandle = params.userHandle,
-            ),
-        )
-    }
-
-    override suspend fun finishRegister(
-        params: PasskeyDemoConfig,
-        response: RegistrationResponse,
-        challengeAsBase64Url: String,
-    ): Boolean {
-        return interop.finishRegistration(
-            RegistrationFinishPayload(
-                response = WebAuthnDtoMapper.fromModel(response),
-                clientDataType = "webauthn.create",
-                challenge = challengeAsBase64Url,
-                origin = params.origin,
-            ),
-        )
-    }
-
-    override suspend fun getSignInOptions(params: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialRequestOptions> {
-        return interop.startAuthentication(
-            AuthenticationStartPayload(
-                rpId = params.rpId,
-                origin = params.origin,
-                userName = params.userName,
-                userHandle = params.userHandle,
-            ),
-        )
-    }
-
-    override suspend fun finishSignIn(
-        params: PasskeyDemoConfig,
-        response: dev.webauthn.model.AuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): Boolean {
-        return interop.finishAuthentication(
-            AuthenticationFinishPayload(
-                response = WebAuthnDtoMapper.fromModel(response),
-                clientDataType = "webauthn.get",
-                challenge = challengeAsBase64Url,
-                origin = params.origin,
-            ),
-        )
-    }
-}
-
-internal fun createPasskeyDemoBackend(
-    httpClient: HttpClient,
-    config: PasskeyDemoConfig,
-): PasskeyDemoBackend {
-    return InteropPasskeyDemoBackend(
-        interop = WebAuthnInteropKtorClient(
-            httpClient = httpClient,
-            endpointBase = config.endpointBase.normalizedEndpoint(),
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
-        ),
-    )
-}
-
-internal suspend fun runRegisterCeremony(
-    config: PasskeyDemoConfig,
-    controller: PasskeyController<PasskeyDemoConfig, PasskeyDemoConfig>,
-    backend: PasskeyDemoBackend,
-    diagnostics: PasskeyDemoDiagnostics = DefaultPasskeyDemoDiagnostics,
-) {
-    diagnostics.trace(
-        event = "register.start",
-        fields = mapOf(
-            "endpoint" to config.endpointBase,
-            "rpId" to config.rpId,
-            "userName" to config.userName,
-        ),
-    )
-    
-    // With PasskeyServerClient, the backend is handled within the controller. 
-    // We just pass the config.
-    controller.register(params = config)
-}
-
-internal suspend fun runSignInCeremony(
-    config: PasskeyDemoConfig,
-    controller: PasskeyController<PasskeyDemoConfig, PasskeyDemoConfig>,
-    backend: PasskeyDemoBackend,
-    diagnostics: PasskeyDemoDiagnostics = DefaultPasskeyDemoDiagnostics,
-) {
-    diagnostics.trace(
-        event = "auth.start",
-        fields = mapOf(
-            "endpoint" to config.endpointBase,
-            "rpId" to config.rpId,
-            "userHandle" to config.userHandle,
-        ),
-    )
-    // With PasskeyServerClient, the backend is handled within the controller. 
-    // We just pass the config.
-    controller.signIn(params = config)
-}
 
 internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean {
     return uiState !is PasskeyControllerState.InProgress
@@ -167,9 +41,9 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
                 PasskeyAction.SIGN_IN -> "Sign In in progress"
             },
             detail = when (phase) {
-                PasskeyPhase.STARTING -> "Preparing ceremony options from the backend."
-                PasskeyPhase.PLATFORM_PROMPT -> "Waiting for passkey prompt interaction."
-                PasskeyPhase.FINISHING -> "Finishing verification with the backend."
+                PasskeyPhase.STARTING -> "Loading options."
+                PasskeyPhase.PLATFORM_PROMPT -> "Waiting for passkey prompt."
+                PasskeyPhase.FINISHING -> "Verifying response."
             },
         )
 
@@ -184,10 +58,7 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
         is PasskeyControllerState.Failure -> {
             val category = error.toCategory()
             PasskeyDemoStatus(
-                tone = when (category) {
-                    PasskeyDemoErrorCategory.USER_CANCELLED -> StatusTone.WARNING
-                    else -> StatusTone.ERROR
-                },
+                tone = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) StatusTone.WARNING else StatusTone.ERROR,
                 headline = category.label,
                 detail = "[${category.label}] ${error.message.withProviderDependencyHint()}",
             )
@@ -254,22 +125,6 @@ private fun PasskeyAction.label(): String {
     return when (this) {
         PasskeyAction.REGISTER -> "Register"
         PasskeyAction.SIGN_IN -> "Sign In"
-    }
-}
-
-private fun Throwable.toUnexpectedClientError(prefix: String): PasskeyClientError {
-    val reason = message?.takeIf { it.isNotBlank() } ?: "Unexpected error"
-    val message = "$prefix failed: ${reason.withProviderDependencyHint()}"
-    val lowered = reason.lowercase()
-    return when {
-        lowered.contains("http") ||
-            lowered.contains("network") ||
-            lowered.contains("timeout") ||
-            lowered.contains("connection") ||
-            lowered.contains("resolve host") ||
-            lowered.contains("cleartext") -> PasskeyClientError.Transport(message = message, cause = this)
-
-        else -> PasskeyClientError.Platform(message = message, cause = this)
     }
 }
 

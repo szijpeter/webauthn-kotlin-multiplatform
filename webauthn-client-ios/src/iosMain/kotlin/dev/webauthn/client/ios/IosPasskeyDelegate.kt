@@ -3,12 +3,13 @@ package dev.webauthn.client.ios
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyJsonCodec
-import dev.webauthn.client.KotlinxPasskeyJsonCodec
+import dev.webauthn.client.PasskeyJsonMapper
+import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
 import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
 import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.client.PasskeyPlatformBridge
+import dev.webauthn.client.deserializeFromJson
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -38,7 +39,7 @@ internal actual class IosPasskeyDelegate(
 
 internal class IosPasskeyPlatformBridge(
     private val bridge: IosAuthorizationBridge,
-    private val jsonCodec: PasskeyJsonCodec = KotlinxPasskeyJsonCodec(),
+    private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
 ) : PasskeyPlatformBridge {
     private val json = Json {
         encodeDefaults = false
@@ -46,14 +47,12 @@ internal class IosPasskeyPlatformBridge(
     }
 
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse =
-        jsonCodec.decodeRegistrationResponseOrThrowPlatform(
+        jsonMapper.decodeRegistrationResponseOrThrowPlatform(
             bridge.createCredential(options).toRegistrationResponseJson(),
         )
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse =
-        jsonCodec.decodeAuthenticationResponseOrThrowPlatform(
-            bridge.getAssertion(options).toAuthenticationResponseJson(),
-        )
+        bridge.getAssertion(options).toAuthenticationResponseJson().deserializeFromJson(jsonMapper)
 
     private fun IosRegistrationPayload.toRegistrationResponseJson(): String = json.encodeToString(
         RegistrationResponseDto.serializer(),

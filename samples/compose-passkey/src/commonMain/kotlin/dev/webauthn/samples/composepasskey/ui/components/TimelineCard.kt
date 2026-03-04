@@ -1,6 +1,5 @@
 package dev.webauthn.samples.composepasskey.ui.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,54 +31,52 @@ public fun TimelineCard(logs: List<PasskeyDemoLogEntry>) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text("Timeline", style = MaterialTheme.typography.titleMedium)
-            AnimatedContent(targetState = logs, label = "logs") { entries ->
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    if (entries.isEmpty()) {
-                        Text(
-                            text = "No events yet.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    } else {
-                        entries.forEach { entry ->
-                            val stripe = when (entry.tone) {
-                                StatusTone.IDLE -> Color(0xFF94A3AF)
-                                StatusTone.WORKING -> Color(0xFFCEA650)
-                                StatusTone.SUCCESS -> Color(0xFF5A9E62)
-                                StatusTone.WARNING -> Color(0xFFC4804A)
-                                StatusTone.ERROR -> Color(0xFFB54F60)
-                            }
-                            Row(
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (logs.isEmpty()) {
+                    Text(
+                        text = "No events yet.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    logs.forEach { entry ->
+                        val stripe = when (entry.tone) {
+                            StatusTone.IDLE -> Color(0xFF94A3AF)
+                            StatusTone.WORKING -> Color(0xFFCEA650)
+                            StatusTone.SUCCESS -> Color(0xFF5A9E62)
+                            StatusTone.WARNING -> Color(0xFFC4804A)
+                            StatusTone.ERROR -> Color(0xFFB54F60)
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(horizontal = 8.dp, vertical = 7.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(10.dp),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                verticalAlignment = Alignment.Top,
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(width = 4.dp, height = 36.dp)
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .background(stripe),
+                                    .size(width = 3.dp, height = 30.dp)
+                                    .clip(RoundedCornerShape(3.dp))
+                                    .background(stripe),
+                            )
+                            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                                Text(
+                                    text = entry.timestamp,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text(
-                                        text = entry.timestamp,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                    Text(
-                                        text = entry.message,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                    )
-                                }
+                                Text(
+                                    text = entry.message,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
                             }
                         }
                     }

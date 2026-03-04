@@ -1,13 +1,13 @@
 package dev.webauthn.samples.composepasskey
 
-import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyController
+import dev.webauthn.client.PasskeyControllerState
+import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.client.PasskeyResult
-import dev.webauthn.client.compose.PasskeyAction
-import dev.webauthn.client.compose.PasskeyClientState
-import dev.webauthn.client.compose.PasskeyClientUiState
-import dev.webauthn.client.compose.PasskeyPhase
+import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
@@ -25,6 +25,9 @@ import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
+import dev.webauthn.network.AuthenticationStartPayload
+import dev.webauthn.network.RegistrationStartPayload
+import dev.webauthn.samples.composepasskey.model.StatusTone
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,92 +38,72 @@ import kotlin.test.assertTrue
 class PasskeyDemoFlowTest {
     @Test
     fun register_success_updates_state_to_success_register() = runTest {
-        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
-        val backend = FakeBackend()
+        val controller = createController()
 
-        runRegisterCeremony(
-            config = PasskeyDemoConfig(endpointBase = "https://example.test"),
-            passkeyClientState = state,
-            backend = backend,
-            diagnostics = TestDiagnostics(),
-        )
+        controller.register(validDemoConfig().toRegistrationStartPayload())
 
-        assertEquals(PasskeyClientUiState.Success(PasskeyAction.REGISTER), state.uiState)
+        assertEquals(PasskeyControllerState.Success(PasskeyAction.REGISTER), controller.uiState.value)
     }
 
     @Test
     fun sign_in_success_updates_state_to_success_sign_in() = runTest {
-        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
-        val backend = FakeBackend()
+        val controller = createController()
 
-        runSignInCeremony(
-            config = PasskeyDemoConfig(endpointBase = "https://example.test"),
-            passkeyClientState = state,
-            backend = backend,
-            diagnostics = TestDiagnostics(),
-        )
+        controller.signIn(validDemoConfig().toAuthenticationStartPayload())
 
-        assertEquals(PasskeyClientUiState.Success(PasskeyAction.SIGN_IN), state.uiState)
+        assertEquals(PasskeyControllerState.Success(PasskeyAction.SIGN_IN), controller.uiState.value)
     }
 
     @Test
     fun register_start_validation_failure_ends_in_invalid_options() = runTest {
-        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
-        val backend = FakeBackend(
-            registrationStartResult = ValidationResult.Invalid(
-                errors = listOf(WebAuthnValidationError.MissingValue(field = "challenge", message = "missing")),
+        val controller = createController(
+            serverClient = FakeServerClient(
+                registerOptions = ValidationResult.Invalid(
+                    errors = listOf(WebAuthnValidationError.MissingValue(field = "challenge", message = "missing")),
+                ),
             ),
         )
 
-        runRegisterCeremony(
-            config = PasskeyDemoConfig(endpointBase = "https://example.test"),
-            passkeyClientState = state,
-            backend = backend,
-            diagnostics = TestDiagnostics(),
-        )
+        controller.register(validDemoConfig().toRegistrationStartPayload())
 
-        val failure = assertIs<PasskeyClientUiState.Failure>(state.uiState)
+        val failure = assertIs<PasskeyControllerState.Failure>(controller.uiState.value)
         assertEquals(PasskeyAction.REGISTER, failure.action)
-        assertTrue(failure.error is PasskeyClientError.InvalidOptions)
+        assertIs<PasskeyClientError.InvalidOptions>(failure.error)
         assertTrue(failure.error.message.contains("challenge"))
     }
 
     @Test
     fun register_verify_rejection_ends_in_transport_failure() = runTest {
-        val state = PasskeyClientState(passkeyClient = FakePasskeyClient())
-        val backend = FakeBackend(registrationVerifyResult = false)
-
-        runRegisterCeremony(
-            config = PasskeyDemoConfig(endpointBase = "https://example.test"),
-            passkeyClientState = state,
-            backend = backend,
-            diagnostics = TestDiagnostics(),
+        val controller = createController(
+            serverClient = FakeServerClient(registerVerifyResult = false),
         )
 
-        val failure = assertIs<PasskeyClientUiState.Failure>(state.uiState)
+        controller.register(validDemoConfig().toRegistrationStartPayload())
+
+        val failure = assertIs<PasskeyControllerState.Failure>(controller.uiState.value)
         assertEquals(PasskeyAction.REGISTER, failure.action)
-        assertTrue(failure.error is PasskeyClientError.Transport)
+        assertIs<PasskeyClientError.Transport>(failure.error)
     }
 
     @Test
     fun action_buttons_disabled_only_while_in_progress() {
-        assertTrue(areCeremonyActionsEnabled(PasskeyClientUiState.Idle))
+        assertTrue(areCeremonyActionsEnabled(PasskeyControllerState.Idle))
         assertFalse(
             areCeremonyActionsEnabled(
-                PasskeyClientUiState.InProgress(
+                PasskeyControllerState.InProgress(
                     action = PasskeyAction.REGISTER,
                     phase = PasskeyPhase.STARTING,
                 ),
             ),
         )
-        assertTrue(areCeremonyActionsEnabled(PasskeyClientUiState.Success(PasskeyAction.SIGN_IN)))
+        assertTrue(areCeremonyActionsEnabled(PasskeyControllerState.Success(PasskeyAction.SIGN_IN)))
     }
 
     @Test
     fun timeline_entries_are_emitted_for_start_and_terminal_transitions() {
         val started = timelineEntryForTransition(
-            previous = PasskeyClientUiState.Idle,
-            current = PasskeyClientUiState.InProgress(
+            previous = PasskeyControllerState.Idle,
+            current = PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.STARTING,
             ),
@@ -128,11 +111,11 @@ class PasskeyDemoFlowTest {
             timestamp = "t+1s",
         )
         val completed = timelineEntryForTransition(
-            previous = PasskeyClientUiState.InProgress(
+            previous = PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.FINISHING,
             ),
-            current = PasskeyClientUiState.Success(PasskeyAction.REGISTER),
+            current = PasskeyControllerState.Success(PasskeyAction.REGISTER),
             id = 2L,
             timestamp = "t+2s",
         )
@@ -142,36 +125,43 @@ class PasskeyDemoFlowTest {
         assertEquals(StatusTone.SUCCESS, completed?.tone)
         assertTrue(completed?.message.orEmpty().contains("completed"))
     }
+
+    private fun createController(
+        passkeyClient: PasskeyClient = FakePasskeyClient(),
+        serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> = FakeServerClient(),
+    ): PasskeyController<RegistrationStartPayload, AuthenticationStartPayload> {
+        return PasskeyController(passkeyClient = passkeyClient, serverClient = serverClient)
+    }
 }
 
-private class FakeBackend(
-    private val registrationStartResult: ValidationResult<PublicKeyCredentialCreationOptions> = ValidationResult.Valid(validCreationOptions()),
-    private val registrationVerifyResult: Boolean = true,
-    private val authenticationStartResult: ValidationResult<PublicKeyCredentialRequestOptions> = ValidationResult.Valid(validRequestOptions()),
-    private val authenticationVerifyResult: Boolean = true,
-) : PasskeyDemoBackend {
-    override suspend fun startRegistration(config: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialCreationOptions> {
-        return registrationStartResult
+private class FakeServerClient(
+    private val registerOptions: ValidationResult<PublicKeyCredentialCreationOptions> = ValidationResult.Valid(validCreationOptions()),
+    private val registerVerifyResult: Boolean = true,
+    private val signInOptions: ValidationResult<PublicKeyCredentialRequestOptions> = ValidationResult.Valid(validRequestOptions()),
+    private val signInVerifyResult: Boolean = true,
+) : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
+    override suspend fun getRegisterOptions(params: RegistrationStartPayload): ValidationResult<PublicKeyCredentialCreationOptions> {
+        return registerOptions
     }
 
-    override suspend fun finishRegistration(
-        config: PasskeyDemoConfig,
+    override suspend fun finishRegister(
+        params: RegistrationStartPayload,
         response: RegistrationResponse,
-        challenge: String,
+        challengeAsBase64Url: String,
     ): Boolean {
-        return registrationVerifyResult
+        return registerVerifyResult
     }
 
-    override suspend fun startAuthentication(config: PasskeyDemoConfig): ValidationResult<PublicKeyCredentialRequestOptions> {
-        return authenticationStartResult
+    override suspend fun getSignInOptions(params: AuthenticationStartPayload): ValidationResult<PublicKeyCredentialRequestOptions> {
+        return signInOptions
     }
 
-    override suspend fun finishAuthentication(
-        config: PasskeyDemoConfig,
+    override suspend fun finishSignIn(
+        params: AuthenticationStartPayload,
         response: AuthenticationResponse,
-        challenge: String,
+        challengeAsBase64Url: String,
     ): Boolean {
-        return authenticationVerifyResult
+        return signInVerifyResult
     }
 }
 
@@ -186,19 +176,16 @@ private class FakePasskeyClient(
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
         return assertionResult
     }
-
-    override suspend fun capabilities(): PasskeyCapabilities = PasskeyCapabilities()
 }
 
-private class TestDiagnostics : PasskeyDemoDiagnostics {
-    override fun trace(event: String, fields: Map<String, String>) = Unit
-
-    override fun error(
-        event: String,
-        message: String,
-        throwable: Throwable?,
-        fields: Map<String, String>,
-    ) = Unit
+private fun validDemoConfig(): PasskeyDemoConfig {
+    return PasskeyDemoConfig(
+        endpointBase = "https://example.test",
+        rpId = "example.test",
+        origin = "https://example.test",
+        userHandle = "demo-user-1",
+        userName = "demo@local",
+    )
 }
 
 private fun validCreationOptions(): PublicKeyCredentialCreationOptions {

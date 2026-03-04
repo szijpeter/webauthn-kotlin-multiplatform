@@ -1,8 +1,6 @@
 package dev.webauthn.samples.composepasskey
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,12 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
+import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.WebAuthnBackendProfile
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoLogEntry
 import dev.webauthn.samples.composepasskey.model.StatusTone
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
@@ -44,11 +42,17 @@ private const val MAX_LOG_ENTRIES: Int = 40
 public fun App() {
     val httpClient = rememberPlatformHttpClient()
     val config = remember { PasskeyDemoConfig() }
-    val backend = remember(httpClient, config) { createPasskeyDemoBackend(httpClient, config) }
+    val serverClient = remember(httpClient, config.endpointBase) {
+        KtorPasskeyServerClient(
+            httpClient = httpClient,
+            endpointBase = config.endpointBase.normalizedEndpoint(),
+            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
+        )
+    }
 
     val passkeyClient = rememberPasskeyClient()
     val passkeyController = rememberPasskeyController(
-        serverClient = backend,
+        serverClient = serverClient,
         passkeyClient = passkeyClient,
     )
 
@@ -127,55 +131,51 @@ public fun App() {
         typography = EditorialTypography,
     ) {
         Surface(modifier = Modifier.fillMaxSize()) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color(0xFFF9F5EC), Color(0xFFEFE7DA)),
-                        ),
-                    ),
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
-                ) {
-                    Header(status = status)
+                Header(status = status)
 
-                    CapabilitiesCard(
-                        capabilities = capabilities,
-                    )
+                CapabilitiesCard(
+                    capabilities = capabilities,
+                )
 
-                    ActionsCard(
-                        actionsEnabled = actionsEnabled,
-                        onRegister = {
-                            scope.launch {
-                                runRegisterCeremony(
-                                    config = config,
-                                    controller = passkeyController,
-                                    backend = backend,
-                                    diagnostics = diagnostics,
-                                )
-                            }
-                        },
-                        onSignIn = {
-                            scope.launch {
-                                runSignInCeremony(
-                                    config = config,
-                                    controller = passkeyController,
-                                    backend = backend,
-                                    diagnostics = diagnostics,
-                                )
-                            }
-                        },
-                    )
+                ActionsCard(
+                    actionsEnabled = actionsEnabled,
+                    onRegister = {
+                        scope.launch {
+                            diagnostics.trace(
+                                event = "register.start",
+                                fields = mapOf(
+                                    "endpoint" to config.endpointBase,
+                                    "rpId" to config.rpId,
+                                    "userName" to config.userName,
+                                ),
+                            )
+                            passkeyController.register(config.toRegistrationStartPayload())
+                        }
+                    },
+                    onSignIn = {
+                        scope.launch {
+                            diagnostics.trace(
+                                event = "auth.start",
+                                fields = mapOf(
+                                    "endpoint" to config.endpointBase,
+                                    "rpId" to config.rpId,
+                                    "userHandle" to config.userHandle,
+                                ),
+                            )
+                            passkeyController.signIn(config.toAuthenticationStartPayload())
+                        }
+                    },
+                )
 
-                    TimelineCard(logs = logs)
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
+                TimelineCard(logs = logs)
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }

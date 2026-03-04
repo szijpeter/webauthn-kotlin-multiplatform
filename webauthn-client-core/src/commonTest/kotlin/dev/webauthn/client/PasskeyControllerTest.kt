@@ -122,7 +122,7 @@ class PasskeyControllerTest {
     }
 
     @Test
-    fun unknown_exception_is_wrapped() = runTest(UnconfinedTestDispatcher()) {
+    fun server_exception_maps_to_transport_error() = runTest(UnconfinedTestDispatcher()) {
         val fakeClient = FakePasskeyClient()
         val serverClient = FakePasskeyServerClient(
             signInOptionsException = IllegalStateException("random crash")
@@ -133,7 +133,7 @@ class PasskeyControllerTest {
 
         val finalState = controller.uiState.value
         assertIs<PasskeyControllerState.Failure>(finalState)
-        assertIs<PasskeyClientError.Platform>(finalState.error)
+        assertIs<PasskeyClientError.Transport>(finalState.error)
         assertTrue(finalState.error.message.contains("random crash"))
     }
 

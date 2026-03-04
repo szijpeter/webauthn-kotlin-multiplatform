@@ -74,7 +74,7 @@ Demo behavior notes:
 
 ## Client Interop
 
-Use `WebAuthnInteropKtorClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC` because the endpoint contract is intentionally compatible with that profile.
+Use `KtorPasskeyServerClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC` because the endpoint contract is intentionally compatible with that profile.
 
 ## Android Verification Reset
 

@@ -74,6 +74,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         runCeremony(
             action = PasskeyAction.REGISTER,
             getOptions = { serverClient.getRegisterOptions(params) },
+            extractChallenge = { options -> options.challenge.value.encoded() },
             interactWithPlatform = { options -> passkeyClient.createCredential(options) },
             finish = { response, challenge -> serverClient.finishRegister(params, response, challenge) },
         )
@@ -88,6 +89,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         runCeremony(
             action = PasskeyAction.SIGN_IN,
             getOptions = { serverClient.getSignInOptions(params) },
+            extractChallenge = { options -> options.challenge.value.encoded() },
             interactWithPlatform = { options -> passkeyClient.getAssertion(options) },
             finish = { response, challenge -> serverClient.finishSignIn(params, response, challenge) },
         )
@@ -96,6 +98,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
     private suspend fun <OptionsT, ResponseT> runCeremony(
         action: PasskeyAction,
         getOptions: suspend () -> ValidationResult<OptionsT>,
+        extractChallenge: (OptionsT) -> String,
         interactWithPlatform: suspend (options: OptionsT) -> PasskeyResult<ResponseT>,
         finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> Boolean,
     ) {
@@ -116,16 +119,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
                 }
             }
 
-            // Extract the challenge to pass it back to the server.
-            // Both PublicKeyCredentialCreationOptions and PublicKeyCredentialRequestOptions have `challenge` in their schema.
-            val challengeBase64Url = when (validOptions) {
-                is PublicKeyCredentialCreationOptions -> validOptions.challenge.value.encoded()
-                is PublicKeyCredentialRequestOptions -> validOptions.challenge.value.encoded()
-                else -> {
-                    _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.Platform("Unknown options type"))
-                    return
-                }
-            }
+            val challengeBase64Url = extractChallenge(validOptions)
 
             // 2. Platform Prompting
             _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.PLATFORM_PROMPT)
@@ -153,14 +147,9 @@ public class PasskeyController<RegisterParams, SignInParams>(
             // Re-throw cancellation
             throw e
         } catch (e: Exception) {
-            // Wrap unknown throwables
-            val error = when {
-                e.message?.contains("network", ignoreCase = true) == true ||
-                e.message?.contains("timeout", ignoreCase = true) == true ||
-                e.message?.contains("connection", ignoreCase = true) == true -> {
-                    PasskeyClientError.Transport(e.message ?: "Transport error", e)
-                }
-                else -> PasskeyClientError.Platform(e.message ?: "Unexpected error", e)
+            val error = when (e) {
+                is IllegalArgumentException -> PasskeyClientError.InvalidOptions(e.message ?: "Invalid options")
+                else -> PasskeyClientError.Transport(e.message ?: "Server interaction failed", e)
             }
             _uiState.value = PasskeyControllerState.Failure(action, error)
         }

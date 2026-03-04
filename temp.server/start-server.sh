@@ -41,6 +41,7 @@ upsert_prop() {
 
     if grep -qE "^[[:space:]]*${escaped_key}=" "$file"; then
         sed -i.bak -E "s|^[[:space:]]*${escaped_key}=.*$|${key}=${value}|" "$file"
+        rm -f "${file}.bak"
     else
         printf "%s=%s\n" "$key" "$value" >> "$file"
     fi

@@ -47,12 +47,12 @@ It does not depend on `kotlinx-serialization-json` or `:webauthn-serialization-k
 
 Raw JSON API support is optional and lives in `webauthn-client-json-core`, which provides:
 - `JsonPasskeyClient`
-- `PasskeyJsonCodec`
-- `KotlinxPasskeyJsonCodec`
+- `PasskeyJsonMapper`
+- `KotlinxPasskeyJsonMapper`
 
 Policy:
 
 1. Keep platform wrappers thin (`webauthn-client-android`, `webauthn-client-ios`) and avoid moving shared logic back into target-specific modules.
 2. Keep the API boundary domain-owned (`PasskeyClient`, `PasskeyResult`, `PasskeyClientError`) even when platform SDK errors are richer.
 3. Prefer additive capability flags (`PasskeyCapabilities`) over target-specific branching in public API signatures.
-4. Keep serialization strategy replaceable through `PasskeyJsonCodec` in optional JSON module so alternative codecs can be used without core API changes.
+4. Keep serialization strategy replaceable through `PasskeyJsonMapper` in optional JSON module so alternative mappers can be used without core API changes.

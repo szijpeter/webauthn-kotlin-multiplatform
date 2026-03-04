@@ -2,16 +2,15 @@ package dev.webauthn.samples.clientinterop
 
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ValidationResult
-import dev.webauthn.network.AuthenticationFinishPayload
 import dev.webauthn.network.AuthenticationStartPayload
-import dev.webauthn.network.RegistrationFinishPayload
+import dev.webauthn.network.KtorPasskeyServerClient
 import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.network.WebAuthnBackendProfile
-import dev.webauthn.network.WebAuthnInteropKtorClient
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -34,25 +33,26 @@ public fun main(): Unit = runBlocking {
     }
 
     try {
-        val interop = WebAuthnInteropKtorClient(
+        val serverClient = KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = endpointBase,
             profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
         )
+        val registrationParams = RegistrationStartPayload(
+            rpId = rpId,
+            rpName = "WebAuthn Kotlin MPP Demo",
+            origin = origin,
+            userName = userName,
+            userDisplayName = userName,
+            userHandle = userId,
+        )
 
-        val registrationOptions = interop.startRegistration(
-            RegistrationStartPayload(
-                rpId = rpId,
-                rpName = "WebAuthn Kotlin MPP Demo",
-                origin = origin,
-                userName = userName,
-                userDisplayName = userName,
-                userHandle = userId,
-            ),
-        ).requireValid("startRegistration")
+        val registrationOptions = serverClient.getRegisterOptions(registrationParams)
+            .requireValid("startRegistration")
 
         val registrationChallenge = registrationOptions.challenge.value.encoded()
-        val registrationResponse = RegistrationResponseDto(
+        val registrationResponse = WebAuthnDtoMapper.toModel(
+            RegistrationResponseDto(
             id = credentialId,
             rawId = credentialId,
             response = RegistrationResponsePayloadDto(
@@ -63,28 +63,27 @@ public fun main(): Unit = runBlocking {
                 ),
                 attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
             ),
-        )
-
-        val registrationOk = interop.finishRegistration(
-            RegistrationFinishPayload(
-                response = registrationResponse,
-                clientDataType = "webauthn.create",
-                challenge = registrationChallenge,
-                origin = origin,
             ),
+        ).requireValid("registration response mapping")
+
+        val registrationOk = serverClient.finishRegister(
+            params = registrationParams,
+            response = registrationResponse,
+            challengeAsBase64Url = registrationChallenge,
         )
         check(registrationOk) { "finishRegistration failed" }
 
-        val authenticationOptions = interop.startAuthentication(
-            AuthenticationStartPayload(
-                rpId = rpId,
-                origin = origin,
-                userName = userId,
-            ),
-        ).requireValid("startAuthentication")
+        val authenticationParams = AuthenticationStartPayload(
+            rpId = rpId,
+            origin = origin,
+            userName = userId,
+        )
+        val authenticationOptions = serverClient.getSignInOptions(authenticationParams)
+            .requireValid("startAuthentication")
 
         val authenticationChallenge = authenticationOptions.challenge.value.encoded()
-        val authenticationResponse = AuthenticationResponseDto(
+        val authenticationResponse = WebAuthnDtoMapper.toModel(
+            AuthenticationResponseDto(
             id = credentialId,
             rawId = credentialId,
             response = AuthenticationResponsePayloadDto(
@@ -96,15 +95,13 @@ public fun main(): Unit = runBlocking {
                 authenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 5 }).encoded(),
                 signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
             ),
-        )
-
-        val authenticationOk = interop.finishAuthentication(
-            AuthenticationFinishPayload(
-                response = authenticationResponse,
-                clientDataType = "webauthn.get",
-                challenge = authenticationChallenge,
-                origin = origin,
             ),
+        ).requireValid("authentication response mapping")
+
+        val authenticationOk = serverClient.finishSignIn(
+            params = authenticationParams,
+            response = authenticationResponse,
+            challengeAsBase64Url = authenticationChallenge,
         )
         check(authenticationOk) { "finishAuthentication failed" }
 

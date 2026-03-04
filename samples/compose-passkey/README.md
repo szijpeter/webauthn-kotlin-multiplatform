@@ -7,9 +7,10 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against the temp
 1. Runtime capability probing (`supportsPrf`, Large Blob read/write, security key support).
 2. End-to-end passkey registration against `POST /register/options` + `/register/verify`.
 3. End-to-end passkey sign-in against `POST /authenticate/options` + `/authenticate/verify`.
-4. Sealed, Compose-native passkey lifecycle state (`Idle`, `InProgress`, `Success`, `Failure`) driving UI status and action enablement.
-5. Timeline logging for lifecycle transitions (start and terminal result) plus capability bootstrap logs.
-6. Structured debug logging for internal calls and network traces (sanitized).
+4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
+5. Direct sample wiring to `KtorPasskeyServerClient` (`PASSKEY_ENCRYPTION_POC` profile) without a sample-only backend abstraction.
+6. Timeline logging for lifecycle transitions (start and terminal result) plus capability bootstrap logs.
+7. Structured debug logging for internal calls and network traces (sanitized).
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
@@ -78,8 +79,9 @@ To inspect logs:
 
 ## Test layering (fake vs real client)
 
-- `samples:compose-passkey` `commonTest` validates flow behavior with `FakePasskeyClient` and fake backend helpers so orchestration is deterministic across KMP targets.
-- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyClientState()`).
+- `samples:compose-passkey` `commonTest` validates flow behavior with `FakePasskeyClient` and `FakeServerClient` (`PasskeyServerClient`) so orchestration is deterministic across KMP targets.
+- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
+- Runtime server wiring uses `webauthn-network-ktor-client` (`KtorPasskeyServerClient`).
 - Final readiness still requires the live register/sign-in checklist run on a real/emulated Android device with provider dependencies present.
 
 ## Android provider prerequisite

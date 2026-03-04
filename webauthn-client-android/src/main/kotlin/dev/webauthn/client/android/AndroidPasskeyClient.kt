@@ -17,11 +17,11 @@ import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
 import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
 import dev.webauthn.client.encodeAssertionOptionsOrThrowInvalid
 import dev.webauthn.client.encodeCreationOptionsOrThrowInvalid
-import dev.webauthn.client.KotlinxPasskeyJsonCodec
+import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyJsonCodec
+import dev.webauthn.client.PasskeyJsonMapper
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.model.AuthenticationResponse
@@ -42,12 +42,12 @@ public class AndroidPasskeyClient(
 internal class AndroidPasskeyPlatformBridge(
     private val context: Context,
     private val credentialManager: CredentialManager,
-    private val jsonCodec: PasskeyJsonCodec = KotlinxPasskeyJsonCodec(),
+    private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
 ) : PasskeyPlatformBridge {
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
         return runTypedCeremony(
             options = options,
-            encodeOptions = jsonCodec::encodeCreationOptionsOrThrowInvalid,
+            encodeOptions = jsonMapper::encodeCreationOptionsOrThrowInvalid,
             executeRequest = { requestJson ->
                 credentialManager.createCredential(
                     context = context,
@@ -55,14 +55,14 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
-            decodePayload = jsonCodec::decodeRegistrationResponseOrThrowPlatform,
+            decodePayload = jsonMapper::decodeRegistrationResponseOrThrowPlatform,
         )
     }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
         return runTypedCeremony(
             options = options,
-            encodeOptions = jsonCodec::encodeAssertionOptionsOrThrowInvalid,
+            encodeOptions = jsonMapper::encodeAssertionOptionsOrThrowInvalid,
             executeRequest = { requestJson ->
                 credentialManager.getCredential(
                     context,
@@ -70,7 +70,7 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requirePublicKeyCredential(response).authenticationResponseJson },
-            decodePayload = jsonCodec::decodeAuthenticationResponseOrThrowPlatform,
+            decodePayload = jsonMapper::decodeAuthenticationResponseOrThrowPlatform,
         )
     }
 

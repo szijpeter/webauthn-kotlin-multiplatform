@@ -14,7 +14,7 @@ Goal: keep Android and iOS client implementation moving even when our first-part
 
 ### Option A: External backend profile (`PASSKEY_ENCRYPTION_POC`)
 
-Use `WebAuthnInteropKtorClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC` to call:
+Use `KtorPasskeyServerClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC` to call:
 
 - `POST /register/options`
 - `POST /register/verify`
@@ -24,7 +24,7 @@ Use `WebAuthnInteropKtorClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_
 Example:
 
 ```kotlin
-val interop = WebAuthnInteropKtorClient(
+val serverClient = KtorPasskeyServerClient(
     httpClient = client,
     endpointBase = "https://your-host",
     profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
@@ -79,7 +79,7 @@ Use `WebAuthnBackendProfile.LIBRARY_ROUTES` with our in-repo server route contra
 - `:webauthn-client-core`
 - `:webauthn-serialization-kotlinx`
 - `kotlinx-serialization-json`
-- Provides `JsonPasskeyClient`, `PasskeyJsonCodec`, and `KotlinxPasskeyJsonCodec`
+- Provides `JsonPasskeyClient`, `PasskeyJsonMapper`, and `KotlinxPasskeyJsonMapper`
 
 JSON interop wrapper example for a typed client:
 
