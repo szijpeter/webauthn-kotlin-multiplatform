@@ -7,14 +7,14 @@ Goal: keep Android and iOS client implementation moving even when our first-part
 ## Principle
 
 1. Client work must not block on server hardening.
-2. Use explicit backend profiles for interop testing.
+2. Use explicit backend contracts for interop testing.
 3. Keep shared ceremony logic in `webauthn-client-core`; platform modules only bridge OS APIs.
 
 ## Backend Options for Client Bring-Up
 
-### Option A: External backend profile (`PASSKEY_ENCRYPTION_POC`)
+### Option A: External backend contract (`TempServerBackendContract`)
 
-Use `KtorPasskeyServerClient` with `WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC` to call:
+Use `KtorPasskeyServerClient` with a host-provided `BackendContract` to call:
 
 - `POST /register/options`
 - `POST /register/verify`
@@ -27,11 +27,27 @@ Example:
 val serverClient = KtorPasskeyServerClient(
     httpClient = client,
     endpointBase = "https://your-host",
-    profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
+    backendContract = TempServerBackendContract(),
 )
 ```
 
-If you have the sibling repo locally, `../passkey-encryption-poc` already includes these routes and associated-domain endpoints.
+If your backend uses different path names with the same payload semantics, override routes directly:
+
+```kotlin
+val serverClient = KtorPasskeyServerClient(
+    httpClient = client,
+    endpointBase = "https://your-host",
+    backendContract = TempServerBackendContract(
+        registerOptionsPath = "/passkeys/register/options",
+        registerVerifyPath = "/passkeys/register/verify",
+        authenticateOptionsPath = "/passkeys/auth/options",
+        authenticateVerifyPath = "/passkeys/auth/verify",
+    ),
+)
+```
+
+The sample modules provide a `TempServerBackendContract` reference implementation for this route shape.
+It is intentionally temporary and should be removed once your backend aligns with `DefaultBackendContract`.
 
 ### Option B: Local temporary backend (`temp.server`)
 
@@ -61,9 +77,10 @@ cd temp.server && npm start
 The shared Compose module also exposes `MainViewController()` for iOS host integration.
 The Compose sample includes structured debug logging (`PasskeyDemo` tag), sanitized network traces, and a readiness runbook at `samples/compose-passkey/READINESS_CHECKLIST.md`.
 
-### Option C: First-party backend routes
+### Option C: First-party backend contract
 
-Use `WebAuthnBackendProfile.LIBRARY_ROUTES` with our in-repo server route contract when those paths are ready for your integration target.
+Use `DefaultBackendContract` with our in-repo server route contract when those paths are ready for your integration target.
+You can also override paths in `DefaultBackendContract(...)` if needed.
 
 ## Client Dependencies Required
 

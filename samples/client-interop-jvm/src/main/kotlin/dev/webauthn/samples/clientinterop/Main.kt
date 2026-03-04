@@ -5,7 +5,6 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.KtorPasskeyServerClient
 import dev.webauthn.network.RegistrationStartPayload
-import dev.webauthn.network.WebAuthnBackendProfile
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
@@ -36,7 +35,7 @@ public fun main(): Unit = runBlocking {
         val serverClient = KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = endpointBase,
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
+            backendContract = TempServerBackendContract(),
         )
         val registrationParams = RegistrationStartPayload(
             rpId = rpId,

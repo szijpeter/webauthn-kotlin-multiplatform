@@ -28,14 +28,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class KtorPasskeyServerClientTest {
     @Test
-    fun libraryRoutes_registration_usesExpectedEndpointsAndPayloadShape() = runTest {
+    fun defaultContract_registration_usesExpectedEndpointsAndPayloadShape() = runTest {
         val requestBodies = mutableMapOf<String, String>()
         val client = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -72,7 +71,7 @@ class KtorPasskeyServerClientTest {
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            profile = WebAuthnBackendProfile.LIBRARY_ROUTES,
+            backendContract = DefaultBackendContract(),
         )
         val params = RegistrationStartPayload(
             rpId = "example.com",
@@ -103,7 +102,7 @@ class KtorPasskeyServerClientTest {
     }
 
     @Test
-    fun libraryRoutes_authentication_usesExpectedEndpointsAndPayloadShape() = runTest {
+    fun defaultContract_authentication_usesExpectedEndpointsAndPayloadShape() = runTest {
         val requestBodies = mutableMapOf<String, String>()
         val client = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -139,7 +138,7 @@ class KtorPasskeyServerClientTest {
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            profile = WebAuthnBackendProfile.LIBRARY_ROUTES,
+            backendContract = DefaultBackendContract(),
         )
         val params = AuthenticationStartPayload(
             rpId = "example.com",
@@ -168,61 +167,12 @@ class KtorPasskeyServerClientTest {
     }
 
     @Test
-    fun pocStartRegistration_mapsAuthenticatorAttachment() = runTest {
+    fun customRoutes_overrideDefaultContractPaths() = runTest {
+        val seenPaths = mutableListOf<String>()
         val client = createMockClient { request ->
+            seenPaths += request.url.encodedPath
             when (request.url.encodedPath) {
-                "/register/options" -> respond(
-                    content =
-                        """
-                        {
-                          "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                          "rp": {"id": "example.com", "name": "Example"},
-                          "user": {"id": "AQID", "name": "alice", "displayName": "Alice"},
-                          "pubKeyCredParams": [{"type": "public-key", "alg": -7}],
-                          "authenticatorSelection": {
-                            "authenticatorAttachment": "platform",
-                            "residentKey": "required",
-                            "userVerification": "required"
-                          }
-                        }
-                        """.trimIndent(),
-                    status = HttpStatusCode.OK,
-                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
-                )
-
-                else -> error("Unexpected path: ${request.url.encodedPath}")
-            }
-        }
-
-        val serverClient = KtorPasskeyServerClient(
-            httpClient = client,
-            endpointBase = "https://example.test",
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
-        )
-
-        val result = serverClient.getRegisterOptions(
-            RegistrationStartPayload(
-                rpId = "example.com",
-                rpName = "Example",
-                origin = "https://example.com",
-                userName = "alice",
-                userDisplayName = "Alice",
-                userHandle = "AQID",
-            ),
-        )
-
-        assertTrue(result is ValidationResult.Valid)
-        assertEquals(AuthenticatorAttachment.PLATFORM, result.value.authenticatorAttachment)
-        assertEquals("alice", result.value.user.name)
-    }
-
-    @Test
-    fun pocFinishRegistration_reusesUserHandleFromChallenge() = runTest {
-        val seenUrls = mutableListOf<String>()
-        val client = createMockClient { request ->
-            seenUrls += request.url.toString()
-            when (request.url.encodedPath) {
-                "/register/options" -> respond(
+                "/custom/register/start" -> respond(
                     content =
                         """
                         {
@@ -236,85 +186,30 @@ class KtorPasskeyServerClientTest {
                     headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
                 )
 
-                "/register/verify" -> respond(
-                    content = """{"success":true}""",
+                "/custom/register/finish" -> respond(
+                    content = """{"status":"ok"}""",
                     status = HttpStatusCode.OK,
                     headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
                 )
 
-                else -> error("Unexpected path: ${request.url.encodedPath}")
-            }
-        }
-
-        val serverClient = KtorPasskeyServerClient(
-            httpClient = client,
-            endpointBase = "https://example.test",
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
-        )
-        val params = RegistrationStartPayload(
-            rpId = "example.com",
-            rpName = "Example",
-            origin = "https://example.com",
-            userName = "alice",
-            userDisplayName = "Alice",
-            userHandle = "AQID",
-        )
-
-        val start = serverClient.getRegisterOptions(params)
-        assertTrue(start is ValidationResult.Valid)
-
-        val finishResult = serverClient.finishRegister(
-            params = params,
-            response = validRegistrationResponse(),
-            challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        )
-
-        assertTrue(finishResult)
-        val verifyUrl = seenUrls.find { it.contains("/register/verify") }
-        assertNotNull(verifyUrl)
-        assertTrue(verifyUrl.contains("userId=AQID"))
-    }
-
-    @Test
-    fun pocStartAuthentication_doesNotCacheUserId_when_registration_verify_fails() = runTest {
-        val authOptionBodies = mutableListOf<String>()
-        val client = createMockClient { request ->
-            when (request.url.encodedPath) {
-                "/register/options" -> respond(
+                "/custom/auth/start" -> respond(
                     content =
                         """
                         {
                           "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                          "rp": {"id": "example.com", "name": "Example"},
-                          "user": {"id": "AQID", "name": "alice", "displayName": "Alice"},
-                          "pubKeyCredParams": [{"type": "public-key", "alg": -7}]
+                          "rpId": "example.com",
+                          "allowCredentials": []
                         }
                         """.trimIndent(),
                     status = HttpStatusCode.OK,
                     headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
                 )
 
-                "/register/verify" -> respond(
-                    content = """{"success":false}""",
+                "/custom/auth/finish" -> respond(
+                    content = """{"status":"ok"}""",
                     status = HttpStatusCode.OK,
                     headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
                 )
-
-                "/authenticate/options" -> {
-                    authOptionBodies += request.bodyText()
-                    respond(
-                        content =
-                            """
-                            {
-                              "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                              "rpId": "example.com",
-                              "allowCredentials": []
-                            }
-                            """.trimIndent(),
-                        status = HttpStatusCode.OK,
-                        headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
-                    )
-                }
 
                 else -> error("Unexpected path: ${request.url.encodedPath}")
             }
@@ -322,10 +217,15 @@ class KtorPasskeyServerClientTest {
 
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
-            endpointBase = "https://example.test",
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
+            endpointBase = "https://example.test/",
+            backendContract = DefaultBackendContract(
+                registerOptionsPath = "custom/register/start",
+                registerVerifyPath = "custom/register/finish",
+                authenticateOptionsPath = "custom/auth/start",
+                authenticateVerifyPath = "custom/auth/finish",
+            ),
         )
-        val registrationParams = RegistrationStartPayload(
+        val registerParams = RegistrationStartPayload(
             rpId = "example.com",
             rpName = "Example",
             origin = "https://example.com",
@@ -333,118 +233,39 @@ class KtorPasskeyServerClientTest {
             userDisplayName = "Alice",
             userHandle = "AQID",
         )
-
-        val start = serverClient.getRegisterOptions(registrationParams)
-        assertTrue(start is ValidationResult.Valid)
-
-        val finished = serverClient.finishRegister(
-            params = registrationParams,
-            response = validRegistrationResponse(),
-            challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        )
-        assertFalse(finished)
-
-        val authStart = serverClient.getSignInOptions(
-            AuthenticationStartPayload(
-                rpId = "example.com",
-                origin = "https://example.com",
-                userName = "alice",
-                userHandle = null,
-            ),
-        )
-        assertTrue(authStart is ValidationResult.Valid)
-        assertEquals(1, authOptionBodies.size)
-        val requestedUserId = Json.parseToJsonElement(authOptionBodies.single())
-            .jsonObject["userId"]
-            ?.jsonPrimitive
-            ?.content
-        assertEquals("alice", requestedUserId)
-    }
-
-    @Test
-    fun pocStartAuthentication_usesCachedUserId_after_successful_registration_verify() = runTest {
-        val authOptionBodies = mutableListOf<String>()
-        val client = createMockClient { request ->
-            when (request.url.encodedPath) {
-                "/register/options" -> respond(
-                    content =
-                        """
-                        {
-                          "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                          "rp": {"id": "example.com", "name": "Example"},
-                          "user": {"id": "AQID", "name": "alice", "displayName": "Alice"},
-                          "pubKeyCredParams": [{"type": "public-key", "alg": -7}]
-                        }
-                        """.trimIndent(),
-                    status = HttpStatusCode.OK,
-                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
-                )
-
-                "/register/verify" -> respond(
-                    content = """{"success":true}""",
-                    status = HttpStatusCode.OK,
-                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
-                )
-
-                "/authenticate/options" -> {
-                    authOptionBodies += request.bodyText()
-                    respond(
-                        content =
-                            """
-                            {
-                              "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                              "rpId": "example.com",
-                              "allowCredentials": []
-                            }
-                            """.trimIndent(),
-                        status = HttpStatusCode.OK,
-                        headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
-                    )
-                }
-
-                else -> error("Unexpected path: ${request.url.encodedPath}")
-            }
-        }
-
-        val serverClient = KtorPasskeyServerClient(
-            httpClient = client,
-            endpointBase = "https://example.test",
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
-        )
-        val registrationParams = RegistrationStartPayload(
+        val signInParams = AuthenticationStartPayload(
             rpId = "example.com",
-            rpName = "Example",
             origin = "https://example.com",
             userName = "alice",
-            userDisplayName = "Alice",
             userHandle = "AQID",
         )
 
-        val start = serverClient.getRegisterOptions(registrationParams)
-        assertTrue(start is ValidationResult.Valid)
-
-        val finished = serverClient.finishRegister(
-            params = registrationParams,
-            response = validRegistrationResponse(),
-            challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        )
-        assertTrue(finished)
-
-        val authStart = serverClient.getSignInOptions(
-            AuthenticationStartPayload(
-                rpId = "example.com",
-                origin = "https://example.com",
-                userName = "alice",
-                userHandle = null,
+        assertTrue(serverClient.getRegisterOptions(registerParams) is ValidationResult.Valid)
+        assertTrue(
+            serverClient.finishRegister(
+                params = registerParams,
+                response = validRegistrationResponse(),
+                challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             ),
         )
-        assertTrue(authStart is ValidationResult.Valid)
-        assertEquals(1, authOptionBodies.size)
-        val requestedUserId = Json.parseToJsonElement(authOptionBodies.single())
-            .jsonObject["userId"]
-            ?.jsonPrimitive
-            ?.content
-        assertEquals("AQID", requestedUserId)
+        assertTrue(serverClient.getSignInOptions(signInParams) is ValidationResult.Valid)
+        assertTrue(
+            serverClient.finishSignIn(
+                params = signInParams,
+                response = validAuthenticationResponse(),
+                challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            ),
+        )
+
+        assertContentEquals(
+            listOf(
+                "/custom/register/start",
+                "/custom/register/finish",
+                "/custom/auth/start",
+                "/custom/auth/finish",
+            ),
+            seenPaths,
+        )
     }
 
     private fun createMockClient(

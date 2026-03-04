@@ -8,7 +8,7 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against the temp
 2. End-to-end passkey registration against `POST /register/options` + `/register/verify`.
 3. End-to-end passkey sign-in against `POST /authenticate/options` + `/authenticate/verify`.
 4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
-5. Direct sample wiring to `KtorPasskeyServerClient` (`PASSKEY_ENCRYPTION_POC` profile) without a sample-only backend abstraction.
+5. Direct sample wiring to `KtorPasskeyServerClient` with sample-scoped `TempServerBackendContract` for temp backend interop.
 6. Timeline logging for lifecycle transitions (start and terminal result) plus capability bootstrap logs.
 7. Structured debug logging for internal calls and network traces (sanitized).
 

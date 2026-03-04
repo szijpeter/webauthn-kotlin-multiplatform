@@ -25,7 +25,6 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
 import dev.webauthn.network.KtorPasskeyServerClient
-import dev.webauthn.network.WebAuthnBackendProfile
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoLogEntry
 import dev.webauthn.samples.composepasskey.model.StatusTone
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
@@ -46,7 +45,7 @@ public fun App() {
         KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = config.endpointBase.normalizedEndpoint(),
-            profile = WebAuthnBackendProfile.PASSKEY_ENCRYPTION_POC,
+            backendContract = TempServerBackendContract(),
         )
     }
 

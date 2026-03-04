@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-01
+Last updated: 2026-03-04
 
 ## Status Legend
 
@@ -20,7 +20,7 @@ Last updated: 2026-03-01
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
 - Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
-- Network interop now supports both native library routes and external `PASSKEY_ENCRYPTION_POC` profile routes.
+- Network interop now uses a default backend contract in `webauthn-network-ktor-client`, while sample-only temp-server contract wiring lives under `samples/*`.
 - Samples now include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against `temp.server`.
 
 ## Plan Progress (Estimated)
@@ -46,7 +46,7 @@ Last updated: 2026-03-01
 | `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyController`) for controller-driven state | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, capability reporting, shared-core delegation | Lifecycle and OEM/provider compatibility hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation | More runtime/device matrix coverage |
-| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, backend profile interop (`LIBRARY_ROUTES`, `PASSKEY_ENCRYPTION_POC`) | Retry/error policy hardening and broader profile fixtures |
+| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`) | Retry/error policy hardening and broader contract fixtures |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
 | `samples:*` | Beta | Runnable backend/android/ios structure, JVM interop demo, and Compose KMP readiness sample wired to `temp.server` | More real-device matrix coverage and extension-focused end-to-end examples |
 
