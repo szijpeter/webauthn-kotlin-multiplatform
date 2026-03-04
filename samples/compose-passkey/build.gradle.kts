@@ -50,11 +50,11 @@ val demoOrigin = demoConfigValue(
 )
 val demoUserId = demoConfigValue(
     envName = "WEBAUTHN_DEMO_USER_ID",
-    defaultValue = "demo-user-1",
+    defaultValue = "42",
 )
 val demoUserName = demoConfigValue(
     envName = "WEBAUTHN_DEMO_USER_NAME",
-    defaultValue = "demo@local",
+    defaultValue = "Zaphod Beeblebrox",
 )
 
 val generatePasskeyDemoBuildConfig by tasks.registering {
