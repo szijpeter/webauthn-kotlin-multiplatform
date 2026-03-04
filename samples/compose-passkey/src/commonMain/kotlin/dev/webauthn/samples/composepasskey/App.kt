@@ -18,28 +18,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
 import dev.webauthn.network.KtorPasskeyServerClient
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoLogEntry
-import dev.webauthn.samples.composepasskey.model.StatusTone
+import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
 import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
+import dev.webauthn.samples.composepasskey.ui.components.DebugLogCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
-import dev.webauthn.samples.composepasskey.ui.components.TimelineCard
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
 import kotlinx.coroutines.launch
 
-private const val MAX_LOG_ENTRIES: Int = 40
-
 @Composable
 public fun App() {
-    val httpClient = rememberPlatformHttpClient()
+    val scope = rememberCoroutineScope()
+    val debugLogs = remember { DebugLogStore() }
+    val httpLogSink: (String) -> Unit = remember(scope, debugLogs) {
+        { line ->
+            scope.launch {
+                debugLogs.d(source = "http", message = line)
+            }
+        }
+    }
+    val httpClient = rememberPlatformHttpClient(onLogLine = httpLogSink)
     val config = remember { PasskeyDemoConfig() }
     val serverClient = remember(httpClient, config.endpointBase) {
         KtorPasskeyServerClient(
@@ -55,71 +61,57 @@ public fun App() {
         passkeyClient = passkeyClient,
     )
 
-    val diagnostics = remember { DefaultPasskeyDemoDiagnostics }
-    val scope = rememberCoroutineScope()
-
-    var capabilities by remember { mutableStateOf(PasskeyCapabilities()) }
-    var logs by remember { mutableStateOf(emptyList<PasskeyDemoLogEntry>()) }
-    var nextLogId by remember { mutableStateOf(1L) }
-    var fallbackTick by remember { mutableStateOf(0L) }
+    val capabilities = remember { mutableStateOf(PasskeyCapabilities()) }
     val uiState by passkeyController.uiState.collectAsState()
-    var previousUiState by remember { mutableStateOf(passkeyController.uiState.value) }
-
-    fun nextTimestamp(): String {
-        fallbackTick += 1
-        return "t+$fallbackTick" + "s"
-    }
-
-    fun appendLog(tone: StatusTone, message: String) {
-        val entry = PasskeyDemoLogEntry(
-            id = nextLogId,
-            timestamp = nextTimestamp(),
-            tone = tone,
-            message = message,
-        )
-        nextLogId += 1
-        logs = (listOf(entry) + logs).take(MAX_LOG_ENTRIES)
-    }
+    val previousUiState = remember { mutableStateOf(passkeyController.uiState.value) }
 
     DisposableEffect(httpClient) {
+        debugLogs.i(source = "app", message = "App composition entered")
         onDispose { httpClient.close() }
     }
 
+    LaunchedEffect(Unit) {
+        debugLogs.i(source = "app", message = "First render complete")
+        debugLogs.i(
+            source = "app",
+            message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} origin=${config.origin} user=${config.userName}",
+        )
+    }
+
     LaunchedEffect(passkeyClient) {
+        debugLogs.i(source = "capabilities", message = "Loading capability hints")
         runCatching { passkeyClient.capabilities() }
             .onSuccess { loaded ->
-                capabilities = loaded
-                appendLog(
-                    tone = StatusTone.IDLE,
-                    message = "Capabilities loaded: PRF=${loaded.supportsPrf}, LargeBlobRead=${loaded.supportsLargeBlobRead}, LargeBlobWrite=${loaded.supportsLargeBlobWrite}, SecurityKey=${loaded.supportsSecurityKey}",
+                capabilities.value = loaded
+                debugLogs.i(
+                    source = "capabilities",
+                    message = "Loaded PRF=${loaded.supportsPrf} largeBlobRead=${loaded.supportsLargeBlobRead} largeBlobWrite=${loaded.supportsLargeBlobWrite} securityKey=${loaded.supportsSecurityKey}",
                 )
             }
             .onFailure { throwable ->
-                capabilities = PasskeyCapabilities()
-                diagnostics.error(
-                    event = "capabilities.load.failure",
-                    message = throwable.message ?: "Capabilities unavailable; using defaults",
+                capabilities.value = PasskeyCapabilities()
+                debugLogs.e(
+                    source = "capabilities",
+                    message = "Failed to load capabilities: ${throwable.message ?: "using defaults"}",
                     throwable = throwable,
-                )
-                appendLog(
-                    tone = StatusTone.WARNING,
-                    message = "Capabilities unavailable, using safe defaults.",
                 )
             }
     }
 
     LaunchedEffect(uiState) {
-        val transitionEntry = timelineEntryForTransition(
-            previous = previousUiState,
+        val transition = controllerTransitionLog(
+            previous = previousUiState.value,
             current = uiState,
-            id = nextLogId,
-            timestamp = "pending",
         )
-        if (transitionEntry != null) {
-            nextLogId += 1
-            logs = (listOf(transitionEntry.copy(timestamp = nextTimestamp())) + logs).take(MAX_LOG_ENTRIES)
+        if (transition != null) {
+            when (transition.level) {
+                DebugLogLevel.DEBUG -> debugLogs.d(source = "controller", message = transition.message)
+                DebugLogLevel.INFO -> debugLogs.i(source = "controller", message = transition.message)
+                DebugLogLevel.WARN -> debugLogs.w(source = "controller", message = transition.message)
+                DebugLogLevel.ERROR -> debugLogs.e(source = "controller", message = transition.message)
+            }
         }
-        previousUiState = uiState
+        previousUiState.value = uiState
     }
 
     val status = uiState.toStatusPresentation()
@@ -140,40 +132,32 @@ public fun App() {
                 Header(status = status)
 
                 CapabilitiesCard(
-                    capabilities = capabilities,
+                    capabilities = capabilities.value,
                 )
 
                 ActionsCard(
                     actionsEnabled = actionsEnabled,
                     onRegister = {
                         scope.launch {
-                            diagnostics.trace(
-                                event = "register.start",
-                                fields = mapOf(
-                                    "endpoint" to config.endpointBase,
-                                    "rpId" to config.rpId,
-                                    "userName" to config.userName,
-                                ),
+                            debugLogs.i(
+                                source = "action",
+                                message = "Register tapped endpoint=${config.endpointBase} rpId=${config.rpId} user=${config.userName}",
                             )
                             passkeyController.register(config.toRegistrationStartPayload())
                         }
                     },
                     onSignIn = {
                         scope.launch {
-                            diagnostics.trace(
-                                event = "auth.start",
-                                fields = mapOf(
-                                    "endpoint" to config.endpointBase,
-                                    "rpId" to config.rpId,
-                                    "userHandle" to config.userHandle,
-                                ),
+                            debugLogs.i(
+                                source = "action",
+                                message = "Sign In tapped endpoint=${config.endpointBase} rpId=${config.rpId} userHandle=${config.userHandle}",
                             )
                             passkeyController.signIn(config.toAuthenticationStartPayload())
                         }
                     },
                 )
 
-                TimelineCard(logs = logs)
+                DebugLogCard(entries = debugLogs.entries)
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }

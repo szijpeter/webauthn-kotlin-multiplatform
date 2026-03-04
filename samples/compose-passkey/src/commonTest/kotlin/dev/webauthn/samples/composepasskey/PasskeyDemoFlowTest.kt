@@ -27,7 +27,7 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
-import dev.webauthn.samples.composepasskey.model.StatusTone
+import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -100,30 +100,38 @@ class PasskeyDemoFlowTest {
     }
 
     @Test
-    fun timeline_entries_are_emitted_for_start_and_terminal_transitions() {
-        val started = timelineEntryForTransition(
+    fun controller_transition_logs_cover_start_success_and_failure() {
+        val started = controllerTransitionLog(
             previous = PasskeyControllerState.Idle,
             current = PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.STARTING,
             ),
-            id = 1L,
-            timestamp = "t+1s",
         )
-        val completed = timelineEntryForTransition(
+        val completed = controllerTransitionLog(
             previous = PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.FINISHING,
             ),
             current = PasskeyControllerState.Success(PasskeyAction.REGISTER),
-            id = 2L,
-            timestamp = "t+2s",
+        )
+        val failed = controllerTransitionLog(
+            previous = PasskeyControllerState.InProgress(
+                action = PasskeyAction.SIGN_IN,
+                phase = PasskeyPhase.PLATFORM_PROMPT,
+            ),
+            current = PasskeyControllerState.Failure(
+                action = PasskeyAction.SIGN_IN,
+                error = PasskeyClientError.UserCancelled("cancelled"),
+            ),
         )
 
-        assertEquals(StatusTone.WORKING, started?.tone)
-        assertTrue(started?.message.orEmpty().contains("started"))
-        assertEquals(StatusTone.SUCCESS, completed?.tone)
-        assertTrue(completed?.message.orEmpty().contains("completed"))
+        assertEquals(DebugLogLevel.INFO, started?.level)
+        assertTrue(started?.message.orEmpty().contains("starting"))
+        assertEquals(DebugLogLevel.INFO, completed?.level)
+        assertTrue(completed?.message.orEmpty().contains("success"))
+        assertEquals(DebugLogLevel.WARN, failed?.level)
+        assertTrue(failed?.message.orEmpty().contains("failed"))
     }
 
     private fun createController(

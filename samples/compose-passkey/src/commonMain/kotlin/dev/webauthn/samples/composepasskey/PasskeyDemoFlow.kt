@@ -4,7 +4,7 @@ import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyPhase
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoLogEntry
+import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.model.StatusTone
 
@@ -66,43 +66,44 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
     }
 }
 
-internal fun timelineEntryForTransition(
+internal data class ControllerTransitionLog(
+    val level: DebugLogLevel,
+    val message: String,
+)
+
+internal fun controllerTransitionLog(
     previous: PasskeyControllerState,
     current: PasskeyControllerState,
-    id: Long,
-    timestamp: String,
-): PasskeyDemoLogEntry? {
-    return when (previous) {
-        !is PasskeyControllerState.InProgress if current is PasskeyControllerState.InProgress -> {
-            PasskeyDemoLogEntry(
-                id = id,
-                timestamp = timestamp,
-                tone = StatusTone.WORKING,
-                message = "${current.action.label()} started.",
+): ControllerTransitionLog? {
+    if (current is PasskeyControllerState.InProgress) {
+        val changed =
+            previous !is PasskeyControllerState.InProgress ||
+                previous.action != current.action ||
+                previous.phase != current.phase
+        if (changed) {
+            return ControllerTransitionLog(
+                level = DebugLogLevel.INFO,
+                message = "${current.action.label()} ${current.phase.logLabel()}",
             )
         }
-
-        is PasskeyControllerState.InProgress if current is PasskeyControllerState.Success -> {
-            PasskeyDemoLogEntry(
-                id = id,
-                timestamp = timestamp,
-                tone = StatusTone.SUCCESS,
-                message = "${current.action.label()} completed.",
-            )
-        }
-
-        is PasskeyControllerState.InProgress if current is PasskeyControllerState.Failure -> {
-            val category = current.error.toCategory()
-            PasskeyDemoLogEntry(
-                id = id,
-                timestamp = timestamp,
-                tone = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) StatusTone.WARNING else StatusTone.ERROR,
-                message = "[${category.label}] ${current.error.message.withProviderDependencyHint()}",
-            )
-        }
-
-        else -> null
     }
+
+    if (current is PasskeyControllerState.Success && previous != current) {
+        return ControllerTransitionLog(
+            level = DebugLogLevel.INFO,
+            message = "${current.action.label()} success",
+        )
+    }
+
+    if (current is PasskeyControllerState.Failure && previous != current) {
+        val category = current.error.toCategory()
+        return ControllerTransitionLog(
+            level = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) DebugLogLevel.WARN else DebugLogLevel.ERROR,
+            message = "${current.action.label()} failed [${category.label}] ${current.error.message.withProviderDependencyHint()}",
+        )
+    }
+
+    return null
 }
 
 private enum class PasskeyDemoErrorCategory(public val label: String) {
@@ -125,6 +126,14 @@ private fun PasskeyAction.label(): String {
     return when (this) {
         PasskeyAction.REGISTER -> "Register"
         PasskeyAction.SIGN_IN -> "Sign In"
+    }
+}
+
+private fun PasskeyPhase.logLabel(): String {
+    return when (this) {
+        PasskeyPhase.STARTING -> "starting"
+        PasskeyPhase.PLATFORM_PROMPT -> "platform_prompt"
+        PasskeyPhase.FINISHING -> "finishing"
     }
 }
 

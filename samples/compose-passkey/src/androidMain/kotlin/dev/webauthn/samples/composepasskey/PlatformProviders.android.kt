@@ -12,8 +12,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 @Composable
-public actual fun rememberPlatformHttpClient(): HttpClient {
-    return remember {
+public actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
+    return remember(onLogLine) {
         HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(
@@ -27,10 +27,7 @@ public actual fun rememberPlatformHttpClient(): HttpClient {
                 level = LogLevel.INFO
                 logger = object : Logger {
                     override fun log(message: String) {
-                        DefaultPasskeyDemoDiagnostics.trace(
-                            event = "http.engine",
-                            fields = mapOf("line" to sanitizeNetworkLogLine(message)),
-                        )
+                        onLogLine(message)
                     }
                 }
             }

@@ -1,5 +1,7 @@
 package dev.webauthn.samples.composepasskey.model
 
+import kotlin.time.Instant
+
 public enum class StatusTone {
     IDLE,
     WORKING,
@@ -8,10 +10,18 @@ public enum class StatusTone {
     ERROR,
 }
 
-public data class PasskeyDemoLogEntry(
+public enum class DebugLogLevel {
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+}
+
+public data class DebugLogEntry(
     public val id: Long,
-    public val timestamp: String,
-    public val tone: StatusTone,
+    public val timestamp: Instant,
+    public val level: DebugLogLevel,
+    public val source: String,
     public val message: String,
 )
 

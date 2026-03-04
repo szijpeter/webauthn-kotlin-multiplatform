@@ -18,7 +18,7 @@ Run:
 Pass condition:
 
 - all commands succeed without test failures.
-- shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus transition timeline behavior.
+- shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus debug-log transition behavior.
 - runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
 - Android UI smoke test sources compile in CI (`:samples:compose-passkey-android:compileDebugAndroidTestKotlin`).
 
@@ -62,8 +62,8 @@ adb shell am start -n dev.webauthn.samples.composepasskey.android/.MainActivity
 Pass criteria:
 
 1. App launch succeeds.
-2. `Register` succeeds and timeline records registration success.
-3. `Sign In` succeeds and timeline records authentication success.
+2. `Register` succeeds and debug log records registration success.
+3. `Sign In` succeeds and debug log records authentication success.
 4. No fatal crash in logcat while running the flow.
 
 Suggested crash check:
@@ -82,8 +82,7 @@ adb logcat | rg "PasskeyDemo"
 
 Pass condition:
 
-- register/auth action and network events are present.
-- sensitive fields are redacted in log lines.
+- app/action/controller/http events are present and readable.
 
 ## 5. Optional emulator smoke run
 

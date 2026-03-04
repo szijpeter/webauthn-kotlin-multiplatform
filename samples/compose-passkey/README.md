@@ -9,8 +9,8 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against the temp
 3. End-to-end passkey sign-in against `POST /authenticate/options` + `/authenticate/verify`.
 4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
 5. Direct sample wiring to `KtorPasskeyServerClient` with sample-scoped `TempServerBackendContract` for temp backend interop.
-6. Timeline logging for lifecycle transitions (start and terminal result) plus capability bootstrap logs.
-7. Structured debug logging for internal calls and network traces (sanitized).
+6. Single logger-backed debug log panel in UI (wall-clock timestamps, level, source, message).
+7. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
@@ -65,12 +65,13 @@ Use it from an external iOS app host to render the sample UI.
 
 ## Debug logging
 
-The sample emits structured logs with tag `PasskeyDemo`:
+The sample emits structured logs with tag `PasskeyDemo` and uses the same entries for the in-app debug panel:
 
-- ceremony steps: `register.*`, `auth.*`
-- network traces: `http.engine` (sanitized)
-
-Sensitive fields are redacted (`challenge`, `clientDataJSON`, `attestationObject`, `authenticatorData`, `signature`, `rawId`, credential identifiers).
+- `app`: startup and configuration
+- `capabilities`: probe start/success/failure
+- `action`: register/sign-in taps
+- `controller`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
+- `http`: raw Ktor engine lines
 
 To inspect logs:
 
@@ -92,7 +93,7 @@ The Android host includes `androidx.credentials:credentials-play-services-auth`,
 2. Screen lock configured.
 3. A passkey-capable account/provider on the device.
 
-If provider wiring is missing at runtime, the sample surfaces an actionable hint in status + timeline.
+If provider wiring is missing at runtime, the sample surfaces an actionable hint in status + debug log.
 
 ## Practical passkey note
 

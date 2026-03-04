@@ -19,11 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoLogEntry
-import dev.webauthn.samples.composepasskey.model.StatusTone
+import dev.webauthn.samples.composepasskey.formatTimestampForDisplay
+import dev.webauthn.samples.composepasskey.model.DebugLogEntry
+import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 
 @Composable
-public fun TimelineCard(logs: List<PasskeyDemoLogEntry>) {
+public fun DebugLogCard(entries: List<DebugLogEntry>) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -34,22 +35,21 @@ public fun TimelineCard(logs: List<PasskeyDemoLogEntry>) {
                 .padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("Timeline", style = MaterialTheme.typography.titleMedium)
+            Text("Debug Log", style = MaterialTheme.typography.titleMedium)
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                if (logs.isEmpty()) {
+                if (entries.isEmpty()) {
                     Text(
                         text = "No events yet.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
-                    logs.forEach { entry ->
-                        val stripe = when (entry.tone) {
-                            StatusTone.IDLE -> Color(0xFF94A3AF)
-                            StatusTone.WORKING -> Color(0xFFCEA650)
-                            StatusTone.SUCCESS -> Color(0xFF5A9E62)
-                            StatusTone.WARNING -> Color(0xFFC4804A)
-                            StatusTone.ERROR -> Color(0xFFB54F60)
+                    entries.forEach { entry ->
+                        val stripe = when (entry.level) {
+                            DebugLogLevel.DEBUG -> Color(0xFF94A3AF)
+                            DebugLogLevel.INFO -> Color(0xFF4D81A7)
+                            DebugLogLevel.WARN -> Color(0xFFC4804A)
+                            DebugLogLevel.ERROR -> Color(0xFFB54F60)
                         }
                         Row(
                             modifier = Modifier
@@ -68,12 +68,12 @@ public fun TimelineCard(logs: List<PasskeyDemoLogEntry>) {
                             )
                             Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                                 Text(
-                                    text = entry.timestamp,
+                                    text = "${entry.formatTimestampForDisplay()} ${entry.level.name}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
-                                    text = entry.message,
+                                    text = "${entry.source}: ${entry.message}",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )
