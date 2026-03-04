@@ -160,6 +160,27 @@ class PasskeyControllerTest {
         firstJob.join()
     }
 
+    @Test
+    fun cancellation_resets_state_to_idle() = runTest(UnconfinedTestDispatcher()) {
+        val fakeClient = FakePasskeyClient()
+        val serverClient = FakePasskeyServerClient()
+        val controller = PasskeyController(fakeClient, serverClient)
+
+        val job = launch {
+            controller.signIn(Unit)
+        }
+
+        assertEquals(
+            PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING),
+            controller.uiState.value,
+        )
+
+        job.cancel()
+        job.join()
+
+        assertEquals(PasskeyControllerState.Idle, controller.uiState.value)
+    }
+
     private class FakePasskeyServerClient(
         val registerOptionsDeferred: CompletableDeferred<ValidationResult<PublicKeyCredentialCreationOptions>> = CompletableDeferred(),
         val finishRegisterDeferred: CompletableDeferred<Boolean> = CompletableDeferred(),

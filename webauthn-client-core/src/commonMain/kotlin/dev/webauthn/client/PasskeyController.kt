@@ -9,6 +9,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
 
 public enum class PasskeyAction {
     REGISTER,
@@ -52,6 +53,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
     private val serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
 ) {
     private val _uiState = MutableStateFlow<PasskeyControllerState>(PasskeyControllerState.Idle)
+    private val ceremonyMutex = Mutex()
 
     /**
      * A flow of the current state of the Passkey Ceremony.
@@ -102,14 +104,14 @@ public class PasskeyController<RegisterParams, SignInParams>(
         interactWithPlatform: suspend (options: OptionsT) -> PasskeyResult<ResponseT>,
         finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> Boolean,
     ) {
+        if (!ceremonyMutex.tryLock()) {
+            return
+        }
+
         try {
-            // Check State
-            if (_uiState.value is PasskeyControllerState.InProgress) {
-                return
-            }
+            _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.STARTING)
 
             // 1. Starting (Network)
-            _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.STARTING)
             val validOptions = when (val optionsResult = getOptions()) {
                 is ValidationResult.Valid -> optionsResult.value
                 is ValidationResult.Invalid -> {
@@ -144,7 +146,9 @@ public class PasskeyController<RegisterParams, SignInParams>(
             _uiState.value = PasskeyControllerState.Success(action)
 
         } catch (e: CancellationException) {
-            // Re-throw cancellation
+            if (_uiState.value is PasskeyControllerState.InProgress) {
+                _uiState.value = PasskeyControllerState.Idle
+            }
             throw e
         } catch (e: Exception) {
             val error = when (e) {
@@ -152,6 +156,8 @@ public class PasskeyController<RegisterParams, SignInParams>(
                 else -> PasskeyClientError.Transport(e.message ?: "Server interaction failed", e)
             }
             _uiState.value = PasskeyControllerState.Failure(action, error)
+        } finally {
+            ceremonyMutex.unlock()
         }
     }
 }
