@@ -38,7 +38,7 @@ fun demoConfigValue(envName: String, defaultValue: String): String {
 
 val demoEndpoint = demoConfigValue(
     envName = "WEBAUTHN_DEMO_ENDPOINT",
-    defaultValue = "http://127.0.0.1:8787",
+    defaultValue = "http://127.0.0.1:8080",
 )
 val demoRpId = demoConfigValue(
     envName = "WEBAUTHN_DEMO_RP_ID",
@@ -115,7 +115,6 @@ kotlin {
                 implementation(libs.kermit)
                 implementation(project(":webauthn-client-compose"))
                 implementation(project(":webauthn-network-ktor-client"))
-                implementation(project(":webauthn-serialization-kotlinx"))
             }
         }
 

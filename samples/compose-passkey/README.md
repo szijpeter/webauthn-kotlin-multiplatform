@@ -1,20 +1,20 @@
 # samples:compose-passkey
 
-Compose Multiplatform sample app for a minimal passkey E2E flow against the temporary backend in `temp.server`.
+Compose Multiplatform sample app for a minimal passkey E2E flow against `samples/backend-ktor`.
 
 ## What this demonstrates
 
 1. Runtime capability probing (`supportsPrf`, Large Blob read/write, security key support).
-2. End-to-end passkey registration against `POST /register/options` + `/register/verify`.
-3. End-to-end passkey sign-in against `POST /authenticate/options` + `/authenticate/verify`.
+2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
+3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
-5. Direct sample wiring to `KtorPasskeyServerClient` with sample-scoped `TempServerBackendContract` for temp backend interop.
+5. Direct sample wiring to `KtorPasskeyServerClient` default backend contract.
 6. Single logger-backed debug log panel in UI (wall-clock timestamps, level, source, message).
 7. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
-- `WEBAUTHN_DEMO_ENDPOINT` (default: `http://127.0.0.1:8787`)
+- `WEBAUTHN_DEMO_ENDPOINT` (default: `http://127.0.0.1:8080`)
 - `WEBAUTHN_DEMO_RP_ID` (default: `localhost`)
 - `WEBAUTHN_DEMO_ORIGIN` (default: `https://localhost`)
 - `WEBAUTHN_DEMO_USER_ID` (default: `demo-user-1`)
@@ -22,23 +22,22 @@ Build-time config is shared across Android and iOS (not platform-specific). Thes
 
 Examples:
 
-- Android Emulator host alias: `WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8787`
-- Physical phone on LAN: `WEBAUTHN_DEMO_ENDPOINT=http://<laptop-lan-ip>:8787`
+- Android Emulator host alias: `WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080`
+- Physical phone on LAN: `WEBAUTHN_DEMO_ENDPOINT=http://<laptop-lan-ip>:8080`
 - ngrok tunnel: `WEBAUTHN_DEMO_ENDPOINT=https://<domain>` and set `WEBAUTHN_DEMO_RP_ID/WEBAUTHN_DEMO_ORIGIN` to the same HTTPS domain
 
 ## Run (Android)
 
-1. Start temporary backend:
+1. Start sample backend:
 
 ```bash
-cd temp.server
-npm start
+./gradlew :samples:backend-ktor:run
 ```
 
 For physical devices, prefer tunnel mode:
 
 ```bash
-./temp.server/start-server.sh
+./samples/backend-ktor/start-server.sh
 ```
 
 This updates root `local.properties` (`WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, `WEBAUTHN_DEMO_ORIGIN`) to match the active ngrok domain.
@@ -46,7 +45,7 @@ This updates root `local.properties` (`WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_R
 2. Build and run sample host app:
 
 ```bash
-WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8787 ./gradlew :samples:compose-passkey-android:installDebug
+WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080 ./gradlew :samples:compose-passkey-android:installDebug
 ```
 
 3. Optional UI smoke test (emulator/device connected):
@@ -102,4 +101,4 @@ For realistic device passkey prompts, use HTTPS plus associated-domain configura
 - Android: `/.well-known/assetlinks.json`
 - iOS: `/.well-known/apple-app-site-association`
 
-This sample intentionally uses fixed minimal config values to keep the E2E ceremony flow focused.
+`samples/backend-ktor` serves both endpoints.

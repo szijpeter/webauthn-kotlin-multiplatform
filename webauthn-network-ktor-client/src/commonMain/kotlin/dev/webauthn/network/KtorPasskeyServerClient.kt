@@ -10,13 +10,17 @@ import dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto
 import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 public interface BackendContract {
     public suspend fun getRegisterOptions(
@@ -59,11 +63,20 @@ public class DefaultBackendContract(
         endpointFor: (String) -> String,
         params: RegistrationStartPayload,
     ): ValidationResult<PublicKeyCredentialCreationOptions> {
-        val dto: PublicKeyCredentialCreationOptionsDto =
-            httpClient.post(endpointFor(registerOptionsPath)) {
-                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(params)
-            }.body()
+        val response = httpClient.post(endpointFor(registerOptionsPath)) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(params)
+        }
+        val responseText = response.bodyAsText()
+        throwIfHttpError(
+            response = response,
+            responseText = responseText,
+            operation = "Registration start",
+        )
+        val dto = decodeOrThrow<PublicKeyCredentialCreationOptionsDto>(
+            body = responseText,
+            operation = "Registration start response",
+        )
 
         return WebAuthnDtoMapper.toModel(dto)
     }
@@ -82,11 +95,20 @@ public class DefaultBackendContract(
             challenge = challengeAsBase64Url,
             origin = params.origin,
         )
-        val result: FinishPayloadResponse =
-            httpClient.post(endpointFor(registerVerifyPath)) {
-                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(finishPayload)
-            }.body()
+        val httpResponse = httpClient.post(endpointFor(registerVerifyPath)) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(finishPayload)
+        }
+        val responseText = httpResponse.bodyAsText()
+        throwIfHttpError(
+            response = httpResponse,
+            responseText = responseText,
+            operation = "Registration finish",
+        )
+        val result = decodeOrThrow<FinishPayloadResponse>(
+            body = responseText,
+            operation = "Registration finish response",
+        )
         return result.status == "ok"
     }
 
@@ -95,11 +117,20 @@ public class DefaultBackendContract(
         endpointFor: (String) -> String,
         params: AuthenticationStartPayload,
     ): ValidationResult<PublicKeyCredentialRequestOptions> {
-        val dto: PublicKeyCredentialRequestOptionsDto =
-            httpClient.post(endpointFor(authenticateOptionsPath)) {
-                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(params)
-            }.body()
+        val response = httpClient.post(endpointFor(authenticateOptionsPath)) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(params)
+        }
+        val responseText = response.bodyAsText()
+        throwIfHttpError(
+            response = response,
+            responseText = responseText,
+            operation = "Authentication start",
+        )
+        val dto = decodeOrThrow<PublicKeyCredentialRequestOptionsDto>(
+            body = responseText,
+            operation = "Authentication start response",
+        )
 
         return WebAuthnDtoMapper.toModel(dto)
     }
@@ -118,11 +149,20 @@ public class DefaultBackendContract(
             challenge = challengeAsBase64Url,
             origin = params.origin,
         )
-        val result: FinishPayloadResponse =
-            httpClient.post(endpointFor(authenticateVerifyPath)) {
-                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(finishPayload)
-            }.body()
+        val httpResponse = httpClient.post(endpointFor(authenticateVerifyPath)) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(finishPayload)
+        }
+        val responseText = httpResponse.bodyAsText()
+        throwIfHttpError(
+            response = httpResponse,
+            responseText = responseText,
+            operation = "Authentication finish",
+        )
+        val result = decodeOrThrow<FinishPayloadResponse>(
+            body = responseText,
+            operation = "Authentication finish response",
+        )
         return result.status == "ok"
     }
 }
@@ -218,3 +258,51 @@ private data class AuthenticationFinishPayload(
 private data class FinishPayloadResponse(
     val status: String,
 )
+
+@Serializable
+private data class ServerErrorPayload(
+    val errors: List<String>? = null,
+)
+
+private val contractJson: Json = Json {
+    ignoreUnknownKeys = true
+}
+
+private suspend fun throwIfHttpError(
+    response: HttpResponse,
+    responseText: String,
+    operation: String,
+) {
+    if (response.status.isSuccess()) {
+        return
+    }
+    val details = serverErrorMessage(responseText)
+    throw IllegalStateException(
+        "$operation failed with HTTP ${response.status.value}: $details",
+    )
+}
+
+private inline fun <reified T> decodeOrThrow(
+    body: String,
+    operation: String,
+): T {
+    return runCatching { contractJson.decodeFromString<T>(body) }
+        .getOrElse { error ->
+            val preview = body.trim().take(512).ifBlank { "<empty>" }
+            throw IllegalStateException("$operation could not be parsed: ${error.message}. Body: $preview")
+        }
+}
+
+private fun serverErrorMessage(body: String): String {
+    val trimmed = body.trim()
+    if (trimmed.isEmpty()) {
+        return "<empty>"
+    }
+    val fromErrors = runCatching {
+        contractJson.decodeFromString<ServerErrorPayload>(trimmed)
+            .errors
+            ?.filter { it.isNotBlank() }
+            ?.joinToString("; ")
+    }.getOrNull()?.takeIf { it.isNotBlank() }
+    return fromErrors ?: trimmed.take(512)
+}

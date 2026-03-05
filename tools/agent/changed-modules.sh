@@ -206,10 +206,6 @@ for file in "${changed_files[@]}"; do
             mark_module "webauthn-client-ios"
             mark_category "ios"
             ;;
-        temp.server/*)
-            mark_module "temp.server"
-            mark_category "client"
-            ;;
         samples/android-passkey/*)
             mark_module "samples:android-passkey"
             mark_category "android"

@@ -37,6 +37,29 @@ import kotlin.test.assertTrue
 
 class PasskeyDemoFlowTest {
     @Test
+    fun request_payloads_normalize_plaintext_user_handle_to_base64url() {
+        val config = validDemoConfig()
+        val expected = Base64UrlBytes.fromBytes("demo-user-1".encodeToByteArray()).encoded()
+
+        val registrationPayload = config.toRegistrationStartPayload()
+        val authenticationPayload = config.toAuthenticationStartPayload()
+
+        assertEquals(expected, registrationPayload.userHandle)
+        assertEquals(expected, authenticationPayload.userHandle)
+    }
+
+    @Test
+    fun request_payloads_preserve_existing_base64url_user_handle() {
+        val config = validDemoConfig().copy(userHandle = "AQID")
+
+        val registrationPayload = config.toRegistrationStartPayload()
+        val authenticationPayload = config.toAuthenticationStartPayload()
+
+        assertEquals("AQID", registrationPayload.userHandle)
+        assertEquals("AQID", authenticationPayload.userHandle)
+    }
+
+    @Test
     fun register_success_updates_state_to_success_register() = runTest {
         val controller = createController()
 

@@ -1,5 +1,7 @@
 package dev.webauthn.server
 
+import dev.webauthn.core.CeremonyType
+import dev.webauthn.core.ChallengeSession
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.SignatureVerifier
@@ -15,6 +17,9 @@ import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
+import java.security.MessageDigest
+import java.util.Base64
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -906,6 +911,221 @@ class ServiceSmokeTest {
         )
 
         assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun authenticationFinishSupportsRs256Assertions() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { algorithm: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray ->
+                algorithm == CoseAlgorithm.RS256
+            },
+            rpIdHasher = rpIdHasher,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 9 }),
+        )
+        val regOptions = registrationService.start(startRequest)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x31 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41, signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+        registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        val authStart = authenticationService.start(
+            AuthenticationStartRequest(rpId = startRequest.rpId, origin = startRequest.origin, userName = "alice"),
+        )
+        assertTrue(authStart is ValidationResult.Valid)
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId("example.com"), flags = 0x01, signCount = 2,
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = authStart.value.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        when (result) {
+            is ValidationResult.Valid -> {
+                assertTrue(true)
+            }
+            is ValidationResult.Invalid -> {
+                error("Expected valid assertion vector, got: ${result.errors.joinToString { "${it.field}: ${it.message}" }}")
+            }
+        }
+    }
+
+    @Test
+    fun authenticationFinishSupportsCapturedAndroidAssertionVector() = runBlocking {
+        val rpId = RpId.parseOrThrow("nella-intercrinal-cryptically.ngrok-free.dev")
+        val origin = Origin.parseOrThrow("https://nella-intercrinal-cryptically.ngrok-free.dev")
+        val userName = "Zaphod Beeblebrox"
+        val parsedUserHandle = UserHandle.parse("NDI")
+        assertTrue(parsedUserHandle is ValidationResult.Valid)
+        val userHandle = parsedUserHandle.value
+
+        val registrationVector = RegistrationResponseDto(
+            id = "adnJdzQQOzHT8aobzfRCfA",
+            rawId = "adnJdzQQOzHT8aobzfRCfA",
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiTEE1RExiWUNyZGNnME11S1R4SDVoaVI1ZUhXVFFGNk9iamVBenZ2bGNySSIsIm9yaWdpbiI6ImFuZHJvaWQ6YXBrLWtleS1oYXNoOlZiai1tUGU5eDBORWlIREdHM0VPaTA0RVRHVDVTSW9FYzNmMnpwYzdxQzgiLCJhbmRyb2lkUGFja2FnZU5hbWUiOiJkZXYud2ViYXV0aG4uc2FtcGxlcy5jb21wb3NlcGFzc2tleS5hbmRyb2lkIn0",
+                attestationObject = "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViU1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWpdAAAAAOqbjWZNAR0hPOS2tIy1ddQAEGnZyXc0EDsx0_GqG830QnylAQIDJiABIVggd-XJL5odWHADN7Ayg5vk1LfCsAGqC9gpXHMtgtehFjoiWCAnkr58JQNicaTRIf7zALTm0G5Jh1BSTjlfi0HE05IyDA",
+            ),
+        )
+        val parsedRegistration = WebAuthnDtoMapper.toModel(registrationVector)
+        assertTrue(parsedRegistration is ValidationResult.Valid)
+        val registration = parsedRegistration.value
+
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        userStore.save(UserAccount(id = userHandle, name = userName, displayName = userName))
+        credentialStore.save(
+            StoredCredential(
+                credentialId = registration.credentialId,
+                userId = userHandle,
+                rpId = rpId,
+                publicKeyCose = registration.attestedCredentialData.cosePublicKey,
+                signCount = registration.rawAuthenticatorData.signCount,
+            ),
+        )
+
+        val challenge = Challenge.parseOrThrow("JpE2XdxmrNqpe1loYEcfm8K_oZfAkE1ZSwEIuMEOBOA")
+        challengeStore.put(
+            ChallengeSession(
+                challenge = challenge,
+                rpId = rpId,
+                origin = origin,
+                userName = userName,
+                createdAtEpochMs = 0L,
+                expiresAtEpochMs = Long.MAX_VALUE,
+                type = CeremonyType.AUTHENTICATION,
+                extensions = null,
+            ),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = dev.webauthn.server.crypto.JvmSignatureVerifier(),
+            rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher(),
+        )
+
+        val authenticationVector = AuthenticationResponseDto(
+            id = "adnJdzQQOzHT8aobzfRCfA",
+            rawId = "adnJdzQQOzHT8aobzfRCfA",
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiSnBFMlhkeG1yTnFwZTFsb1lFY2ZtOEtfb1pmQWtFMVpTd0VJdU1FT0JPQSIsIm9yaWdpbiI6ImFuZHJvaWQ6YXBrLWtleS1oYXNoOlZiai1tUGU5eDBORWlIREdHM0VPaTA0RVRHVDVTSW9FYzNmMnpwYzdxQzgiLCJhbmRyb2lkUGFja2FnZU5hbWUiOiJkZXYud2ViYXV0aG4uc2FtcGxlcy5jb21wb3NlcGFzc2tleS5hbmRyb2lkIn0",
+                authenticatorData = "1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWodAAAAAA",
+                signature = "MEYCIQDK_YzkGEhtIf4K6XM8LAjU4f3qASY3J5cgggiQOW7Y6wIhAKqCT7k80zLi_GADyhg41TK6S32uaSJiZ_aGzM_gfiCk",
+                userHandle = "NDI",
+            ),
+        )
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = authenticationVector,
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = challenge,
+                    origin = origin,
+                ),
+            ),
+        )
+
+        when (result) {
+            is ValidationResult.Valid -> {
+                assertTrue(true)
+            }
+            is ValidationResult.Invalid -> {
+                error(
+                    "Expected valid assertion vector, got: ${result.errors.joinToString { "${it.field}: ${it.message}" }}",
+                )
+            }
+        }
+    }
+
+    @Test
+    fun jvmSignatureVerifierSupportsCapturedAndroidAssertionVector() {
+        val padToBase64 = { value: String -> value.padEnd((value.length + 3) / 4 * 4, '=') }
+        val cosePublicKey = Base64.getUrlDecoder().decode(
+            padToBase64("pQECAyYgASFYIHflyS-aHVhwAzewMoOb5NS3wrABqgvYKVxzLYLXoRY6IlggJ5K-fCUDYnGk0SH-8wC05tBuSYdQUk45X4tBxNOSMgw"),
+        )
+        val rawAuthenticatorData = Base64.getUrlDecoder().decode(
+            padToBase64("1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWodAAAAAA"),
+        )
+        val clientDataJson = Base64.getUrlDecoder().decode(
+            padToBase64(
+                "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiSnBFMlhkeG1yTnFwZTFsb1lFY2ZtOEtfb1pmQWtFMVpTd0VJdU1FT0JPQSIsIm9yaWdpbiI6ImFuZHJvaWQ6YXBrLWtleS1oYXNoOlZiai1tUGU5eDBORWlIREdHM0VPaTA0RVRHVDVTSW9FYzNmMnpwYzdxQzgiLCJhbmRyb2lkUGFja2FnZU5hbWUiOiJkZXYud2ViYXV0aG4uc2FtcGxlcy5jb21wb3NlcGFzc2tleS5hbmRyb2lkIn0",
+            ),
+        )
+        val signature = Base64.getUrlDecoder().decode(
+            padToBase64("MEYCIQDK_YzkGEhtIf4K6XM8LAjU4f3qASY3J5cgggiQOW7Y6wIhAKqCT7k80zLi_GADyhg41TK6S32uaSJiZ_aGzM_gfiCk"),
+        )
+        val signedData = rawAuthenticatorData + MessageDigest.getInstance("SHA-256").digest(clientDataJson)
+        val verifier = dev.webauthn.server.crypto.JvmSignatureVerifier()
+
+        val result = verifier.verify(
+            algorithm = CoseAlgorithm.ES256,
+            publicKeyCose = cosePublicKey,
+            data = signedData,
+            signature = signature,
+        )
+
+        assertTrue(result, "Captured Android assertion vector should verify with JvmSignatureVerifier")
     }
 
     @Test

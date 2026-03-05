@@ -51,7 +51,6 @@ public fun App() {
         KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = config.endpointBase.normalizedEndpoint(),
-            backendContract = TempServerBackendContract(),
         )
     }
 

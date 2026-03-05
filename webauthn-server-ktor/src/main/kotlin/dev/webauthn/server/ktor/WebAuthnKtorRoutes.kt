@@ -42,6 +42,7 @@ public data class AuthenticationStartPayload(
     public val rpId: String,
     public val origin: String,
     public val userName: String,
+    public val userHandle: String? = null,
     public val extensions: dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto? = null,
 )
 
@@ -81,7 +82,9 @@ public fun Route.webAuthnRoutes(
                 when (val parsed = WebAuthnDtoMapper.toModelValidated(it, fieldPrefix = "extensions")) {
                     is dev.webauthn.model.ValidationResult.Valid -> parsed.value
                     is dev.webauthn.model.ValidationResult.Invalid -> {
-                        call.respond(HttpStatusCode.BadRequest, mapOf("errors" to parsed.errors.map { err -> err.message }))
+                        val errors = parsed.errors.map { err -> "${err.field}: ${err.message}" }
+                        call.application.environment.log.warn("webauthn.registration.start rejected: ${errors.joinToString("; ")}")
+                        call.respond(HttpStatusCode.BadRequest, mapOf("errors" to errors))
                         return@post
                     }
                 }
@@ -116,7 +119,9 @@ public fun Route.webAuthnRoutes(
                 }
 
                 is dev.webauthn.model.ValidationResult.Invalid -> {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("errors" to result.errors.map { it.message }))
+                    val errors = result.errors.map { "${it.field}: ${it.message}" }
+                    call.application.environment.log.warn("webauthn.registration.finish rejected: ${errors.joinToString("; ")}")
+                    call.respond(HttpStatusCode.BadRequest, mapOf("errors" to errors))
                 }
             }
         }
@@ -127,7 +132,9 @@ public fun Route.webAuthnRoutes(
                 when (val parsed = WebAuthnDtoMapper.toModelValidated(it, fieldPrefix = "extensions")) {
                     is dev.webauthn.model.ValidationResult.Valid -> parsed.value
                     is dev.webauthn.model.ValidationResult.Invalid -> {
-                        call.respond(HttpStatusCode.BadRequest, mapOf("errors" to parsed.errors.map { err -> err.message }))
+                        val errors = parsed.errors.map { err -> "${err.field}: ${err.message}" }
+                        call.application.environment.log.warn("webauthn.authentication.start rejected: ${errors.joinToString("; ")}")
+                        call.respond(HttpStatusCode.BadRequest, mapOf("errors" to errors))
                         return@post
                     }
                 }
@@ -146,7 +153,9 @@ public fun Route.webAuthnRoutes(
                 }
 
                 is dev.webauthn.model.ValidationResult.Invalid -> {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("errors" to result.errors.map { it.message }))
+                    val errors = result.errors.map { "${it.field}: ${it.message}" }
+                    call.application.environment.log.warn("webauthn.authentication.start rejected: ${errors.joinToString("; ")}")
+                    call.respond(HttpStatusCode.BadRequest, mapOf("errors" to errors))
                 }
             }
         }
@@ -168,7 +177,9 @@ public fun Route.webAuthnRoutes(
                 }
 
                 is dev.webauthn.model.ValidationResult.Invalid -> {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("errors" to result.errors.map { it.message }))
+                    val errors = result.errors.map { "${it.field}: ${it.message}" }
+                    call.application.environment.log.warn("webauthn.authentication.finish rejected: ${errors.joinToString("; ")}")
+                    call.respond(HttpStatusCode.BadRequest, mapOf("errors" to errors))
                 }
             }
         }

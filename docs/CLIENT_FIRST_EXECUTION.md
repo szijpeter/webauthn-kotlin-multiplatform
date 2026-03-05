@@ -1,8 +1,8 @@
 # Client-First Execution
 
-Date: 2026-03-01
+Date: 2026-03-05
 
-Goal: keep Android and iOS client implementation moving even when our first-party backend is not yet release-ready.
+Goal: keep Android and iOS client implementation moving with an in-repo backend that matches the default contract.
 
 ## Principle
 
@@ -12,14 +12,14 @@ Goal: keep Android and iOS client implementation moving even when our first-part
 
 ## Backend Options for Client Bring-Up
 
-### Option A: External backend contract (`TempServerBackendContract`)
+### Option A: First-party default backend contract
 
-Use `KtorPasskeyServerClient` with a host-provided `BackendContract` to call:
+Use `KtorPasskeyServerClient` with `DefaultBackendContract` (default) and call:
 
-- `POST /register/options`
-- `POST /register/verify`
-- `POST /authenticate/options`
-- `POST /authenticate/verify`
+- `POST /webauthn/registration/start`
+- `POST /webauthn/registration/finish`
+- `POST /webauthn/authentication/start`
+- `POST /webauthn/authentication/finish`
 
 Example:
 
@@ -27,60 +27,53 @@ Example:
 val serverClient = KtorPasskeyServerClient(
     httpClient = client,
     endpointBase = "https://your-host",
-    backendContract = TempServerBackendContract(),
 )
 ```
 
-If your backend uses different path names with the same payload semantics, override routes directly:
+If your backend uses the same payload semantics but different paths, override route paths in `DefaultBackendContract(...)`.
 
-```kotlin
-val serverClient = KtorPasskeyServerClient(
-    httpClient = client,
-    endpointBase = "https://your-host",
-    backendContract = TempServerBackendContract(
-        registerOptionsPath = "/passkeys/register/options",
-        registerVerifyPath = "/passkeys/register/verify",
-        authenticateOptionsPath = "/passkeys/auth/options",
-        authenticateVerifyPath = "/passkeys/auth/verify",
-    ),
-)
-```
+### Option B: Host-provided custom backend contract
 
-The sample modules provide a `TempServerBackendContract` reference implementation for this route shape.
-It is intentionally temporary and should be removed once your backend aligns with `DefaultBackendContract`.
+If your backend payloads differ from `DefaultBackendContract`, provide a custom `BackendContract` implementation and inject it into `KtorPasskeyServerClient`.
 
-### Option B: Local temporary backend (`temp.server`)
+## Local Backend App (`samples/backend-ktor`)
 
-Use the local development backend in `temp.server/` when you need a fast, disposable endpoint for mobile client iteration.
+Use the in-repo sample backend app for local and ngrok-based mobile runs.
 
-- No production guarantees
-- In-memory state only
-- Returns WebAuthn-shaped JSON for registration/authentication
-- Serves association files at `/.well-known/assetlinks.json` and `/.well-known/apple-app-site-association`
+Implemented routes:
 
-Quick demo (transport + interop profile round-trip):
+- `POST /webauthn/registration/start`
+- `POST /webauthn/registration/finish`
+- `POST /webauthn/authentication/start`
+- `POST /webauthn/authentication/finish`
+- `GET /health`
+- `GET /.well-known/assetlinks.json`
+- `GET /.well-known/apple-app-site-association`
+- `GET /apple-app-site-association`
+
+Run locally:
 
 ```bash
-cd temp.server && npm start
-# in another shell
-./gradlew :samples:client-interop-jvm:run
+./gradlew :samples:backend-ktor:run
 ```
 
-UI demo (Compose KMP readiness flow):
+Run with ngrok + local.properties synchronization:
 
 ```bash
-cd temp.server && npm start
-# in another shell
-./gradlew :samples:compose-passkey-android:installDebug
+./samples/backend-ktor/start-server.sh
 ```
+
+Defaults:
+
+- `PORT=8080`
+- `WEBAUTHN_SAMPLE_ATTESTATION=NONE` (`STRICT` to enable strict attestation verification)
+- `ANDROID_PACKAGE_NAME=dev.webauthn.samples.composepasskey.android`
+- `ANDROID_SHA256=PUT_SHA256_FINGERPRINT_HERE` (replace for real-device app-link verification)
+- `IOS_APP_ID=TEAMID.com.example.app`
+
+The helper script writes `WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, and `WEBAUTHN_DEMO_ORIGIN` to root `local.properties`.
 
 The shared Compose module also exposes `MainViewController()` for iOS host integration.
-The Compose sample includes structured debug logging (`PasskeyDemo` tag), sanitized network traces, and a readiness runbook at `samples/compose-passkey/READINESS_CHECKLIST.md`.
-
-### Option C: First-party backend contract
-
-Use `DefaultBackendContract` with our in-repo server route contract when those paths are ready for your integration target.
-You can also override paths in `DefaultBackendContract(...)` if needed.
 
 ## Client Dependencies Required
 
@@ -131,9 +124,9 @@ val jsonClient = typedClient.withJsonSupport()
 
 ## Association File Requirement
 
-Passkey platform APIs still require domain association for realistic end-to-end testing.
+Passkey platform APIs require associated-domain files for realistic end-to-end testing.
 
 - Android: `https://<host>/.well-known/assetlinks.json`
 - iOS: `https://<host>/.well-known/apple-app-site-association`
 
-The `temp.server` backend exposes both endpoints for local/ngrok workflows.
+`samples/backend-ktor` serves both endpoints for local/ngrok workflows.

@@ -177,6 +177,66 @@ class WebAuthnKtorRoutesTest {
     }
 
     @Test
+    fun authenticationStartRouteAcceptsOptionalUserHandleField() = testApplication {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        application {
+            install(ContentNegotiation) { json() }
+            installWebAuthnRoutes(registrationService, authenticationService)
+        }
+
+        client.post("/webauthn/registration/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "rpName": "Example",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "userDisplayName": "Alice",
+                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ"
+                }
+                """.trimIndent(),
+            )
+        }
+
+        val response = client.post("/webauthn/authentication/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ"
+                }
+                """.trimIndent(),
+            )
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @Test
     fun registrationFinishRouteReturns200() = testApplication {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()

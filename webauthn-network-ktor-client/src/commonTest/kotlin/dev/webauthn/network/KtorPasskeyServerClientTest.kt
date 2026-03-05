@@ -30,6 +30,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class KtorPasskeyServerClientTest {
@@ -266,6 +267,94 @@ class KtorPasskeyServerClientTest {
             ),
             seenPaths,
         )
+    }
+
+    @Test
+    fun finishRegister_throwsDetailedError_whenServerReturnsValidationPayloadWithoutStatus() = runTest {
+        val client = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/webauthn/registration/finish" -> respond(
+                    content = """{"errors":["invalid payload"]}""",
+                    status = HttpStatusCode.BadRequest,
+                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+                )
+
+                else -> error("Unexpected path: ${request.url.encodedPath}")
+            }
+        }
+
+        val contract = DefaultBackendContract(
+            registerOptionsPath = "/unused/register/start",
+            registerVerifyPath = "/webauthn/registration/finish",
+            authenticateOptionsPath = "/unused/auth/start",
+            authenticateVerifyPath = "/unused/auth/finish",
+        )
+        val serverClient = KtorPasskeyServerClient(
+            httpClient = client,
+            endpointBase = "https://example.test",
+            backendContract = contract,
+        )
+        val params = RegistrationStartPayload(
+            rpId = "example.com",
+            rpName = "Example",
+            origin = "https://example.com",
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = "AQID",
+        )
+
+        val failure = assertFailsWith<IllegalStateException> {
+            serverClient.finishRegister(
+                params = params,
+                response = validRegistrationResponse(),
+                challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            )
+        }
+        assertTrue(failure.message?.contains("Registration finish failed with HTTP 400") == true)
+        assertTrue(failure.message?.contains("invalid payload") == true)
+    }
+
+    @Test
+    fun finishSignIn_throwsDetailedError_whenServerReturnsValidationPayloadWithoutStatus() = runTest {
+        val client = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/webauthn/authentication/finish" -> respond(
+                    content = """{"errors":["invalid assertion"]}""",
+                    status = HttpStatusCode.BadRequest,
+                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+                )
+
+                else -> error("Unexpected path: ${request.url.encodedPath}")
+            }
+        }
+
+        val contract = DefaultBackendContract(
+            registerOptionsPath = "/unused/register/start",
+            registerVerifyPath = "/unused/register/finish",
+            authenticateOptionsPath = "/unused/auth/start",
+            authenticateVerifyPath = "/webauthn/authentication/finish",
+        )
+        val serverClient = KtorPasskeyServerClient(
+            httpClient = client,
+            endpointBase = "https://example.test",
+            backendContract = contract,
+        )
+        val params = AuthenticationStartPayload(
+            rpId = "example.com",
+            origin = "https://example.com",
+            userName = "alice",
+            userHandle = "AQID",
+        )
+
+        val failure = assertFailsWith<IllegalStateException> {
+            serverClient.finishSignIn(
+                params = params,
+                response = validAuthenticationResponse(),
+                challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            )
+        }
+        assertTrue(failure.message?.contains("Authentication finish failed with HTTP 400") == true)
+        assertTrue(failure.message?.contains("invalid assertion") == true)
     }
 
     private fun createMockClient(

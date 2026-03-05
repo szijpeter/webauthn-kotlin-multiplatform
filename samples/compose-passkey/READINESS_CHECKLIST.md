@@ -22,24 +22,24 @@ Pass condition:
 - runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
 - Android UI smoke test sources compile in CI (`:samples:compose-passkey-android:compileDebugAndroidTestKotlin`).
 
-## 2. Local temp server
+## 2. Local sample backend
 
 Run:
 
 ```bash
-cd temp.server
-npm start
+./gradlew :samples:backend-ktor:run
 ```
 
-or for ngrok-based physical device runs:
+or for ngrok-based physical-device runs:
 
 ```bash
-./temp.server/start-server.sh
+./samples/backend-ktor/start-server.sh
 ```
 
 Pass condition:
 
-- server starts on `http://127.0.0.1:8787`.
+- server starts on `http://127.0.0.1:8080`.
+- `GET /health` returns `{ "status": "ok" }`.
 
 ## 3. Android manual flow (required)
 
@@ -47,10 +47,10 @@ Prerequisites:
 
 - Google Play-enabled emulator/device
 - screen lock configured
-- internet access to temp server host
+- internet access to sample backend host
 - build-time endpoint configured via `WEBAUTHN_DEMO_ENDPOINT` for your target
-  - emulator: `http://10.0.2.2:8787`
-  - physical device: `http://<laptop-lan-ip>:8787`
+  - emulator: `http://10.0.2.2:8080`
+  - physical device: `http://<laptop-lan-ip>:8080`
 
 Run:
 
