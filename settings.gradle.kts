@@ -6,26 +6,11 @@ pluginManagement {
     }
 }
 
-val compatSerializationVersionOverride =
-    providers.gradleProperty("compat.serializationVersionOverride").orNull
-val compatSignumVersionOverride =
-    providers.gradleProperty("compat.signumVersionOverride").orNull
-val compatSignumIndispensableVersionOverride =
-    providers.gradleProperty("compat.signumIndispensableVersionOverride").orNull
-
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-    }
-    versionCatalogs {
-        val libs = maybeCreate("libs")
-        libs.apply {
-            compatSerializationVersionOverride?.let { version("serialization", it) }
-            compatSignumVersionOverride?.let { version("signum", it) }
-            compatSignumIndispensableVersionOverride?.let { version("signum-indispensable", it) }
-        }
     }
 }
 

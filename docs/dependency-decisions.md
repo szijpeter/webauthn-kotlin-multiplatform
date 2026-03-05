@@ -17,8 +17,9 @@ Tracking issue: [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/iss
 Unpin policy:
 
 1. Keep runtime Signum-only (no JCA fallback in production paths).
-2. Re-run `tools/compat/run-signum-serialization-matrix.sh` target combos on dependency-sensitive changes.
-3. Move to `1.10.x` only after matrix passes for target combo(s) with Signum runtime.
+2. Keep `serialization = "1.9.0"` pinned in `gradle/libs.versions.toml` until compatibility is resolved.
+3. Keep a guard test that fails when the pinned version is changed before upstream fix lands.
+4. Revisit `1.10.x` only after [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved.
 
 ## Remaining JCA Boundary
 
