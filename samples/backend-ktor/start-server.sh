@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SERVER_DIR="$ROOT_DIR/temp.server"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOCAL_PROPERTIES_FILE="$ROOT_DIR/local.properties"
 
-PORT="${PORT:-8787}"
+PORT="${PORT:-8080}"
+WEBAUTHN_SAMPLE_ATTESTATION="${WEBAUTHN_SAMPLE_ATTESTATION:-NONE}"
 DEFAULT_ANDROID_PACKAGE_NAME="dev.webauthn.samples.composepasskey.android"
 
 read_prop() {
@@ -79,12 +79,11 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-require_cmd node
+require_cmd keytool
 require_cmd ngrok
 require_cmd curl
 require_cmd awk
 require_cmd sed
-require_cmd keytool
 
 NGROK_DOMAIN="${NGROK_DOMAIN:-$(read_prop "$LOCAL_PROPERTIES_FILE" "ngrok.domain" || true)}"
 ANDROID_PACKAGE_NAME="${ANDROID_PACKAGE_NAME:-$(read_prop "$LOCAL_PROPERTIES_FILE" "ANDROID_PACKAGE_NAME" || true)}"
@@ -140,6 +139,7 @@ echo "Using tunnel URL: $NGROK_URL"
 echo "Using RP_ID: $RP_ID"
 echo "Using ANDROID_PACKAGE_NAME: $ANDROID_PACKAGE_NAME"
 echo "Using ANDROID_SHA256: $ANDROID_SHA256"
+echo "Using WEBAUTHN_SAMPLE_ATTESTATION: $WEBAUTHN_SAMPLE_ATTESTATION"
 
 upsert_prop "$LOCAL_PROPERTIES_FILE" "WEBAUTHN_DEMO_ENDPOINT" "$ORIGIN"
 upsert_prop "$LOCAL_PROPERTIES_FILE" "WEBAUTHN_DEMO_RP_ID" "$RP_ID"
@@ -150,18 +150,17 @@ if [[ -n "$IOS_APP_ID" ]]; then
     upsert_prop "$LOCAL_PROPERTIES_FILE" "IOS_APP_ID" "$IOS_APP_ID"
 fi
 
-echo "Updated local.properties with WEBAUTHN_DEMO_* and Android association values."
+echo "Updated local.properties with WEBAUTHN_DEMO_* and association values."
 echo "Rebuild app after this script starts to bake updated values."
 
 (
-    cd "$SERVER_DIR"
+    cd "$ROOT_DIR"
     PORT="$PORT" \
-    RP_ID="$RP_ID" \
-    ORIGIN="$ORIGIN" \
     ANDROID_PACKAGE_NAME="$ANDROID_PACKAGE_NAME" \
     ANDROID_SHA256="$ANDROID_SHA256" \
     IOS_APP_ID="$IOS_APP_ID" \
-    node server.mjs
+    WEBAUTHN_SAMPLE_ATTESTATION="$WEBAUTHN_SAMPLE_ATTESTATION" \
+    ./gradlew :samples:backend-ktor:run
 ) &
 SERVER_PID=$!
 

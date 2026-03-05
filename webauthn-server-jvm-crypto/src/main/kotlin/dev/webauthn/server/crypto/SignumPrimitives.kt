@@ -194,12 +194,50 @@ internal object SignumPrimitives {
 
     private fun parseSignatureResult(algorithm: CoseAlgorithm, signature: ByteArray): KmmResult<CryptoSignature> =
         when (algorithm) {
-            CoseAlgorithm.ES256 -> catchingAsn1OrIllegalArgument {
-                CryptoSignature.EC.decodeFromDer(signature)
+            CoseAlgorithm.ES256 -> {
+                val parsedDer = catchingAsn1OrIllegalArgument {
+                    CryptoSignature.EC.decodeFromDer(signature)
+                }
+                if (parsedDer.isSuccess) {
+                    parsedDer
+                } else {
+                    val derFromRaw = ecdsaP1363ToDer(signature) ?: return parsedDer
+                    catchingAsn1OrIllegalArgument {
+                        CryptoSignature.EC.decodeFromDer(derFromRaw)
+                    }
+                }
             }
             CoseAlgorithm.RS256 -> KmmResult(CryptoSignature.RSA(signature))
             CoseAlgorithm.EdDSA -> failureResult("Unsupported COSE algorithm: $algorithm")
         }
+
+    private fun ecdsaP1363ToDer(signature: ByteArray): ByteArray? {
+        if (signature.size != 64) {
+            return null
+        }
+        val r = signature.copyOfRange(0, 32).toAsn1Integer()
+        val s = signature.copyOfRange(32, 64).toAsn1Integer()
+        val sequenceLength = r.size + s.size
+        return if (sequenceLength <= 0x7F) {
+            byteArrayOf(0x30, sequenceLength.toByte()) + r + s
+        } else {
+            null
+        }
+    }
+
+    private fun ByteArray.toAsn1Integer(): ByteArray {
+        var firstNonZero = 0
+        while (firstNonZero < size - 1 && this[firstNonZero] == 0.toByte()) {
+            firstNonZero++
+        }
+        val significant = copyOfRange(firstNonZero, size)
+        val prefixed = if (significant[0].toInt() and 0x80 != 0) {
+            byteArrayOf(0x00) + significant
+        } else {
+            significant
+        }
+        return byteArrayOf(0x02, prefixed.size.toByte()) + prefixed
+    }
 
     private inline fun <T> catchingAsn1OrIllegalArgument(block: () -> T): KmmResult<T> =
         catching(block).mapFailure(::expectAsn1OrIllegalArgument)

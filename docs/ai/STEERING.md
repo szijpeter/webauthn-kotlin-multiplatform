@@ -47,7 +47,7 @@ Adapter/transport/platform:
 
 Client acceleration helpers:
 
-- `temp.server/*` (temporary local backend scaffolding only; never production source of truth)
+- `samples/backend-ktor/*` (local development backend app scaffolding for client bring-up)
 - `spec-cache/*` (cached standards references)
 
 Optional trust source:

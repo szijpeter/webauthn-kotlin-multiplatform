@@ -20,12 +20,11 @@ Standards-first WebAuthn Level 3 foundation for Kotlin Multiplatform with modula
 - `webauthn-attestation-mds`: optional FIDO metadata trust source
 - `platform:bom`: aligned dependency coordinates
 - `samples:*`: backend/android/ios usage examples
-- `temp.server/*`: temporary local backend for client bring-up (development-only)
 - `spec-cache/*`: local standards cache/index for implementation work
 
 ## Status
 
-This repository is in active beta: core/server validation paths are production-leaning, while client and attestation surfaces continue hardening. Client development is now explicitly unblocked through shared client-core orchestration plus backend interop and temporary backend options.
+This repository is in active beta: core/server validation paths are production-leaning, while client and attestation surfaces continue hardening. Client development is unblocked through shared client-core orchestration plus the in-repo sample backend app.
 
 ## Standards
 

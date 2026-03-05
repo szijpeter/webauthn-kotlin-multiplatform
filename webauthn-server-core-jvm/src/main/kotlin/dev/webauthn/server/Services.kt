@@ -274,12 +274,14 @@ public class AuthenticationService(
         }
 
         val signedData = signedAuthenticationData(response)
-        val signatureOk = signatureVerifier.verify(
-            algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = storedCredential.publicKeyCose,
-            data = signedData,
-            signature = response.signature.bytes(),
-        )
+        val signatureOk = CoseAlgorithm.entries.any { algorithm ->
+            signatureVerifier.verify(
+                algorithm = algorithm,
+                publicKeyCose = storedCredential.publicKeyCose,
+                data = signedData,
+                signature = response.signature.bytes(),
+            )
+        }
 
         if (!signatureOk) {
             return failure("signature", "Invalid assertion signature")
@@ -301,10 +303,7 @@ public class AuthenticationService(
     private fun signedAuthenticationData(response: AuthenticationResponse): ByteArray {
         val digest = MessageDigest.getInstance("SHA-256")
         val clientDataHash = digest.digest(response.clientDataJson.bytes())
-        val rawAuthData = response.authenticatorData.rpIdHash +
-            byteArrayOf(response.authenticatorData.flags.toByte()) +
-            response.authenticatorData.signCount.toInt().toByteArray()
-        return rawAuthData + clientDataHash
+        return response.rawAuthenticatorData.bytes() + clientDataHash
     }
 }
 
@@ -312,13 +311,4 @@ private object UserAccountStoreLookup {
     suspend fun findRequired(store: UserAccountStore, name: String): UserAccount {
         return requireNotNull(store.findByName(name)) { "User not found in account store: $name" }
     }
-}
-
-private fun Int.toByteArray(): ByteArray {
-    return byteArrayOf(
-        ((this shr 24) and 0xFF).toByte(),
-        ((this shr 16) and 0xFF).toByte(),
-        ((this shr 8) and 0xFF).toByte(),
-        (this and 0xFF).toByte(),
-    )
 }

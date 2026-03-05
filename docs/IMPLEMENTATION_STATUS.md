@@ -20,8 +20,8 @@ Last updated: 2026-03-05
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
 - Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
-- Network interop now uses a default backend contract in `webauthn-network-ktor-client`, while sample-only temp-server contract wiring lives under `samples/*`.
-- Samples now include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against `temp.server`.
+- Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
+- Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
 - Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
 - Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 
@@ -50,7 +50,7 @@ Last updated: 2026-03-05
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation | More runtime/device matrix coverage |
 | `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`) | Retry/error policy hardening and broader contract fixtures |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
-| `samples:*` | Beta | Runnable backend/android/ios structure, JVM interop demo, and Compose KMP readiness sample wired to `temp.server` | More real-device matrix coverage and extension-focused end-to-end examples |
+| `samples:*` | Beta | Runnable backend/android/ios structure and Compose KMP readiness sample wired to default `/webauthn/*` contract via `samples/backend-ktor` | More real-device matrix coverage and extension-focused end-to-end examples |
 
 ## Validation Coverage Status
 
