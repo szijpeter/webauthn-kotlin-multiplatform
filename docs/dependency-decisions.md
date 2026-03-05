@@ -10,6 +10,16 @@
 
 These power runtime hashing, COSE decoding, signature parsing/verification, and SafetyNet JWS decoding.
 
+`kotlinx-serialization` remains pinned to `1.9.x` for now.
+We attempted an unpin to `1.10.0` with captured Android assertion vectors and observed signature verification regressions in Signum-backed authentication verification.
+Tracking issue: [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415).
+
+Unpin policy:
+
+1. Keep runtime Signum-only (no JCA fallback in production paths).
+2. Re-run `tools/compat/run-signum-serialization-matrix.sh` target combos on dependency-sensitive changes.
+3. Move to `1.10.x` only after matrix passes for target combo(s) with Signum runtime.
+
 ## Remaining JCA Boundary
 
 JCA/JDK APIs are intentionally used only for PKI trust duties:

@@ -1,0 +1,61 @@
+name: Signum Serialization Compatibility
+
+on:
+  pull_request:
+    paths:
+      - "gradle/libs.versions.toml"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
+      - "webauthn-server-core-jvm/**"
+      - "webauthn-server-jvm-crypto/**"
+      - "webauthn-serialization-kotlinx/**"
+      - "tools/compat/**"
+      - ".github/workflows/compat-signum-serialization.yml"
+  push:
+    branches: [main]
+    paths:
+      - "gradle/libs.versions.toml"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
+      - "webauthn-server-core-jvm/**"
+      - "webauthn-server-jvm-crypto/**"
+      - "webauthn-serialization-kotlinx/**"
+      - "tools/compat/**"
+      - ".github/workflows/compat-signum-serialization.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  target-compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Read catalog serialization version
+        id: catalog
+        run: |
+          value="$(sed -n 's/^serialization = "\([^"]*\)"/\1/p' gradle/libs.versions.toml | head -n1)"
+          echo "version=$value" >> "$GITHUB_OUTPUT"
+      - name: Compatibility Target (serialization 1.10 + pinned Signum)
+        id: target
+        continue-on-error: true
+        run: |
+          chmod +x tools/compat/run-signum-serialization-matrix.sh
+          tools/compat/run-signum-serialization-matrix.sh --mode target-a
+      - name: Enforce target result when unpinned to 1.10.x
+        run: |
+          if [[ "${{ steps.catalog.outputs.version }}" == 1.10.* ]]; then
+            if [[ "${{ steps.target.outcome }}" != "success" ]]; then
+              echo "Target compatibility failed while serialization is unpinned to 1.10.x"
+              exit 1
+            fi
+            echo "Target compatibility passed for 1.10.x"
+            exit 0
+          fi
+          echo "Serialization is pinned at ${{ steps.catalog.outputs.version }}; target run is advisory until Signum issue #415 is resolved."
