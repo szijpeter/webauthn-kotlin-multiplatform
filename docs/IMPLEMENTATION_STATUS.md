@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-04
+Last updated: 2026-03-05
 
 ## Status Legend
 
@@ -22,6 +22,8 @@ Last updated: 2026-03-04
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
 - Network interop now uses a default backend contract in `webauthn-network-ktor-client`, while sample-only temp-server contract wiring lives under `samples/*`.
 - Samples now include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against `temp.server`.
+- Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
+- Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 
 ## Plan Progress (Estimated)
 
