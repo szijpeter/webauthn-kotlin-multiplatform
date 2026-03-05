@@ -258,7 +258,11 @@ public object WebAuthnDtoMapper {
 
         val residentKey = value.authenticatorSelection?.residentKey?.let { rk ->
             ResidentKeyRequirement.entries.find { it.name.equals(rk, ignoreCase = true) }
-        } ?: ResidentKeyRequirement.PREFERRED
+        } ?: if (value.authenticatorSelection?.requireResidentKey == true) {
+            ResidentKeyRequirement.REQUIRED
+        } else {
+            ResidentKeyRequirement.PREFERRED
+        }
         val userVerification = value.authenticatorSelection?.userVerification?.let { uv ->
             UserVerificationRequirement.entries.find {
                 it.name.equals(uv, ignoreCase = true)

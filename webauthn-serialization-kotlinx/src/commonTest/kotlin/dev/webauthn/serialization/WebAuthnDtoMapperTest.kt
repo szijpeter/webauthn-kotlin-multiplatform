@@ -5,6 +5,7 @@ import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -48,6 +49,27 @@ class WebAuthnDtoMapperTest {
 
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun creationOptionsRequireResidentKeyTrueMapsToRequired() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = "example.com", name = "Example"),
+            user = UserEntityDto(
+                id = "YWFhYWFhYWFhYWFhYWFhYQ",
+                name = "alice",
+                displayName = "Alice",
+            ),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            authenticatorSelection = AuthenticatorSelectionCriteriaDto(
+                requireResidentKey = true,
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(ResidentKeyRequirement.REQUIRED, result.value.residentKey)
     }
 
     @Test

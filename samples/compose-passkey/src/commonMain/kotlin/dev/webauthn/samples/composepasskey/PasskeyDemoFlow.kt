@@ -11,7 +11,7 @@ import dev.webauthn.samples.composepasskey.model.StatusTone
 public data class PasskeyDemoConfig(
     public val endpointBase: String = PasskeyDemoBuildConfig.ENDPOINT_BASE,
     public val rpId: String = resolveDefaultRpId(
-        endpointBase = PasskeyDemoBuildConfig.ENDPOINT_BASE,
+        endpointBase = endpointBase,
         configuredRpId = PasskeyDemoBuildConfig.RP_ID,
     ),
     public val origin: String = resolveDefaultOrigin(
