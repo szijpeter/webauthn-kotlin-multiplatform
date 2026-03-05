@@ -201,6 +201,7 @@ internal object SignumPrimitives {
                 if (parsedDer.isSuccess) {
                     parsedDer
                 } else {
+                    // WebAuthn ES256 signatures are DER, but some integration layers surface raw P1363 (R || S).
                     val derFromRaw = ecdsaP1363ToDer(signature) ?: return parsedDer
                     catchingAsn1OrIllegalArgument {
                         CryptoSignature.EC.decodeFromDer(derFromRaw)
