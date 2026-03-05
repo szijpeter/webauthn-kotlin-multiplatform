@@ -78,14 +78,14 @@ class SampleBackendRoutesTest {
     }
 
     @Test
-    fun sampleBackendConfigDefaultsToAttestationNoneAndSupportsStrictMode() {
+    fun sampleBackendConfigDefaultsToAttestationStrictAndSupportsExplicitNone() {
         val defaultConfig = SampleBackendConfig.fromEnvironment(
             mapOf(
                 "PORT" to "9090",
             ),
         )
         assertEquals(9090, defaultConfig.port)
-        assertEquals(AttestationPolicy.None, defaultConfig.attestationPolicy)
+        assertEquals(AttestationPolicy.Strict, defaultConfig.attestationPolicy)
 
         val strictConfig = SampleBackendConfig.fromEnvironment(
             mapOf(
@@ -93,6 +93,20 @@ class SampleBackendRoutesTest {
             ),
         )
         assertEquals(AttestationPolicy.Strict, strictConfig.attestationPolicy)
+
+        val noneConfig = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "WEBAUTHN_SAMPLE_ATTESTATION" to "NONE",
+            ),
+        )
+        assertEquals(AttestationPolicy.None, noneConfig.attestationPolicy)
+
+        val unknownConfig = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "WEBAUTHN_SAMPLE_ATTESTATION" to "oops",
+            ),
+        )
+        assertEquals(AttestationPolicy.Strict, unknownConfig.attestationPolicy)
     }
 }
 

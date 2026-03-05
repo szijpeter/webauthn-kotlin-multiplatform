@@ -146,7 +146,7 @@ public data class SampleBackendConfig(
     val androidPackageName: String = DEFAULT_ANDROID_PACKAGE_NAME,
     val androidSha256: String = DEFAULT_ANDROID_SHA256,
     val iosAppId: String = DEFAULT_IOS_APP_ID,
-    val attestationPolicy: AttestationPolicy = AttestationPolicy.None,
+    val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
 ) {
     public companion object {
         public fun fromEnvironment(environment: Map<String, String> = System.getenv()): SampleBackendConfig {
@@ -154,10 +154,10 @@ public data class SampleBackendConfig(
             val configuredAndroidPackageName = environment["ANDROID_PACKAGE_NAME"].orIfBlank(DEFAULT_ANDROID_PACKAGE_NAME)
             val configuredAndroidSha256 = environment["ANDROID_SHA256"].orIfBlank(DEFAULT_ANDROID_SHA256)
             val configuredIosAppId = environment["IOS_APP_ID"].orIfBlank(DEFAULT_IOS_APP_ID)
-            val attestationMode = environment["WEBAUTHN_SAMPLE_ATTESTATION"].orIfBlank("NONE")
+            val attestationMode = environment["WEBAUTHN_SAMPLE_ATTESTATION"].orIfBlank("STRICT")
             val attestationPolicy = when (attestationMode.uppercase()) {
-                "STRICT" -> AttestationPolicy.Strict
-                else -> AttestationPolicy.None
+                "NONE" -> AttestationPolicy.None
+                else -> AttestationPolicy.Strict
             }
             return SampleBackendConfig(
                 port = configuredPort,

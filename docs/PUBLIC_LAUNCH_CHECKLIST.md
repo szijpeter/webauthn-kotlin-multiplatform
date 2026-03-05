@@ -11,6 +11,7 @@ Use this checklist when moving from private to public operation.
 5. Required quality gates pass:
    - `tools/agent/quality-gate.sh --mode fast --scope changed --block false`
    - `tools/agent/quality-gate.sh --mode strict --scope changed --block true`
+6. Demo/sample runtime security defaults are explicit (sample backend attestation mode defaults to `STRICT`; relaxed `NONE` mode is opt-in only).
 
 ## GitHub Repository Settings
 
