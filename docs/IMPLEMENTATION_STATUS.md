@@ -22,6 +22,7 @@ Last updated: 2026-03-05
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
 - Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
 - Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
+- Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.
 - Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
 - Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 

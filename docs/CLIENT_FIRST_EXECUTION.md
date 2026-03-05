@@ -66,7 +66,7 @@ Run with ngrok + local.properties synchronization:
 Defaults:
 
 - `PORT=8080`
-- `WEBAUTHN_SAMPLE_ATTESTATION=NONE` (`STRICT` to enable strict attestation verification)
+- `WEBAUTHN_SAMPLE_ATTESTATION=STRICT` (set `NONE` to explicitly relax attestation checks for local bring-up)
 - `ANDROID_PACKAGE_NAME=dev.webauthn.samples.composepasskey.android`
 - `ANDROID_SHA256=PUT_SHA256_FINGERPRINT_HERE` (replace for real-device app-link verification)
 - `IOS_APP_ID=TEAMID.com.example.app`

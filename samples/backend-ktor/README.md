@@ -22,7 +22,7 @@ Ktor sample backend for local/mobile passkey end-to-end flows.
 Environment variables:
 
 - `PORT` (default `8080`)
-- `WEBAUTHN_SAMPLE_ATTESTATION` (`NONE` default, `STRICT` optional)
+- `WEBAUTHN_SAMPLE_ATTESTATION` (`STRICT` default, set `NONE` to explicitly disable strict attestation verification for local bring-up)
 - `ANDROID_PACKAGE_NAME` (default `dev.webauthn.samples.composepasskey.android`)
 - `ANDROID_SHA256` (default placeholder; set for real-device app-link verification)
 - `IOS_APP_ID` (default placeholder)
