@@ -1,7 +1,11 @@
 package dev.webauthn.serialization
 
 import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.AttestedCredentialData
+import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -45,6 +49,27 @@ class WebAuthnDtoMapperTest {
 
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun creationOptionsRequireResidentKeyTrueMapsToRequired() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = "example.com", name = "Example"),
+            user = UserEntityDto(
+                id = "YWFhYWFhYWFhYWFhYWFhYQ",
+                name = "alice",
+                displayName = "Alice",
+            ),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            authenticatorSelection = AuthenticatorSelectionCriteriaDto(
+                requireResidentKey = true,
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(ResidentKeyRequirement.REQUIRED, result.value.residentKey)
     }
 
     @Test
@@ -141,6 +166,60 @@ class WebAuthnDtoMapperTest {
         assertEquals(0x41, result.value.rawAuthenticatorData.flags)
         assertEquals(credentialId.value.encoded(), result.value.attestedCredentialData.credentialId.value.encoded())
         assertContentEquals(cosePublicKey, result.value.attestedCredentialData.cosePublicKey)
+    }
+
+    @Test
+    fun registrationResponsePrefersRawIdOverId() {
+        val rawCredentialBytes = ByteArray(16) { 0x33 }
+        val rawCredentialId = CredentialId.fromBytes(rawCredentialBytes)
+        val mismatchedId = CredentialId.fromBytes(ByteArray(16) { 0x66 })
+        val authData = registrationAuthenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x44 },
+            flags = 0x41,
+            signCount = 9,
+            credentialId = rawCredentialBytes,
+            cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+        )
+        val attestationObject = attestationObjectWithAuthData(authData)
+        val dto = RegistrationResponseDto(
+            id = mismatchedId.value.encoded(),
+            rawId = rawCredentialId.value.encoded(),
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)).encoded(),
+                attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(rawCredentialId, result.value.credentialId)
+        assertEquals(rawCredentialId, result.value.attestedCredentialData.credentialId)
+    }
+
+    @Test
+    fun registrationResponseFromModelUsesAttestedCredentialId() {
+        val attestedCredentialId = CredentialId.fromBytes(ByteArray(16) { 0x77 })
+        val mismatchedTopLevelCredentialId = CredentialId.fromBytes(ByteArray(16) { 0x22 })
+        val model = RegistrationResponse(
+            credentialId = mismatchedTopLevelCredentialId,
+            clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
+            attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
+            rawAuthenticatorData = AuthenticatorData(
+                rpIdHash = ByteArray(32) { 0x01 },
+                flags = 0x41,
+                signCount = 1,
+            ),
+            attestedCredentialData = AttestedCredentialData(
+                aaguid = ByteArray(16) { 0x02 },
+                credentialId = attestedCredentialId,
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+            extensions = null,
+        )
+
+        val dto = WebAuthnDtoMapper.fromModel(model)
+        assertEquals(attestedCredentialId.value.encoded(), dto.id)
+        assertEquals(attestedCredentialId.value.encoded(), dto.rawId)
     }
 
     @Test

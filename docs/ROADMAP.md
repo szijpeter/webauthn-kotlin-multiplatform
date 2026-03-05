@@ -14,7 +14,7 @@ Last updated: 2026-03-02
 ## Immediate Execution Strategy (Client First)
 
 1. Keep client implementation velocity independent from first-party backend hardening.
-2. Use explicit backend profiles and temporary backends for client validation.
+2. Use explicit backend contracts and temporary backends for client validation.
 3. Keep shared client business logic in `webauthn-client-core`; platform wrappers stay thin.
 4. Drive all client API and behavior decisions from WebAuthn spec requirements first.
 
@@ -22,7 +22,7 @@ Last updated: 2026-03-02
 
 1. Keep shared typed ceremony orchestration in `webauthn-client-core` and maintain optional JSON APIs in `webauthn-client-json-core`.
 2. Keep Android Credential Manager and iOS AuthenticationServices adapters as thin platform bridges.
-3. Maintain interop paths for external backend profiles (`PASSKEY_ENCRYPTION_POC`) and temporary local backend (`temp.server`).
+3. Maintain interop paths for host-provided backend contracts and temporary local backend (`temp.server`).
 4. Verify extension transport and response mapping for PRF and Large Blob semantics.
 5. Align client API ergonomics against trusted ecosystem SDKs while preserving standards-first behavior.
 

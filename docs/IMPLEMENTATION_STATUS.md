@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-01
+Last updated: 2026-03-05
 
 ## Status Legend
 
@@ -20,11 +20,14 @@ Last updated: 2026-03-01
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
 - Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
-- Network interop now supports both native library routes and external `PASSKEY_ENCRYPTION_POC` profile routes.
+- Network interop now uses a default backend contract in `webauthn-network-ktor-client`, while sample-only temp-server contract wiring lives under `samples/*`.
+- Samples now include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against `temp.server`.
+- Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
+- Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 
 ## Plan Progress (Estimated)
 
-- Phase 1 (Client readiness/interoperability): ~65% complete.
+- Phase 1 (Client readiness/interoperability): ~75% complete.
 - Phase 2 (Conformance/Security): ~75% complete.
 - Phase 3 (Server robustness): ~70% complete.
 - Phase 4-5 (DX/release): mostly pending.
@@ -41,13 +44,13 @@ Last updated: 2026-03-01
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores | Broader external store implementations beyond H2 contract adapter |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Beta | Shared typed ceremony orchestration (`DefaultPasskeyClient`), deterministic invalid-options vs platform error behavior, capability model | More extension-focused policy helpers and fixture coverage |
-| `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable codec contract (`PasskeyJsonCodec`), default kotlinx codec | Additional fixture depth and profile-oriented JSON interop coverage |
-| `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyClientState`) and lightweight operation state model | Broader UI/runtime lifecycle coverage across host app patterns |
+| `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable mapper contract (`PasskeyJsonMapper`), default kotlinx mapper | Additional fixture depth and profile-oriented JSON interop coverage |
+| `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyController`) for controller-driven state | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, capability reporting, shared-core delegation | Lifecycle and OEM/provider compatibility hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation | More runtime/device matrix coverage |
-| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, backend profile interop (`LIBRARY_ROUTES`, `PASSKEY_ENCRYPTION_POC`) | Retry/error policy hardening and broader profile fixtures |
+| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`) | Retry/error policy hardening and broader contract fixtures |
 | `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests | Full attestation format/trust-chain verification depth |
-| `samples:*` | Scaffold/Beta | Runnable backend/android/ios sample structure | End-to-end realistic passkey flows and docs depth |
+| `samples:*` | Beta | Runnable backend/android/ios structure, JVM interop demo, and Compose KMP readiness sample wired to `temp.server` | More real-device matrix coverage and extension-focused end-to-end examples |
 
 ## Validation Coverage Status
 

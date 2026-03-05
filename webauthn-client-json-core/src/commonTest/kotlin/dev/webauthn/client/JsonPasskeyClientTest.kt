@@ -11,20 +11,19 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
-import dev.webauthn.model.ValidationResult
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class JsonPasskeyClientTest {
-    private val codec = KotlinxPasskeyJsonCodec()
+    private val mapper = KotlinxPasskeyJsonMapper()
 
     @Test
     fun createCredentialJson_rejects_invalid_json() = runTest {
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(),
-            jsonCodec = codec,
+            jsonMapper = mapper,
         )
 
         val result = jsonClient.createCredentialJson("{not-json")
@@ -36,7 +35,7 @@ class JsonPasskeyClientTest {
 
     @Test
     fun createCredentialJson_returns_normalized_response_json() = runTest {
-        val registrationResponseValidation = codec.decodeRegistrationResponse(
+        val registrationResponse = mapper.decodeRegistrationResponseOrThrowPlatform(
             """
             {
               "id": "MzMzMzMzMzMzMzMzMzMzMw",
@@ -48,20 +47,17 @@ class JsonPasskeyClientTest {
             }
             """.trimIndent(),
         )
-        assertTrue(registrationResponseValidation is ValidationResult.Valid)
-        val registrationResponse = registrationResponseValidation.value
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(createResult = PasskeyResult.Success(registrationResponse)),
-            jsonCodec = codec,
+            jsonMapper = mapper,
         )
-        val requestJson = codec.encodeCreationOptions(validCreationOptions())
+        val requestJson = mapper.encodeCreationOptionsOrThrowInvalid(validCreationOptions())
 
         val result = jsonClient.createCredentialJson(requestJson)
 
         assertTrue(result is PasskeyResult.Success)
-        val decoded = codec.decodeRegistrationResponse(result.value)
-        assertTrue(decoded is dev.webauthn.model.ValidationResult.Valid)
-        assertEquals(registrationResponse.credentialId.value.encoded(), decoded.value.credentialId.value.encoded())
+        val decoded = mapper.decodeRegistrationResponseOrThrowPlatform(result.value)
+        assertEquals(registrationResponse.credentialId.value.encoded(), decoded.credentialId.value.encoded())
     }
 
     @Test
@@ -69,9 +65,9 @@ class JsonPasskeyClientTest {
         val failure = PasskeyResult.Failure(PasskeyClientError.UserCancelled())
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(assertionResult = failure),
-            jsonCodec = codec,
+            jsonMapper = mapper,
         )
-        val requestJson = codec.encodeAssertionOptions(validRequestOptions())
+        val requestJson = mapper.encodeAssertionOptionsOrThrowInvalid(validRequestOptions())
 
         val result = jsonClient.getAssertionJson(requestJson)
 

@@ -40,5 +40,7 @@ include(
     ":samples:backend-ktor",
     ":samples:android-passkey",
     ":samples:ios-passkey",
-    ":samples:client-interop-jvm"
+    ":samples:client-interop-jvm",
+    ":samples:compose-passkey",
+    ":samples:compose-passkey-android",
 )

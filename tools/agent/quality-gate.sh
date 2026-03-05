@@ -162,6 +162,15 @@ else
             samples:ios-passkey)
                 run_list+=("./gradlew :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
+            samples:compose-passkey)
+                run_list+=("./gradlew :samples:compose-passkey:allTests :samples:compose-passkey:compileAndroidMain :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+                ;;
+            samples:compose-passkey-android)
+                run_list+=("./gradlew :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
+                ;;
+            temp.server)
+                run_list+=("cd temp.server && npm test")
+                ;;
             temp.server)
                 run_list+=("cd temp.server && npm test")
                 ;;
