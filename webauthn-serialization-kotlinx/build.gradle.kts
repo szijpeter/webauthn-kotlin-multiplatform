@@ -10,11 +10,14 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        commonMain.dependencies {
-            api(project(":webauthn-model"))
-            implementation(libs.kotlinx.serialization.core)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.serialization.cbor)
+        commonMain {
+            dependencies {
+                implementation(project(":webauthn-cbor-internal"))
+                api(project(":webauthn-model"))
+                implementation(libs.kotlinx.serialization.core)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.serialization.cbor)
+            }
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

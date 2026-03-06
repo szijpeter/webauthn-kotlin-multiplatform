@@ -1,5 +1,17 @@
 package dev.webauthn.server.crypto
 
+import dev.webauthn.internal.cbor.MAJOR_ARRAY
+import dev.webauthn.internal.cbor.MAJOR_MAP
+import dev.webauthn.internal.cbor.MAJOR_NEGATIVE_INT
+import dev.webauthn.internal.cbor.MAJOR_SIMPLE_FLOAT
+import dev.webauthn.internal.cbor.MAJOR_TAG
+import dev.webauthn.internal.cbor.MAJOR_UNSIGNED_INT
+import dev.webauthn.internal.cbor.readCborBytes
+import dev.webauthn.internal.cbor.readCborHeader
+import dev.webauthn.internal.cbor.readCborInt
+import dev.webauthn.internal.cbor.readCborLength
+import dev.webauthn.internal.cbor.readCborText
+import dev.webauthn.internal.cbor.skipCborItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
