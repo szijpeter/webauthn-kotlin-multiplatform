@@ -17,7 +17,7 @@ import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-internal class H2StoreTestAdapter private constructor(
+class H2StoreTestAdapter private constructor(
     private val jdbcUrl: String,
     private val cleanup: () -> Unit,
 ) : AutoCloseable {

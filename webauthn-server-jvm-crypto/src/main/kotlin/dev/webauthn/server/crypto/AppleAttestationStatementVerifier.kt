@@ -7,14 +7,18 @@ import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
 
 internal class AppleAttestationStatementVerifier(
-    private val trustChainVerifier: TrustChainVerifier? = TrustChainVerifier(
-        StaticTrustAnchorSource.fromResourcePath("/apple/apple_webauthn_root_ca.pem")
-    ),
+    private val trustChainVerifier: TrustChainVerifier? = DefaultTrustChainVerifier,
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 
     companion object {
         private const val APPLE_EXTENSION_OID = "1.2.840.113635.100.8.2"
+
+        val DefaultTrustChainVerifier: TrustChainVerifier by lazy {
+            TrustChainVerifier(
+                StaticTrustAnchorSource.fromResourcePath("/apple/apple_webauthn_root_ca.pem")
+            )
+        }
     }
 
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
