@@ -7,6 +7,8 @@ import dev.webauthn.model.CredentialId
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.AuthenticatorAttachment
+import dev.webauthn.model.AuthenticatorTransport
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -326,8 +328,8 @@ class WebAuthnDtoMapperTest {
         assertTrue(createResult is ValidationResult.Valid)
         assertEquals(1, createResult.value.excludeCredentials.size)
         assertEquals(2, createResult.value.excludeCredentials[0].transports.size)
-        assertEquals(dev.webauthn.model.AuthenticatorTransport.USB, createResult.value.excludeCredentials[0].transports[0])
-        assertEquals(dev.webauthn.model.AuthenticatorTransport.NFC, createResult.value.excludeCredentials[0].transports[1])
+        assertEquals(AuthenticatorTransport.USB, createResult.value.excludeCredentials[0].transports[0])
+        assertEquals(AuthenticatorTransport.NFC, createResult.value.excludeCredentials[0].transports[1])
 
         val requestDto = PublicKeyCredentialRequestOptionsDto(
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
@@ -340,9 +342,9 @@ class WebAuthnDtoMapperTest {
         assertTrue(requestResult is ValidationResult.Valid)
         assertEquals(1, requestResult.value.allowCredentials.size)
         assertEquals(3, requestResult.value.allowCredentials[0].transports.size)
-        assertEquals(dev.webauthn.model.AuthenticatorTransport.BLE, requestResult.value.allowCredentials[0].transports[0])
-        assertEquals(dev.webauthn.model.AuthenticatorTransport.INTERNAL, requestResult.value.allowCredentials[0].transports[1])
-        assertEquals(dev.webauthn.model.AuthenticatorTransport.HYBRID, requestResult.value.allowCredentials[0].transports[2])
+        assertEquals(AuthenticatorTransport.BLE, requestResult.value.allowCredentials[0].transports[0])
+        assertEquals(AuthenticatorTransport.INTERNAL, requestResult.value.allowCredentials[0].transports[1])
+        assertEquals(AuthenticatorTransport.HYBRID, requestResult.value.allowCredentials[0].transports[2])
     }
 
     @Test
@@ -366,7 +368,7 @@ class WebAuthnDtoMapperTest {
 
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Valid)
-        assertEquals(dev.webauthn.model.AuthenticatorAttachment.CROSS_PLATFORM, result.value.authenticatorAttachment)
+        assertEquals(AuthenticatorAttachment.CROSS_PLATFORM, result.value.authenticatorAttachment)
     }
 
     @Test
@@ -392,7 +394,7 @@ class WebAuthnDtoMapperTest {
 
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Valid)
-        assertEquals(dev.webauthn.model.AuthenticatorAttachment.PLATFORM, result.value.authenticatorAttachment)
+        assertEquals(AuthenticatorAttachment.PLATFORM, result.value.authenticatorAttachment)
     }
 
     private fun authenticatorDataBytes(

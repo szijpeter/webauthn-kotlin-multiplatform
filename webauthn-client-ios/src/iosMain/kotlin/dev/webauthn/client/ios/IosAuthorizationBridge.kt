@@ -1,7 +1,11 @@
 package dev.webauthn.client.ios
 
+import dev.webauthn.model.AttestationConveyancePreference
+import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.ResidentKeyRequirement
+import dev.webauthn.model.UserVerificationRequirement
 import platform.AuthenticationServices.ASAuthorization
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
@@ -19,6 +23,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
+import platform.Foundation.NSProcessInfo
 
 internal data class IosRegistrationPayload(
     val credentialId: ByteArray,
@@ -53,11 +58,11 @@ internal class AuthenticationServicesAuthorizationBridge(
         return runAuthorizationRequest(
             buildRequests = {
                 val requests = mutableListOf<Any>()
-                
+
                 val attachment = options.authenticatorAttachment
-                val usePlatform = attachment == null || attachment == dev.webauthn.model.AuthenticatorAttachment.PLATFORM
-                val useSecurityKey = attachment == null || attachment == dev.webauthn.model.AuthenticatorAttachment.CROSS_PLATFORM
-                
+                val usePlatform = attachment == null || attachment == AuthenticatorAttachment.PLATFORM
+                val useSecurityKey = attachment == null || attachment == AuthenticatorAttachment.CROSS_PLATFORM
+
                 if (usePlatform) {
                     val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
                     val request = provider.createCredentialRegistrationRequestWithChallenge(
@@ -69,8 +74,8 @@ internal class AuthenticationServicesAuthorizationBridge(
                     options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
                     requests.add(request)
                 }
-                
-                if (useSecurityKey && platform.Foundation.NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
+
+                if (useSecurityKey && NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
                     val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rp.id.value)
                     val request = provider.createCredentialRegistrationRequestWithChallenge(
                         challenge = options.challenge.value.bytes().toNSData(),
@@ -82,7 +87,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
                     requests.add(request)
                 }
-                
+
                 require(requests.isNotEmpty()) { "No ASAuthorization providers available for the requested authenticatorAttachment" }
                 requests
             },
@@ -116,11 +121,11 @@ internal class AuthenticationServicesAuthorizationBridge(
         return runAuthorizationRequest(
             buildRequests = {
                 val requests = mutableListOf<Any>()
-                
+
                 // For assertion without attachment constraints we typically request both if possible
                 val usePlatform = true
                 val useSecurityKey = true
-                
+
                 if (usePlatform) {
                     val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rpId.value)
                     val request = provider.createCredentialAssertionRequestWithChallenge(
@@ -129,8 +134,8 @@ internal class AuthenticationServicesAuthorizationBridge(
                     request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
                     requests.add(request)
                 }
-                
-                if (useSecurityKey && platform.Foundation.NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
+
+                if (useSecurityKey && NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
                     val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rpId.value)
                     val request = provider.createCredentialAssertionRequestWithChallenge(
                         options.challenge.value.bytes().toNSData(),
@@ -138,7 +143,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
                     requests.add(request)
                 }
-                
+
                 require(requests.isNotEmpty()) { "No ASAuthorization providers available" }
                 requests
             },
@@ -148,8 +153,9 @@ internal class AuthenticationServicesAuthorizationBridge(
                         IosAuthenticationPayload(
                             credentialId = credential.credentialID.toByteArray(),
                             rawId = credential.credentialID.toByteArray(),
-                            authenticatorData = credential.rawAuthenticatorData?.toByteArray()
-                                ?: throw IllegalStateException("Missing rawAuthenticatorData in assertion response"),
+                            authenticatorData = checkNotNull(
+                                value = credential.rawAuthenticatorData?.toByteArray(),
+                            ) { "Missing rawAuthenticatorData in assertion response" },
                             signature = credential.signature?.toByteArray()
                                 ?: throw IllegalStateException("Missing signature in assertion response"),
                             clientDataJson = credential.rawClientDataJSON.toByteArray(),
@@ -176,7 +182,7 @@ internal class AuthenticationServicesAuthorizationBridge(
         )
     }
 
-    @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class)
     private suspend fun <TPayload> runAuthorizationRequest(
         buildRequests: () -> List<Any>,
         extractPayload: (Any?) -> TPayload,
@@ -202,8 +208,12 @@ internal class AuthenticationServicesAuthorizationBridge(
                 }
             }
 
-            val delegate = object : NSObject(), ASAuthorizationControllerDelegateProtocol, ASAuthorizationControllerPresentationContextProvidingProtocol {
-                override fun presentationAnchorForAuthorizationController(controller: ASAuthorizationController): UIWindow {
+            val delegate = object : NSObject(),
+                ASAuthorizationControllerDelegateProtocol,
+                ASAuthorizationControllerPresentationContextProvidingProtocol {
+                override fun presentationAnchorForAuthorizationController(
+                    controller: ASAuthorizationController)
+                : UIWindow {
                     return windowProvider()
                 }
 
@@ -241,18 +251,18 @@ internal class AuthenticationServicesAuthorizationBridge(
         NSErrorException(NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null))
 }
 
-private fun dev.webauthn.model.UserVerificationRequirement.toPreferenceValue(): String = when (this) {
-    dev.webauthn.model.UserVerificationRequirement.REQUIRED -> "required"
-    dev.webauthn.model.UserVerificationRequirement.PREFERRED -> "preferred"
-    dev.webauthn.model.UserVerificationRequirement.DISCOURAGED -> "discouraged"
+private fun UserVerificationRequirement.toPreferenceValue(): String = when (this) {
+    UserVerificationRequirement.REQUIRED -> "required"
+    UserVerificationRequirement.PREFERRED -> "preferred"
+    UserVerificationRequirement.DISCOURAGED -> "discouraged"
 }
 
-private fun dev.webauthn.model.ResidentKeyRequirement.toPreferenceValue(): String = when (this) {
-    dev.webauthn.model.ResidentKeyRequirement.REQUIRED -> "required"
-    dev.webauthn.model.ResidentKeyRequirement.PREFERRED -> "preferred"
-    dev.webauthn.model.ResidentKeyRequirement.DISCOURAGED -> "discouraged"
+private fun ResidentKeyRequirement.toPreferenceValue(): String = when (this) {
+    ResidentKeyRequirement.REQUIRED -> "required"
+    ResidentKeyRequirement.PREFERRED -> "preferred"
+    ResidentKeyRequirement.DISCOURAGED -> "discouraged"
 }
 
-private fun dev.webauthn.model.AttestationConveyancePreference.toPreferenceValue(): String {
+private fun AttestationConveyancePreference.toPreferenceValue(): String {
     return name.lowercase()
 }
