@@ -1,23 +1,16 @@
 package dev.webauthn.model
 
-public class Base64UrlBytes private constructor(private val bytes: ByteArray) {
-    public fun bytes(): ByteArray = bytes.copyOf()
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
-    public fun encoded(): String = Base64UrlCodec.encode(bytes)
+@OptIn(ExperimentalEncodingApi::class)
+@kotlin.jvm.JvmInline
+public value class Base64UrlBytes private constructor(private val encodedValue: String) {
+    public fun bytes(): ByteArray = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).decode(encodedValue)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Base64UrlBytes) return false
-        return bytes.contentEquals(other.bytes)
-    }
+    public fun encoded(): String = encodedValue
 
-    override fun hashCode(): Int {
-        return bytes.contentHashCode()
-    }
-
-    override fun toString(): String {
-        return encoded()
-    }
+    override fun toString(): String = encoded()
 
     public companion object {
         public fun parse(value: String, field: String = "base64url"): ValidationResult<Base64UrlBytes> {
@@ -32,8 +25,11 @@ public class Base64UrlBytes private constructor(private val bytes: ByteArray) {
                 )
             }
 
-            val decoded = Base64UrlCodec.decode(value)
-                ?: return ValidationResult.Invalid(
+            try {
+                // Verify the string can actually be decoded according to Base64Url specs without padding
+                Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).decode(value)
+            } catch (e: IllegalArgumentException) {
+                return ValidationResult.Invalid(
                     listOf(
                         WebAuthnValidationError.InvalidFormat(
                             field = field,
@@ -41,11 +37,14 @@ public class Base64UrlBytes private constructor(private val bytes: ByteArray) {
                         ),
                     ),
                 )
+            }
 
-            return ValidationResult.Valid(Base64UrlBytes(decoded))
+            return ValidationResult.Valid(Base64UrlBytes(value))
         }
 
-        public fun fromBytes(value: ByteArray): Base64UrlBytes = Base64UrlBytes(value.copyOf())
+        public fun fromBytes(value: ByteArray): Base64UrlBytes {
+            return Base64UrlBytes(Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).encode(value))
+        }
 
         public fun parseOrThrow(value: String, field: String = "base64url"): Base64UrlBytes {
             return parse(value, field).getOrThrow()

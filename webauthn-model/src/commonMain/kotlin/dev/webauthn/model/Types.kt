@@ -1,6 +1,7 @@
 package dev.webauthn.model
 
-public class RpId private constructor(public val value: String) {
+@kotlin.jvm.JvmInline
+public value class RpId private constructor(public val value: String) {
     public companion object {
         private val allowed: Regex = Regex("^[a-z0-9.-]+$")
 
@@ -27,18 +28,11 @@ public class RpId private constructor(public val value: String) {
         public fun parseOrThrow(value: String): RpId = parse(value).getOrThrow()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is RpId) return false
-        return value == other.value
-    }
-
-    override fun hashCode(): Int = value.hashCode()
-
     override fun toString(): String = value
 }
 
-public class Origin private constructor(public val value: String) {
+@kotlin.jvm.JvmInline
+public value class Origin private constructor(public val value: String) {
     public companion object {
         public fun parse(value: String): ValidationResult<Origin> {
             if (!value.startsWith("https://") && !value.startsWith("android:apk-key-hash:")) {
@@ -57,18 +51,11 @@ public class Origin private constructor(public val value: String) {
         public fun parseOrThrow(value: String): Origin = parse(value).getOrThrow()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Origin) return false
-        return value == other.value
-    }
-
-    override fun hashCode(): Int = value.hashCode()
-
     override fun toString(): String = value
 }
 
-public class Challenge private constructor(public val value: Base64UrlBytes) {
+@kotlin.jvm.JvmInline
+public value class Challenge private constructor(public val value: Base64UrlBytes) {
     public companion object {
         public fun parse(encoded: String): ValidationResult<Challenge> {
             val baseResult = Base64UrlBytes.parse(encoded, "challenge")
@@ -100,18 +87,11 @@ public class Challenge private constructor(public val value: Base64UrlBytes) {
         public fun parseOrThrow(encoded: String): Challenge = parse(encoded).getOrThrow()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Challenge) return false
-        return value == other.value
-    }
-
-    override fun hashCode(): Int = value.hashCode()
-
     override fun toString(): String = value.toString()
 }
 
-public class CredentialId private constructor(public val value: Base64UrlBytes) {
+@kotlin.jvm.JvmInline
+public value class CredentialId private constructor(public val value: Base64UrlBytes) {
     public companion object {
         public fun parse(encoded: String): ValidationResult<CredentialId> {
             return when (val parsed = Base64UrlBytes.parse(encoded, "credentialId")) {
@@ -125,18 +105,11 @@ public class CredentialId private constructor(public val value: Base64UrlBytes) 
         public fun parseOrThrow(encoded: String): CredentialId = parse(encoded).getOrThrow()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CredentialId) return false
-        return value == other.value
-    }
-
-    override fun hashCode(): Int = value.hashCode()
-
     override fun toString(): String = value.toString()
 }
 
-public class UserHandle private constructor(public val value: Base64UrlBytes) {
+@kotlin.jvm.JvmInline
+public value class UserHandle private constructor(public val value: Base64UrlBytes) {
     public companion object {
         public fun parse(encoded: String): ValidationResult<UserHandle> {
             return when (val parsed = Base64UrlBytes.parse(encoded, "userHandle")) {
@@ -147,14 +120,6 @@ public class UserHandle private constructor(public val value: Base64UrlBytes) {
 
         public fun fromBytes(value: ByteArray): UserHandle = UserHandle(Base64UrlBytes.fromBytes(value))
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is UserHandle) return false
-        return value == other.value
-    }
-
-    override fun hashCode(): Int = value.hashCode()
 
     override fun toString(): String = value.toString()
 }
