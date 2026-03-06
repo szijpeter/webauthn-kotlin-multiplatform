@@ -34,7 +34,7 @@ public object ChallengeSessions : Table("challenge_sessions") {
     public val challengeValue: org.jetbrains.exposed.sql.Column<String> = varchar("challenge_value", 255)
     public val ceremonyType: org.jetbrains.exposed.sql.Column<String> = varchar("ceremony_type", 50)
     public val rpId: org.jetbrains.exposed.sql.Column<String> = varchar("rp_id", 255)
-    public val originValue: org.jetbrains.exposed.sql.Column<String> = varchar("origin_value", 255)
+    public val originValue: org.jetbrains.exposed.sql.Column<String> = varchar("origin_value", 1024)
     public val userName: org.jetbrains.exposed.sql.Column<String> = varchar("user_name", 255)
     public val createdAtEpochMs: org.jetbrains.exposed.sql.Column<Long> = long("created_at_epoch_ms")
     public val expiresAtEpochMs: org.jetbrains.exposed.sql.Column<Long> = long("expires_at_epoch_ms")
