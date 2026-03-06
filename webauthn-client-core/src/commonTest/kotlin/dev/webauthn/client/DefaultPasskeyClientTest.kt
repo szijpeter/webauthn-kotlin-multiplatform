@@ -122,6 +122,83 @@ class DefaultPasskeyClientTest {
         assertEquals(listOf("test"), capabilities.platformVersionHints)
     }
 
+    @Test
+    fun createCredential_passes_extensions_to_bridge() = runTest {
+        var passedExtensions: dev.webauthn.model.AuthenticationExtensionsClientInputs? = null
+        val client = DefaultPasskeyClient(
+            bridge = object : PasskeyPlatformBridge {
+                override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+                    passedExtensions = options.extensions
+                    return validRegistrationResponse()
+                }
+
+                override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+                    error("unused")
+                }
+
+                override fun mapPlatformError(throwable: Throwable): PasskeyClientError = PasskeyClientError.Platform("err", throwable)
+            },
+        )
+
+        val extensions = dev.webauthn.model.AuthenticationExtensionsClientInputs(
+            prf = dev.webauthn.model.PrfExtensionInput(
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(
+                    first = byteArrayOf(1, 2, 3)
+                )
+            )
+        )
+        val result = client.createCredential(validCreationOptions().copy(extensions = extensions))
+
+        assertTrue(result is PasskeyResult.Success)
+        kotlin.test.assertNotNull(passedExtensions)
+        kotlin.test.assertNotNull(passedExtensions?.prf?.eval)
+        kotlin.test.assertContentEquals(byteArrayOf(1, 2, 3), passedExtensions?.prf?.eval?.first)
+    }
+
+    @Test
+    fun getAssertion_maps_extension_results_from_bridge() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = object : PasskeyPlatformBridge {
+                override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+                    error("unused")
+                }
+
+                override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+                    return validAuthenticationResponse().copy(
+                        extensions = dev.webauthn.model.AuthenticationExtensionsClientOutputs(
+                            largeBlob = dev.webauthn.model.LargeBlobExtensionOutput(
+                                supported = true,
+                                blob = byteArrayOf(4, 5, 6),
+                            )
+                        )
+                    )
+                }
+
+                override fun mapPlatformError(throwable: Throwable): PasskeyClientError = PasskeyClientError.Platform("err", throwable)
+            },
+        )
+
+        val result = client.getAssertion(
+            PublicKeyCredentialRequestOptions(
+                challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
+                rpId = RpId.parseOrThrow("example.com"),
+                allowCredentials = listOf(
+                    dev.webauthn.model.PublicKeyCredentialDescriptor(
+                        type = PublicKeyCredentialType.PUBLIC_KEY,
+                        id = dev.webauthn.model.CredentialId.fromBytes(byteArrayOf(1)),
+                    ),
+                ),
+            ),
+        )
+
+        assertTrue(result is PasskeyResult.Success)
+        val extensions = result.value.extensions
+        kotlin.test.assertNotNull(extensions)
+        kotlin.test.assertNotNull(extensions.largeBlob)
+        kotlin.test.assertTrue(extensions.largeBlob?.supported == true)
+        kotlin.test.assertContentEquals(byteArrayOf(4, 5, 6), extensions.largeBlob?.blob)
+    }
+
     private class StaticBridge(
         private val createResponse: RegistrationResponse,
         private val assertionResponse: AuthenticationResponse,
