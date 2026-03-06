@@ -44,6 +44,10 @@ internal class AndroidPasskeyPlatformBridge(
     private val credentialManager: CredentialManager,
     private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
 ) : PasskeyPlatformBridge {
+    /**
+     * W3C WebAuthn L3: §5.1.3. Create a New Credential (createCredential)
+     * Maps to Android Credential Manager CreatePublicKeyCredentialRequest
+     */
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
         return runTypedCeremony(
             options = options,
@@ -59,6 +63,10 @@ internal class AndroidPasskeyPlatformBridge(
         )
     }
 
+    /**
+     * W3C WebAuthn L3: §5.1.4. Use an Existing Credential to Make an Assertion (getAssertion)
+     * Maps to Android Credential Manager GetCredentialRequest/GetPublicKeyCredentialOption
+     */
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
         return runTypedCeremony(
             options = options,

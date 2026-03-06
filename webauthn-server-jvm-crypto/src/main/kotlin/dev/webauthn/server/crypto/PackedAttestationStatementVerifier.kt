@@ -63,6 +63,10 @@ public class PackedAttestationStatementVerifier internal constructor(
         }
     }
 
+    /**
+     * W3C WebAuthn L3: §8.2. Packed Attestation Statement Format
+     * Process self attestation (when x5c is empty).
+     */
     private fun verifySelfAttestation(
         sig: ByteArray,
         signatureBase: ByteArray,
@@ -100,6 +104,10 @@ public class PackedAttestationStatementVerifier internal constructor(
         }
     }
 
+    /**
+     * W3C WebAuthn L3: §8.2. Packed Attestation Statement Format
+     * Process full or basic attestation (when x5c is present).
+     */
     private fun verifyFullAttestation(
         x5c: List<ByteArray>,
         sig: ByteArray,

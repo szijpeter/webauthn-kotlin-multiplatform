@@ -6,6 +6,9 @@ import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
+/**
+ * W3C WebAuthn L3: §8.6. FIDO U2F Attestation Statement Format
+ */
 public class FidoU2fAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
 ) : AttestationVerifier {
@@ -30,6 +33,7 @@ public class FidoU2fAttestationStatementVerifier(
         val publicKeyU2F = extractRawPublicKey(attestedData.cosePublicKey)
             ?: return failure("cosePublicKey", "Could not extract U2F public key from COSE")
 
+        // W3C WebAuthn L3: §8.6 Step 2: Let verificationData be the concatenation of (0x00 || rpIdHash || clientDataHash || credentialId || publicKeyU2F)
         val verificationData = concat(
             byteArrayOf(0x00),
             input.response.rawAuthenticatorData.rpIdHash,
@@ -38,6 +42,7 @@ public class FidoU2fAttestationStatementVerifier(
             publicKeyU2F,
         )
 
+        // W3C WebAuthn L3: §8.6 Step 3: Verify the sig using verificationData and the public key of the attestation certificate
         if (!SignumPrimitives.verifyWithCertificate(CoseAlgorithm.ES256, attCertDer, verificationData, sig)) {
             return failure("sig", "Invalid fido-u2f attestation signature")
         }

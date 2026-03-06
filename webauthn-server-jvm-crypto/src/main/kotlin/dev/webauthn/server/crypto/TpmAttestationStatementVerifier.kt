@@ -8,6 +8,9 @@ import dev.webauthn.model.WebAuthnValidationError
 import java.nio.ByteBuffer
 import java.util.Arrays
 
+/**
+ * W3C WebAuthn L3: §8.3. TPM Attestation Statement Format
+ */
 internal class TpmAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
@@ -70,6 +73,7 @@ internal class TpmAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: $algId")),
             )
 
+        // W3C WebAuthn L3: §8.3 Step 1: Verify that sig is a valid signature over certInfo
         val signatureValid = SignumPrimitives.verifyWithCertificate(
             algorithm = coseAlg,
             certificateDer = leafCertDer,
@@ -87,6 +91,8 @@ internal class TpmAttestationStatementVerifier(
 
             if (buffer.remaining() < 4) throw IllegalArgumentException("certInfo too short")
             val magic = buffer.int
+            
+            // W3C WebAuthn L3: §8.3 Step 2: Verify that certInfo is a valid TPMT_CERTIFY_INFO structure and magic is TPM_GENERATED_VALUE
             if (magic != TPM_GENERATED_VALUE) {
                 return ValidationResult.Invalid(
                     listOf(WebAuthnValidationError.InvalidValue("certInfo", "Invalid magic: ${Integer.toHexString(magic)}")),
@@ -117,6 +123,8 @@ internal class TpmAttestationStatementVerifier(
                     listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
                 )
             val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
+            
+            // W3C WebAuthn L3: §8.3 Step 3: Verify that extraData is equal to the hash of authData and clientDataHash
             val expectedHash = SignumPrimitives.sha256(authDataBytes + clientDataHash)
             if (!Arrays.equals(extraData, expectedHash)) {
                 return ValidationResult.Invalid(
