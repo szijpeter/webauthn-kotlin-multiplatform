@@ -21,8 +21,12 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.cbor.ByteString
+import kotlinx.serialization.cbor.Cbor
+import kotlinx.serialization.decodeFromByteArray
 
 /**
  * DTO for the /.well-known/webauthn file used by the Related Origins extension.
@@ -502,13 +506,17 @@ public object WebAuthnDtoMapper {
                 if (authenticatorData is ValidationResult.Invalid) {
                     return authenticatorData
                 }
+                val clientDataValue = (clientData as ValidationResult.Valid).value
+                val signatureValue = (signature as ValidationResult.Valid).value
+                val authenticatorDataValue = (authenticatorData as ValidationResult.Valid).value
                 val parsedAuthData = parseAuthenticatorData(
-                    bytes = (authenticatorData as ValidationResult.Valid).value.bytes(),
+                    bytes = authenticatorDataValue.bytes(),
                     field = "response.authenticatorData",
                 )
                 if (parsedAuthData is ValidationResult.Invalid) {
                     return parsedAuthData
                 }
+                val parsedAuthDataValue = (parsedAuthData as ValidationResult.Valid).value
 
                 val parsedUserHandle = when (val userHandle = value.response.userHandle) {
                     null -> null
@@ -535,10 +543,10 @@ public object WebAuthnDtoMapper {
                 ValidationResult.Valid(
                     AuthenticationResponse(
                         credentialId = credentialId.value,
-                        clientDataJson = (clientData as ValidationResult.Valid).value,
-                        rawAuthenticatorData = (authenticatorData as ValidationResult.Valid).value,
-                        authenticatorData = (parsedAuthData as ValidationResult.Valid).value.authenticatorData,
-                        signature = (signature as ValidationResult.Valid).value,
+                        clientDataJson = clientDataValue,
+                        rawAuthenticatorData = authenticatorDataValue,
+                        authenticatorData = parsedAuthDataValue.authenticatorData,
+                        signature = signatureValue,
                         userHandle = parsedUserHandle,
                         authenticatorAttachment = authenticatorAttachment,
                         extensions = extensions,
@@ -905,6 +913,19 @@ private data class ParsedAuthenticatorData(
     val attestedCredentialData: AttestedCredentialData?,
 )
 
+@OptIn(ExperimentalSerializationApi::class)
+private val attestationObjectCbor = Cbor {
+    ignoreUnknownKeys = true
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+private data class AttestationObjectCborDto(
+    @SerialName("authData")
+    @ByteString
+    val authData: ByteArray? = null,
+)
+
 private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationResult<ParsedAuthenticatorData> {
     if (bytes.size < 37) {
         return ValidationResult.Invalid(
@@ -979,25 +1000,15 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
     )
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 private fun extractAuthDataFromAttestationObject(attestationObject: ByteArray): ByteArray? {
-    var offset = 0
-    val mapHeader = readCborHeader(attestationObject, offset) ?: return null
-    if (mapHeader.majorType != MAJOR_MAP || mapHeader.length == null) {
+    val itemEnd = skipCborItem(attestationObject, 0) ?: return null
+    if (itemEnd != attestationObject.size) {
         return null
     }
-    offset = mapHeader.nextOffset
-
-    repeat(mapHeader.length.toInt()) {
-        val key = readCborText(attestationObject, offset) ?: return null
-        offset = key.second
-        if (key.first == "authData") {
-            val authData = readCborByteString(attestationObject, offset) ?: return null
-            offset = authData.second
-            return authData.first
-        }
-        offset = skipCborItem(attestationObject, offset) ?: return null
-    }
-    return null
+    return runCatching {
+        attestationObjectCbor.decodeFromByteArray<AttestationObjectCborDto>(attestationObject).authData
+    }.getOrNull()
 }
 
 private data class CborHeader(
@@ -1012,7 +1023,7 @@ private fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     val initial = bytes[offset].toInt() and 0xFF
     val majorType = (initial ushr 5) and 0x07
     val additionalInfo = initial and 0x1F
-    val lengthResult = readCborLength(bytes, offset + 1, additionalInfo) ?: return null
+    val lengthResult = readCborLength(bytes, offset + 1, majorType, additionalInfo) ?: return null
     return CborHeader(
         majorType = majorType,
         additionalInfo = additionalInfo,
@@ -1021,53 +1032,36 @@ private fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     )
 }
 
-private fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
+private fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additionalInfo: Int): Pair<Long?, Int>? {
     return when {
-        additionalInfo in 0..23 -> additionalInfo.toLong() to offset
-        additionalInfo == 24 -> if (offset + 1 <= bytes.size) {
-            (bytes[offset].toInt() and 0xFF).toLong() to (offset + 1)
-        } else {
-            null
+        additionalInfo < 24 -> additionalInfo.toLong() to offset
+        additionalInfo == 24 -> {
+            if (offset + 1 > bytes.size) return null
+            val value = (bytes[offset].toInt() and 0xFF).toLong()
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 24) return null
+            value to (offset + 1)
         }
-
-        additionalInfo == 25 -> if (offset + 2 <= bytes.size) {
-            bytes.readUint16(offset).toLong() to (offset + 2)
-        } else {
-            null
+        additionalInfo == 25 -> {
+            if (offset + 2 > bytes.size) return null
+            val value = bytes.readUint16(offset).toLong()
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 256) return null
+            value to (offset + 2)
         }
-
-        additionalInfo == 26 -> if (offset + 4 <= bytes.size) {
-            bytes.readUint32(offset) to (offset + 4)
-        } else {
-            null
+        additionalInfo == 26 -> {
+            if (offset + 4 > bytes.size) return null
+            val value = bytes.readUint32(offset)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 65536) return null
+            value to (offset + 4)
         }
-
-        additionalInfo == 27 -> if (offset + 8 <= bytes.size) {
-            bytes.readInt64(offset) to (offset + 8)
-        } else {
-            null
+        additionalInfo == 27 -> {
+            if (offset + 8 > bytes.size) return null
+            val value = bytes.readInt64(offset)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value in 0 until 4294967296L) return null
+            value to (offset + 8)
         }
-
         additionalInfo == 31 -> null to offset
         else -> null
     }
-}
-
-private fun readCborText(bytes: ByteArray, offset: Int): Pair<String, Int>? {
-    val header = readCborHeader(bytes, offset) ?: return null
-    if (header.majorType != MAJOR_TEXT || header.length == null) return null
-    val length = header.length.toInt()
-    if (length < 0 || header.nextOffset + length > bytes.size) return null
-    val value = bytes.copyOfRange(header.nextOffset, header.nextOffset + length).decodeToString()
-    return value to (header.nextOffset + length)
-}
-
-private fun readCborByteString(bytes: ByteArray, offset: Int): Pair<ByteArray, Int>? {
-    val header = readCborHeader(bytes, offset) ?: return null
-    if (header.majorType != MAJOR_BYTE_STRING || header.length == null) return null
-    val length = header.length.toInt()
-    if (length < 0 || header.nextOffset + length > bytes.size) return null
-    return bytes.copyOfRange(header.nextOffset, header.nextOffset + length) to (header.nextOffset + length)
 }
 
 private fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
@@ -1101,16 +1095,7 @@ private fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
         }
 
         MAJOR_TAG -> skipCborItem(bytes, header.nextOffset)
-        MAJOR_SIMPLE_FLOAT -> {
-            when (header.additionalInfo) {
-                in 0..23 -> header.nextOffset
-                24 -> if (header.nextOffset + 1 <= bytes.size) header.nextOffset + 1 else null
-                25 -> if (header.nextOffset + 2 <= bytes.size) header.nextOffset + 2 else null
-                26 -> if (header.nextOffset + 4 <= bytes.size) header.nextOffset + 4 else null
-                27 -> if (header.nextOffset + 8 <= bytes.size) header.nextOffset + 8 else null
-                else -> null
-            }
-        }
+        MAJOR_SIMPLE_FLOAT -> if (header.additionalInfo in 0..27) header.nextOffset else null
 
         else -> null
     }

@@ -560,6 +560,53 @@ class AttestationCborParserTest {
         assertEquals(0, result.first.size)
     }
 
+    // ---- Minimal Encoding Tests ----
+
+    @Test
+    fun readCborLengthRejectsNonMinimalOneByteLengthInt() {
+        assertNull(readCborLength(byteArrayOf(0x18, 0x17), 1, MAJOR_UNSIGNED_INT, 24))
+    }
+
+    @Test
+    fun readCborLengthRejectsNonMinimalTwoByteLengthInt() {
+        assertNull(readCborLength(byteArrayOf(0x19, 0x00, 0xFF.toByte()), 1, MAJOR_UNSIGNED_INT, 25))
+    }
+
+    @Test
+    fun readCborLengthRejectsNonMinimalFourByteLengthInt() {
+        assertNull(
+            readCborLength(
+                byteArrayOf(0x1A, 0x00, 0x00, 0xFF.toByte(), 0xFF.toByte()),
+                1,
+                MAJOR_UNSIGNED_INT,
+                26,
+            ),
+        )
+    }
+
+    @Test
+    fun readCborLengthRejectsNonMinimalEightByteLengthInt() {
+        val bytes = byteArrayOf(
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+        )
+        assertNull(readCborLength(bytes, 0, MAJOR_UNSIGNED_INT, 27))
+    }
+
+    @Test
+    fun readCborLengthAcceptsSmallFloatValues() {
+        val result = readCborLength(byteArrayOf(0x00, 0x00), 0, MAJOR_SIMPLE_FLOAT, 25)
+        assertNotNull(result)
+        assertEquals(0L, result.first)
+        assertEquals(2, result.second)
+    }
+
     // ---- CBOR builders for tests ----
 
     private fun cborMap(vararg entries: Pair<String, ByteArray>): ByteArray {

@@ -55,7 +55,7 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
                 if (stmtHeader.majorType != MAJOR_MAP || stmtHeader.length == null) return null
                 attStmtEntryCount = stmtHeader.length.toInt()
                 offset = stmtHeader.nextOffset
-                repeat(attStmtEntryCount!!) {
+                repeat(attStmtEntryCount) {
                     val stmtKey = readCborText(bytes, offset) ?: return null
                     offset = stmtKey.second
                     when (stmtKey.first) {
@@ -116,8 +116,8 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
 
     return if (fmt != null && attStmtEntryCount != null) {
         ParsedAttestationObject(
-            fmt = fmt!!,
-            attStmtEntryCount = attStmtEntryCount!!,
+            fmt = fmt,
+            attStmtEntryCount = attStmtEntryCount,
             authDataBytes = authDataBytes,
             alg = alg,
             sig = sig,
@@ -146,7 +146,7 @@ internal fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     val initial = bytes[offset].toInt() and 0xFF
     val majorType = (initial ushr 5) and 0x07
     val additionalInfo = initial and 0x1F
-    val lengthResult = readCborLength(bytes, offset + 1, additionalInfo) ?: return null
+    val lengthResult = readCborLength(bytes, offset + 1, majorType, additionalInfo) ?: return null
     return CborHeader(
         majorType = majorType,
         additionalInfo = additionalInfo,
@@ -155,21 +155,33 @@ internal fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     )
 }
 
-internal fun readCborLength(bytes: ByteArray, offset: Int, additionalInfo: Int): Pair<Long?, Int>? {
+internal fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additionalInfo: Int): Pair<Long?, Int>? {
     return when {
-        additionalInfo in 0..23 -> additionalInfo.toLong() to offset
-        additionalInfo == 24 -> if (offset + 1 <= bytes.size) {
-            (bytes[offset].toInt() and 0xFF).toLong() to (offset + 1)
-        } else null
-        additionalInfo == 25 -> if (offset + 2 <= bytes.size) {
-            bytes.readUint16(offset).toLong() to (offset + 2)
-        } else null
-        additionalInfo == 26 -> if (offset + 4 <= bytes.size) {
-            bytes.readUint32(offset) to (offset + 4)
-        } else null
-        additionalInfo == 27 -> if (offset + 8 <= bytes.size) {
-            bytes.readUint64(offset) to (offset + 8)
-        } else null
+        additionalInfo < 24 -> additionalInfo.toLong() to offset
+        additionalInfo == 24 -> {
+            if (offset + 1 > bytes.size) return null
+            val value = (bytes[offset].toInt() and 0xFF).toLong()
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 24) return null
+            value to (offset + 1)
+        }
+        additionalInfo == 25 -> {
+            if (offset + 2 > bytes.size) return null
+            val value = bytes.readUint16(offset).toLong()
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 256) return null
+            value to (offset + 2)
+        }
+        additionalInfo == 26 -> {
+            if (offset + 4 > bytes.size) return null
+            val value = bytes.readUint32(offset)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value < 65536) return null
+            value to (offset + 4)
+        }
+        additionalInfo == 27 -> {
+            if (offset + 8 > bytes.size) return null
+            val value = bytes.readUint64(offset)
+            if (majorType != MAJOR_SIMPLE_FLOAT && value in 0 until 4294967296L) return null
+            value to (offset + 8)
+        }
         additionalInfo == 31 -> null to offset
         else -> null
     }
@@ -232,7 +244,7 @@ internal fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
             next
         }
         MAJOR_TAG -> skipCborItem(bytes, header.nextOffset)
-        MAJOR_SIMPLE_FLOAT -> header.nextOffset
+        MAJOR_SIMPLE_FLOAT -> if (header.additionalInfo in 0..27) header.nextOffset else null
         else -> null
     }
 }
