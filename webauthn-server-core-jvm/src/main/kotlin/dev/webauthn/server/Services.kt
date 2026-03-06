@@ -80,6 +80,9 @@ public class RegistrationService(
         )
     }
 
+    /**
+     * W3C WebAuthn L3: §7.1. Registering a New Credential
+     */
     public suspend fun finish(
         request: RegistrationFinishRequest,
     ): ValidationResult<RegistrationResponse> {
@@ -136,6 +139,7 @@ public class RegistrationService(
         }
 
         val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
+        // W3C WebAuthn L3: §7.1 Step 14: Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
         if (!response.rawAuthenticatorData.rpIdHash.contentEquals(rpHashExpected)) {
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
@@ -220,6 +224,9 @@ public class AuthenticationService(
         )
     }
 
+    /**
+     * W3C WebAuthn L3: §7.2. Verifying an Authentication Assertion
+     */
     public suspend fun finish(request: AuthenticationFinishRequest): ValidationResult<AuthenticationResponse> {
         val parsed = parseAuthenticationResponse(request)
         if (parsed is ValidationResult.Invalid) {
@@ -273,10 +280,12 @@ public class AuthenticationService(
         }
 
         val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
+        // W3C WebAuthn L3: §7.2 Step 19: Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
         if (!response.authenticatorData.rpIdHash.contentEquals(rpHashExpected)) {
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
 
+        // W3C WebAuthn L3: §7.2 Step 23: Verify that the sig is a valid signature over the binary concatenation of authData and hash.
         val signedData = signedAuthenticationData(response)
         val signatureOk = CoseAlgorithm.entries.any { algorithm ->
             signatureVerifier.verify(

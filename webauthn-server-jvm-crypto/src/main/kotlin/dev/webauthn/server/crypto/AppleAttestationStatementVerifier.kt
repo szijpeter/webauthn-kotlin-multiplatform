@@ -6,6 +6,9 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
 
+/**
+ * W3C WebAuthn L3: §8.8. Apple Anonymous Attestation Statement Format
+ */
 internal class AppleAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = DefaultTrustChainVerifier,
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
@@ -55,6 +58,8 @@ internal class AppleAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
             )
         val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
+        
+        // W3C WebAuthn L3: §8.8 Step 1: Verify that nonce equals the value of SHA-256( authData || clientDataHash )
         val nonce = SignumPrimitives.sha256(authDataBytes + clientDataHash)
 
         val extensionValue = try {
@@ -84,6 +89,7 @@ internal class AppleAttestationStatementVerifier(
             )
         }
 
+        // W3C WebAuthn L3: §8.8 Step 2: Verify that credential public key matches the public key in the attestation certificate
         val credPubKeyBytes = input.response.attestedCredentialData.cosePublicKey
         if (credPubKeyBytes.isNotEmpty()) {
             val metadata = SignumPrimitives.decodeCoseMaterial(credPubKeyBytes)

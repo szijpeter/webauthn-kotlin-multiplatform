@@ -19,6 +19,10 @@ public enum class CeremonyType {
     AUTHENTICATION,
 }
 
+/**
+ * Represents the state required to bridge WebAuthn Level 3 Registration/Authentication
+ * ceremonies across disparate request lifecycles.
+ */
 public data class ChallengeSession(
     public val challenge: Challenge,
     public val rpId: RpId,

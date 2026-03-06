@@ -14,6 +14,11 @@ public enum class UserVerificationPolicy {
 }
 
 public object WebAuthnCoreValidator {
+    /**
+     * W3C WebAuthn L3:
+     * - §7.1. Registering a New Credential (Steps 7, 8, 9, 10, 11)
+     * - §7.2. Verifying an Authentication Assertion (Steps 10, 11, 12, 13, 14, 15)
+     */
     public fun validateClientData(
         clientData: CollectedClientData,
         expectedType: String,
@@ -23,6 +28,8 @@ public object WebAuthnCoreValidator {
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
+        // W3C WebAuthn L3 §7.1 Step 8 / §7.2 Step 11: Verify that the value of
+        // C.type is webauthn.create or webauthn.get.
         if (clientData.type != expectedType) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.type",
@@ -30,6 +37,8 @@ public object WebAuthnCoreValidator {
             )
         }
 
+        // W3C WebAuthn L3 §7.1 Step 9 / §7.2 Step 12: Verify that the value of
+        // C.challenge equals the base64url encoding of options.challenge.
         if (clientData.challenge.value.encoded() != expectedChallenge) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.challenge",
@@ -37,6 +46,8 @@ public object WebAuthnCoreValidator {
             )
         }
 
+        // W3C WebAuthn L3 §7.1 Step 10 / §7.2 Step 13: Verify that the value of
+        // C.origin matches the Relying Party's origin (including related origins).
         val validOrigins = setOf(expectedOrigin) + allowedOrigins
         if (!validOrigins.contains(clientData.origin)) {
             errors += WebAuthnValidationError.InvalidValue(
@@ -112,6 +123,11 @@ public object WebAuthnCoreValidator {
         )
     }
 
+    /**
+     * W3C WebAuthn L3:
+     * - §7.1. Registering a New Credential (Steps 14, 15, 16)
+     * - §7.2. Verifying an Authentication Assertion (Steps 18, 19, 20, 21, 22, 23, 24)
+     */
     public fun validateAuthenticatorData(
         data: AuthenticatorData,
         previousSignCount: Long,
@@ -126,6 +142,7 @@ public object WebAuthnCoreValidator {
             )
         }
 
+        // W3C WebAuthn L3 §7.1 Step 15 / §7.2 Step 20: Verify that the User Presence bit of the flags in authData is set.
         val upSet = (data.flags and USER_PRESENCE_FLAG) != 0
         if (!upSet) {
             errors += WebAuthnValidationError.InvalidValue(
@@ -134,6 +151,7 @@ public object WebAuthnCoreValidator {
             )
         }
 
+        // W3C WebAuthn L3 §7.2 Step 21: If user verification is required, verify that the User Verification bit of the flags in authData is set.
         if (uvPolicy == UserVerificationPolicy.REQUIRED) {
             val uvSet = (data.flags and USER_VERIFICATION_FLAG) != 0
             if (!uvSet) {
@@ -144,6 +162,7 @@ public object WebAuthnCoreValidator {
             }
         }
 
+        // W3C WebAuthn L3 §7.1 Step 16 / §7.2 Step 22: Verify that the "backup eligibility" and "backup state" bits match.
         val beSet = (data.flags and BACKUP_ELIGIBLE_FLAG) != 0
         val bsSet = (data.flags and BACKUP_STATE_FLAG) != 0
         if (bsSet && !beSet) {
@@ -153,6 +172,7 @@ public object WebAuthnCoreValidator {
             )
         }
 
+        // W3C WebAuthn L3 §7.2 Step 24: Verify that the signature counter value is strictly greater than the stored counter.
         if (previousSignCount > 0 && data.signCount > 0 && data.signCount <= previousSignCount) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "authenticatorData.signCount",

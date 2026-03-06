@@ -54,6 +54,10 @@ internal class AuthenticationServicesAuthorizationBridge(
 ) : IosAuthorizationBridge {
     private val activeDelegates = mutableSetOf<Any>()
 
+    /**
+     * W3C WebAuthn L3: §5.1.3. Create a New Credential
+     * Maps to Apple ASAuthorizationPlatformPublicKeyCredentialProvider createCredentialRegistrationRequestWithChallenge
+     */
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
         return runAuthorizationRequest(
             buildRequests = {
@@ -117,6 +121,10 @@ internal class AuthenticationServicesAuthorizationBridge(
         )
     }
 
+    /**
+     * W3C WebAuthn L3: §5.1.4. Use an Existing Credential to Make an Assertion
+     * Maps to Apple ASAuthorizationPlatformPublicKeyCredentialProvider createCredentialAssertionRequestWithChallenge
+     */
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload {
         return runAuthorizationRequest(
             buildRequests = {

@@ -22,6 +22,7 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
+        // W3C WebAuthn L3: §9.2.2. Large blob storage extension (largeBlob)
         // 1. LargeBlob validation
         if (inputs?.largeBlob?.support == LargeBlobExtensionInput.LargeBlobSupport.REQUIRED) {
             val supported = outputs?.largeBlob?.supported ?: false
@@ -33,6 +34,7 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
             }
         }
 
+        // W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf)
         // 2. PRF validation
         val prfInput = inputs?.prf
         if (prfInput != null) {
@@ -63,6 +65,7 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
+        // W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf)
         // 1. PRF validation
         val prfInput = inputs?.prf
         if (prfInput?.eval != null || prfInput?.evalByCredential != null) {

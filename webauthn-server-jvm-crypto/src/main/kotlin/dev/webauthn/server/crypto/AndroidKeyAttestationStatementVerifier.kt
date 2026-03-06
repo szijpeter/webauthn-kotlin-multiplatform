@@ -8,6 +8,9 @@ import dev.webauthn.model.WebAuthnValidationError
 import java.math.BigInteger
 import java.util.Arrays
 
+/**
+ * W3C WebAuthn L3: §8.4. Android Key Attestation Statement Format
+ */
 internal class AndroidKeyAttestationStatementVerifier(
     private val trustChainVerifier: TrustChainVerifier? = null,
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
@@ -56,6 +59,8 @@ internal class AndroidKeyAttestationStatementVerifier(
             )
 
         val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
+        
+        // W3C WebAuthn L3: §8.4 Step 1: Verify sig is a valid signature over the concatenation of authData and clientDataHash
         val signedData = authData + clientDataHash
         val coseAlgorithm = coseAlgorithmFromCode(attestationObject.alg.toInt())
             ?: return ValidationResult.Invalid(
@@ -74,6 +79,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             )
         }
 
+        // W3C WebAuthn L3: §8.4 Steps 2-5: Certificate validation including finding the root cert
         if (trustChainVerifier != null) {
             val aaguid = input.response.attestedCredentialData.aaguid
             val chainResult = trustChainVerifier.verify(certsDer, aaguid)
@@ -113,6 +119,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             sequence.readInteger()
             val challenge = sequence.readOctetString()
 
+            // W3C WebAuthn L3: §8.4 Step 5.2: Verify that the attestationChallenge field in the attestation certificate extension data is identical to clientDataHash
             if (!Arrays.equals(challenge, clientDataHash)) {
                 return ValidationResult.Invalid(
                     listOf(WebAuthnValidationError.InvalidValue("attestationChallenge", "Challenge mismatch in attestation certificate")),
@@ -126,6 +133,8 @@ internal class AndroidKeyAttestationStatementVerifier(
             val teeTags = parseAuthorizationList(teeEnforcedSeq)
 
             val allTags = swTags + teeTags
+            
+            // W3C WebAuthn L3: §8.4 Step 5.4 to 5.6: Check AuthorizationList contents
             checkKeyRequirements(allTags, metadata)
         } catch (e: Exception) {
             return ValidationResult.Invalid(
