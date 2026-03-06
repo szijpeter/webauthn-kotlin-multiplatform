@@ -88,7 +88,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     requests.add(request)
                 }
 
-                require(requests.isNotEmpty()) { "No ASAuthorization providers available for the requested authenticatorAttachment" }
+                check(requests.isNotEmpty()) { "No ASAuthorization providers available for the requested authenticatorAttachment" }
                 requests
             },
             extractPayload = { credential ->
@@ -144,7 +144,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     requests.add(request)
                 }
 
-                require(requests.isNotEmpty()) { "No ASAuthorization providers available" }
+                check(requests.isNotEmpty()) { "No ASAuthorization providers available" }
                 requests
             },
             extractPayload = { credential ->
