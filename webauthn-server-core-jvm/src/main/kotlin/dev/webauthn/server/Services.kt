@@ -45,6 +45,7 @@ public class RegistrationService(
                 expiresAtEpochMs = challengeExpirationEpochMs(nowEpochMs, request.timeoutMs),
                 type = CeremonyType.REGISTRATION,
                 extensions = request.extensions,
+                userVerification = request.userVerification,
             ),
         )
 
@@ -126,6 +127,7 @@ public class RegistrationService(
                 clientData = request.clientData,
                 expectedOrigin = session.origin,
                 allowedOrigins = allowedOrigins,
+                userVerificationPolicy = session.userVerification.toPolicy(),
             ),
         )
 
@@ -200,6 +202,7 @@ public class AuthenticationService(
                 expiresAtEpochMs = challengeExpirationEpochMs(nowEpochMs, request.timeoutMs),
                 type = CeremonyType.AUTHENTICATION,
                 extensions = request.extensions,
+                userVerification = request.userVerification,
             ),
         )
 
@@ -261,6 +264,7 @@ public class AuthenticationService(
                 expectedOrigin = session.origin,
                 allowedOrigins = allowedOrigins,
                 previousSignCount = storedCredential.signCount,
+                userVerificationPolicy = session.userVerification.toPolicy(),
             ),
         )
 
@@ -310,5 +314,14 @@ public class AuthenticationService(
 private object UserAccountStoreLookup {
     suspend fun findRequired(store: UserAccountStore, name: String): UserAccount {
         return requireNotNull(store.findByName(name)) { "User not found in account store: $name" }
+    }
+}
+
+private fun dev.webauthn.model.UserVerificationRequirement?.toPolicy(): dev.webauthn.core.UserVerificationPolicy {
+    return when (this) {
+        dev.webauthn.model.UserVerificationRequirement.REQUIRED -> dev.webauthn.core.UserVerificationPolicy.REQUIRED
+        dev.webauthn.model.UserVerificationRequirement.PREFERRED -> dev.webauthn.core.UserVerificationPolicy.PREFERRED
+        dev.webauthn.model.UserVerificationRequirement.DISCOURAGED -> dev.webauthn.core.UserVerificationPolicy.DISCOURAGED
+        null -> dev.webauthn.core.UserVerificationPolicy.PREFERRED
     }
 }

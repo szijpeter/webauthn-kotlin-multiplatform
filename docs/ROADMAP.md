@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-03-05
+Last updated: 2026-03-06
 
 ## North-Star Exit Criteria
 
@@ -46,6 +46,8 @@ Definition of done:
 1. Strengthen registration/authentication finish-path invariants.
 2. Add replay, race, and persistence-oriented scenarios (in-memory and H2-backed store contracts done).
 3. Expand server-ktor integration coverage.
+4. JetBrains Exposed store module (`webauthn-server-store-exposed`) with `ExposedChallengeStore`, `ExposedCredentialStore`, `ExposedUserAccountStore` (done).
+5. Strict UV policy coverage: `ChallengeSession` persists `userVerification`, `Services.kt` maps to `UserVerificationPolicy` for core validator (done).
 
 Definition of done:
 
@@ -77,3 +79,4 @@ Definition of done:
 2. Expand client extension interop tests (PRF, Large Blob, authenticatorAttachment/transports round-trip) (done).
 3. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
 4. Implement iOS external security-key provider bridging and enable `supportsSecurityKey` only after end-to-end support exists (done).
+5. Finalize API surface and lock public `expect/actual` or interface contracts.

@@ -21,9 +21,17 @@ internal data class SafetyNetJwsPayload(
 )
 
 internal class AndroidSafetyNetAttestationStatementVerifier(
-    private val trustChainVerifier: TrustChainVerifier? = null,
+    private val trustChainVerifier: TrustChainVerifier? = DefaultTrustChainVerifier,
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
+
+    companion object {
+        val DefaultTrustChainVerifier: TrustChainVerifier by lazy {
+            TrustChainVerifier(
+                StaticTrustAnchorSource.fromResourcePath("/safetynet/gs_root_r2.pem")
+            )
+        }
+    }
 
     private val json = Json {
         ignoreUnknownKeys = true

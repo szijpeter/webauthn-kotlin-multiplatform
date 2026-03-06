@@ -28,6 +28,7 @@ public data class ChallengeSession(
     public val expiresAtEpochMs: Long,
     public val type: CeremonyType,
     public val extensions: AuthenticationExtensionsClientInputs? = null,
+    public val userVerification: dev.webauthn.model.UserVerificationRequirement? = null,
 )
 
 

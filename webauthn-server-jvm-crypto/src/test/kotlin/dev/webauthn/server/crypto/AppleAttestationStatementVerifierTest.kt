@@ -40,7 +40,9 @@ class AppleAttestationStatementVerifierTest {
             x5c = listOf(attCert)
         )
 
-        val verifier = AppleAttestationStatementVerifier()
+        val verifier = AppleAttestationStatementVerifier(
+            trustChainVerifier = TrustChainVerifier { _ -> listOf(attCert) }
+        )
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
         
@@ -61,7 +63,9 @@ class AppleAttestationStatementVerifierTest {
             x5c = listOf(attCert)
         )
 
-        val verifier = AppleAttestationStatementVerifier()
+        val verifier = AppleAttestationStatementVerifier(
+            trustChainVerifier = TrustChainVerifier { _ -> listOf(attCert) }
+        )
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
         
@@ -76,7 +80,7 @@ class AppleAttestationStatementVerifierTest {
         val attestationObject = buildAppleAttestationObject(
             x5c = emptyList()
         )
-        val verifier = AppleAttestationStatementVerifier()
+        val verifier = AppleAttestationStatementVerifier(trustChainVerifier = null)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, ByteArray(0))
         val result = verifier.verify(input)
 
@@ -97,7 +101,7 @@ class AppleAttestationStatementVerifierTest {
             x5c = listOf(attCert)
         )
 
-        val verifier = AppleAttestationStatementVerifier()
+        val verifier = AppleAttestationStatementVerifier(trustChainVerifier = null)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
         
@@ -108,6 +112,7 @@ class AppleAttestationStatementVerifierTest {
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = AppleAttestationStatementVerifier(
+            trustChainVerifier = null,
             certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateES256KeyPair()
@@ -145,7 +150,9 @@ class AppleAttestationStatementVerifierTest {
             x5c = listOf(attCert)
         )
 
-        val verifier = AppleAttestationStatementVerifier()
+        val verifier = AppleAttestationStatementVerifier(
+            trustChainVerifier = TrustChainVerifier { _ -> listOf(attCert) }
+        )
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
         

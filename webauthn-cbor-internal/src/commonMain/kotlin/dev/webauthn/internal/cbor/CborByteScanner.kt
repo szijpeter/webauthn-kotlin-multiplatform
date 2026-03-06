@@ -89,7 +89,8 @@ public fun readCborInt(bytes: ByteArray, offset: Int): Pair<Long, Int>? {
     }
 }
 
-public fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
+public fun skipCborItem(bytes: ByteArray, offset: Int, depth: Int = 0): Int? {
+    if (depth > 32) return null
     val header = readCborHeader(bytes, offset) ?: return null
     return when (header.majorType) {
         MAJOR_UNSIGNED_INT, MAJOR_NEGATIVE_INT -> header.nextOffset
@@ -97,13 +98,13 @@ public fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
             val length = header.length?.toInt() ?: return null
             val end = header.nextOffset + length
             if (end > bytes.size) return null
-            end
+            return end
         }
 
         MAJOR_ARRAY -> {
             val count = header.length?.toInt() ?: return null
             var next = header.nextOffset
-            repeat(count) { next = skipCborItem(bytes, next) ?: return null }
+            repeat(count) { next = skipCborItem(bytes, next, depth + 1) ?: return null }
             next
         }
 
@@ -111,13 +112,13 @@ public fun skipCborItem(bytes: ByteArray, offset: Int): Int? {
             val count = header.length?.toInt() ?: return null
             var next = header.nextOffset
             repeat(count) {
-                next = skipCborItem(bytes, next) ?: return null
-                next = skipCborItem(bytes, next) ?: return null
+                next = skipCborItem(bytes, next, depth + 1) ?: return null
+                next = skipCborItem(bytes, next, depth + 1) ?: return null
             }
             next
         }
 
-        MAJOR_TAG -> skipCborItem(bytes, header.nextOffset)
+        MAJOR_TAG -> skipCborItem(bytes, header.nextOffset, depth + 1)
         MAJOR_SIMPLE_FLOAT -> if (header.additionalInfo in 0..27) header.nextOffset else null
         else -> null
     }
