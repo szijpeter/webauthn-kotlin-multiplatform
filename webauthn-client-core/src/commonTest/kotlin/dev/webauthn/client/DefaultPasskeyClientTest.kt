@@ -6,7 +6,6 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
-import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
@@ -14,21 +13,26 @@ import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
+import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.AuthenticationExtensionsPRFValues
+import dev.webauthn.model.LargeBlobExtensionOutput
+import dev.webauthn.model.PrfExtensionInput
+import dev.webauthn.model.PublicKeyCredentialCreationOptions
+import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.UserHandle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class DefaultPasskeyClientTest {
+
     @Test
     fun createCredential_rejects_empty_pub_key_params() = runTest {
-        val client = DefaultPasskeyClient(
-            bridge = StaticBridge(
-                createResponse = validRegistrationResponse(),
-                assertionResponse = validAuthenticationResponse(),
-            ),
-        )
+        val client = DefaultPasskeyClient(bridge = TestBridge())
 
         val result = client.createCredential(
             PublicKeyCredentialCreationOptions(
@@ -46,19 +50,10 @@ class DefaultPasskeyClientTest {
     @Test
     fun getAssertion_maps_bridge_failures_with_platform_mapper() = runTest {
         val client = DefaultPasskeyClient(
-            bridge = object : PasskeyPlatformBridge {
-                override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
-                    error("unused")
-                }
-
-                override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
-                    throw IllegalStateException("boom")
-                }
-
-                override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
-                    return PasskeyClientError.Transport("mapped", throwable)
-                }
-            },
+            bridge = TestBridge(
+                assertionAction = { error("boom") },
+                errorMapper = { PasskeyClientError.Transport("mapped", it) },
+            ),
         )
 
         val result = client.getAssertion(
@@ -66,9 +61,9 @@ class DefaultPasskeyClientTest {
                 challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
                 rpId = RpId.parseOrThrow("example.com"),
                 allowCredentials = listOf(
-                    dev.webauthn.model.PublicKeyCredentialDescriptor(
+                    PublicKeyCredentialDescriptor(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
-                        id = dev.webauthn.model.CredentialId.fromBytes(byteArrayOf(1)),
+                        id = CredentialId.fromBytes(byteArrayOf(1)),
                     ),
                 ),
             ),
@@ -82,19 +77,10 @@ class DefaultPasskeyClientTest {
     @Test
     fun createCredential_maps_illegal_argument_to_invalid_options() = runTest {
         val client = DefaultPasskeyClient(
-            bridge = object : PasskeyPlatformBridge {
-                override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
-                    throw IllegalArgumentException("bad options")
-                }
-
-                override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
-                    return validAuthenticationResponse()
-                }
-
-                override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
-                    return PasskeyClientError.Platform("unexpected", throwable)
-                }
-            },
+            bridge = TestBridge(
+                createAction = { throw IllegalArgumentException("bad options") },
+                errorMapper = { PasskeyClientError.Platform("unexpected", it) },
+            ),
         )
 
         val result = client.createCredential(validCreationOptions())
@@ -107,9 +93,7 @@ class DefaultPasskeyClientTest {
     @Test
     fun capabilities_default_to_bridge_values() = runTest {
         val client = DefaultPasskeyClient(
-            bridge = StaticBridge(
-                createResponse = validRegistrationResponse(),
-                assertionResponse = validAuthenticationResponse(),
+            bridge = TestBridge(
                 capabilities = PasskeyCapabilities(
                     supportsPrf = true,
                     platformVersionHints = listOf("test"),
@@ -122,18 +106,82 @@ class DefaultPasskeyClientTest {
         assertEquals(listOf("test"), capabilities.platformVersionHints)
     }
 
-    private class StaticBridge(
-        private val createResponse: RegistrationResponse,
-        private val assertionResponse: AuthenticationResponse,
+    @Test
+    fun createCredential_passes_extensions_to_bridge() = runTest {
+        var passedExtensions: AuthenticationExtensionsClientInputs? = null
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createAction = {
+                    passedExtensions = it.extensions
+                    validRegistrationResponse()
+                },
+            ),
+        )
+
+        val extensions = AuthenticationExtensionsClientInputs(
+            prf = PrfExtensionInput(
+                eval = AuthenticationExtensionsPRFValues(
+                    first = byteArrayOf(1, 2, 3)
+                )
+            )
+        )
+        val result = client.createCredential(validCreationOptions().copy(extensions = extensions))
+
+        assertTrue(result is PasskeyResult.Success)
+        assertNotNull(passedExtensions)
+        assertNotNull(passedExtensions?.prf?.eval)
+        assertContentEquals(byteArrayOf(1, 2, 3), passedExtensions?.prf?.eval?.first)
+    }
+
+    @Test
+    fun getAssertion_maps_extension_results_from_bridge() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                assertionAction = {
+                    validAuthenticationResponse().copy(
+                        extensions = AuthenticationExtensionsClientOutputs(
+                            largeBlob = LargeBlobExtensionOutput(
+                                supported = true,
+                                blob = byteArrayOf(4, 5, 6),
+                            ),
+                        ),
+                    )
+                },
+            ),
+        )
+
+        val result = client.getAssertion(
+            PublicKeyCredentialRequestOptions(
+                challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
+                rpId = RpId.parseOrThrow("example.com"),
+                allowCredentials = listOf(
+                    PublicKeyCredentialDescriptor(
+                        type = PublicKeyCredentialType.PUBLIC_KEY,
+                        id = CredentialId.fromBytes(byteArrayOf(1)),
+                    ),
+                ),
+            ),
+        )
+
+        assertTrue(result is PasskeyResult.Success)
+        val extensions = result.value.extensions
+        assertNotNull(extensions)
+        assertNotNull(extensions.largeBlob)
+        assertEquals(extensions.largeBlob?.supported, true)
+        assertContentEquals(byteArrayOf(4, 5, 6), extensions.largeBlob?.blob)
+    }
+
+    private class TestBridge(
+        private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RegistrationResponse = { validRegistrationResponse() },
+        private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> AuthenticationResponse = { validAuthenticationResponse() },
+        private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform", it) },
         private val capabilities: PasskeyCapabilities = PasskeyCapabilities(),
     ) : PasskeyPlatformBridge {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse = createResponse
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse = createAction(options)
 
-        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse = assertionResponse
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse = assertionAction(options)
 
-        override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
-            return PasskeyClientError.Platform(throwable.message ?: "platform", throwable)
-        }
+        override fun mapPlatformError(throwable: Throwable): PasskeyClientError = errorMapper(throwable)
 
         override suspend fun capabilities(): PasskeyCapabilities = capabilities
     }

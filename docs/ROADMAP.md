@@ -74,6 +74,6 @@ Definition of done:
 ## Active Priorities (Next 3)
 
 1. Finish client-first execution docs and sample wiring for external/default backend flows.
-2. Expand client extension interop tests (PRF, Large Blob, authenticatorAttachment/transports round-trip).
+2. Expand client extension interop tests (PRF, Large Blob, authenticatorAttachment/transports round-trip) (done).
 3. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
-4. Implement iOS external security-key provider bridging and enable `supportsSecurityKey` only after end-to-end support exists.
+4. Implement iOS external security-key provider bridging and enable `supportsSecurityKey` only after end-to-end support exists (done).

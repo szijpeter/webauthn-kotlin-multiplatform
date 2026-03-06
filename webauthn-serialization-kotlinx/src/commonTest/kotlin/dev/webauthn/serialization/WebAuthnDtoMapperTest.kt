@@ -7,6 +7,8 @@ import dev.webauthn.model.CredentialId
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.AuthenticatorAttachment
+import dev.webauthn.model.AuthenticatorTransport
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -309,6 +311,90 @@ class WebAuthnDtoMapperTest {
 
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun creationOptionsAndRequestOptionsParseTransports() {
+        val createDto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto("example.com", "Example"),
+            user = UserEntityDto("YWFhYWFhYWFhYWFhYWFhYQ", "alice", "Alice"),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto("public-key", -7)),
+            excludeCredentials = listOf(
+                PublicKeyCredentialDescriptorDto("public-key", "YWFhYWFhYWFhYWFhYWFhYQ", listOf("usb", "nfc"))
+            )
+        )
+        val createResult = WebAuthnDtoMapper.toModel(createDto)
+        assertTrue(createResult is ValidationResult.Valid)
+        assertEquals(1, createResult.value.excludeCredentials.size)
+        assertEquals(2, createResult.value.excludeCredentials[0].transports.size)
+        assertEquals(AuthenticatorTransport.USB, createResult.value.excludeCredentials[0].transports[0])
+        assertEquals(AuthenticatorTransport.NFC, createResult.value.excludeCredentials[0].transports[1])
+
+        val requestDto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = "example.com",
+            allowCredentials = listOf(
+                PublicKeyCredentialDescriptorDto("public-key", "YWFhYWFhYWFhYWFhYWFhYQ", listOf("ble", "internal", "hybrid"))
+            )
+        )
+        val requestResult = WebAuthnDtoMapper.toModel(requestDto)
+        assertTrue(requestResult is ValidationResult.Valid)
+        assertEquals(1, requestResult.value.allowCredentials.size)
+        assertEquals(3, requestResult.value.allowCredentials[0].transports.size)
+        assertEquals(AuthenticatorTransport.BLE, requestResult.value.allowCredentials[0].transports[0])
+        assertEquals(AuthenticatorTransport.INTERNAL, requestResult.value.allowCredentials[0].transports[1])
+        assertEquals(AuthenticatorTransport.HYBRID, requestResult.value.allowCredentials[0].transports[2])
+    }
+
+    @Test
+    fun authenticationResponseParsesAuthenticatorAttachment() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val authenticatorData = authenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x22 },
+            flags = 0x05,
+            signCount = 42,
+        )
+        val dto = AuthenticationResponseDto(
+            id = credentialId.value.encoded(),
+            rawId = credentialId.value.encoded(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                authenticatorData = Base64UrlBytes.fromBytes(authenticatorData).encoded(),
+                signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+            ),
+            authenticatorAttachment = "cross-platform",
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(AuthenticatorAttachment.CROSS_PLATFORM, result.value.authenticatorAttachment)
+    }
+
+    @Test
+    fun registrationResponseParsesAuthenticatorAttachment() {
+        val credentialBytes = ByteArray(16) { 0x33 }
+        val authData = registrationAuthenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x44 },
+            flags = 0x41,
+            signCount = 9,
+            credentialId = credentialBytes,
+            cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+        )
+        val attestationObject = attestationObjectWithAuthData(authData)
+        val dto = RegistrationResponseDto(
+            id = Base64UrlBytes.fromBytes(credentialBytes).encoded(),
+            rawId = Base64UrlBytes.fromBytes(credentialBytes).encoded(),
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)).encoded(),
+                attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+            ),
+            authenticatorAttachment = "platform",
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(AuthenticatorAttachment.PLATFORM, result.value.authenticatorAttachment)
     }
 
     private fun authenticatorDataBytes(
