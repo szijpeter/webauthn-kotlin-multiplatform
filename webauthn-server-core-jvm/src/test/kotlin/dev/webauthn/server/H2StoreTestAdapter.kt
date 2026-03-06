@@ -60,7 +60,8 @@ internal class H2StoreTestAdapter private constructor(
                         origin_value VARCHAR NOT NULL,
                         user_name VARCHAR NOT NULL,
                         created_at_epoch_ms BIGINT NOT NULL,
-                        expires_at_epoch_ms BIGINT NOT NULL
+                        expires_at_epoch_ms BIGINT NOT NULL,
+                        user_verification VARCHAR
                     )
                     """.trimIndent(),
                 )
@@ -97,7 +98,7 @@ private class H2ChallengeStore(
             connection.prepareStatement(
                 """
                 MERGE INTO challenge_sessions KEY(challenge_key)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(),
             ).use { statement ->
                 statement.setString(1, key(session.challenge, session.type))
@@ -108,6 +109,7 @@ private class H2ChallengeStore(
                 statement.setString(6, session.userName)
                 statement.setLong(7, session.createdAtEpochMs)
                 statement.setLong(8, session.expiresAtEpochMs)
+                statement.setString(9, session.userVerification?.name)
                 statement.executeUpdate()
             }
         }
@@ -120,7 +122,7 @@ private class H2ChallengeStore(
             try {
                 val session = connection.prepareStatement(
                     """
-                    SELECT challenge_value, ceremony_type, rp_id, origin_value, user_name, created_at_epoch_ms, expires_at_epoch_ms
+                    SELECT challenge_value, ceremony_type, rp_id, origin_value, user_name, created_at_epoch_ms, expires_at_epoch_ms, user_verification
                     FROM challenge_sessions
                     WHERE challenge_key = ?
                     FOR UPDATE
@@ -139,6 +141,7 @@ private class H2ChallengeStore(
                                 createdAtEpochMs = resultSet.getLong("created_at_epoch_ms"),
                                 expiresAtEpochMs = resultSet.getLong("expires_at_epoch_ms"),
                                 type = CeremonyType.valueOf(resultSet.getString("ceremony_type")),
+                                userVerification = resultSet.getString("user_verification")?.let { dev.webauthn.model.UserVerificationRequirement.valueOf(it) },
                             )
                         }
                     }

@@ -15,6 +15,7 @@ Last updated: 2026-03-06
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - JVM server flow is implemented with ceremony orchestration and store contract coverage.
 - Attestation verification includes hardened TPM and Android Key policy checks with expanded tests.
+- Strict UV policy coverage: `ChallengeSession` persists `userVerification`; `Services.kt` maps to `UserVerificationPolicy` for core validator enforcement.
 - JVM crypto remains Signum-first (`supreme` + `indispensable-cosef` + `indispensable-josef`) with JCA only for PKIX/X.509 trust duties.
 - Client architecture moved to shared orchestration in `webauthn-client-core` (`DefaultPasskeyClient`) with thin Android/iOS platform bridges.
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
@@ -29,8 +30,8 @@ Last updated: 2026-03-06
 ## Plan Progress (Estimated)
 
 - Phase 1 (Client readiness/interoperability): ~75% complete.
-- Phase 2 (Conformance/Security): ~75% complete.
-- Phase 3 (Server robustness): ~70% complete.
+- Phase 2 (Conformance/Security): ~85% complete.
+- Phase 3 (Server robustness): ~80% complete.
 - Phase 4-5 (DX/release): mostly pending.
 
 ## Module Maturity
@@ -43,7 +44,8 @@ Last updated: 2026-03-06
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + typed CBOR authData extraction, shared internal CBOR byte scanner usage, strict minimal CBOR/COSE rejection for registration parsing, round-trip tests, attachment/attestation/transports mapping | Deeper COSE/CBOR vector coverage |
 | `webauthn-crypto-api` | Beta | Lean cross-module contracts (`SignatureVerifier`, `AttestationVerifier`, `TrustAnchorSource`, `RpIdHasher`, `CoseAlgorithm`, `coseAlgorithmFromCode`, payload models) | Additional implementations and cross-platform behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | Signum-first crypto path (digest, COSE decode, signature verification, JOSE SafetyNet decode), `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers, deterministic malformed/unsupported COSE rejection vectors, shared internal CBOR byte scanner usage, strict minimal CBOR attestation parsing, unified trust-chain flow through `TrustChainVerifier` | Broader attestation vector and trust-anchor coverage depth |
-| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores | Broader external store implementations beyond H2 contract adapter |
+| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores, strict UV policy mapping through `Services.kt` | Broader external store implementations beyond H2 contract adapter |
+| `webauthn-server-store-exposed` | Beta | JetBrains Exposed store module (`ExposedChallengeStore`, `ExposedCredentialStore`, `ExposedUserAccountStore`), forUpdate() row locking for challenge consumption, database-agnostic via Exposed, H2-backed contract tests + Docker-gated PostgreSQL Testcontainers tests | Additional database vendor testing and production hardening |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Beta | Shared typed ceremony orchestration (`DefaultPasskeyClient`), deterministic invalid-options vs platform error behavior, capability model | More extension-focused policy helpers and fixture coverage |
 | `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable mapper contract (`PasskeyJsonMapper`), default kotlinx mapper | Additional fixture depth and profile-oriented JSON interop coverage |

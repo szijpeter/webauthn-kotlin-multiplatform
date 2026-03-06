@@ -43,4 +43,5 @@ include(
     ":samples:ios-passkey",
     ":samples:compose-passkey",
     ":samples:compose-passkey-android",
+    ":webauthn-server-store-exposed",
 )

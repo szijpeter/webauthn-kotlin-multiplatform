@@ -21,7 +21,9 @@ internal data class SafetyNetJwsPayload(
 )
 
 internal class AndroidSafetyNetAttestationStatementVerifier(
-    private val trustChainVerifier: TrustChainVerifier? = null,
+    private val trustChainVerifier: TrustChainVerifier? = TrustChainVerifier(
+        StaticTrustAnchorSource.fromResourcePath("/safetynet/gs_root_r2.pem")
+    ),
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 

@@ -51,7 +51,9 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val verifier = AndroidSafetyNetAttestationStatementVerifier()
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> listOf(certBytes) }
+        val chainVerifier = TrustChainVerifier(trustSource)
+        val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         
@@ -98,6 +100,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
         val verifier = AndroidSafetyNetAttestationStatementVerifier(
+            trustChainVerifier = null,
             certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateRSA2048KeyPair()
@@ -157,7 +160,9 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val verifier = AndroidSafetyNetAttestationStatementVerifier()
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> listOf(certBytes) }
+        val chainVerifier = TrustChainVerifier(trustSource)
+        val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         

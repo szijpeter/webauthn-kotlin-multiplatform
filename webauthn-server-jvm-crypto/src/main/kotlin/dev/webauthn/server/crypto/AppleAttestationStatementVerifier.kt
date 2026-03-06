@@ -7,7 +7,9 @@ import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
 
 internal class AppleAttestationStatementVerifier(
-    private val trustChainVerifier: TrustChainVerifier? = null,
+    private val trustChainVerifier: TrustChainVerifier? = TrustChainVerifier(
+        StaticTrustAnchorSource.fromResourcePath("/apple/apple_webauthn_root_ca.pem")
+    ),
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 

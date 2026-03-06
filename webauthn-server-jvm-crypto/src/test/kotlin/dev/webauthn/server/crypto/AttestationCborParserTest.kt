@@ -519,6 +519,17 @@ class AttestationCborParserTest {
     }
 
     @Test
+    fun skipCborItemReturnsNullForExceedingDepthLimit() {
+        // Create a nested array of depth 34
+        var bytes = byteArrayOf(0x00) // inner uint(0)
+        for (i in 0..33) {
+            bytes = byteArrayOf(0x81.toByte()) + bytes // array(1)
+        }
+        val result = skipCborItem(bytes, 0)
+        assertNull(result)
+    }
+
+    @Test
     fun readCborHeaderParsesSimpleValueTrue() {
         // CBOR true = major 7 (simple/float), additional info 21
         val header = readCborHeader(byteArrayOf(0xF5.toByte()), 0)
