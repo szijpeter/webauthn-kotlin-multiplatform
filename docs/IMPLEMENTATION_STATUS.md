@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-06
+Last updated: 2024-05-15
 
 ## Status Legend
 
@@ -45,7 +45,7 @@ Last updated: 2026-03-06
 | `webauthn-crypto-api` | Beta | Lean cross-module contracts (`SignatureVerifier`, `AttestationVerifier`, `TrustAnchorSource`, `RpIdHasher`, `CoseAlgorithm`, `coseAlgorithmFromCode`, payload models) | Additional implementations and cross-platform behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | Signum-first crypto path (digest, COSE decode, signature verification, JOSE SafetyNet decode), `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers, deterministic malformed/unsupported COSE rejection vectors, shared internal CBOR byte scanner usage, strict minimal CBOR attestation parsing, unified trust-chain flow through `TrustChainVerifier` | Broader attestation vector and trust-anchor coverage depth |
 | `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores, strict UV policy mapping through `Services.kt` | Broader external store implementations beyond H2 contract adapter |
-| `webauthn-server-store-exposed` | Beta | JetBrains Exposed store module (`ExposedChallengeStore`, `ExposedCredentialStore`, `ExposedUserAccountStore`), forUpdate() row locking for challenge consumption, database-agnostic via Exposed, H2-backed contract tests + Docker-gated PostgreSQL Testcontainers tests | Additional database vendor testing and production hardening |
+| `webauthn-server-store-exposed` | Beta | JetBrains Exposed store module (`ExposedChallengeStore`, `ExposedCredentialStore`, `ExposedUserAccountStore`), forUpdate() row locking for challenge consumption, database-agnostic via Exposed, H2-backed contract tests + Docker-gated PostgreSQL Testcontainers tests, persists `ChallengeSession.extensions` via JSON | Additional database vendor testing and production hardening |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Beta | Shared typed ceremony orchestration (`DefaultPasskeyClient`), deterministic invalid-options vs platform error behavior, capability model | More extension-focused policy helpers and fixture coverage |
 | `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable mapper contract (`PasskeyJsonMapper`), default kotlinx mapper | Additional fixture depth and profile-oriented JSON interop coverage |

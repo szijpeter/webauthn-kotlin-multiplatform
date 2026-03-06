@@ -16,6 +16,7 @@ dependencies {
     testFixturesApi(project(":webauthn-core"))
     testFixturesApi(project(":webauthn-crypto-api"))
     testFixturesApi(project(":webauthn-serialization-kotlinx"))
+    testFixturesApi(libs.kotlinx.serialization.json)
     testFixturesApi(project(":webauthn-server-jvm-crypto"))
     testFixturesApi(libs.kotlinx.coroutines.core)
     testFixturesApi(libs.junit.jupiter)

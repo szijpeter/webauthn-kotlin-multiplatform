@@ -12,6 +12,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
 import java.sql.DriverManager
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 internal class H2StoreTestAdapter private constructor(
     private val jdbcUrl: String,
@@ -61,7 +65,8 @@ internal class H2StoreTestAdapter private constructor(
                         user_name VARCHAR NOT NULL,
                         created_at_epoch_ms BIGINT NOT NULL,
                         expires_at_epoch_ms BIGINT NOT NULL,
-                        user_verification VARCHAR
+                        user_verification VARCHAR,
+                        extensions VARCHAR
                     )
                     """.trimIndent(),
                 )
@@ -98,7 +103,7 @@ private class H2ChallengeStore(
             connection.prepareStatement(
                 """
                 MERGE INTO challenge_sessions KEY(challenge_key)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(),
             ).use { statement ->
                 statement.setString(1, key(session.challenge, session.type))
@@ -110,6 +115,7 @@ private class H2ChallengeStore(
                 statement.setLong(7, session.createdAtEpochMs)
                 statement.setLong(8, session.expiresAtEpochMs)
                 statement.setString(9, session.userVerification?.name)
+                statement.setString(10, session.extensions?.let { Json.encodeToString(WebAuthnDtoMapper.fromModel(it)) })
                 statement.executeUpdate()
             }
         }
@@ -122,7 +128,7 @@ private class H2ChallengeStore(
             try {
                 val session = connection.prepareStatement(
                     """
-                    SELECT challenge_value, ceremony_type, rp_id, origin_value, user_name, created_at_epoch_ms, expires_at_epoch_ms, user_verification
+                    SELECT challenge_value, ceremony_type, rp_id, origin_value, user_name, created_at_epoch_ms, expires_at_epoch_ms, user_verification, extensions
                     FROM challenge_sessions
                     WHERE challenge_key = ?
                     FOR UPDATE
@@ -142,6 +148,13 @@ private class H2ChallengeStore(
                                 expiresAtEpochMs = resultSet.getLong("expires_at_epoch_ms"),
                                 type = CeremonyType.valueOf(resultSet.getString("ceremony_type")),
                                 userVerification = resultSet.getString("user_verification")?.let { dev.webauthn.model.UserVerificationRequirement.valueOf(it) },
+                                extensions = resultSet.getString("extensions")?.let { json ->
+                                    val dto = Json.decodeFromString<AuthenticationExtensionsClientInputsDto>(json)
+                                    when (val res = WebAuthnDtoMapper.toModelValidated(dto)) {
+                                        is dev.webauthn.model.ValidationResult.Valid -> res.value
+                                        is dev.webauthn.model.ValidationResult.Invalid -> null
+                                    }
+                                },
                             )
                         }
                     }

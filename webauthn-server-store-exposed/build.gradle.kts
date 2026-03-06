@@ -6,6 +6,7 @@ dependencies {
     api(project(":webauthn-core"))
     api(project(":webauthn-serialization-kotlinx"))
     api(project(":webauthn-crypto-api"))
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.coroutines.core)
 

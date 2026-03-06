@@ -13,7 +13,11 @@ import dev.webauthn.server.CredentialStore
 import dev.webauthn.server.StoredCredential
 import dev.webauthn.server.UserAccount
 import dev.webauthn.server.UserAccountStore
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -35,6 +39,7 @@ public object ChallengeSessions : Table("challenge_sessions") {
     public val createdAtEpochMs: org.jetbrains.exposed.sql.Column<Long> = long("created_at_epoch_ms")
     public val expiresAtEpochMs: org.jetbrains.exposed.sql.Column<Long> = long("expires_at_epoch_ms")
     public val userVerification: org.jetbrains.exposed.sql.Column<String?> = varchar("user_verification", 50).nullable()
+    public val extensions: org.jetbrains.exposed.sql.Column<String?> = varchar("extensions", 4096).nullable()
 
     override val primaryKey: PrimaryKey = PrimaryKey(challengeKey)
 }
@@ -78,6 +83,7 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                     it[createdAtEpochMs] = session.createdAtEpochMs
                     it[expiresAtEpochMs] = session.expiresAtEpochMs
                     it[userVerification] = session.userVerification?.name
+                    it[extensions] = session.extensions?.let { ext -> Json.encodeToString(WebAuthnDtoMapper.fromModel(ext)) }
                 }
             } else {
                 ChallengeSessions.insert {
@@ -90,6 +96,7 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                     it[createdAtEpochMs] = session.createdAtEpochMs
                     it[expiresAtEpochMs] = session.expiresAtEpochMs
                     it[userVerification] = session.userVerification?.name
+                    it[extensions] = session.extensions?.let { ext -> Json.encodeToString(WebAuthnDtoMapper.fromModel(ext)) }
                 }
             }
         }
@@ -111,6 +118,13 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                 expiresAtEpochMs = row[ChallengeSessions.expiresAtEpochMs],
                 type = CeremonyType.valueOf(row[ChallengeSessions.ceremonyType]),
                 userVerification = row[ChallengeSessions.userVerification]?.let { dev.webauthn.model.UserVerificationRequirement.valueOf(it) },
+                extensions = row[ChallengeSessions.extensions]?.let { json ->
+                    val dto = Json.decodeFromString<AuthenticationExtensionsClientInputsDto>(json)
+                    when (val res = WebAuthnDtoMapper.toModelValidated(dto)) {
+                        is dev.webauthn.model.ValidationResult.Valid -> res.value
+                        is dev.webauthn.model.ValidationResult.Invalid -> null
+                    }
+                },
             )
             
             ChallengeSessions.deleteWhere { challengeKey eq key }
