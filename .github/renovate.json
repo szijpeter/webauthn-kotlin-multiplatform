@@ -1,0 +1,49 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "enabledManagers": [
+    "gradle",
+    "github-actions"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "schedule": [
+    "before 5am on monday"
+  ],
+  "timezone": "Etc/UTC",
+  "prConcurrentLimit": 8,
+  "prHourlyLimit": 2,
+  "ignoreUnstable": true,
+  "automerge": true,
+  "automergeType": "pr",
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "description": "Ported from Dependabot: Ignore specific incompatible datetime version",
+      "matchPackageNames": ["org.jetbrains.kotlinx:kotlinx-datetime"],
+      "ignoreVersions": ["0.7.1-0.6.x-compat"]
+    },
+    {
+      "description": "Group patch/minor updates to reduce PR noise.",
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "pin",
+        "digest"
+      ],
+      "groupName": "non-major dependencies",
+      "groupSlug": "non-major-dependencies"
+    },
+    {
+      "description": "Keep major updates separate for focused review.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "major dependencies",
+      "groupSlug": "major-dependencies"
+    }
+  ]
+}
