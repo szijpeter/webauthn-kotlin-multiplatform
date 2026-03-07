@@ -24,7 +24,7 @@
     {
       "description": "Ported from Dependabot: Ignore specific incompatible datetime version",
       "matchPackageNames": ["org.jetbrains.kotlinx:kotlinx-datetime"],
-      "ignoreVersions": ["0.7.1-0.6.x-compat"]
+      "allowedVersions": "!/^0\\.7\\.1-0\\.6\\.x-compat$/"
     },
     {
       "description": "Group patch/minor updates to reduce PR noise.",
