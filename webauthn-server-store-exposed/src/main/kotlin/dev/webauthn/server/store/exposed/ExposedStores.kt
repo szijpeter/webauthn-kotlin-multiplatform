@@ -18,46 +18,41 @@ import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.statements.*
+import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 public object ChallengeSessions : Table("challenge_sessions") {
-    public val challengeKey: org.jetbrains.exposed.sql.Column<String> = varchar("challenge_key", 255)
-    public val challengeValue: org.jetbrains.exposed.sql.Column<String> = varchar("challenge_value", 255)
-    public val ceremonyType: org.jetbrains.exposed.sql.Column<String> = varchar("ceremony_type", 50)
-    public val rpId: org.jetbrains.exposed.sql.Column<String> = varchar("rp_id", 255)
-    public val originValue: org.jetbrains.exposed.sql.Column<String> = varchar("origin_value", 1024)
-    public val userName: org.jetbrains.exposed.sql.Column<String> = varchar("user_name", 255)
-    public val createdAtEpochMs: org.jetbrains.exposed.sql.Column<Long> = long("created_at_epoch_ms")
-    public val expiresAtEpochMs: org.jetbrains.exposed.sql.Column<Long> = long("expires_at_epoch_ms")
-    public val userVerification: org.jetbrains.exposed.sql.Column<String?> = varchar("user_verification", 50).nullable()
-    public val extensions: org.jetbrains.exposed.sql.Column<String?> = varchar("extensions", 4096).nullable()
+    public val challengeKey: Column<String> = varchar("challenge_key", 255)
+    public val challengeValue: Column<String> = varchar("challenge_value", 255)
+    public val ceremonyType: Column<String> = varchar("ceremony_type", 50)
+    public val rpId: Column<String> = varchar("rp_id", 255)
+    public val originValue: Column<String> = varchar("origin_value", 1024)
+    public val userName: Column<String> = varchar("user_name", 255)
+    public val createdAtEpochMs: Column<Long> = long("created_at_epoch_ms")
+    public val expiresAtEpochMs: Column<Long> = long("expires_at_epoch_ms")
+    public val userVerification: Column<String?> = varchar("user_verification", 50).nullable()
+    public val extensions: Column<String?> = varchar("extensions", 4096).nullable()
 
     override val primaryKey: PrimaryKey = PrimaryKey(challengeKey)
 }
 
 public object Credentials : Table("credentials") {
-    public val credentialId: org.jetbrains.exposed.sql.Column<String> = varchar("credential_id", 255)
-    public val userId: org.jetbrains.exposed.sql.Column<String> = varchar("user_id", 255)
-    public val rpId: org.jetbrains.exposed.sql.Column<String> = varchar("rp_id", 255)
-    public val publicKey: org.jetbrains.exposed.sql.Column<ByteArray> = binary("public_key")
-    public val signCount: org.jetbrains.exposed.sql.Column<Long> = long("sign_count")
+    public val credentialId: Column<String> = varchar("credential_id", 255)
+    public val userId: Column<String> = varchar("user_id", 255)
+    public val rpId: Column<String> = varchar("rp_id", 255)
+    public val publicKey: Column<ByteArray> = binary("public_key")
+    public val signCount: Column<Long> = long("sign_count")
 
     override val primaryKey: PrimaryKey = PrimaryKey(credentialId)
 }
 
 public object UserAccounts : Table("user_accounts") {
-    public val userName: org.jetbrains.exposed.sql.Column<String> = varchar("user_name", 255)
-    public val userId: org.jetbrains.exposed.sql.Column<String> = varchar("user_id", 255)
-    public val displayName: org.jetbrains.exposed.sql.Column<String> = varchar("display_name", 255)
+    public val userName: Column<String> = varchar("user_name", 255)
+    public val userId: Column<String> = varchar("user_id", 255)
+    public val displayName: Column<String> = varchar("display_name", 255)
 
     override val primaryKey: PrimaryKey = PrimaryKey(userName)
 }
