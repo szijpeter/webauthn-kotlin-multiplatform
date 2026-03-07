@@ -23,7 +23,7 @@ signum-indispensable = "3.19.3"
 kermit = "2.0.8"
 exposed = "0.58.0"
 testcontainers = "1.21.4"
-postgresql = "42.7.5"
+postgresql = "42.7.10"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
