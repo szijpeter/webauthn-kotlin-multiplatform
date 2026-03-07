@@ -25,25 +25,6 @@
       "description": "Ported from Dependabot: Ignore specific incompatible datetime version",
       "matchPackageNames": ["org.jetbrains.kotlinx:kotlinx-datetime"],
       "allowedVersions": "!/^0\\.7\\.1-0\\.6\\.x-compat$/"
-    },
-    {
-      "description": "Group patch/minor updates to reduce PR noise.",
-      "matchUpdateTypes": [
-        "patch",
-        "minor",
-        "pin",
-        "digest"
-      ],
-      "groupName": "non-major dependencies",
-      "groupSlug": "non-major-dependencies"
-    },
-    {
-      "description": "Keep major updates separate for focused review.",
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "groupName": "major dependencies",
-      "groupSlug": "major-dependencies"
     }
   ]
 }
