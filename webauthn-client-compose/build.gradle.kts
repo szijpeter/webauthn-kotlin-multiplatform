@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "dev.webauthn.client.compose"
         compileSdk = 36
         minSdk = 26

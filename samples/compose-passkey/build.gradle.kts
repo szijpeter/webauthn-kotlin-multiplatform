@@ -88,7 +88,7 @@ val generatePasskeyDemoBuildConfig by tasks.registering {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "dev.webauthn.samples.composepasskey"
         compileSdk = 36
         minSdk = 26
