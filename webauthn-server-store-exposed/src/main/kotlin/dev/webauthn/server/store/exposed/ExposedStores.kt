@@ -100,7 +100,9 @@ private fun validateCurrentWebAuthnSchema(existingTables: List<Table>) {
     check(migrationStatements.isEmpty()) {
         buildString {
             appendLine("WebAuthn Exposed schema drift detected.")
-            if (existingTables.size != WEB_AUTHN_SCHEMA_TABLES.size) {
+            if (existingTables.isEmpty()) {
+                appendLine("Detected an uninitialized schema.")
+            } else if (existingTables.size != WEB_AUTHN_SCHEMA_TABLES.size) {
                 appendLine(
                     "Detected a partially initialized schema with existing tables: " +
                         existingTables.joinToString { it.tableName }

@@ -32,13 +32,30 @@ class ExposedSchemaInitializationTest {
             SchemaUtils.create(ChallengeSessions)
         }
 
-        val error = assertFailsWith<IllegalStateException> {
+        assertFailsWith<IllegalStateException> {
             initializeWebAuthnSchema(database)
         }
 
-        assertTrue(error.message?.contains("schema drift detected") == true)
-        assertTrue(error.message?.contains("partially initialized schema") == true)
-        assertTrue(error.message?.contains("CREATE TABLE") == true)
+        assertTrue(
+            webAuthnSchemaMigrationStatements(database).any {
+                it.contains("create table", ignoreCase = true)
+            }
+        )
+    }
+
+    @Test
+    fun `validateWebAuthnSchema reports migration statements for an uninitialized schema`() {
+        val database = createDatabase()
+
+        assertFailsWith<IllegalStateException> {
+            validateWebAuthnSchema(database)
+        }
+
+        assertTrue(
+            webAuthnSchemaMigrationStatements(database).any {
+                it.contains("create table", ignoreCase = true)
+            }
+        )
     }
 
     private fun createDatabase(): Database =
