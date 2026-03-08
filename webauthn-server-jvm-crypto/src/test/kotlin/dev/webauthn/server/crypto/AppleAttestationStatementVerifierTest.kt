@@ -165,6 +165,26 @@ class AppleAttestationStatementVerifierTest {
         assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("Public key mismatch") })
     }
 
+    @Test
+    fun verifyFailsForMissingCredentialPublicKey() {
+        val rpIdHash = ByteArray(32) { 0x10 }
+        val flags = byteArrayOf(0x41)
+        val signCount = byteArrayOf(0, 0, 0, 1)
+        val aaguid = ByteArray(16) { 0x22 }
+        val credentialId = ByteArray(16) { 0x33 }
+        val credentialIdLength = byteArrayOf(
+            ((credentialId.size shr 8) and 0xFF).toByte(),
+            (credentialId.size and 0xFF).toByte(),
+        )
+        // authData ending exactly after credentialId
+        val malformedAuthData = rpIdHash + flags + signCount + aaguid + credentialIdLength + credentialId
+        
+        val exception = kotlin.test.assertFailsWith<IllegalArgumentException> {
+            attestedCredentialData(malformedAuthData)
+        }
+        assertTrue(exception.message!!.contains("authData must contain credential public key"))
+    }
+
     // ---- Helpers ----
 
     private fun buildAppleAttestationObject(authData: ByteArray = sampleAuthDataBytes(), x5c: List<ByteArray>): ByteArray {
@@ -323,6 +343,7 @@ class AppleAttestationStatementVerifierTest {
         val credentialIdStart = 55
         val credentialIdEnd = credentialIdStart + credentialIdLength
         require(authData.size >= credentialIdEnd) { "authData must contain credential ID" }
+        require(authData.size > credentialIdEnd) { "authData must contain credential public key" }
         return AttestedCredentialData(
             aaguid = aaguid,
             credentialId = CredentialId.fromBytes(authData.copyOfRange(credentialIdStart, credentialIdEnd)),
