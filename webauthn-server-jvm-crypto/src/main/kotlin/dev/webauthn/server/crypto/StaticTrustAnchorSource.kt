@@ -1,6 +1,8 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.TrustAnchorSource
+import dev.webauthn.model.Aaguid
+import dev.webauthn.model.ImmutableBytes
 import java.io.InputStream
 import java.security.cert.CertificateFactory
 import java.security.cert.TrustAnchor
@@ -10,8 +12,8 @@ internal class StaticTrustAnchorSource(
     private val certificates: List<X509Certificate>,
 ) : TrustAnchorSource {
 
-    override fun findTrustAnchors(aaguid: ByteArray?): List<ByteArray> {
-        return certificates.map { it.encoded }
+    override fun findTrustAnchors(aaguid: Aaguid?): List<ImmutableBytes> {
+        return certificates.map { ImmutableBytes.fromBytes(it.encoded) }
     }
 
     companion object {

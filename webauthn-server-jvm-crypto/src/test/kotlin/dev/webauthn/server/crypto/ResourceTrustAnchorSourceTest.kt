@@ -17,7 +17,7 @@ class ResourceTrustAnchorSourceTest {
 
         val factory = CertificateFactory.getInstance("X.509")
         trustAnchors.forEachIndexed { index, der ->
-            val certificate = factory.generateCertificate(ByteArrayInputStream(der))
+            val certificate = factory.generateCertificate(ByteArrayInputStream(der.bytes()))
             assertTrue(certificate is X509Certificate, "Expected X.509 trust anchor at index $index")
         }
     }

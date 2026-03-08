@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2024-05-15
+Last updated: 2026-03-08
 
 ## Status Legend
 
@@ -21,6 +21,7 @@ Last updated: 2024-05-15
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
 - Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
+- Shared model contracts now use immutable byte/domain wrappers for opaque binary values (`ImmutableBytes`, `RpIdHash`, `Aaguid`) instead of public raw `ByteArray` properties.
 - Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
 - Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.
@@ -38,7 +39,7 @@ Last updated: 2024-05-15
 
 | Module | Maturity | Implemented | Gaps / Risks |
 |---|---|---|---|
-| `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins), authenticator transports/attachment and attestation preference models | Continued edge-case coverage for uncommon protocol combinations |
+| `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, immutable byte/domain wrappers for binary protocol values, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins), authenticator transports/attachment and attestation preference models | Continued edge-case coverage for uncommon protocol combinations |
 | `webauthn-cbor-internal` | Beta | Shared strict CBOR byte scanner helpers for attestation/authenticator parsing, minimal-encoding rejection, common KMP module consumed via normal project dependencies | Internal helper module only; broader vector depth remains covered through consuming modules |
 | `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests, extension processing hooks, LargeBlob validation, PRF missing-output checks | Additional L3 extension hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + typed CBOR authData extraction, shared internal CBOR byte scanner usage, strict minimal CBOR/COSE rejection for registration parsing, round-trip tests, attachment/attestation/transports mapping | Deeper COSE/CBOR vector coverage |
@@ -61,7 +62,7 @@ Last updated: 2024-05-15
 Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 - `clientData` type/challenge/origin checks
-- `authenticatorData` rpIdHash length and UP flag checks
+- `authenticatorData` rpIdHash invariant typing and UP flag checks
 - signCount non-increase invalid case
 - strict base64url parsing guarantees
 - allowCredentials membership enforcement
