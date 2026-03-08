@@ -26,11 +26,13 @@ import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.JdbcTransaction
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.exists
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 
 public object ChallengeSessions : Table("challenge_sessions") {
     public val challengeKey: Column<String> = varchar("challenge_key", 255)
@@ -65,9 +67,50 @@ public object UserAccounts : Table("user_accounts") {
     override val primaryKey: PrimaryKey = PrimaryKey(userName)
 }
 
+private val WEB_AUTHN_SCHEMA_TABLES: Array<Table> = arrayOf(ChallengeSessions, Credentials, UserAccounts)
+
 public fun initializeWebAuthnSchema(database: Database) {
     transaction(database) {
-        SchemaUtils.createMissingTablesAndColumns(ChallengeSessions, Credentials, UserAccounts)
+        val existingTables = WEB_AUTHN_SCHEMA_TABLES.filter { it.exists() }
+        if (existingTables.isEmpty()) {
+            SchemaUtils.create(*WEB_AUTHN_SCHEMA_TABLES)
+            return@transaction
+        }
+
+        validateCurrentWebAuthnSchema(existingTables)
+    }
+}
+
+public fun webAuthnSchemaMigrationStatements(database: Database): List<String> =
+    transaction(database) {
+        currentWebAuthnSchemaMigrationStatements()
+    }
+
+public fun validateWebAuthnSchema(database: Database) {
+    transaction(database) {
+        validateCurrentWebAuthnSchema(WEB_AUTHN_SCHEMA_TABLES.filter { it.exists() })
+    }
+}
+
+private fun currentWebAuthnSchemaMigrationStatements(): List<String> =
+    MigrationUtils.statementsRequiredForDatabaseMigration(*WEB_AUTHN_SCHEMA_TABLES)
+
+private fun validateCurrentWebAuthnSchema(existingTables: List<Table>) {
+    val migrationStatements = currentWebAuthnSchemaMigrationStatements()
+    check(migrationStatements.isEmpty()) {
+        buildString {
+            appendLine("WebAuthn Exposed schema drift detected.")
+            if (existingTables.isEmpty()) {
+                appendLine("Detected an uninitialized schema.")
+            } else if (existingTables.size != WEB_AUTHN_SCHEMA_TABLES.size) {
+                appendLine(
+                    "Detected a partially initialized schema with existing tables: " +
+                        existingTables.joinToString { it.tableName }
+                )
+            }
+            appendLine("Apply the following migration statements with your migration tool:")
+            migrationStatements.forEach(::appendLine)
+        }.trimEnd()
     }
 }
 

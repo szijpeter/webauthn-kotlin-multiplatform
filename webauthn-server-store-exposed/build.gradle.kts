@@ -12,6 +12,8 @@ dependencies {
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.migration.core)
+    implementation(libs.exposed.migration.jdbc)
 
     api(project(":webauthn-server-core-jvm"))
     testImplementation(testFixtures(project(":webauthn-server-core-jvm")))
