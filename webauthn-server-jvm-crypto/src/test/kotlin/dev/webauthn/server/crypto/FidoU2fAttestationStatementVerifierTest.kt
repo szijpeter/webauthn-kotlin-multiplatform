@@ -1,7 +1,6 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
-import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
@@ -229,8 +228,6 @@ class FidoU2fAttestationStatementVerifierTest {
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
     }
-
-    private fun aaguid(): Aaguid = Aaguid.fromBytes(ByteArray(16))
 
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {

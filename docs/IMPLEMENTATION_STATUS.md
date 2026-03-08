@@ -24,7 +24,6 @@ Last updated: 2026-03-08
 - Shared model contracts now use `Base64UrlBytes` plus domain-specific fixed-size wrappers (`RpIdHash`, `Aaguid`) instead of public raw `ByteArray` properties.
 - Shared byte/domain wrappers now use redacted `toString()` output, add named `ClientDataHash` and `CosePublicKey` values where the semantics matter, and keep the JVM signature verifier on typed COSE-key inputs.
 - Packed attestation now derives flags and AAGUID from `authData` with explicit truncated-input rejection, and MDS trust lookup normalizes hyphenated AAGUID metadata entries.
-- FIDO U2F verifier tests now build typed attested credential data with an explicit local AAGUID helper, keeping the regression fixture aligned with the named byte-wrapper model.
 - Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
 - Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.
