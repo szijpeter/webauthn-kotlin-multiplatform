@@ -5,6 +5,7 @@ import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.RpIdHash
@@ -216,7 +217,7 @@ class WebAuthnDtoMapperTest {
             attestedCredentialData = AttestedCredentialData(
                 aaguid = aaguid(0x02),
                 credentialId = attestedCredentialId,
-                cosePublicKey = base64UrlBytes(0xA1, 0x01, 0x02),
+                cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
             ),
             extensions = null,
         )

@@ -6,6 +6,7 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -216,7 +217,7 @@ class DefaultPasskeyClientTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguid(2),
                     credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-                    cosePublicKey = base64UrlBytes(1, 2, 3),
+                    cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
                 ),
             )
         }

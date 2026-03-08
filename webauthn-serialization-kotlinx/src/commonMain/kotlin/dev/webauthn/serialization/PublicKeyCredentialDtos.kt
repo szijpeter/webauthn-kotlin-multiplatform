@@ -981,7 +981,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
         AttestedCredentialData(
             aaguid = aaguid,
             credentialId = CredentialId.fromBytes(credentialId),
-            cosePublicKey = dev.webauthn.model.Base64UrlBytes.fromBytes(bytes.copyOfRange(offset, coseEnd)),
+            cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(bytes.copyOfRange(offset, coseEnd)),
         )
     } else {
         null

@@ -121,7 +121,7 @@ public data class AuthenticatorData(
 public data class AttestedCredentialData(
     public val aaguid: Aaguid,
     public val credentialId: CredentialId,
-    public val cosePublicKey: Base64UrlBytes,
+    public val cosePublicKey: CosePublicKey,
 )
 
 /** W3C WebAuthn L3: §5.2. AuthenticatorAttestationResponse Interface */

@@ -14,6 +14,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -255,7 +256,7 @@ private fun validRegistrationResponse(): RegistrationResponse {
         attestedCredentialData = AttestedCredentialData(
             aaguid = Aaguid.fromBytes(ByteArray(16) { 2 }),
             credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-            cosePublicKey = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
+            cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
         ),
     )
 }

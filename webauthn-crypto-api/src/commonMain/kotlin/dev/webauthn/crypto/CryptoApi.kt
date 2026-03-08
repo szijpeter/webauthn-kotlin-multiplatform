@@ -4,13 +4,15 @@ import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.ClientDataHash
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 
 public fun interface SignatureVerifier {
     public fun verify(
         algorithm: CoseAlgorithm,
-        publicKeyCose: Base64UrlBytes,
+        publicKeyCose: CosePublicKey,
         data: ByteArray,
         signature: ByteArray,
     ): Boolean
@@ -39,6 +41,6 @@ public fun coseAlgorithmFromCode(code: Int): CoseAlgorithm? =
 
 public data class SignedAuthenticationPayload(
     public val authenticatorData: AuthenticatorData,
-    public val clientDataHash: Base64UrlBytes,
+    public val clientDataHash: ClientDataHash,
     public val signature: Base64UrlBytes,
 )

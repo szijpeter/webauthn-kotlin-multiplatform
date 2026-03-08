@@ -217,7 +217,7 @@ class FidoU2fAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(RpIdHash.fromBytes(rpIdHash), 0x41, 1),
-                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, base64UrlBytes(cosePublicKey)),
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey)),
             ),
             clientData = CollectedClientData(
                 "webauthn.create",

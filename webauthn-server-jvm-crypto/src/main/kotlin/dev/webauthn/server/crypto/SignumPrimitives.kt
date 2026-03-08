@@ -19,6 +19,7 @@ import at.asitplus.signum.supreme.sign.verifierFor
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.coseAlgorithmFromCode
 import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.CosePublicKey
 import java.io.ByteArrayInputStream
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
@@ -29,13 +30,13 @@ import kotlinx.serialization.decodeFromByteArray
 internal object SignumPrimitives {
     fun sha256(input: ByteArray): ByteArray = Digest.SHA256.digest(input)
 
-    fun decodeCoseMaterial(coseKey: Base64UrlBytes): CosePublicKeyMaterial? =
+    fun decodeCoseMaterial(coseKey: CosePublicKey): CosePublicKeyMaterial? =
         decodeCoseMaterialResult(coseKey.bytes()).getOrNull()
 
     fun decodeCoseMaterial(coseKey: ByteArray): CosePublicKeyMaterial? =
         decodeCoseMaterialResult(coseKey).getOrNull()
 
-    fun decodeCosePublicKey(coseKey: Base64UrlBytes): CryptoPublicKey? =
+    fun decodeCosePublicKey(coseKey: CosePublicKey): CryptoPublicKey? =
         decodeCosePublicKeyResult(coseKey.bytes()).getOrNull()
 
     fun decodeCosePublicKey(coseKey: ByteArray): CryptoPublicKey? =
@@ -57,7 +58,7 @@ internal object SignumPrimitives {
 
     fun verifyWithCosePublicKey(
         algorithm: CoseAlgorithm,
-        publicKeyCose: Base64UrlBytes,
+        publicKeyCose: CosePublicKey,
         data: ByteArray,
         signature: ByteArray,
     ): Boolean {

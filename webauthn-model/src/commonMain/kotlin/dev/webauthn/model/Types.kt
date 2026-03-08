@@ -87,7 +87,7 @@ public value class Challenge private constructor(public val value: Base64UrlByte
         public fun parseOrThrow(encoded: String): Challenge = parse(encoded).getOrThrow()
     }
 
-    override fun toString(): String = value.toString()
+    override fun toString(): String = "Challenge(${value.bytes().size} bytes)"
 }
 
 @kotlin.jvm.JvmInline
@@ -105,7 +105,7 @@ public value class CredentialId private constructor(public val value: Base64UrlB
         public fun parseOrThrow(encoded: String): CredentialId = parse(encoded).getOrThrow()
     }
 
-    override fun toString(): String = value.toString()
+    override fun toString(): String = "CredentialId(${value.bytes().size} bytes)"
 }
 
 @kotlin.jvm.JvmInline
@@ -119,9 +119,11 @@ public value class UserHandle private constructor(public val value: Base64UrlByt
         }
 
         public fun fromBytes(value: ByteArray): UserHandle = UserHandle(Base64UrlBytes.fromBytes(value))
+
+        public fun parseOrThrow(encoded: String): UserHandle = parse(encoded).getOrThrow()
     }
 
-    override fun toString(): String = value.toString()
+    override fun toString(): String = "UserHandle(${value.bytes().size} bytes)"
 }
 
 public enum class PublicKeyCredentialType {

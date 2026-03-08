@@ -3,7 +3,7 @@ package dev.webauthn.server.crypto
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
@@ -56,7 +56,7 @@ public class FidoU2fAttestationStatementVerifier(
         return ValidationResult.Valid(Unit)
     }
 
-    private fun extractRawPublicKey(coseKey: Base64UrlBytes): ByteArray? {
+    private fun extractRawPublicKey(coseKey: CosePublicKey): ByteArray? {
         val material = SignumPrimitives.decodeCoseMaterial(coseKey) ?: return null
         if (material.kty != 2L) return null
         return SignumPrimitives.toUncompressedEcPoint(material)

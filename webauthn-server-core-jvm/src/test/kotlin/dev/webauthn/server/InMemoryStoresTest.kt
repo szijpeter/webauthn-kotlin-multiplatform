@@ -24,7 +24,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = RpId.parseOrThrow("example.com"),
-                publicKeyCose = base64UrlBytes(1, 2, 3),
+                publicKeyCose = cosePublicKey(1, 2, 3),
                 signCount = 1,
             ),
         )
@@ -69,7 +69,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = rpId,
-                publicKeyCose = base64UrlBytes(1, 2, 3),
+                publicKeyCose = cosePublicKey(1, 2, 3),
                 signCount = 1,
             ),
         )
@@ -80,7 +80,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = rpId,
-                publicKeyCose = base64UrlBytes(4, 5, 6),
+                publicKeyCose = cosePublicKey(4, 5, 6),
                 signCount = 99,
             ),
         )
@@ -102,7 +102,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = RpId.parseOrThrow("example.com"),
-                publicKeyCose = base64UrlBytes(1, 2, 3),
+                publicKeyCose = cosePublicKey(1, 2, 3),
                 signCount = 1,
             ),
         )

@@ -398,7 +398,7 @@ class PackedAttestationStatementVerifierTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = base64UrlBytes(cosePublicKey),
+                    cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData(

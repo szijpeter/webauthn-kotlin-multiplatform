@@ -711,7 +711,7 @@ class AndroidKeyAttestationStatementVerifierTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguidFromAuthData(authData),
                     credentialId = credentialId,
-                    cosePublicKey = base64UrlBytes(cosePublicKey),
+                    cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),

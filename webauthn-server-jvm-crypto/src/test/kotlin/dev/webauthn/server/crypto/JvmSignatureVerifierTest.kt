@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.CoseAlgorithm
+import dev.webauthn.model.CosePublicKey
 import java.security.AlgorithmParameters
 import java.security.KeyPairGenerator
 import java.security.KeyFactory
@@ -37,7 +38,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
+            publicKeyCose = CosePublicKey.fromBytes(TestCoseHelpers.coseBytesFromPublicKey(kp.public)),
             data = data,
             signature = sig,
         )
@@ -60,7 +61,7 @@ class JvmSignatureVerifierTest {
         val tampered = "tampered data".encodeToByteArray()
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
+            publicKeyCose = CosePublicKey.fromBytes(TestCoseHelpers.coseBytesFromPublicKey(kp.public)),
             data = tampered,
             signature = sig,
         )
@@ -86,7 +87,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp2.public), // wrong key
+            publicKeyCose = CosePublicKey.fromBytes(TestCoseHelpers.coseBytesFromPublicKey(kp2.public)), // wrong key
             data = data,
             signature = sig,
         )
@@ -109,7 +110,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
+            publicKeyCose = CosePublicKey.fromBytes(TestCoseHelpers.coseBytesFromPublicKey(kp.public)),
             data = data,
             signature = rawSignature,
         )
@@ -128,7 +129,7 @@ class JvmSignatureVerifierTest {
 
         val signumResult = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = cosePublicKey,
+            publicKeyCose = CosePublicKey.fromBytes(cosePublicKey),
             data = signedData,
             signature = signatureDer,
         )
@@ -179,7 +180,7 @@ class JvmSignatureVerifierTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.RS256,
-            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
+            publicKeyCose = CosePublicKey.fromBytes(TestCoseHelpers.coseBytesFromPublicKey(kp.public)),
             data = data,
             signature = sig,
         )
@@ -202,7 +203,7 @@ class JvmSignatureVerifierTest {
         val tampered = "tampered data".encodeToByteArray()
         val result = verifier.verify(
             algorithm = CoseAlgorithm.RS256,
-            publicKeyCose = TestCoseHelpers.coseBytesFromPublicKey(kp.public),
+            publicKeyCose = CosePublicKey.fromBytes(TestCoseHelpers.coseBytesFromPublicKey(kp.public)),
             data = tampered,
             signature = sig,
         )

@@ -1120,7 +1120,7 @@ class ServiceSmokeTest {
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = cosePublicKey,
+            publicKeyCose = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
             data = signedData,
             signature = signature,
         )

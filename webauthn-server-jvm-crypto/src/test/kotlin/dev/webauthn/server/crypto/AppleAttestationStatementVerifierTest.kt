@@ -347,7 +347,7 @@ class AppleAttestationStatementVerifierTest {
         return AttestedCredentialData(
             aaguid = aaguid,
             credentialId = CredentialId.fromBytes(authData.copyOfRange(credentialIdStart, credentialIdEnd)),
-            cosePublicKey = base64UrlBytes(authData.copyOfRange(credentialIdEnd, authData.size)),
+            cosePublicKey = cosePublicKey(authData.copyOfRange(credentialIdEnd, authData.size)),
         )
     }
 

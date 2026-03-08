@@ -7,6 +7,7 @@ import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -424,7 +425,7 @@ class WebAuthnCoreValidatorTest {
             attestedCredentialData = AttestedCredentialData(
                 aaguid = aaguid(0),
                 credentialId = credentialId,
-                cosePublicKey = base64UrlBytes(9, 8, 7),
+                cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(9, 8, 7)),
             ),
         )
     }
