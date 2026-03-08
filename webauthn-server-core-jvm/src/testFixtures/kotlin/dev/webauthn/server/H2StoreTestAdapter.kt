@@ -195,7 +195,7 @@ private class H2CredentialStore(
                 statement.setString(1, credential.credentialId.value.encoded())
                 statement.setString(2, credential.userId.value.encoded())
                 statement.setString(3, credential.rpId.value)
-                statement.setBytes(4, credential.publicKeyCose)
+                statement.setBytes(4, credential.publicKeyCose.bytes())
                 statement.setLong(5, credential.signCount)
                 statement.executeUpdate()
             }
@@ -299,7 +299,7 @@ private fun java.sql.ResultSet.toStoredCredential(): StoredCredential {
         credentialId = CredentialId.parseOrThrow(getString("credential_id")),
         userId = UserHandle.parse(getString("user_id")).getOrThrow(),
         rpId = RpId.parseOrThrow(getString("rp_id")),
-        publicKeyCose = getBytes("public_key"),
+        publicKeyCose = dev.webauthn.model.CosePublicKey.fromBytes(getBytes("public_key")),
         signCount = getLong("sign_count"),
     )
 }

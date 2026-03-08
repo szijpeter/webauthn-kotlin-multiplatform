@@ -3,8 +3,10 @@ package dev.webauthn.client
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -13,6 +15,7 @@ import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
@@ -222,9 +225,20 @@ class PasskeyControllerTest {
                 credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
                 attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-                rawAuthenticatorData = AuthenticatorData(rpIdHash = ByteArray(32) { 1 }, flags = 0x41, signCount = 1),
-                attestedCredentialData = AttestedCredentialData(aaguid = ByteArray(16) { 2 }, credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)), cosePublicKey = byteArrayOf(1, 2, 3)),
+                rawAuthenticatorData = AuthenticatorData(rpIdHash = rpIdHash(1), flags = 0x41, signCount = 1),
+                attestedCredentialData = AttestedCredentialData(
+                    aaguid = aaguid(2),
+                    credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
+                    cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
+                ),
             )
         }
+
+        fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
+
+        fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
+
+        fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
+            Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
     }
 }

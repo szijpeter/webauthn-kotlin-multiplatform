@@ -3,6 +3,7 @@ package dev.webauthn.server.crypto
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
@@ -36,7 +37,7 @@ public class FidoU2fAttestationStatementVerifier(
         // W3C WebAuthn L3: §8.6 Step 2: Let verificationData be the concatenation of (0x00 || rpIdHash || clientDataHash || credentialId || publicKeyU2F)
         val verificationData = concat(
             byteArrayOf(0x00),
-            input.response.rawAuthenticatorData.rpIdHash,
+            input.response.rawAuthenticatorData.rpIdHash.bytes(),
             clientDataHash,
             attestedData.credentialId.value.bytes(),
             publicKeyU2F,
@@ -55,7 +56,7 @@ public class FidoU2fAttestationStatementVerifier(
         return ValidationResult.Valid(Unit)
     }
 
-    private fun extractRawPublicKey(coseKey: ByteArray): ByteArray? {
+    private fun extractRawPublicKey(coseKey: CosePublicKey): ByteArray? {
         val material = SignumPrimitives.decodeCoseMaterial(coseKey) ?: return null
         if (material.kty != 2L) return null
         return SignumPrimitives.toUncompressedEcPoint(material)

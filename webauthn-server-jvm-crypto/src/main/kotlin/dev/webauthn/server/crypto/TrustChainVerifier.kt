@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.TrustAnchorSource
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
@@ -14,14 +15,14 @@ public class TrustChainVerifier internal constructor(
         certificateChainValidator = JvmCertificateChainValidator(),
     )
 
-    public fun verify(chainDer: List<ByteArray>, aaguid: ByteArray? = null): ValidationResult<Unit> {
+    public fun verify(chainDer: List<ByteArray>, aaguid: Aaguid? = null): ValidationResult<Unit> {
         if (chainDer.isEmpty()) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.MissingValue("x5c", "Certificate chain is empty")),
             )
         }
 
-        val trustAnchorsDer = trustAnchorSource.findTrustAnchors(aaguid)
+        val trustAnchorsDer = trustAnchorSource.findTrustAnchors(aaguid).map { it.bytes() }
         if (trustAnchorsDer.isEmpty()) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "No trust anchors found for this authenticator")),

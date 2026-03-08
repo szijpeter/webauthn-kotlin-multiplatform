@@ -10,7 +10,7 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
 
     public fun encoded(): String = encodedValue
 
-    override fun toString(): String = encoded()
+    override fun toString(): String = "Base64UrlBytes(${bytes().size} bytes)"
 
     public companion object {
         public fun parse(value: String, field: String = "base64url"): ValidationResult<Base64UrlBytes> {

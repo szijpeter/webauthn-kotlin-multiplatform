@@ -25,7 +25,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.Foundation.NSProcessInfo
 
-internal data class IosRegistrationPayload(
+internal class IosRegistrationPayload(
     val credentialId: ByteArray,
     val rawId: ByteArray,
     val attestationObject: ByteArray,
@@ -33,7 +33,7 @@ internal data class IosRegistrationPayload(
     val authenticatorAttachment: String? = null,
 )
 
-internal data class IosAuthenticationPayload(
+internal class IosAuthenticationPayload(
     val credentialId: ByteArray,
     val rawId: ByteArray,
     val authenticatorData: ByteArray,

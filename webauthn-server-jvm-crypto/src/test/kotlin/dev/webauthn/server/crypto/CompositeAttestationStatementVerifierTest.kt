@@ -124,8 +124,8 @@ class CompositeAttestationVerifierTest {
                 credentialId = credentialId,
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
-                rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey)
+                rawAuthenticatorData = AuthenticatorData(rpIdHash(), 0, 0),
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey))
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

@@ -43,4 +43,15 @@ class TypesTest {
         assertEquals(idA, idB)
         assertFalse(idA == idC)
     }
+
+    @Test
+    fun byteBackedNamedValuesRedactPayloadsInToString() {
+        val challenge = Challenge.fromBytes(ByteArray(16) { 7 })
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 3 })
+        val userHandle = UserHandle.fromBytes(ByteArray(32) { 5 })
+
+        assertEquals("Challenge(16 bytes)", challenge.toString())
+        assertEquals("CredentialId(16 bytes)", credentialId.toString())
+        assertEquals("UserHandle(32 bytes)", userHandle.toString())
+    }
 }

@@ -3,9 +3,12 @@ package dev.webauthn.serialization
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.AuthenticatorTransport
@@ -97,7 +100,7 @@ class WebAuthnDtoMapperTest {
         assertTrue(result is ValidationResult.Valid)
         assertEquals(0x05, result.value.authenticatorData.flags)
         assertEquals(42, result.value.authenticatorData.signCount)
-        assertContentEquals(ByteArray(32) { 0x22 }, result.value.authenticatorData.rpIdHash)
+        assertContentEquals(ByteArray(32) { 0x22 }, result.value.authenticatorData.rpIdHash.bytes())
     }
 
     @Test
@@ -167,7 +170,7 @@ class WebAuthnDtoMapperTest {
         assertEquals(9, result.value.rawAuthenticatorData.signCount)
         assertEquals(0x41, result.value.rawAuthenticatorData.flags)
         assertEquals(credentialId.value.encoded(), result.value.attestedCredentialData.credentialId.value.encoded())
-        assertContentEquals(cosePublicKey, result.value.attestedCredentialData.cosePublicKey)
+        assertContentEquals(cosePublicKey, result.value.attestedCredentialData.cosePublicKey.bytes())
     }
 
     @Test
@@ -207,14 +210,14 @@ class WebAuthnDtoMapperTest {
             clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
             attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
             rawAuthenticatorData = AuthenticatorData(
-                rpIdHash = ByteArray(32) { 0x01 },
+                rpIdHash = rpIdHash(0x01),
                 flags = 0x41,
                 signCount = 1,
             ),
             attestedCredentialData = AttestedCredentialData(
-                aaguid = ByteArray(16) { 0x02 },
+                aaguid = aaguid(0x02),
                 credentialId = attestedCredentialId,
-                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+                cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
             ),
             extensions = null,
         )
@@ -257,7 +260,7 @@ class WebAuthnDtoMapperTest {
         assertNotNull(extensions.prf)
         assertTrue(extensions.prf!!.enabled!!)
         assertNotNull(extensions.prf!!.results)
-        assertContentEquals(byteArrayOf(0xAA.toByte()), extensions.prf!!.results!!.first)
+        assertContentEquals(byteArrayOf(0xAA.toByte()), extensions.prf!!.results!!.first.bytes())
 
         // Round trip
         val backToDto = WebAuthnDtoMapper.fromModel(result.value)
@@ -499,4 +502,11 @@ class WebAuthnDtoMapperTest {
         }
         return result
     }
+
+    private fun rpIdHash(fill: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { fill.toByte() })
+
+    private fun aaguid(fill: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { fill.toByte() })
+
+    private fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
+        Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 }

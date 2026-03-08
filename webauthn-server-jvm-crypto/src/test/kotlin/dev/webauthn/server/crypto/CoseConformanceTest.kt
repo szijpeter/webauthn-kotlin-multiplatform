@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.CoseAlgorithm
+import dev.webauthn.model.CosePublicKey
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -125,7 +126,7 @@ class CoseConformanceTest {
     fun signatureVerifier_returnsFalseForMalformedCose() {
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = byteArrayOf(0x00, 0x01, 0x02), // not a COSE map
+            publicKeyCose = CosePublicKey.fromBytes(byteArrayOf(0x00, 0x01, 0x02)), // not a COSE map
             data = byteArrayOf(1, 2, 3),
             signature = ByteArray(64),
         )
@@ -142,7 +143,7 @@ class CoseConformanceTest {
         )
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = coseOkp,
+            publicKeyCose = CosePublicKey.fromBytes(coseOkp),
             data = byteArrayOf(1, 2, 3),
             signature = ByteArray(64),
         )

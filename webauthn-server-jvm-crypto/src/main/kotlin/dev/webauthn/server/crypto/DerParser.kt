@@ -12,7 +12,7 @@ internal class DerParser(private val data: ByteArray) {
     val isExhausted: Boolean
         get() = pos >= data.size
 
-    data class Header(val tag: Int, val value: ByteArray)
+    class Header(val tag: Int, val value: ByteArray)
 
     fun readNextTLV(): Header {
         return readHeader()

@@ -2,6 +2,7 @@ package dev.webauthn.core
 
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.LargeBlobExtensionInput
 import dev.webauthn.model.LargeBlobExtensionOutput
@@ -55,8 +56,8 @@ class WebAuthnExtensionValidatorTest {
     fun registrationFailsIfPrfReportedDisabledButInputsProvided() {
         val inputs = AuthenticationExtensionsClientInputs(
             prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1))
-            )
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1)),
+            ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
             prf = dev.webauthn.model.PrfExtensionOutput(enabled = false)
@@ -70,7 +71,7 @@ class WebAuthnExtensionValidatorTest {
     fun registrationFailsIfPrfRequestedButOutputMissing() {
         val inputs = AuthenticationExtensionsClientInputs(
             prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1)),
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1)),
             ),
         )
 
@@ -82,7 +83,7 @@ class WebAuthnExtensionValidatorTest {
     fun authenticationFailsIfPrfRequestedButResultsMissing() {
         val inputs = AuthenticationExtensionsClientInputs(
             prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1)),
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1)),
             ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
@@ -100,13 +101,13 @@ class WebAuthnExtensionValidatorTest {
     fun authenticationFailsIfPrfResultsMissingSecondOutput() {
         val inputs = AuthenticationExtensionsClientInputs(
             prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1), byteArrayOf(2))
-            )
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
+            ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
             prf = dev.webauthn.model.PrfExtensionOutput(
-                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(3)) // missing second
-            )
+                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(3)), // missing second
+            ),
         )
 
         val result = WebAuthnExtensionValidator.validateAuthenticationExtensions(inputs, outputs)
@@ -117,16 +118,19 @@ class WebAuthnExtensionValidatorTest {
     fun authenticationPassesIfPrfResultsMatchRequestedOutputCount() {
         val inputs = AuthenticationExtensionsClientInputs(
             prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(1), byteArrayOf(2))
-            )
+                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
+            ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
             prf = dev.webauthn.model.PrfExtensionOutput(
-                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(byteArrayOf(3), byteArrayOf(4))
-            )
+                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(3), bytes(4)),
+            ),
         )
 
         val result = WebAuthnExtensionValidator.validateAuthenticationExtensions(inputs, outputs)
         assertTrue(result is ValidationResult.Valid)
     }
+
+    private fun bytes(vararg value: Int): Base64UrlBytes =
+        Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 }

@@ -67,3 +67,21 @@ Policy:
 2. Keep the API boundary domain-owned (`PasskeyClient`, `PasskeyResult`, `PasskeyClientError`) even when platform SDK errors are richer.
 3. Prefer additive capability flags (`PasskeyCapabilities`) over target-specific branching in public API signatures.
 4. Keep serialization strategy replaceable through `PasskeyJsonMapper` in optional JSON module so alternative mappers can be used without core API changes.
+
+## Immutable Byte Contracts
+
+Public shared model contracts no longer expose raw `ByteArray` properties for value objects.
+
+Decision:
+
+1. Keep existing domain wrappers that already encode opaque binary values well (`Base64UrlBytes`, `Challenge`, `CredentialId`, `UserHandle`).
+2. Use `Base64UrlBytes` as the shared generic immutable byte value type, with narrow wrappers only where domain invariants matter.
+3. Use narrow domain wrappers where fixed-size invariants matter (`RpIdHash`, `Aaguid`).
+4. Keep `webauthn-crypto-api` Signum-agnostic by exposing library-owned byte/domain types rather than third-party byte container types.
+
+Rationale:
+
+1. Kotlin `data class` equality and hashing are unsafe for array properties because arrays keep identity-based semantics.
+2. Public `ByteArray` properties also leak mutability through shallow copies and shared references.
+3. Repo-owned immutable wrappers give content-based equality, stable hashing, and defensive-copy boundaries without introducing a third-party public API dependency.
+4. Fixed-size wrappers keep protocol invariants close to the type system and remove repeated length checks from call sites.

@@ -9,10 +9,12 @@ import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.AttestedCredentialData
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -22,6 +24,7 @@ import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
@@ -246,14 +249,14 @@ private fun validRegistrationResponse(): RegistrationResponse {
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
         attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
         rawAuthenticatorData = AuthenticatorData(
-            rpIdHash = ByteArray(32) { 1 },
+            rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 1 }),
             flags = 0x41,
             signCount = 1,
         ),
         attestedCredentialData = AttestedCredentialData(
-            aaguid = ByteArray(16) { 2 },
+            aaguid = Aaguid.fromBytes(ByteArray(16) { 2 }),
             credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-            cosePublicKey = byteArrayOf(1, 2, 3),
+            cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
         ),
     )
 }
@@ -264,7 +267,7 @@ private fun validAuthenticationResponse(): AuthenticationResponse {
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
         rawAuthenticatorData = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
         authenticatorData = AuthenticatorData(
-            rpIdHash = ByteArray(32) { 1 },
+            rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 1 }),
             flags = 0x01,
             signCount = 2,
         ),

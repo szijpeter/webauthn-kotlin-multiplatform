@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
@@ -13,6 +14,7 @@ import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import java.security.KeyPairGenerator
@@ -102,7 +104,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, extensionValue)
         
         // Use the cert itself as the trust anchor
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> listOf(attCert) }
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(attCert) }
         
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
@@ -705,12 +707,37 @@ class AndroidKeyAttestationStatementVerifierTest {
                 credentialId = credentialId,
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
-                rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey)
+                rawAuthenticatorData = authenticatorData(authData),
+                attestedCredentialData = AttestedCredentialData(
+                    aaguid = aaguidFromAuthData(authData),
+                    credentialId = credentialId,
+                    cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
+                ),
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
+    }
+
+    private fun authenticatorData(authData: ByteArray): AuthenticatorData {
+        require(authData.size >= 37) { "authData must contain rpIdHash, flags, and signCount" }
+        return AuthenticatorData(
+            rpIdHash = RpIdHash.fromBytes(authData.copyOfRange(0, 32)),
+            flags = authData[32].toInt() and 0xFF,
+            signCount = readUnsignedInt(authData, 33),
+        )
+    }
+
+    private fun aaguidFromAuthData(authData: ByteArray): Aaguid {
+        require(authData.size >= 53) { "authData must contain AAGUID" }
+        return Aaguid.fromBytes(authData.copyOfRange(37, 53))
+    }
+
+    private fun readUnsignedInt(source: ByteArray, offset: Int): Long {
+        return ((source[offset].toLong() and 0xFF) shl 24) or
+            ((source[offset + 1].toLong() and 0xFF) shl 16) or
+            ((source[offset + 2].toLong() and 0xFF) shl 8) or
+            (source[offset + 3].toLong() and 0xFF)
     }
 
     private fun validCoseEcKeyBytes(): ByteArray {

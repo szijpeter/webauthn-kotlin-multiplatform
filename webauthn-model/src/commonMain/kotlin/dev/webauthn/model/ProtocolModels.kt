@@ -40,15 +40,15 @@ public data class PrfExtensionInput(
 )
 
 public data class AuthenticationExtensionsPRFValues(
-    public val first: ByteArray,
-    public val second: ByteArray? = null,
+    public val first: Base64UrlBytes,
+    public val second: Base64UrlBytes? = null,
 )
 
 /** W3C WebAuthn L3: §9.2.2. Large blob storage extension (largeBlob) */
 public data class LargeBlobExtensionInput(
     public val support: LargeBlobSupport? = null,
     public val read: Boolean? = null,
-    public val write: ByteArray? = null,
+    public val write: Base64UrlBytes? = null,
 ) {
     public enum class LargeBlobSupport {
         REQUIRED,
@@ -71,7 +71,7 @@ public data class PrfExtensionOutput(
 /** W3C WebAuthn L3: §9.2.2. Large blob storage extension (largeBlob) Output */
 public data class LargeBlobExtensionOutput(
     public val supported: Boolean? = null,
-    public val blob: ByteArray? = null,
+    public val blob: Base64UrlBytes? = null,
     public val written: Boolean? = null,
 )
 
@@ -112,16 +112,16 @@ public data class CollectedClientData(
 
 /** W3C WebAuthn L3: §6.1. Authenticator Data */
 public data class AuthenticatorData(
-    public val rpIdHash: ByteArray,
+    public val rpIdHash: RpIdHash,
     public val flags: Int,
     public val signCount: Long,
 )
 
 /** W3C WebAuthn L3: §6.5. Attested Credential Data */
 public data class AttestedCredentialData(
-    public val aaguid: ByteArray,
+    public val aaguid: Aaguid,
     public val credentialId: CredentialId,
-    public val cosePublicKey: ByteArray,
+    public val cosePublicKey: CosePublicKey,
 )
 
 /** W3C WebAuthn L3: §5.2. AuthenticatorAttestationResponse Interface */
@@ -146,4 +146,3 @@ public data class AuthenticationResponse(
     public val authenticatorAttachment: AuthenticatorAttachment? = null,
     public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
-

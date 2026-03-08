@@ -91,7 +91,7 @@ internal class AppleAttestationStatementVerifier(
 
         // W3C WebAuthn L3: §8.8 Step 2: Verify that credential public key matches the public key in the attestation certificate
         val credPubKeyBytes = input.response.attestedCredentialData.cosePublicKey
-        if (credPubKeyBytes.isNotEmpty()) {
+        if (credPubKeyBytes.bytes().isNotEmpty()) {
             val metadata = SignumPrimitives.decodeCoseMaterial(credPubKeyBytes)
             if (metadata != null && metadata.kty == 2L) {
                 val certMetadata = try {

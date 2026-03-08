@@ -6,12 +6,14 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
@@ -215,8 +217,8 @@ class FidoU2fAttestationStatementVerifierTest {
                 credentialId = credentialId,
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
-                rawAuthenticatorData = AuthenticatorData(rpIdHash, 0x41, 1),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, cosePublicKey),
+                rawAuthenticatorData = AuthenticatorData(RpIdHash.fromBytes(rpIdHash), 0x41, 1),
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, CosePublicKey.fromBytes(cosePublicKey)),
             ),
             clientData = CollectedClientData(
                 "webauthn.create",

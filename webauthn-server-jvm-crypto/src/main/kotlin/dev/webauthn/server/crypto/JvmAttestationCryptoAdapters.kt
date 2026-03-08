@@ -11,7 +11,7 @@ import java.security.cert.TrustAnchor
 import java.security.cert.X509Certificate
 import java.security.interfaces.ECPublicKey
 
-internal data class CosePublicKeyMaterial(
+internal class CosePublicKeyMaterial(
     val kty: Long,
     val alg: Long? = null,
     val crv: Long? = null,
@@ -21,7 +21,7 @@ internal data class CosePublicKeyMaterial(
     val e: ByteArray? = null,
 )
 
-internal data class ParsedCertificate(
+internal class ParsedCertificate(
     val subjectDistinguishedName: String,
     val version: Int,
     val basicConstraints: Int,

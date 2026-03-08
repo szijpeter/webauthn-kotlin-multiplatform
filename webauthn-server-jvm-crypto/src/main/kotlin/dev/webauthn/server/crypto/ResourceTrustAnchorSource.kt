@@ -1,15 +1,17 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.TrustAnchorSource
+import dev.webauthn.model.Aaguid
+import dev.webauthn.model.Base64UrlBytes
 import java.io.InputStream
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
 public class ResourceTrustAnchorSource : TrustAnchorSource {
 
-    private val trustedCerts: List<ByteArray> by lazy {
+    private val trustedCerts: List<Base64UrlBytes> by lazy {
         val factory = CertificateFactory.getInstance("X.509")
-        val certs = mutableListOf<ByteArray>()
+        val certs = mutableListOf<Base64UrlBytes>()
 
         val filenames = listOf(
             "Apple_WebAuthn_Root_CA.pem",
@@ -28,7 +30,7 @@ public class ResourceTrustAnchorSource : TrustAnchorSource {
                         val generatedCerts = factory.generateCertificates(it)
                         for (cert in generatedCerts) {
                             if (cert is X509Certificate) {
-                                certs.add(cert.encoded)
+                                certs.add(Base64UrlBytes.fromBytes(cert.encoded))
                             }
                         }
                     } catch (e: Exception) {
@@ -42,7 +44,7 @@ public class ResourceTrustAnchorSource : TrustAnchorSource {
         certs
     }
 
-    override fun findTrustAnchors(aaguid: ByteArray?): List<ByteArray> {
+    override fun findTrustAnchors(aaguid: Aaguid?): List<Base64UrlBytes> {
         // Return all trusted roots.
         // In a more advanced implementation, we could filter by AAGUID if we had a mapping.
         return trustedCerts

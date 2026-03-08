@@ -7,6 +7,7 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -32,7 +33,7 @@ public data class StoredCredential(
     public val credentialId: CredentialId,
     public val userId: UserHandle,
     public val rpId: RpId,
-    public val publicKeyCose: ByteArray,
+    public val publicKeyCose: CosePublicKey,
     public val signCount: Long,
 )
 

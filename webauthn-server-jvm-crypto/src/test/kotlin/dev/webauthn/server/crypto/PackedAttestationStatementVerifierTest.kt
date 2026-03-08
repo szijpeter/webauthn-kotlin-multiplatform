@@ -165,6 +165,40 @@ class PackedAttestationStatementVerifierTest {
         assertTrue(result is ValidationResult.Invalid)
     }
 
+    @Test
+    fun fullAttestationFailsWhenAuthDataIsTooShortForAaguid() {
+        val kp = generateES256KeyPair()
+        val attCert = generateSelfSignedAttestationCert(kp)
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
+        val authData = ByteArray(33).apply {
+            repeat(32) { index -> this[index] = 0x10.toByte() }
+            this[32] = 0x40.toByte()
+        }
+        val signatureBase = authData + sha256(clientDataJson)
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
+
+        val attestationObject = buildPackedAttestationObject(
+            authData = authData,
+            alg = CoseAlgorithm.ES256.code.toLong(),
+            sig = sig,
+            x5c = listOf(attCert),
+        )
+
+        val verifier = PackedAttestationStatementVerifier(
+            signatureVerifier = spkiSignatureVerifier(),
+        )
+
+        val result = verifier.verify(
+            sampleInput(credentialId, clientDataJson, attestationObject, authData, ByteArray(32)),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            (result as ValidationResult.Invalid).errors.any { it.message.contains("too short to contain AAGUID") },
+        )
+    }
+
     // ---- ECDAA rejection ----
 
     @Test
@@ -357,14 +391,14 @@ class PackedAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(
-                    rpIdHash = ByteArray(32),
+                    rpIdHash = rpIdHash(),
                     flags = 0x41,
                     signCount = 1,
                 ),
                 attestedCredentialData = AttestedCredentialData(
-                    aaguid = ByteArray(16),
+                    aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = cosePublicKey,
+                    cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData(
