@@ -1,11 +1,13 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -217,7 +219,7 @@ class FidoU2fAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(RpIdHash.fromBytes(rpIdHash), 0x41, 1),
-                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey)),
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, CosePublicKey.fromBytes(cosePublicKey)),
             ),
             clientData = CollectedClientData(
                 "webauthn.create",
@@ -227,6 +229,8 @@ class FidoU2fAttestationStatementVerifierTest {
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
     }
+
+    private fun aaguid(): Aaguid = Aaguid.fromBytes(ByteArray(16))
 
     @Test
     fun sharedCryptoServices_noRegressionInValidAndInvalidCases() {
