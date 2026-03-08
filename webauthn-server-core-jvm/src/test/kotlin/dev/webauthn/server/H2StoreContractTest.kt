@@ -28,7 +28,7 @@ class H2StoreContractTest : StoreContractTestBase() {
         val first = H2StoreTestAdapter.createPersistent(dbFile)
         try {
             first.userStore.save(UserAccount(userHandle, "persistent", "Persistent User"))
-            first.credentialStore.save(StoredCredential(credentialId, userHandle, rpId, byteArrayOf(1, 2, 3), 1))
+            first.credentialStore.save(StoredCredential(credentialId, userHandle, rpId, immutableBytes(1, 2, 3), 1))
             first.credentialStore.updateSignCount(credentialId, 9)
         } finally {
             first.close()

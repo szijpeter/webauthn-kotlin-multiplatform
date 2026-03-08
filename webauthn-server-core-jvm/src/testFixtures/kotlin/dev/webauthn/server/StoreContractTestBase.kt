@@ -7,6 +7,7 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
@@ -75,7 +76,7 @@ abstract class StoreContractTestBase {
 
             val attestationObject = attestationObjectWithAuthData(
                 registrationAuthenticatorDataBytes(
-                    rpIdHash = rpIdHasher.hashRpId("example.com"),
+                    rpIdHash = rpIdHasher.hashRpId("example.com").bytes(),
                     flags = 0x41,
                     signCount = 1,
                     credentialId = credentialId.value.bytes(),
@@ -131,7 +132,9 @@ abstract class StoreContractTestBase {
             val credentialId = CredentialId.fromBytes(ByteArray(16) { 5 })
 
             fixture.userStore.save(UserAccount(userHandle, "bob", "Bob"))
-            fixture.credentialStore.save(StoredCredential(credentialId, userHandle, rpId, byteArrayOf(1, 2, 3), 0))
+            fixture.credentialStore.save(
+                StoredCredential(credentialId, userHandle, rpId, ImmutableBytes.fromBytes(byteArrayOf(1, 2, 3)), 0),
+            )
             fixture.challengeStore.put(
                 ChallengeSession(
                     challenge = challenge,
@@ -145,7 +148,7 @@ abstract class StoreContractTestBase {
             )
 
             val authData = authenticationAuthenticatorDataBytes(
-                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                rpIdHash = rpIdHasher.hashRpId("example.com").bytes(),
                 flags = 0x01,
                 signCount = 2,
             )
@@ -218,7 +221,7 @@ abstract class StoreContractTestBase {
                         attestationObject = Base64UrlBytes.fromBytes(
                             attestationObjectWithAuthData(
                                 registrationAuthenticatorDataBytes(
-                                    rpIdHash = rpIdHasher.hashRpId("example.com"),
+                                    rpIdHash = rpIdHasher.hashRpId("example.com").bytes(),
                                     flags = 0x41,
                                     signCount = 1,
                                     credentialId = byteArrayOf(1),
@@ -257,7 +260,9 @@ abstract class StoreContractTestBase {
             val credentialId = CredentialId.fromBytes(ByteArray(16) { 8 })
             val userHandle = UserHandle.fromBytes(ByteArray(16) { 8 })
             fixture.userStore.save(UserAccount(userHandle, "bob", "Bob"))
-            fixture.credentialStore.save(StoredCredential(credentialId, userHandle, rpId, byteArrayOf(1), 0))
+            fixture.credentialStore.save(
+                StoredCredential(credentialId, userHandle, rpId, ImmutableBytes.fromBytes(byteArrayOf(1)), 0),
+            )
             fixture.challengeStore.put(
                 ChallengeSession(
                     challenge = challenge,
@@ -277,7 +282,7 @@ abstract class StoreContractTestBase {
                     response = AuthenticationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1)).encoded(),
                         authenticatorData = Base64UrlBytes.fromBytes(
-                            authenticationAuthenticatorDataBytes(rpIdHasher.hashRpId("example.com"), 0x01, 1),
+                            authenticationAuthenticatorDataBytes(rpIdHasher.hashRpId("example.com").bytes(), 0x01, 1),
                         ).encoded(),
                         signature = "YWFh",
                         userHandle = null,

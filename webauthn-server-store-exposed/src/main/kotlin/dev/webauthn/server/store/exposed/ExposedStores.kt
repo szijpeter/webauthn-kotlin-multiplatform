@@ -154,7 +154,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                 Credentials.update({ Credentials.credentialId eq credential.credentialId.value.encoded() }) {
                     it[userId] = credential.userId.value.encoded()
                     it[rpId] = credential.rpId.value
-                    it[publicKey] = credential.publicKeyCose
+                    it[publicKey] = credential.publicKeyCose.bytes()
                     it[signCount] = credential.signCount
                 }
             } else {
@@ -162,7 +162,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                     it[credentialId] = credential.credentialId.value.encoded()
                     it[userId] = credential.userId.value.encoded()
                     it[rpId] = credential.rpId.value
-                    it[publicKey] = credential.publicKeyCose
+                    it[publicKey] = credential.publicKeyCose.bytes()
                     it[signCount] = credential.signCount
                 }
             }
@@ -177,7 +177,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
                         userId = UserHandle.parse(row[Credentials.userId]).getOrThrow(),
                         rpId = RpId.parseOrThrow(row[Credentials.rpId]),
-                        publicKeyCose = row[Credentials.publicKey],
+                        publicKeyCose = dev.webauthn.model.ImmutableBytes.fromBytes(row[Credentials.publicKey]),
                         signCount = row[Credentials.signCount],
                     )
                 }
@@ -192,7 +192,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
                         userId = UserHandle.parse(row[Credentials.userId]).getOrThrow(),
                         rpId = RpId.parseOrThrow(row[Credentials.rpId]),
-                        publicKeyCose = row[Credentials.publicKey],
+                        publicKeyCose = dev.webauthn.model.ImmutableBytes.fromBytes(row[Credentials.publicKey]),
                         signCount = row[Credentials.signCount],
                     )
                 }

@@ -5,6 +5,7 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.crypto.coseAlgorithmFromCode
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
@@ -145,7 +146,7 @@ public class PackedAttestationStatementVerifier internal constructor(
         val hasAt = (flags.toInt() and 0x40) != 0
 
         if (hasAt && signatureBase.size >= 53) {
-            val aaguid = signatureBase.copyOfRange(37, 37 + 16)
+            val aaguid = Aaguid.fromBytes(signatureBase.copyOfRange(37, 37 + 16))
             val aaguidCheck = AaguidMismatchVerifier.verify(attCertDer, aaguid, certificateInspector)
             if (aaguidCheck is ValidationResult.Invalid) {
                 return aaguidCheck
@@ -154,7 +155,7 @@ public class PackedAttestationStatementVerifier internal constructor(
 
         if (trustChainVerifier != null) {
             val aaguid = if (hasAt && signatureBase.size >= 53) {
-                signatureBase.copyOfRange(37, 37 + 16)
+                Aaguid.fromBytes(signatureBase.copyOfRange(37, 37 + 16))
             } else {
                 null
             }

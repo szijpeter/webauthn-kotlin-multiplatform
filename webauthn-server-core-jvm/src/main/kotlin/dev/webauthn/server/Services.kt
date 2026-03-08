@@ -140,7 +140,7 @@ public class RegistrationService(
 
         val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
         // W3C WebAuthn L3: §7.1 Step 14: Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
-        if (!response.rawAuthenticatorData.rpIdHash.contentEquals(rpHashExpected)) {
+        if (response.rawAuthenticatorData.rpIdHash != rpHashExpected) {
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
 
@@ -281,7 +281,7 @@ public class AuthenticationService(
 
         val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
         // W3C WebAuthn L3: §7.2 Step 19: Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
-        if (!response.authenticatorData.rpIdHash.contentEquals(rpHashExpected)) {
+        if (response.authenticatorData.rpIdHash != rpHashExpected) {
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
 

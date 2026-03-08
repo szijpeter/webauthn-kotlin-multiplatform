@@ -357,14 +357,14 @@ class PackedAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(
-                    rpIdHash = ByteArray(32),
+                    rpIdHash = rpIdHash(),
                     flags = 0x41,
                     signCount = 1,
                 ),
                 attestedCredentialData = AttestedCredentialData(
-                    aaguid = ByteArray(16),
+                    aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = cosePublicKey,
+                    cosePublicKey = immutableBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData(

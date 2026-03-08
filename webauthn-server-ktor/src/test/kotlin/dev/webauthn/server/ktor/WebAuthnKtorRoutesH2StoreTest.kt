@@ -1,11 +1,11 @@
 package dev.webauthn.server.ktor
 
-import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.server.AttestationPolicy
 import dev.webauthn.server.AuthenticationService
 import dev.webauthn.server.RegistrationService
+import dev.webauthn.server.byteArraySignatureVerifier
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -42,7 +42,7 @@ class WebAuthnKtorRoutesH2StoreTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
         )
 

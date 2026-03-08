@@ -204,7 +204,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
         )
 
@@ -290,7 +290,7 @@ class ServiceSmokeTest {
             challengeStore = InMemoryChallengeStore(),
             credentialStore = InMemoryCredentialStore(),
             userAccountStore = InMemoryUserAccountStore(),
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher(),
         )
 
@@ -332,7 +332,7 @@ class ServiceSmokeTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
         val attestationObject = attestationObjectWithAuthData(
             registrationAuthenticatorDataBytes(
-                rpIdHash = ByteArray(32) { 0xFF.toByte() },
+                rpIdHash = dev.webauthn.model.RpIdHash.fromBytes(ByteArray(32) { 0xFF.toByte() }),
                 flags = 0x41,
                 signCount = 1,
                 credentialId = credentialId.value.bytes(),
@@ -562,7 +562,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
             nowEpochMs = { currentTime },
         )
@@ -667,7 +667,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
         )
 
@@ -755,7 +755,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
         )
 
@@ -845,7 +845,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> false }, // always fails
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> false }, // always fails
             rpIdHasher = rpIdHasher,
         )
 
@@ -931,7 +931,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { algorithm: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray ->
+            signatureVerifier = byteArraySignatureVerifier { algorithm: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray ->
                 algorithm == CoseAlgorithm.RS256
             },
             rpIdHasher = rpIdHasher,
@@ -1146,7 +1146,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
         )
 
@@ -1381,7 +1381,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
             originMetadataProvider = metadataProvider
         )
@@ -1486,7 +1486,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = SignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
+            signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
             originMetadataProvider = metadataProvider,
         )
@@ -1567,26 +1567,26 @@ class ServiceSmokeTest {
     }
 
     private fun authenticationAuthenticatorDataBytes(
-        rpIdHash: ByteArray,
+        rpIdHash: dev.webauthn.model.RpIdHash,
         flags: Int,
         signCount: Long,
     ): ByteArray {
         return concat(
-            rpIdHash,
+            rpIdHash.bytes(),
             byteArrayOf(flags.toByte()),
             uint32(signCount),
         )
     }
 
     private fun registrationAuthenticatorDataBytes(
-        rpIdHash: ByteArray = ByteArray(32) { 0x10 },
+        rpIdHash: dev.webauthn.model.RpIdHash = dev.webauthn.model.RpIdHash.fromBytes(ByteArray(32) { 0x10 }),
         flags: Int,
         signCount: Long,
         credentialId: ByteArray,
         cosePublicKey: ByteArray,
     ): ByteArray {
         return concat(
-            rpIdHash,
+            rpIdHash.bytes(),
             byteArrayOf(flags.toByte()),
             uint32(signCount),
             ByteArray(16) { 0x22 },

@@ -800,11 +800,11 @@ public object WebAuthnDtoMapper {
         }
     }
 
-    private fun parseBase64Url(value: String, field: String): ValidationResult<ByteArray> {
-        return dev.webauthn.model.Base64UrlBytes.parse(value, field).fold(
-            onValid = { ValidationResult.Valid(it.bytes()) },
-            onInvalid = { ValidationResult.Invalid(it) },
-        )
+    private fun parseBase64Url(
+        value: String,
+        field: String,
+    ): ValidationResult<dev.webauthn.model.ImmutableBytes> {
+        return dev.webauthn.model.ImmutableBytes.parse(value, field)
     }
 
     private fun AuthenticatorAttachment.toDtoValue(): String {
@@ -904,11 +904,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    private fun ByteArray.toBase64Url(): String = dev.webauthn.model.Base64UrlBytes.fromBytes(this).encoded()
-    private fun String.fromBase64Url(): ByteArray = dev.webauthn.model.Base64UrlBytes.parse(this).fold(
-        onValid = { it.bytes() },
-        onInvalid = { throw IllegalArgumentException("Invalid base64url: $it") }
-    )
+    private fun dev.webauthn.model.ImmutableBytes.toBase64Url(): String = encoded()
 }
 
 private data class ParsedAuthenticatorData(
@@ -941,7 +937,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
         )
     }
 
-    val rpIdHash = bytes.copyOfRange(0, 32)
+    val rpIdHash = dev.webauthn.model.RpIdHash.fromBytes(bytes.copyOfRange(0, 32))
     val flags = bytes[32].toInt() and 0xFF
     val signCount = bytes.readUint32(33)
     var offset = 37
@@ -957,7 +953,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
                 ),
             )
         }
-        val aaguid = bytes.copyOfRange(offset, offset + 16)
+        val aaguid = dev.webauthn.model.Aaguid.fromBytes(bytes.copyOfRange(offset, offset + 16))
         offset += 16
         val credentialIdLength = bytes.readUint16(offset)
         offset += 2
@@ -985,7 +981,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
         AttestedCredentialData(
             aaguid = aaguid,
             credentialId = CredentialId.fromBytes(credentialId),
-            cosePublicKey = bytes.copyOfRange(offset, coseEnd),
+            cosePublicKey = dev.webauthn.model.ImmutableBytes.fromBytes(bytes.copyOfRange(offset, coseEnd)),
         )
     } else {
         null
