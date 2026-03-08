@@ -51,7 +51,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> immutableList(certBytes) }
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(certBytes) }
         val chainVerifier = TrustChainVerifier(trustSource)
         val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -72,7 +72,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         val certB64 = Base64.getEncoder().encodeToString(certBytes)
         
         // Use the cert itself as the trust anchor
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> immutableList(certBytes) }
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(certBytes) }
         val chainVerifier = TrustChainVerifier(trustSource)
 
         val headerJson = """{"alg":"RS256","x5c":["$certB64"]}"""
@@ -160,7 +160,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> immutableList(certBytes) }
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(certBytes) }
         val chainVerifier = TrustChainVerifier(trustSource)
         val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -245,7 +245,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(rpIdHash(), 0, 0),
-                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, immutableBytes(ByteArray(0)))
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, base64UrlBytes(ByteArray(0)))
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

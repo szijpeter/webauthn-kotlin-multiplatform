@@ -83,7 +83,7 @@ class NoneAttestationStatementVerifierTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = immutableBytes(0xA1, 0x01, 0x02),
+                    cosePublicKey = base64UrlBytes(0xA1, 0x01, 0x02),
                 ),
             ),
             clientData = dev.webauthn.model.CollectedClientData(

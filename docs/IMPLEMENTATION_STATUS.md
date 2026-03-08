@@ -21,7 +21,7 @@ Last updated: 2026-03-08
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
 - Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and lightweight operation state.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
-- Shared model contracts now use immutable byte/domain wrappers for opaque binary values (`ImmutableBytes`, `RpIdHash`, `Aaguid`) instead of public raw `ByteArray` properties.
+- Shared model contracts now use `Base64UrlBytes` plus domain-specific fixed-size wrappers (`RpIdHash`, `Aaguid`) instead of public raw `ByteArray` properties.
 - Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
 - Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.

@@ -7,7 +7,6 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.CredentialId
-import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
@@ -401,7 +400,7 @@ private fun validRegistrationResponse(): RegistrationResponse {
         attestedCredentialData = AttestedCredentialData(
             aaguid = aaguid(2),
             credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-            cosePublicKey = immutableBytes(1, 2, 3),
+            cosePublicKey = base64UrlBytes(1, 2, 3),
         ),
         authenticatorAttachment = AuthenticatorAttachment.PLATFORM,
     )
@@ -425,5 +424,5 @@ private fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { s
 
 private fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
 
-private fun immutableBytes(vararg value: Int): ImmutableBytes =
-    ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
+private fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
+    Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })

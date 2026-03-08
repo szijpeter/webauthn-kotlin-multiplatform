@@ -44,9 +44,9 @@ This document maps currently implemented validation behavior to normative requir
 - `validateRegistrationReturnsCredentialIdAndSignCountForValidInput`
 - `validateAuthenticationReturnsCredentialIdAndSignCountForValidInput`
 - `roundTripEncodesAndDecodesForMultipleLengths`
-- `immutableBytesUseContentBasedEqualityAndHashCode`
-- `immutableBytesDoNotTrackSourceArrayMutation`
-- `immutableBytesReturnDefensiveCopies`
+- `base64UrlBytesUseContentBasedEqualityAndHashCode`
+- `base64UrlBytesDoNotTrackSourceArrayMutation`
+- `base64UrlBytesReturnDefensiveCopies`
 - `registrationFinishSucceedsWithRelatedOrigin`
 - `authenticationFinishSucceedsWithRelatedOrigin`
 - `verifyPassesForValidU2fAttestation`

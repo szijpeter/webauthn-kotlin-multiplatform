@@ -299,7 +299,7 @@ private fun java.sql.ResultSet.toStoredCredential(): StoredCredential {
         credentialId = CredentialId.parseOrThrow(getString("credential_id")),
         userId = UserHandle.parse(getString("user_id")).getOrThrow(),
         rpId = RpId.parseOrThrow(getString("rp_id")),
-        publicKeyCose = dev.webauthn.model.ImmutableBytes.fromBytes(getBytes("public_key")),
+        publicKeyCose = dev.webauthn.model.Base64UrlBytes.fromBytes(getBytes("public_key")),
         signCount = getLong("sign_count"),
     )
 }

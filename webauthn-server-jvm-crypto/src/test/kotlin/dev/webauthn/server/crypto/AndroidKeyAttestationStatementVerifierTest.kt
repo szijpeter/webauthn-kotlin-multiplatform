@@ -102,7 +102,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, extensionValue)
         
         // Use the cert itself as the trust anchor
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> immutableList(attCert) }
+        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(attCert) }
         
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
@@ -706,7 +706,7 @@ class AndroidKeyAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(rpIdHash(), 0, 0),
-                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, immutableBytes(cosePublicKey))
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, base64UrlBytes(cosePublicKey))
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

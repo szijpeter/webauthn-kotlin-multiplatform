@@ -7,7 +7,6 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CredentialId
-import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
@@ -133,7 +132,7 @@ abstract class StoreContractTestBase {
 
             fixture.userStore.save(UserAccount(userHandle, "bob", "Bob"))
             fixture.credentialStore.save(
-                StoredCredential(credentialId, userHandle, rpId, ImmutableBytes.fromBytes(byteArrayOf(1, 2, 3)), 0),
+                StoredCredential(credentialId, userHandle, rpId, Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)), 0),
             )
             fixture.challengeStore.put(
                 ChallengeSession(
@@ -261,7 +260,7 @@ abstract class StoreContractTestBase {
             val userHandle = UserHandle.fromBytes(ByteArray(16) { 8 })
             fixture.userStore.save(UserAccount(userHandle, "bob", "Bob"))
             fixture.credentialStore.save(
-                StoredCredential(credentialId, userHandle, rpId, ImmutableBytes.fromBytes(byteArrayOf(1)), 0),
+                StoredCredential(credentialId, userHandle, rpId, Base64UrlBytes.fromBytes(byteArrayOf(1)), 0),
             )
             fixture.challengeStore.put(
                 ChallengeSession(

@@ -7,7 +7,6 @@ import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
-import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -229,7 +228,7 @@ class PasskeyControllerTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguid(2),
                     credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-                    cosePublicKey = immutableBytes(1, 2, 3),
+                    cosePublicKey = base64UrlBytes(1, 2, 3),
                 ),
             )
         }
@@ -238,7 +237,7 @@ class PasskeyControllerTest {
 
         fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
 
-        fun immutableBytes(vararg value: Int): ImmutableBytes =
-            ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
+        fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
+            Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
     }
 }

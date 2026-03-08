@@ -4,7 +4,6 @@ import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import dev.webauthn.model.ImmutableBytes
 
 public class TrustChainVerifier internal constructor(
     private val trustAnchorSource: TrustAnchorSource,
@@ -23,7 +22,7 @@ public class TrustChainVerifier internal constructor(
             )
         }
 
-        val trustAnchorsDer = trustAnchorSource.findTrustAnchors(aaguid).map(ImmutableBytes::bytes)
+        val trustAnchorsDer = trustAnchorSource.findTrustAnchors(aaguid).map { it.bytes() }
         if (trustAnchorsDer.isEmpty()) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "No trust anchors found for this authenticator")),

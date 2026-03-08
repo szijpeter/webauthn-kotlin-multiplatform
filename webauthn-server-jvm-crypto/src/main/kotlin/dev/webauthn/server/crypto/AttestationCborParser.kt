@@ -14,7 +14,7 @@ import dev.webauthn.internal.cbor.skipCborItem
  * Extracts `fmt`, `authData`, and `attStmt` fields from the CBOR-encoded attestation object.
  * For `attStmt`, extracts packed-format fields: `alg`, `sig`, `x5c`, and `ecdaaKeyId`.
  */
-internal data class ParsedAttestationObject(
+internal class ParsedAttestationObject(
     val fmt: String,
     val attStmtEntryCount: Int,
     val authDataBytes: ByteArray? = null,

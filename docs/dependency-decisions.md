@@ -75,7 +75,7 @@ Public shared model contracts no longer expose raw `ByteArray` properties for va
 Decision:
 
 1. Keep existing domain wrappers that already encode opaque binary values well (`Base64UrlBytes`, `Challenge`, `CredentialId`, `UserHandle`).
-2. Use repo-owned immutable byte wrappers for new generic binary value semantics (`ImmutableBytes`).
+2. Use `Base64UrlBytes` as the shared generic immutable byte value type, with narrow wrappers only where domain invariants matter.
 3. Use narrow domain wrappers where fixed-size invariants matter (`RpIdHash`, `Aaguid`).
 4. Keep `webauthn-crypto-api` Signum-agnostic by exposing library-owned byte/domain types rather than third-party byte container types.
 

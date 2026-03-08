@@ -364,7 +364,7 @@ class PackedAttestationStatementVerifierTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = immutableBytes(cosePublicKey),
+                    cosePublicKey = base64UrlBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData(

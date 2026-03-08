@@ -4,14 +4,13 @@ import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
-import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 
 public fun interface SignatureVerifier {
     public fun verify(
         algorithm: CoseAlgorithm,
-        publicKeyCose: ImmutableBytes,
+        publicKeyCose: Base64UrlBytes,
         data: ByteArray,
         signature: ByteArray,
     ): Boolean
@@ -22,7 +21,7 @@ public fun interface AttestationVerifier {
 }
 
 public fun interface TrustAnchorSource {
-    public fun findTrustAnchors(aaguid: Aaguid?): List<ImmutableBytes>
+    public fun findTrustAnchors(aaguid: Aaguid?): List<Base64UrlBytes>
 }
 
 public fun interface RpIdHasher {
@@ -40,6 +39,6 @@ public fun coseAlgorithmFromCode(code: Int): CoseAlgorithm? =
 
 public data class SignedAuthenticationPayload(
     public val authenticatorData: AuthenticatorData,
-    public val clientDataHash: ImmutableBytes,
+    public val clientDataHash: Base64UrlBytes,
     public val signature: Base64UrlBytes,
 )

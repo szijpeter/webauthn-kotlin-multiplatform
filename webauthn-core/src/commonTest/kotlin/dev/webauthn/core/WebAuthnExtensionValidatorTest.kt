@@ -2,8 +2,8 @@ package dev.webauthn.core
 
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
-import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.LargeBlobExtensionInput
 import dev.webauthn.model.LargeBlobExtensionOutput
 import dev.webauthn.model.ValidationResult
@@ -131,6 +131,6 @@ class WebAuthnExtensionValidatorTest {
         assertTrue(result is ValidationResult.Valid)
     }
 
-    private fun bytes(vararg value: Int): ImmutableBytes =
-        ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
+    private fun bytes(vararg value: Int): Base64UrlBytes =
+        Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 }

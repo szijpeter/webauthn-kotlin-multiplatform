@@ -220,7 +220,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
                         userId = UserHandle.parse(row[Credentials.userId]).getOrThrow(),
                         rpId = RpId.parseOrThrow(row[Credentials.rpId]),
-                        publicKeyCose = dev.webauthn.model.ImmutableBytes.fromBytes(row[Credentials.publicKey]),
+                        publicKeyCose = dev.webauthn.model.Base64UrlBytes.fromBytes(row[Credentials.publicKey]),
                         signCount = row[Credentials.signCount],
                     )
                 }
@@ -235,7 +235,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
                         userId = UserHandle.parse(row[Credentials.userId]).getOrThrow(),
                         rpId = RpId.parseOrThrow(row[Credentials.rpId]),
-                        publicKeyCose = dev.webauthn.model.ImmutableBytes.fromBytes(row[Credentials.publicKey]),
+                        publicKeyCose = dev.webauthn.model.Base64UrlBytes.fromBytes(row[Credentials.publicKey]),
                         signCount = row[Credentials.signCount],
                     )
                 }

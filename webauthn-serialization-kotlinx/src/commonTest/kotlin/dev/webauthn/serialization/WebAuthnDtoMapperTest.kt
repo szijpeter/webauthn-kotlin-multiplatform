@@ -5,7 +5,6 @@ import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.CredentialId
-import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.RpIdHash
@@ -217,7 +216,7 @@ class WebAuthnDtoMapperTest {
             attestedCredentialData = AttestedCredentialData(
                 aaguid = aaguid(0x02),
                 credentialId = attestedCredentialId,
-                cosePublicKey = immutableBytes(0xA1, 0x01, 0x02),
+                cosePublicKey = base64UrlBytes(0xA1, 0x01, 0x02),
             ),
             extensions = null,
         )
@@ -507,6 +506,6 @@ class WebAuthnDtoMapperTest {
 
     private fun aaguid(fill: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { fill.toByte() })
 
-    private fun immutableBytes(vararg value: Int): ImmutableBytes =
-        ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
+    private fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
+        Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 }

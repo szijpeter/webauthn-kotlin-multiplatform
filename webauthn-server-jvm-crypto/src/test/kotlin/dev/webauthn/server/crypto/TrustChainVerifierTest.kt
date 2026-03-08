@@ -22,7 +22,7 @@ class TrustChainVerifierTest {
             issuerPrivateKey = rootKp.private,
         )
 
-        val trustSource = TrustAnchorSource { _ -> immutableList(rootCert) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
         val result = verifier.verify(listOf(leafCert), null)
@@ -34,7 +34,7 @@ class TrustChainVerifierTest {
         val rootKp = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
         val rootCert = TestCertificateFixtures.selfSignedRsaCertificate(rootKp, subjectCn = "Root CA")
 
-        val trustSource = TrustAnchorSource { _ -> immutableList(rootCert) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
         val result = verifier.verify(emptyList(), null)
@@ -73,7 +73,7 @@ class TrustChainVerifierTest {
         )
         val wrongAnchor = TestCertificateFixtures.selfSignedRsaCertificate(otherRootKp, subjectCn = "Other Root")
 
-        val trustSource = TrustAnchorSource { _ -> immutableList(wrongAnchor) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(wrongAnchor) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
         val result = verifier.verify(listOf(leafCert), null)
@@ -92,7 +92,7 @@ class TrustChainVerifierTest {
             issuerPrivateKey = rootKp.private,
         )
 
-        val trustSource = TrustAnchorSource { _ -> immutableList(rootCert) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
         val result = verifier.verifyFallbackSignedByNext(listOf(leafCert, rootCert))
@@ -115,7 +115,7 @@ class TrustChainVerifierTest {
             issuerPrivateKey = rootKp.private,
         )
 
-        val trustSource = TrustAnchorSource { _ -> immutableList(rootCert) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
         val result = verifier.verifyFallbackSignedByNext(listOf(leafCert, unrelatedRoot))

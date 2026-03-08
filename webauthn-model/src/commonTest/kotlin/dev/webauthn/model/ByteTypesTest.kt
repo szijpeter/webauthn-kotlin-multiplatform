@@ -8,10 +8,10 @@ import kotlin.test.assertFailsWith
 
 class ByteTypesTest {
     @Test
-    fun immutableBytesUseContentBasedEqualityAndHashCode() {
-        val first = ImmutableBytes.fromBytes(byteArrayOf(1, 2, 3, 4))
-        val second = ImmutableBytes.fromBytes(byteArrayOf(1, 2, 3, 4))
-        val third = ImmutableBytes.fromBytes(byteArrayOf(4, 3, 2, 1))
+    fun base64UrlBytesUseContentBasedEqualityAndHashCode() {
+        val first = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3, 4))
+        val second = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3, 4))
+        val third = Base64UrlBytes.fromBytes(byteArrayOf(4, 3, 2, 1))
 
         assertEquals(first, second)
         assertEquals(first.hashCode(), second.hashCode())
@@ -19,9 +19,9 @@ class ByteTypesTest {
     }
 
     @Test
-    fun immutableBytesDoNotTrackSourceArrayMutation() {
+    fun base64UrlBytesDoNotTrackSourceArrayMutation() {
         val source = byteArrayOf(7, 8, 9)
-        val value = ImmutableBytes.fromBytes(source)
+        val value = Base64UrlBytes.fromBytes(source)
 
         source[0] = 42
 
@@ -29,8 +29,8 @@ class ByteTypesTest {
     }
 
     @Test
-    fun immutableBytesReturnDefensiveCopies() {
-        val value = ImmutableBytes.fromBytes(byteArrayOf(5, 6, 7))
+    fun base64UrlBytesReturnDefensiveCopies() {
+        val value = Base64UrlBytes.fromBytes(byteArrayOf(5, 6, 7))
         val firstRead = value.bytes()
 
         firstRead[1] = 99

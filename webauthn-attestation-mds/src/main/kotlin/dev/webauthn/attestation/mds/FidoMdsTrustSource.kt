@@ -2,7 +2,7 @@ package dev.webauthn.attestation.mds
 
 import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.Aaguid
-import dev.webauthn.model.ImmutableBytes
+import dev.webauthn.model.Base64UrlBytes
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -30,7 +30,7 @@ public class FidoMdsTrustSource(
     @Volatile
     private var cache: CachedBlob? = null
 
-    override fun findTrustAnchors(aaguid: Aaguid?): List<ImmutableBytes> {
+    override fun findTrustAnchors(aaguid: Aaguid?): List<Base64UrlBytes> {
         val snapshot = cache ?: return emptyList()
         val lookupAaguid = aaguid?.bytes()?.joinToString(separator = "") { byte -> "%02x".format(byte) }
         return snapshot.blob.entries
@@ -38,7 +38,7 @@ public class FidoMdsTrustSource(
             .filter { lookupAaguid == null || it.aaguid.equals(lookupAaguid, ignoreCase = true) }
             .flatMap { it.attestationRootCertificates.asSequence() }
             .mapNotNull(::decodePemToDer)
-            .map(ImmutableBytes::fromBytes)
+            .map(Base64UrlBytes::fromBytes)
             .toList()
     }
 
