@@ -58,7 +58,13 @@ public class PackedAttestationStatementVerifier internal constructor(
             ?: return invalid("attestationObject.attStmt.alg", "Unsupported COSE algorithm: $alg")
 
         return if (!parsed.x5c.isNullOrEmpty()) {
-            verifyFullAttestation(parsed.x5c, sig, signatureBase, coseAlgorithm)
+            verifyFullAttestation(
+                x5c = parsed.x5c,
+                sig = sig,
+                signatureBase = signatureBase,
+                authDataBytes = authDataBytes,
+                coseAlgorithm = coseAlgorithm,
+            )
         } else {
             verifySelfAttestation(sig, signatureBase, coseAlgorithm, input)
         }
@@ -113,6 +119,7 @@ public class PackedAttestationStatementVerifier internal constructor(
         x5c: List<ByteArray>,
         sig: ByteArray,
         signatureBase: ByteArray,
+        authDataBytes: ByteArray,
         coseAlgorithm: CoseAlgorithm,
     ): ValidationResult<Unit> {
         val attCertDer = x5c.firstOrNull()
@@ -142,11 +149,20 @@ public class PackedAttestationStatementVerifier internal constructor(
             )
         }
 
-        val flags = signatureBase[32]
-        val hasAt = (flags.toInt() and 0x40) != 0
+        if (authDataBytes.size <= FLAGS_OFFSET) {
+            return invalid("attestationObject.authData", "authData is too short to contain flags")
+        }
 
-        if (hasAt && signatureBase.size >= 53) {
-            val aaguid = Aaguid.fromBytes(signatureBase.copyOfRange(37, 37 + 16))
+        val flags = authDataBytes[FLAGS_OFFSET]
+        val hasAt = (flags.toInt() and 0x40) != 0
+        val aaguid = when {
+            !hasAt -> null
+            authDataBytes.size < AAGUID_END_OFFSET ->
+                return invalid("attestationObject.authData", "authData is too short to contain AAGUID")
+            else -> Aaguid.fromBytes(authDataBytes.copyOfRange(AAGUID_START_OFFSET, AAGUID_END_OFFSET))
+        }
+
+        if (aaguid != null) {
             val aaguidCheck = AaguidMismatchVerifier.verify(attCertDer, aaguid, certificateInspector)
             if (aaguidCheck is ValidationResult.Invalid) {
                 return aaguidCheck
@@ -154,11 +170,6 @@ public class PackedAttestationStatementVerifier internal constructor(
         }
 
         if (trustChainVerifier != null) {
-            val aaguid = if (hasAt && signatureBase.size >= 53) {
-                Aaguid.fromBytes(signatureBase.copyOfRange(37, 37 + 16))
-            } else {
-                null
-            }
             val chainResult = trustChainVerifier.verify(x5c, aaguid)
             if (chainResult is ValidationResult.Invalid) {
                 return chainResult
@@ -172,5 +183,11 @@ public class PackedAttestationStatementVerifier internal constructor(
         return ValidationResult.Invalid(
             listOf(WebAuthnValidationError.InvalidValue(field = field, message = message)),
         )
+    }
+
+    private companion object {
+        private const val FLAGS_OFFSET = 32
+        private const val AAGUID_START_OFFSET = 37
+        private const val AAGUID_END_OFFSET = AAGUID_START_OFFSET + 16
     }
 }

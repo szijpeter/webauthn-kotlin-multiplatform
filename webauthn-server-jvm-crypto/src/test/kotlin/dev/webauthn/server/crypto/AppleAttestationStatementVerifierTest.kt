@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
@@ -13,6 +14,7 @@ import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import java.security.KeyPairGenerator
@@ -282,12 +284,37 @@ class AppleAttestationStatementVerifierTest {
                 credentialId = credentialId,
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
-                rawAuthenticatorData = AuthenticatorData(rpIdHash(), 0, 0),
-                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, base64UrlBytes(credentialPublicKey))
+                rawAuthenticatorData = authenticatorData(authData),
+                attestedCredentialData = AttestedCredentialData(
+                    aaguid = aaguidFromAuthData(authData),
+                    credentialId = credentialId,
+                    cosePublicKey = base64UrlBytes(credentialPublicKey),
+                ),
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
+    }
+
+    private fun authenticatorData(authData: ByteArray): AuthenticatorData {
+        require(authData.size >= 37) { "authData must contain rpIdHash, flags, and signCount" }
+        return AuthenticatorData(
+            rpIdHash = RpIdHash.fromBytes(authData.copyOfRange(0, 32)),
+            flags = authData[32].toInt() and 0xFF,
+            signCount = readUnsignedInt(authData, 33),
+        )
+    }
+
+    private fun aaguidFromAuthData(authData: ByteArray): Aaguid {
+        require(authData.size >= 53) { "authData must contain AAGUID" }
+        return Aaguid.fromBytes(authData.copyOfRange(37, 53))
+    }
+
+    private fun readUnsignedInt(source: ByteArray, offset: Int): Long {
+        return ((source[offset].toLong() and 0xFF) shl 24) or
+            ((source[offset + 1].toLong() and 0xFF) shl 16) or
+            ((source[offset + 2].toLong() and 0xFF) shl 8) or
+            (source[offset + 3].toLong() and 0xFF)
     }
 
     // ASN.1 helpers

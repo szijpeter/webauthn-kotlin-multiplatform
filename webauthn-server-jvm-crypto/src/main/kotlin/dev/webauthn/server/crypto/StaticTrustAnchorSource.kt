@@ -11,9 +11,11 @@ import java.security.cert.X509Certificate
 internal class StaticTrustAnchorSource(
     private val certificates: List<X509Certificate>,
 ) : TrustAnchorSource {
+    private val encodedCertificates: List<Base64UrlBytes> =
+        certificates.map { Base64UrlBytes.fromBytes(it.encoded) }
 
     override fun findTrustAnchors(aaguid: Aaguid?): List<Base64UrlBytes> {
-        return certificates.map { Base64UrlBytes.fromBytes(it.encoded) }
+        return encodedCertificates
     }
 
     companion object {

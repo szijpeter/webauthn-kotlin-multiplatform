@@ -33,13 +33,13 @@ internal object SignumPrimitives {
         decodeCoseMaterialResult(coseKey.bytes()).getOrNull()
 
     fun decodeCoseMaterial(coseKey: ByteArray): CosePublicKeyMaterial? =
-        decodeCoseMaterial(Base64UrlBytes.fromBytes(coseKey))
+        decodeCoseMaterialResult(coseKey).getOrNull()
 
     fun decodeCosePublicKey(coseKey: Base64UrlBytes): CryptoPublicKey? =
         decodeCosePublicKeyResult(coseKey.bytes()).getOrNull()
 
     fun decodeCosePublicKey(coseKey: ByteArray): CryptoPublicKey? =
-        decodeCosePublicKey(Base64UrlBytes.fromBytes(coseKey))
+        decodeCosePublicKeyResult(coseKey).getOrNull()
 
     fun toSubjectPublicKeyInfo(material: CosePublicKeyMaterial): ByteArray? =
         toSubjectPublicKeyInfoResult(material).getOrNull()

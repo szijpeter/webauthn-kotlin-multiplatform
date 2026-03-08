@@ -12,4 +12,5 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.ktor.client.mock)
 }
