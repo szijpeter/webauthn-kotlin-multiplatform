@@ -16,12 +16,20 @@ import dev.webauthn.server.UserAccountStore
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.v1.core.*
-import org.jetbrains.exposed.v1.core.statements.*
-import org.jetbrains.exposed.v1.jdbc.*
-import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.core.Column
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.JdbcTransaction
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.update
+import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 public object ChallengeSessions : Table("challenge_sessions") {
@@ -63,9 +71,14 @@ public fun initializeWebAuthnSchema(database: Database) {
     }
 }
 
+private suspend fun <T> Database.ioTransaction(statement: suspend JdbcTransaction.() -> T): T =
+    withContext(Dispatchers.IO) {
+        suspendTransaction(db = this@ioTransaction, statement = statement)
+    }
+
 public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
     override suspend fun put(session: ChallengeSession) {
-        newSuspendedTransaction(Dispatchers.IO, db) {
+        db.ioTransaction {
             val key = key(session.challenge, session.type)
             val exists = ChallengeSessions.selectAll().where { ChallengeSessions.challengeKey eq key }.singleOrNull() != null
             if (exists) {
@@ -98,11 +111,11 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
     }
 
     override suspend fun consume(challenge: Challenge, type: CeremonyType): ChallengeSession? {
-        return newSuspendedTransaction<ChallengeSession?>(Dispatchers.IO, db) {
+        return db.ioTransaction {
             val key = key(challenge, type)
             val row = ChallengeSessions.selectAll().where { ChallengeSessions.challengeKey eq key }
                 .forUpdate()
-                .singleOrNull() ?: return@newSuspendedTransaction null
+                .singleOrNull() ?: return@ioTransaction null
             
             val session = ChallengeSession(
                 challenge = Challenge.parseOrThrow(row[ChallengeSessions.challengeValue]),
@@ -135,7 +148,7 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
 
 public class ExposedCredentialStore(private val db: Database) : CredentialStore {
     override suspend fun save(credential: StoredCredential) {
-        newSuspendedTransaction(Dispatchers.IO, db) {
+        db.ioTransaction {
             val exists = Credentials.selectAll().where { Credentials.credentialId eq credential.credentialId.value.encoded() }.singleOrNull() != null
             if (exists) {
                 Credentials.update({ Credentials.credentialId eq credential.credentialId.value.encoded() }) {
@@ -157,7 +170,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
     }
 
     override suspend fun findById(id: CredentialId): StoredCredential? {
-        return newSuspendedTransaction<StoredCredential?>(Dispatchers.IO, db) {
+        return db.ioTransaction {
             Credentials.selectAll().where { Credentials.credentialId eq id.value.encoded() }
                 .singleOrNull()?.let { row ->
                     StoredCredential(
@@ -172,7 +185,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
     }
 
     override suspend fun findByUserId(userId: UserHandle): List<StoredCredential> {
-        return newSuspendedTransaction<List<StoredCredential>>(Dispatchers.IO, db) {
+        return db.ioTransaction {
             Credentials.selectAll().where { Credentials.userId eq userId.value.encoded() }
                 .map { row ->
                     StoredCredential(
@@ -187,7 +200,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
     }
 
     override suspend fun updateSignCount(id: CredentialId, signCount: Long) {
-        newSuspendedTransaction(Dispatchers.IO, db) {
+        db.ioTransaction {
             Credentials.update({ Credentials.credentialId eq id.value.encoded() }) {
                 it[Credentials.signCount] = signCount
             }
@@ -197,7 +210,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
 
 public class ExposedUserAccountStore(private val db: Database) : UserAccountStore {
     override suspend fun findByName(name: String): UserAccount? {
-        return newSuspendedTransaction<UserAccount?>(Dispatchers.IO, db) {
+        return db.ioTransaction {
             UserAccounts.selectAll().where { UserAccounts.userName eq name }
                 .singleOrNull()?.let { row ->
                     UserAccount(
@@ -210,7 +223,7 @@ public class ExposedUserAccountStore(private val db: Database) : UserAccountStor
     }
 
     override suspend fun save(user: UserAccount) {
-        newSuspendedTransaction(Dispatchers.IO, db) {
+        db.ioTransaction {
             val exists = UserAccounts.selectAll().where { UserAccounts.userName eq user.name }.singleOrNull() != null
             if (exists) {
                 UserAccounts.update({ UserAccounts.userName eq user.name }) {

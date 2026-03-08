@@ -11,7 +11,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.exposed.core)
-    implementation(libs.exposed.dao)
     implementation(libs.exposed.jdbc)
 
     api(project(":webauthn-server-core-jvm"))
