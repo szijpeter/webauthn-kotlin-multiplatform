@@ -30,22 +30,23 @@ class AppleAttestationStatementVerifierTest {
     @Test
     fun verifyPassesForValidApple() {
         val kp = generateES256KeyPair()
-        val authData = sampleAuthDataBytes()
+        val coseKey = generateCoseKey(kp.public as ECPublicKey)
+        val authData = sampleAuthDataBytes(credentialPublicKey = coseKey)
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val clientDataHash = sha256(clientDataJson)
         val nonce = sha256(authData + clientDataHash)
 
         val attCert = generateAppleAttestationCert(kp, nonce)
-        val coseKey = generateCoseKey(kp.public as ECPublicKey)
 
         val attestationObject = buildAppleAttestationObject(
+            authData = authData,
             x5c = listOf(attCert)
         )
 
         val verifier = AppleAttestationStatementVerifier(
             trustChainVerifier = TrustChainVerifier { _ -> base64UrlList(attCert) }
         )
-        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
+        val input = sampleInput(clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         
         assertTrue(result is ValidationResult.Valid, "Expected Valid, got $result")
@@ -54,21 +55,21 @@ class AppleAttestationStatementVerifierTest {
     @Test
     fun verifyFailsForNonceMismatch() {
         val kp = generateES256KeyPair()
-        val authData = sampleAuthDataBytes()
+        val coseKey = generateCoseKey(kp.public as ECPublicKey)
+        val authData = sampleAuthDataBytes(credentialPublicKey = coseKey)
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         
         // Generate cert with random nonce
         val attCert = generateAppleAttestationCert(kp, ByteArray(32) { 0xBB.toByte() })
-        val coseKey = generateCoseKey(kp.public as ECPublicKey)
-
         val attestationObject = buildAppleAttestationObject(
+            authData = authData,
             x5c = listOf(attCert)
         )
 
         val verifier = AppleAttestationStatementVerifier(
             trustChainVerifier = TrustChainVerifier { _ -> base64UrlList(attCert) }
         )
-        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
+        val input = sampleInput(clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         
         assertTrue(result is ValidationResult.Invalid)
@@ -80,10 +81,11 @@ class AppleAttestationStatementVerifierTest {
         val authData = sampleAuthDataBytes()
         val clientDataJson = ByteArray(0)
         val attestationObject = buildAppleAttestationObject(
+            authData = authData,
             x5c = emptyList()
         )
         val verifier = AppleAttestationStatementVerifier(trustChainVerifier = null)
-        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, ByteArray(0))
+        val input = sampleInput(clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
@@ -93,18 +95,19 @@ class AppleAttestationStatementVerifierTest {
     @Test
     fun verifyFailsForMissingExtension() {
         val kp = generateES256KeyPair()
-        val authData = sampleAuthDataBytes()
+        val coseKey = generateCoseKey(kp.public as ECPublicKey)
+        val authData = sampleAuthDataBytes(credentialPublicKey = coseKey)
         val clientDataJson = ByteArray(0)
         // Generate cert WITHOUT Apple extension
         val attCert = generateStandardCert(kp)
-        val coseKey = generateCoseKey(kp.public as ECPublicKey)
 
         val attestationObject = buildAppleAttestationObject(
+            authData = authData,
             x5c = listOf(attCert)
         )
 
         val verifier = AppleAttestationStatementVerifier(trustChainVerifier = null)
-        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
+        val input = sampleInput(clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         
         assertTrue(result is ValidationResult.Invalid)
@@ -118,18 +121,18 @@ class AppleAttestationStatementVerifierTest {
             certificateInspector = JvmCertificateInspector(),
         )
         val kp = generateES256KeyPair()
-        val authData = sampleAuthDataBytes()
+        val coseKey = generateCoseKey(kp.public as ECPublicKey)
+        val authData = sampleAuthDataBytes(credentialPublicKey = coseKey)
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val clientDataHash = sha256(clientDataJson)
         val nonce = sha256(authData + clientDataHash)
         val attCert = generateAppleAttestationCert(kp, nonce)
-        val coseKey = generateCoseKey(kp.public as ECPublicKey)
-        val attestationObject = buildAppleAttestationObject(x5c = listOf(attCert))
-        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
+        val attestationObject = buildAppleAttestationObject(authData = authData, x5c = listOf(attCert))
+        val input = sampleInput(clientDataJson, attestationObject, authData)
         assertTrue(verifier.verify(input) is ValidationResult.Valid)
 
-        val attestationObjectEmptyX5c = buildAppleAttestationObject(x5c = emptyList())
-        val invalidInput = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObjectEmptyX5c, authData, ByteArray(0))
+        val attestationObjectEmptyX5c = buildAppleAttestationObject(authData = authData, x5c = emptyList())
+        val invalidInput = sampleInput(clientDataJson, attestationObjectEmptyX5c, authData)
         val invalidResult = verifier.verify(invalidInput)
         assertTrue(invalidResult is ValidationResult.Invalid)
         assertTrue((invalidResult as ValidationResult.Invalid).errors.any { it.message.contains("x5c is required") })
@@ -139,23 +142,23 @@ class AppleAttestationStatementVerifierTest {
     fun verifyFailsForPublicKeyMismatch() {
         val kp = generateES256KeyPair()
         val kp2 = generateES256KeyPair() // Different key
-        val authData = sampleAuthDataBytes()
+        val coseKey = generateCoseKey(kp2.public as ECPublicKey)
+        val authData = sampleAuthDataBytes(credentialPublicKey = coseKey)
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val clientDataHash = sha256(clientDataJson)
         val nonce = sha256(authData + clientDataHash)
 
         val attCert = generateAppleAttestationCert(kp, nonce)
-        // Credential public key from DIFFERENT key
-        val coseKey = generateCoseKey(kp2.public as ECPublicKey)
 
         val attestationObject = buildAppleAttestationObject(
+            authData = authData,
             x5c = listOf(attCert)
         )
 
         val verifier = AppleAttestationStatementVerifier(
             trustChainVerifier = TrustChainVerifier { _ -> base64UrlList(attCert) }
         )
-        val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
+        val input = sampleInput(clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
         
         assertTrue(result is ValidationResult.Invalid)
@@ -253,11 +256,18 @@ class AppleAttestationStatementVerifierTest {
     }
     
     // Helpers (duplicate from other tests)
-    private fun sampleAuthDataBytes(): ByteArray {
+    private fun sampleAuthDataBytes(
+        credentialId: ByteArray = ByteArray(16) { 0x33 },
+        credentialPublicKey: ByteArray = byteArrayOf(0xA0.toByte()),
+    ): ByteArray {
         val rpIdHash = ByteArray(32) { 0x10 }
         val flags = byteArrayOf(0x41)
         val signCount = byteArrayOf(0, 0, 0, 1)
-        return rpIdHash + flags + signCount + ByteArray(16) { 0x22 }
+        val credentialIdLength = byteArrayOf(
+            ((credentialId.size shr 8) and 0xFF).toByte(),
+            (credentialId.size and 0xFF).toByte(),
+        )
+        return rpIdHash + flags + signCount + ByteArray(16) { 0x22 } + credentialIdLength + credentialId + credentialPublicKey
     }
     private fun sha256(data: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(data)
     private fun generateES256KeyPair(): java.security.KeyPair {
@@ -267,12 +277,11 @@ class AppleAttestationStatementVerifierTest {
     }
     
     private fun sampleInput(
-        credentialId: CredentialId,
         clientDataJson: ByteArray,
         attestationObject: ByteArray,
         authData: ByteArray,
-        credentialPublicKey: ByteArray,
     ): RegistrationValidationInput {
+        val parsedAttestedCredentialData = attestedCredentialData(authData)
         return RegistrationValidationInput(
             options = PublicKeyCredentialCreationOptions(
                 rp = PublicKeyCredentialRpEntity(id = RpId.parseOrThrow("example.com"), name = "Example"),
@@ -281,15 +290,11 @@ class AppleAttestationStatementVerifierTest {
                 pubKeyCredParams = emptyList(),
             ),
             response = RegistrationResponse(
-                credentialId = credentialId,
+                credentialId = parsedAttestedCredentialData.credentialId,
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = authenticatorData(authData),
-                attestedCredentialData = AttestedCredentialData(
-                    aaguid = aaguidFromAuthData(authData),
-                    credentialId = credentialId,
-                    cosePublicKey = base64UrlBytes(credentialPublicKey),
-                ),
+                attestedCredentialData = parsedAttestedCredentialData,
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
@@ -306,9 +311,27 @@ class AppleAttestationStatementVerifierTest {
     }
 
     private fun aaguidFromAuthData(authData: ByteArray): Aaguid {
+        require(hasAttestedCredentialData(authData)) { "authData does not contain attested credential data" }
         require(authData.size >= 53) { "authData must contain AAGUID" }
         return Aaguid.fromBytes(authData.copyOfRange(37, 53))
     }
+
+    private fun attestedCredentialData(authData: ByteArray): AttestedCredentialData {
+        val aaguid = aaguidFromAuthData(authData)
+        require(authData.size >= 55) { "authData must contain credential ID length" }
+        val credentialIdLength = ((authData[53].toInt() and 0xFF) shl 8) or (authData[54].toInt() and 0xFF)
+        val credentialIdStart = 55
+        val credentialIdEnd = credentialIdStart + credentialIdLength
+        require(authData.size >= credentialIdEnd) { "authData must contain credential ID" }
+        return AttestedCredentialData(
+            aaguid = aaguid,
+            credentialId = CredentialId.fromBytes(authData.copyOfRange(credentialIdStart, credentialIdEnd)),
+            cosePublicKey = base64UrlBytes(authData.copyOfRange(credentialIdEnd, authData.size)),
+        )
+    }
+
+    private fun hasAttestedCredentialData(authData: ByteArray): Boolean =
+        authData.size > 32 && (authData[32].toInt() and 0x40) != 0
 
     private fun readUnsignedInt(source: ByteArray, offset: Int): Long {
         return ((source[offset].toLong() and 0xFF) shl 24) or

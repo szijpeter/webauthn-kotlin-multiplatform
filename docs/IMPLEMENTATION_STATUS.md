@@ -55,7 +55,7 @@ Last updated: 2026-03-08
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, capability reporting, shared-core delegation | Lifecycle and OEM/provider compatibility hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation | More runtime/device matrix coverage |
 | `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`) | Retry/error policy hardening and broader contract fixtures |
-| `webauthn-attestation-mds` | Scaffold/Beta | Optional trust source module and tests, normalized AAGUID lookup across hyphenated metadata and raw-byte authenticator values | Full attestation format/trust-chain verification depth |
+| `webauthn-attestation-mds` | Beta | Optional trust source module and tests, normalized AAGUID lookup across hyphenated metadata and raw-byte authenticator values | Full attestation format/trust-chain verification depth |
 | `samples:*` | Beta | Runnable backend/android/ios structure and Compose KMP readiness sample wired to default `/webauthn/*` contract via `samples/backend-ktor` | More real-device matrix coverage and extension-focused end-to-end examples |
 
 ## Validation Coverage Status
@@ -63,7 +63,7 @@ Last updated: 2026-03-08
 Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 - `clientData` type/challenge/origin checks
-- `authenticatorData` rpIdHash invariant typing and UP flag checks
+- `authenticatorData` rpIdHash verification (with type-enforced fixed-size invariant) and UP flag checks
 - signCount non-increase invalid case
 - strict base64url parsing guarantees
 - allowCredentials membership enforcement

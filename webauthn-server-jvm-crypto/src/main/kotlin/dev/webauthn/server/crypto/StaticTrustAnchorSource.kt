@@ -5,7 +5,6 @@ import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import java.io.InputStream
 import java.security.cert.CertificateFactory
-import java.security.cert.TrustAnchor
 import java.security.cert.X509Certificate
 
 internal class StaticTrustAnchorSource(
@@ -15,7 +14,7 @@ internal class StaticTrustAnchorSource(
         certificates.map { Base64UrlBytes.fromBytes(it.encoded) }
 
     override fun findTrustAnchors(aaguid: Aaguid?): List<Base64UrlBytes> {
-        return encodedCertificates
+        return encodedCertificates.toList()
     }
 
     companion object {
