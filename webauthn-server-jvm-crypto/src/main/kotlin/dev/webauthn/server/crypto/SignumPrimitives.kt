@@ -18,6 +18,7 @@ import at.asitplus.signum.supreme.sign.verify
 import at.asitplus.signum.supreme.sign.verifierFor
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.coseAlgorithmFromCode
+import dev.webauthn.model.ImmutableBytes
 import java.io.ByteArrayInputStream
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
@@ -28,11 +29,17 @@ import kotlinx.serialization.decodeFromByteArray
 internal object SignumPrimitives {
     fun sha256(input: ByteArray): ByteArray = Digest.SHA256.digest(input)
 
+    fun decodeCoseMaterial(coseKey: ImmutableBytes): CosePublicKeyMaterial? =
+        decodeCoseMaterialResult(coseKey.bytes()).getOrNull()
+
     fun decodeCoseMaterial(coseKey: ByteArray): CosePublicKeyMaterial? =
-        decodeCoseMaterialResult(coseKey).getOrNull()
+        decodeCoseMaterial(ImmutableBytes.fromBytes(coseKey))
+
+    fun decodeCosePublicKey(coseKey: ImmutableBytes): CryptoPublicKey? =
+        decodeCosePublicKeyResult(coseKey.bytes()).getOrNull()
 
     fun decodeCosePublicKey(coseKey: ByteArray): CryptoPublicKey? =
-        decodeCosePublicKeyResult(coseKey).getOrNull()
+        decodeCosePublicKey(ImmutableBytes.fromBytes(coseKey))
 
     fun toSubjectPublicKeyInfo(material: CosePublicKeyMaterial): ByteArray? =
         toSubjectPublicKeyInfoResult(material).getOrNull()
@@ -50,7 +57,7 @@ internal object SignumPrimitives {
 
     fun verifyWithCosePublicKey(
         algorithm: CoseAlgorithm,
-        publicKeyCose: ByteArray,
+        publicKeyCose: ImmutableBytes,
         data: ByteArray,
         signature: ByteArray,
     ): Boolean {

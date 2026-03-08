@@ -24,7 +24,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = RpId.parseOrThrow("example.com"),
-                publicKeyCose = byteArrayOf(1, 2, 3),
+                publicKeyCose = immutableBytes(1, 2, 3),
                 signCount = 1,
             ),
         )
@@ -69,7 +69,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = rpId,
-                publicKeyCose = byteArrayOf(1, 2, 3),
+                publicKeyCose = immutableBytes(1, 2, 3),
                 signCount = 1,
             ),
         )
@@ -80,7 +80,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = rpId,
-                publicKeyCose = byteArrayOf(4, 5, 6),
+                publicKeyCose = immutableBytes(4, 5, 6),
                 signCount = 99,
             ),
         )
@@ -102,7 +102,7 @@ class InMemoryStoresTest {
                 credentialId = credentialId,
                 userId = userHandle,
                 rpId = RpId.parseOrThrow("example.com"),
-                publicKeyCose = byteArrayOf(1, 2, 3),
+                publicKeyCose = immutableBytes(1, 2, 3),
                 signCount = 1,
             ),
         )

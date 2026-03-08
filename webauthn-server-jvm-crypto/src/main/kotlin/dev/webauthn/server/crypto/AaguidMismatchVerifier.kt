@@ -1,4 +1,5 @@
 package dev.webauthn.server.crypto
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import java.util.Arrays
@@ -8,9 +9,10 @@ internal object AaguidMismatchVerifier {
 
     fun verify(
         certificateDer: ByteArray,
-        aaguid: ByteArray,
+        aaguid: Aaguid,
         certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
     ): ValidationResult<Unit> {
+        val aaguidBytes = aaguid.bytes()
         val extensionValue = certificateInspector.extensionValue(certificateDer, AAGUID_OID)
             ?: return ValidationResult.Valid(Unit)
 
@@ -19,7 +21,7 @@ internal object AaguidMismatchVerifier {
             val innerBytes = outerParser.readOctetString()
 
             if (innerBytes.size == 16) {
-                if (!Arrays.equals(innerBytes, aaguid)) {
+                if (!Arrays.equals(innerBytes, aaguidBytes)) {
                     return ValidationResult.Invalid(
                         listOf(WebAuthnValidationError.InvalidValue("x5c", "AAGUID in certificate does not match authenticator AAGUID")),
                     )
@@ -31,7 +33,7 @@ internal object AaguidMismatchVerifier {
                 val innerParser = DerParser(innerBytes)
                 val doubleInner = innerParser.readOctetString()
                 if (doubleInner.size == 16) {
-                    if (!Arrays.equals(doubleInner, aaguid)) {
+                    if (!Arrays.equals(doubleInner, aaguidBytes)) {
                         return ValidationResult.Invalid(
                             listOf(WebAuthnValidationError.InvalidValue("x5c", "AAGUID in certificate does not match authenticator AAGUID")),
                         )

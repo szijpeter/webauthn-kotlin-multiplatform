@@ -26,9 +26,9 @@ class SerializationConformanceTest {
         val result = WebAuthnDtoMapper.toModel(dto)
 
         assertTrue(result is ValidationResult.Valid)
-        assertContentEquals(authData.copyOfRange(0, 32), result.value.rawAuthenticatorData.rpIdHash)
+        assertContentEquals(authData.copyOfRange(0, 32), result.value.rawAuthenticatorData.rpIdHash.bytes())
         assertEquals(credentialId, result.value.attestedCredentialData.credentialId)
-        assertContentEquals(cosePublicKey, result.value.attestedCredentialData.cosePublicKey)
+        assertContentEquals(cosePublicKey, result.value.attestedCredentialData.cosePublicKey.bytes())
     }
 
     @Test

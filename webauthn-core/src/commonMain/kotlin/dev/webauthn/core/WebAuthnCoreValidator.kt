@@ -135,13 +135,6 @@ public object WebAuthnCoreValidator {
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
-        if (data.rpIdHash.size != 32) {
-            errors += WebAuthnValidationError.InvalidValue(
-                field = "authenticatorData.rpIdHash",
-                message = "rpIdHash must be 32 bytes",
-            )
-        }
-
         // W3C WebAuthn L3 §7.1 Step 15 / §7.2 Step 20: Verify that the User Presence bit of the flags in authData is set.
         val upSet = (data.flags and USER_PRESENCE_FLAG) != 0
         if (!upSet) {

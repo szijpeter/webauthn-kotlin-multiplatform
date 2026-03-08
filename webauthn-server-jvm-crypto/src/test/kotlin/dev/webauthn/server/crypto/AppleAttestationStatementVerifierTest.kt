@@ -41,7 +41,7 @@ class AppleAttestationStatementVerifierTest {
         )
 
         val verifier = AppleAttestationStatementVerifier(
-            trustChainVerifier = TrustChainVerifier { _ -> listOf(attCert) }
+            trustChainVerifier = TrustChainVerifier { _ -> immutableList(attCert) }
         )
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
@@ -64,7 +64,7 @@ class AppleAttestationStatementVerifierTest {
         )
 
         val verifier = AppleAttestationStatementVerifier(
-            trustChainVerifier = TrustChainVerifier { _ -> listOf(attCert) }
+            trustChainVerifier = TrustChainVerifier { _ -> immutableList(attCert) }
         )
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
@@ -151,7 +151,7 @@ class AppleAttestationStatementVerifierTest {
         )
 
         val verifier = AppleAttestationStatementVerifier(
-            trustChainVerifier = TrustChainVerifier { _ -> listOf(attCert) }
+            trustChainVerifier = TrustChainVerifier { _ -> immutableList(attCert) }
         )
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData, coseKey)
         val result = verifier.verify(input)
@@ -282,8 +282,8 @@ class AppleAttestationStatementVerifierTest {
                 credentialId = credentialId,
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
-                rawAuthenticatorData = AuthenticatorData(ByteArray(32), 0, 0),
-                attestedCredentialData = AttestedCredentialData(ByteArray(16), credentialId, credentialPublicKey)
+                rawAuthenticatorData = AuthenticatorData(rpIdHash(), 0, 0),
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, immutableBytes(credentialPublicKey))
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

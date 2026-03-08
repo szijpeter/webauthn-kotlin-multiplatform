@@ -4,9 +4,12 @@ import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -391,14 +394,14 @@ private fun validRegistrationResponse(): RegistrationResponse {
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
         attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
         rawAuthenticatorData = AuthenticatorData(
-            rpIdHash = ByteArray(32) { 1 },
+            rpIdHash = rpIdHash(1),
             flags = 0x41,
             signCount = 1,
         ),
         attestedCredentialData = AttestedCredentialData(
-            aaguid = ByteArray(16) { 2 },
+            aaguid = aaguid(2),
             credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-            cosePublicKey = byteArrayOf(1, 2, 3),
+            cosePublicKey = immutableBytes(1, 2, 3),
         ),
         authenticatorAttachment = AuthenticatorAttachment.PLATFORM,
     )
@@ -410,10 +413,17 @@ private fun validAuthenticationResponse(): AuthenticationResponse {
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
         rawAuthenticatorData = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
         authenticatorData = AuthenticatorData(
-            rpIdHash = ByteArray(32) { 1 },
+            rpIdHash = rpIdHash(1),
             flags = 0x01,
             signCount = 2,
         ),
         signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)),
     )
 }
+
+private fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
+
+private fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
+
+private fun immutableBytes(vararg value: Int): ImmutableBytes =
+    ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })

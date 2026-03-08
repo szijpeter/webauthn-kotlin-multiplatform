@@ -3,15 +3,18 @@ package dev.webauthn.client
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
@@ -121,16 +124,16 @@ class DefaultPasskeyClientTest {
         val extensions = AuthenticationExtensionsClientInputs(
             prf = PrfExtensionInput(
                 eval = AuthenticationExtensionsPRFValues(
-                    first = byteArrayOf(1, 2, 3)
-                )
-            )
+                    first = immutableBytes(1, 2, 3),
+                ),
+            ),
         )
         val result = client.createCredential(validCreationOptions().copy(extensions = extensions))
 
         assertTrue(result is PasskeyResult.Success)
         assertNotNull(passedExtensions)
         assertNotNull(passedExtensions?.prf?.eval)
-        assertContentEquals(byteArrayOf(1, 2, 3), passedExtensions?.prf?.eval?.first)
+        assertContentEquals(byteArrayOf(1, 2, 3), passedExtensions?.prf?.eval?.first?.bytes())
     }
 
     @Test
@@ -142,7 +145,7 @@ class DefaultPasskeyClientTest {
                         extensions = AuthenticationExtensionsClientOutputs(
                             largeBlob = LargeBlobExtensionOutput(
                                 supported = true,
-                                blob = byteArrayOf(4, 5, 6),
+                                blob = immutableBytes(4, 5, 6),
                             ),
                         ),
                     )
@@ -168,7 +171,7 @@ class DefaultPasskeyClientTest {
         assertNotNull(extensions)
         assertNotNull(extensions.largeBlob)
         assertEquals(extensions.largeBlob?.supported, true)
-        assertContentEquals(byteArrayOf(4, 5, 6), extensions.largeBlob?.blob)
+        assertContentEquals(byteArrayOf(4, 5, 6), extensions.largeBlob?.blob?.bytes())
     }
 
     private class TestBridge(
@@ -207,14 +210,14 @@ class DefaultPasskeyClientTest {
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
                 attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
                 rawAuthenticatorData = AuthenticatorData(
-                    rpIdHash = ByteArray(32) { 1 },
+                    rpIdHash = rpIdHash(1),
                     flags = 0x41,
                     signCount = 1,
                 ),
                 attestedCredentialData = AttestedCredentialData(
-                    aaguid = ByteArray(16) { 2 },
+                    aaguid = aaguid(2),
                     credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-                    cosePublicKey = byteArrayOf(1, 2, 3),
+                    cosePublicKey = immutableBytes(1, 2, 3),
                 ),
             )
         }
@@ -225,12 +228,19 @@ class DefaultPasskeyClientTest {
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)),
                 rawAuthenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 3 }),
                 authenticatorData = AuthenticatorData(
-                    rpIdHash = ByteArray(32) { 4 },
+                    rpIdHash = rpIdHash(4),
                     flags = 0x01,
                     signCount = 2,
                 ),
                 signature = Base64UrlBytes.fromBytes(byteArrayOf(5, 5, 5)),
             )
         }
+
+        fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
+
+        fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
+
+        fun immutableBytes(vararg value: Int): ImmutableBytes =
+            ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
     }
 }

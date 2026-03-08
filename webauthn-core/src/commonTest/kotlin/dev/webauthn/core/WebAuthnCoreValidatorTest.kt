@@ -3,10 +3,12 @@ package dev.webauthn.core
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ImmutableBytes
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -15,11 +17,13 @@ import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class WebAuthnCoreValidatorTest {
@@ -126,23 +130,16 @@ class WebAuthnCoreValidatorTest {
 
     @Test
     fun authenticatorDataFailsForInvalidRpIdHashLength() {
-        val result = WebAuthnCoreValidator.validateAuthenticatorData(
-            data = AuthenticatorData(
-                rpIdHash = ByteArray(31),
-                flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
-                signCount = 1,
-            ),
-            previousSignCount = 0,
-        )
-
-        assertTrue(result is ValidationResult.Invalid)
+        assertFailsWith<IllegalArgumentException> {
+            RpIdHash.fromBytes(ByteArray(31))
+        }
     }
 
     @Test
     fun authenticatorDataFailsForMissingUserPresenceFlag() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = 0,
                 signCount = 1,
             ),
@@ -156,7 +153,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataFailsForNonIncreasingSignCount() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
                 signCount = 5,
             ),
@@ -170,7 +167,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataAllowsZeroCounterCases() {
         val bothZero = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
                 signCount = 0,
             ),
@@ -178,7 +175,7 @@ class WebAuthnCoreValidatorTest {
         )
         val currentZero = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
                 signCount = 0,
             ),
@@ -193,7 +190,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataFailsWhenUvRequiredButNotSet() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
                 signCount = 1,
             ),
@@ -208,7 +205,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataPassesWhenUvRequiredAndSet() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG or WebAuthnCoreValidator.USER_VERIFICATION_FLAG,
                 signCount = 1,
             ),
@@ -223,7 +220,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataPassesWhenUvPreferredAndNotSet() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG,
                 signCount = 1,
             ),
@@ -238,7 +235,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataFailsWhenBackupStateSetWithoutBackupEligible() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG or WebAuthnCoreValidator.BACKUP_STATE_FLAG,
                 signCount = 1,
             ),
@@ -252,7 +249,7 @@ class WebAuthnCoreValidatorTest {
     fun authenticatorDataPassesWhenBackupStateAndEligibleBothSet() {
         val result = WebAuthnCoreValidator.validateAuthenticatorData(
             data = AuthenticatorData(
-                rpIdHash = ByteArray(32),
+                rpIdHash = rpIdHash(0),
                 flags = WebAuthnCoreValidator.USER_PRESENCE_FLAG or
                     WebAuthnCoreValidator.BACKUP_ELIGIBLE_FLAG or
                     WebAuthnCoreValidator.BACKUP_STATE_FLAG,
@@ -421,14 +418,14 @@ class WebAuthnCoreValidatorTest {
             clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
             attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
             rawAuthenticatorData = AuthenticatorData(
-                rpIdHash = ByteArray(32) { 1 },
+                rpIdHash = rpIdHash(1),
                 flags = flags,
                 signCount = signCount,
             ),
             attestedCredentialData = AttestedCredentialData(
-                aaguid = ByteArray(16),
+                aaguid = aaguid(0),
                 credentialId = credentialId,
-                cosePublicKey = byteArrayOf(9, 8, 7),
+                cosePublicKey = immutableBytes(9, 8, 7),
             ),
         )
     }
@@ -443,7 +440,7 @@ class WebAuthnCoreValidatorTest {
             clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
             rawAuthenticatorData = Base64UrlBytes.fromBytes(ByteArray(37)),
             authenticatorData = AuthenticatorData(
-                rpIdHash = ByteArray(32) { 2 },
+                rpIdHash = rpIdHash(2),
                 flags = flags,
                 signCount = signCount,
             ),
@@ -451,5 +448,12 @@ class WebAuthnCoreValidatorTest {
             userHandle = null,
         )
     }
+
+    private fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
+
+    private fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
+
+    private fun immutableBytes(vararg value: Int): ImmutableBytes =
+        ImmutableBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 
 }

@@ -76,14 +76,14 @@ class NoneAttestationStatementVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(
-                    rpIdHash = ByteArray(32),
+                    rpIdHash = rpIdHash(),
                     flags = 0x41,
                     signCount = 0,
                 ),
                 attestedCredentialData = AttestedCredentialData(
-                    aaguid = ByteArray(16),
+                    aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+                    cosePublicKey = immutableBytes(0xA1, 0x01, 0x02),
                 ),
             ),
             clientData = dev.webauthn.model.CollectedClientData(
