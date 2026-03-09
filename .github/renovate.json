@@ -5,6 +5,7 @@
   ],
   "enabledManagers": [
     "gradle",
+    "gradle-wrapper",
     "github-actions"
   ],
   "labels": [
