@@ -2,10 +2,6 @@
 
 This document maps currently implemented validation behavior to normative requirements.
 
-## Trace updates
-
-- 2026-03-10: `Base64UrlBytes.parse` was refactored to `runCatching`-based control flow for detekt compliance; validation semantics and covered rules remain unchanged.
-
 ## Implemented rules
 
 | Rule | Normative source | Implementation | Negative-path test coverage |

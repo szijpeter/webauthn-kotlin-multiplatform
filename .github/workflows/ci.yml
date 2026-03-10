@@ -37,6 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: detekt-reports
+          if-no-files-found: error
           path: |
             **/build/reports/detekt/*.xml
             **/build/reports/detekt/*.html

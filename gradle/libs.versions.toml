@@ -12,6 +12,7 @@ androidx-lifecycle = "2.9.6"
 kmmresult = "1.9.3"
 bcv = "0.18.1"
 dokka = "2.1.0"
+# Detekt 1.x does not support Kotlin 2.x; 2.x is currently alpha-only.
 detekt = "2.0.0-alpha.2"
 junit = "6.0.3"
 h2 = "2.4.240"

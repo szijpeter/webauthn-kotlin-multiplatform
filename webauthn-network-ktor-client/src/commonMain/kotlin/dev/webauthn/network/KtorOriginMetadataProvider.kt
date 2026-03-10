@@ -2,11 +2,13 @@ package dev.webauthn.network
 
 import dev.webauthn.core.OriginMetadataProvider
 import dev.webauthn.model.Origin
+import dev.webauthn.model.getOrNull
 import dev.webauthn.serialization.RelatedOriginsDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.CancellationException
 
 /**
  * Implementation of [OriginMetadataProvider] using Ktor HttpClient.
@@ -17,18 +19,18 @@ public class KtorOriginMetadataProvider(
 
     override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
         val url = "${primaryOrigin.toString().removeSuffix("/")}/.well-known/webauthn"
-        return runCatching {
+        return try {
             val response = httpClient.get(url)
             if (response.status == HttpStatusCode.OK) {
                 val dto = response.body<RelatedOriginsDto>()
-                dto.origins.mapNotNull { origin ->
-                    runCatching { Origin.parseOrThrow(origin) }.getOrNull()
-                }.toSet()
+                dto.origins.mapNotNull { origin -> Origin.parse(origin).getOrNull() }.toSet()
             } else {
                 emptySet()
             }
-        }.getOrElse {
-            // Fetch failures must not block validation flow; empty related-origin set is acceptable fallback.
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (_: Exception) {
+            // Fail closed on fetch/parse errors by treating related origins as unavailable.
             emptySet()
         }
     }

@@ -1,3 +1,8 @@
+# Detekt rollout rationale:
+# - No baseline: we keep the gate clean with maxIssues=0 and fix/suppress intentionally.
+# - Correctness-first rules stay on; this config only relaxes high-noise style/doc checks.
+# - Complexity limits are currently set to existing project shape and will be tightened in follow-ups.
+# - Exclusions are handled in Gradle task config (for generated/build outputs).
 config:
   validation: true
   warningsAsErrors: false
@@ -6,6 +11,8 @@ config:
 
 comments:
   active: true
+  # Public API docs are tracked via Dokka + docs process; enforcing KDoc presence here would
+  # produce a large migration-only noise set unrelated to runtime correctness.
   UndocumentedPublicClass:
     active: false
   UndocumentedPublicFunction:
@@ -15,6 +22,7 @@ comments:
 
 complexity:
   active: true
+  # Temporary migration thresholds for no-baseline adoption; tighten after focused refactors.
   ComplexCondition:
     active: true
     allowedConditions: 4
@@ -66,6 +74,7 @@ naming:
 
 style:
   active: true
+  # These are intentionally disabled for the first detekt rollout to avoid broad, low-signal churn.
   ReturnCount:
     active: false
   ThrowsCount:

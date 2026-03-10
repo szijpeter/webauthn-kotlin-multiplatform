@@ -25,14 +25,10 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
                 )
             }
 
-            val isDecodable = runCatching {
+            try {
                 // Verify the string can actually be decoded according to Base64Url specs without padding.
                 Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).decode(value)
-                true
-            }.getOrElse {
-                false
-            }
-            if (!isDecodable) {
+            } catch (_: IllegalArgumentException) {
                 return ValidationResult.Invalid(
                     listOf(
                         WebAuthnValidationError.InvalidFormat(
