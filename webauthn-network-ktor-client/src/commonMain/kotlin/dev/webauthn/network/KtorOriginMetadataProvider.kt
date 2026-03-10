@@ -17,18 +17,18 @@ public class KtorOriginMetadataProvider(
 
     override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
         val url = "${primaryOrigin.toString().removeSuffix("/")}/.well-known/webauthn"
-        return try {
+        return runCatching {
             val response = httpClient.get(url)
             if (response.status == HttpStatusCode.OK) {
                 val dto = response.body<RelatedOriginsDto>()
-                dto.origins.mapNotNull { 
-                    try { Origin.parseOrThrow(it) } catch (e: Exception) { null }
+                dto.origins.mapNotNull { origin ->
+                    runCatching { Origin.parseOrThrow(origin) }.getOrNull()
                 }.toSet()
             } else {
                 emptySet()
             }
-        } catch (e: Exception) {
-            // Log or handle error? For now return empty as per spec guidance on fetch failures
+        }.getOrElse {
+            // Fetch failures must not block validation flow; empty related-origin set is acceptable fallback.
             emptySet()
         }
     }

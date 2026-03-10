@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-08
+Last updated: 2026-03-10
 
 ## Status Legend
 
@@ -30,6 +30,7 @@ Last updated: 2026-03-08
 - Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
 - `AppleAttestationStatementVerifier` tests now use a hardened `authData` parser that explicitly rejects truncated credential data missing the public key.
 - Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
+- Repository quality gates now run detekt across all Kotlin modules plus `build-logic` with a shared strict config (`maxIssues=0`, no baseline); CI uploads XML/HTML detekt reports per run.
 
 ## Plan Progress (Estimated)
 

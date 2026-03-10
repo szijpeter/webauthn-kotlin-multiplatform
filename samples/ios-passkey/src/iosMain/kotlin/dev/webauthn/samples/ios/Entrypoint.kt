@@ -1,5 +1,3 @@
 package dev.webauthn.samples.ios
 
-public fun sampleEntrypoint(): String {
-    return "WebAuthn iOS sample initialized"
-}
+public const val SAMPLE_ENTRYPOINT_MESSAGE: String = "WebAuthn iOS sample initialized"

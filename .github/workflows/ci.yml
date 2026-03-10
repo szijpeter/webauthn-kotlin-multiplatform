@@ -19,6 +19,28 @@ jobs:
           chmod +x tools/agent/*.sh .githooks/pre-commit .githooks/pre-push
           tools/agent/verify-harness-sync.sh
 
+  detekt:
+    runs-on: ubuntu-latest
+    needs: [harness]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Detekt
+        run: ./gradlew detekt :build-logic:detekt --stacktrace --continue
+      - name: Upload Detekt Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-reports
+          path: |
+            **/build/reports/detekt/*.xml
+            **/build/reports/detekt/*.html
+
   jvm:
     runs-on: ubuntu-latest
     needs: [harness]

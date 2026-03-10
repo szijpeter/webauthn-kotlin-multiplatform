@@ -1,0 +1,80 @@
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+  excludes: []
+
+comments:
+  active: true
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+complexity:
+  active: true
+  ComplexCondition:
+    active: true
+    allowedConditions: 4
+  CyclomaticComplexMethod:
+    active: true
+    allowedComplexity: 40
+  LargeClass:
+    active: true
+    allowedLines: 2000
+  LongMethod:
+    active: true
+    allowedLines: 140
+  LongParameterList:
+    active: true
+    allowedFunctionParameters: 8
+    allowedConstructorParameters: 10
+    ignoreDefaultParameters: true
+    ignoreDataClasses: true
+  TooManyFunctions:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
+    allowedFunctionsPerFile: 20
+    allowedFunctionsPerClass: 20
+    allowedFunctionsPerInterface: 20
+    allowedFunctionsPerObject: 35
+    allowedFunctionsPerEnum: 20
+
+exceptions:
+  active: true
+  TooGenericExceptionCaught:
+    active: false
+
+naming:
+  active: true
+  MatchingDeclarationName:
+    active: false
+  FunctionNaming:
+    active: true
+    aliases: ['FunctionName']
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
+    functionPattern: '[A-Za-z][a-zA-Z0-9]*'
+    excludeClassPattern: '$^'
+  VariableNaming:
+    active: true
+    aliases: ['PropertyName']
+    variablePattern: '[a-zA-Z][A-Za-z0-9_]*'
+    privateVariablePattern: '(_)?[a-zA-Z][A-Za-z0-9_]*'
+    excludeClassPattern: '$^'
+
+style:
+  active: true
+  ReturnCount:
+    active: false
+  ThrowsCount:
+    active: false
+  UnusedParameter:
+    active: false
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false
+  NewLineAtEndOfFile:
+    active: false
