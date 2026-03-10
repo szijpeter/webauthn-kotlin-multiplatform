@@ -236,7 +236,7 @@ for file in "${changed_files[@]}"; do
         .github/workflows/*)
             mark_category "ci"
             ;;
-        build-logic/*|build.gradle.kts|settings.gradle.kts|gradle/*|gradle.properties|platform/*)
+        build-logic/*|build.gradle.kts|settings.gradle.kts|gradle/*|gradle.properties|platform/*|config/detekt/*)
             mark_category "build"
             ;;
     esac

@@ -112,6 +112,7 @@ run_list=()
 
 if [[ "$scope" == "full" ]]; then
     run_list+=("./gradlew check --stacktrace")
+    run_list+=("./gradlew detekt :build-logic:detekt --stacktrace")
 else
     IFS=',' read -r -a categories <<< "$CATEGORIES_CSV"
     IFS=',' read -r -a modules <<< "$MODULES_CSV"
@@ -142,31 +143,33 @@ else
         [[ -z "$module" ]] && continue
         case "$module" in
             webauthn-model|webauthn-core|webauthn-serialization-kotlinx|webauthn-crypto-api|webauthn-client-core|webauthn-client-json-core|webauthn-client-compose|webauthn-network-ktor-client)
+                run_list+=("./gradlew :$module:detekt --stacktrace")
                 run_list+=("./gradlew :$module:allTests --stacktrace")
                 ;;
             webauthn-server-core-jvm|webauthn-server-jvm-crypto|webauthn-server-ktor|webauthn-attestation-mds)
+                run_list+=("./gradlew :$module:detekt --stacktrace")
                 run_list+=("./gradlew :$module:test --stacktrace")
                 ;;
             webauthn-client-android)
-                run_list+=("./gradlew :webauthn-client-android:lintDebug :webauthn-client-android:assemble --stacktrace")
+                run_list+=("./gradlew :webauthn-client-android:detekt :webauthn-client-android:lintDebug :webauthn-client-android:assemble --stacktrace")
                 ;;
             webauthn-client-ios)
-                run_list+=("./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 --stacktrace")
+                run_list+=("./gradlew :webauthn-client-ios:detekt :webauthn-client-ios:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
             samples:android-passkey)
-                run_list+=("./gradlew :samples:android-passkey:lintDebug :samples:android-passkey:assemble --stacktrace")
+                run_list+=("./gradlew :samples:android-passkey:detekt :samples:android-passkey:lintDebug :samples:android-passkey:assemble --stacktrace")
                 ;;
             samples:backend-ktor)
-                run_list+=("./gradlew :samples:backend-ktor:test --stacktrace")
+                run_list+=("./gradlew :samples:backend-ktor:detekt :samples:backend-ktor:test --stacktrace")
                 ;;
             samples:ios-passkey)
-                run_list+=("./gradlew :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+                run_list+=("./gradlew :samples:ios-passkey:detekt :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
             samples:compose-passkey)
-                run_list+=("./gradlew :samples:compose-passkey:allTests :samples:compose-passkey:compileAndroidMain :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+                run_list+=("./gradlew :samples:compose-passkey:detekt :samples:compose-passkey:allTests :samples:compose-passkey:compileAndroidMain :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
             samples:compose-passkey-android)
-                run_list+=("./gradlew :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
+                run_list+=("./gradlew :samples:compose-passkey-android:detekt :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
                 ;;
         esac
     done
@@ -181,6 +184,10 @@ else
         else
             run_list+=("./gradlew :build-logic:check --stacktrace")
         fi
+    fi
+
+    if [[ "$has_harness" == "true" || "$has_ci" == "true" || "$has_build" == "true" ]]; then
+        run_list+=("./gradlew detekt :build-logic:detekt --stacktrace")
     fi
 
     if [[ "$mode" == "strict" ]]; then
