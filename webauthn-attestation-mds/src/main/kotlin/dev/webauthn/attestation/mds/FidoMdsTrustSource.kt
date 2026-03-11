@@ -9,6 +9,7 @@ import io.ktor.client.request.get
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/** Minimal representation of an MDS v3 metadata blob document. */
 @Serializable
 public data class MdsMetadataBlob(
     @SerialName("no") public val no: Long,
@@ -16,12 +17,14 @@ public data class MdsMetadataBlob(
     @SerialName("entries") public val entries: List<MdsEntry>,
 )
 
+/** MDS entry containing authenticator metadata and trust anchors. */
 @Serializable
 public data class MdsEntry(
     @SerialName("aaguid") public val aaguid: String? = null,
     @SerialName("attestationRootCertificates") public val attestationRootCertificates: List<String> = emptyList(),
 )
 
+/** Pull-based FIDO MDS trust source that maps AAGUIDs to attestation roots. */
 public class FidoMdsTrustSource(
     private val httpClient: HttpClient,
     private val metadataUrl: String,

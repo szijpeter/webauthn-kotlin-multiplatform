@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength", "TooGenericExceptionCaught")
+@file:Suppress("MaxLineLength")
 
 package dev.webauthn.client.ios
 
@@ -193,6 +193,7 @@ internal class AuthenticationServicesAuthorizationBridge(
     }
 
     @OptIn(ExperimentalForeignApi::class)
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <TPayload> runAuthorizationRequest(
         buildRequests: () -> List<Any>,
         extractPayload: (Any?) -> TPayload,

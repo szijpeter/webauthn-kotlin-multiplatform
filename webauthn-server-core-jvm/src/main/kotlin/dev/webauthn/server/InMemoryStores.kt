@@ -7,6 +7,7 @@ import dev.webauthn.model.CredentialId
 import dev.webauthn.model.UserHandle
 import java.util.concurrent.ConcurrentHashMap
 
+/** In-memory challenge/session store for development and tests. */
 public class InMemoryChallengeStore : ChallengeStore {
     private val sessions: MutableMap<String, ChallengeSession> = ConcurrentHashMap()
 
@@ -23,6 +24,7 @@ public class InMemoryChallengeStore : ChallengeStore {
     }
 }
 
+/** In-memory credential store for development and tests. */
 public class InMemoryCredentialStore : CredentialStore {
     private val byId: MutableMap<String, StoredCredential> = ConcurrentHashMap()
     private val userCredentialIds: MutableMap<String, MutableSet<String>> = ConcurrentHashMap()
@@ -50,6 +52,7 @@ public class InMemoryCredentialStore : CredentialStore {
     }
 }
 
+/** In-memory user-account store for development and tests. */
 public class InMemoryUserAccountStore : UserAccountStore {
     private val byName: MutableMap<String, UserAccount> = ConcurrentHashMap()
 

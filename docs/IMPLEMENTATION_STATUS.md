@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-11
+Last updated: 2026-03-12
 
 ## Status Legend
 
@@ -33,6 +33,7 @@ Last updated: 2026-03-11
 - Repository quality gates now run detekt across all Kotlin modules plus `build-logic` with a shared strict config (`maxIssues=0`, no baseline); CI uploads XML/HTML detekt reports per run.
 - Detekt hardening phase 2 tightened `ReturnCount`, `ThrowsCount`, and `UnusedParameter`; spec-facing public models now carry W3C section KDoc while DTO-heavy mapping code uses targeted local suppressions where documentation noise would not improve signal.
 - Review follow-up keeps `Base64UrlBytes.parse` and Related Origins fetch error handling on explicit `try/catch` paths, with coroutine cancellation propagation preserved in the Ktor metadata provider.
+- Detekt hardening follow-up now covers public production server/crypto/store APIs with explicit KDoc and narrow local suppressions for spec-shaped complexity hot paths; strict changed-scope quality gates are green after attestation parser regression tests were updated.
 
 ## Plan Progress (Estimated)
 

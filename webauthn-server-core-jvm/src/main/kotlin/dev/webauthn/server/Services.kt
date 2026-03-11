@@ -21,6 +21,7 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
 import java.security.MessageDigest
 
+/** Server registration ceremony service (WebAuthn L3 §7.1). */
 public class RegistrationService(
     private val challengeStore: ChallengeStore,
     private val credentialStore: CredentialStore,
@@ -30,7 +31,8 @@ public class RegistrationService(
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
     @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
     private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
-    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider = dev.webauthn.core.NoOpOriginMetadataProvider,
+    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider =
+        dev.webauthn.core.NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: RegistrationStartRequest): PublicKeyCredentialCreationOptions {
@@ -68,9 +70,18 @@ public class RegistrationService(
             ),
             challenge = challenge,
             pubKeyCredParams = listOf(
-                PublicKeyCredentialParameters(type = PublicKeyCredentialType.PUBLIC_KEY, alg = CoseAlgorithm.ES256.code),
-                PublicKeyCredentialParameters(type = PublicKeyCredentialType.PUBLIC_KEY, alg = CoseAlgorithm.RS256.code),
-                PublicKeyCredentialParameters(type = PublicKeyCredentialType.PUBLIC_KEY, alg = CoseAlgorithm.EdDSA.code),
+                PublicKeyCredentialParameters(
+                    type = PublicKeyCredentialType.PUBLIC_KEY,
+                    alg = CoseAlgorithm.ES256.code,
+                ),
+                PublicKeyCredentialParameters(
+                    type = PublicKeyCredentialType.PUBLIC_KEY,
+                    alg = CoseAlgorithm.RS256.code,
+                ),
+                PublicKeyCredentialParameters(
+                    type = PublicKeyCredentialType.PUBLIC_KEY,
+                    alg = CoseAlgorithm.EdDSA.code,
+                ),
             ),
             timeoutMs = request.timeoutMs,
             excludeCredentials = existingCredentials.map(::defaultCredentialDescriptor),
@@ -118,7 +129,12 @@ public class RegistrationService(
                 displayName = session.userName,
             ),
             challenge = session.challenge,
-            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.ES256.code)),
+            pubKeyCredParams = listOf(
+                PublicKeyCredentialParameters(
+                    PublicKeyCredentialType.PUBLIC_KEY,
+                    CoseAlgorithm.ES256.code,
+                ),
+            ),
             extensions = session.extensions,
         )
 
@@ -185,6 +201,7 @@ public class RegistrationService(
     }
 }
 
+/** Server authentication ceremony service (WebAuthn L3 §7.2). */
 public class AuthenticationService(
     private val challengeStore: ChallengeStore,
     private val credentialStore: CredentialStore,
@@ -193,7 +210,8 @@ public class AuthenticationService(
     private val rpIdHasher: RpIdHasher,
     @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
     private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
-    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider = dev.webauthn.core.NoOpOriginMetadataProvider,
+    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider =
+        dev.webauthn.core.NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: AuthenticationStartRequest): ValidationResult<PublicKeyCredentialRequestOptions> {
@@ -293,7 +311,8 @@ public class AuthenticationService(
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
 
-        // W3C WebAuthn L3: §7.2 Step 23: Verify that the sig is a valid signature over the binary concatenation of authData and hash.
+        // W3C WebAuthn L3: §7.2 Step 23: Verify that sig is a valid signature
+        // over the binary concatenation of authData and hash.
         val signedData = signedAuthenticationData(response)
         val signatureOk = CoseAlgorithm.entries.any { algorithm ->
             signatureVerifier.verify(
@@ -336,9 +355,15 @@ private object UserAccountStoreLookup {
 
 private fun dev.webauthn.model.UserVerificationRequirement?.toPolicy(): dev.webauthn.core.UserVerificationPolicy {
     return when (this) {
-        dev.webauthn.model.UserVerificationRequirement.REQUIRED -> dev.webauthn.core.UserVerificationPolicy.REQUIRED
-        dev.webauthn.model.UserVerificationRequirement.PREFERRED -> dev.webauthn.core.UserVerificationPolicy.PREFERRED
-        dev.webauthn.model.UserVerificationRequirement.DISCOURAGED -> dev.webauthn.core.UserVerificationPolicy.DISCOURAGED
+        dev.webauthn.model.UserVerificationRequirement.REQUIRED ->
+            dev.webauthn.core.UserVerificationPolicy.REQUIRED
+
+        dev.webauthn.model.UserVerificationRequirement.PREFERRED ->
+            dev.webauthn.core.UserVerificationPolicy.PREFERRED
+
+        dev.webauthn.model.UserVerificationRequirement.DISCOURAGED ->
+            dev.webauthn.core.UserVerificationPolicy.DISCOURAGED
+
         null -> dev.webauthn.core.UserVerificationPolicy.PREFERRED
     }
 }

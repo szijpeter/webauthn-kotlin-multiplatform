@@ -11,43 +11,60 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 
+/** High-level user action currently being executed by the controller. */
 public enum class PasskeyAction {
     REGISTER,
     SIGN_IN,
 }
 
+/** Lifecycle phase of a passkey ceremony. */
 public enum class PasskeyPhase {
     STARTING,
     PLATFORM_PROMPT,
     FINISHING,
 }
 
+/** UI-facing state emitted by [PasskeyController]. */
 public sealed interface PasskeyControllerState {
+    /** No ceremony is currently in progress. */
     public data object Idle : PasskeyControllerState
 
+    /** A ceremony is running with the provided [action] and [phase]. */
     public data class InProgress(
         public val action: PasskeyAction,
         public val phase: PasskeyPhase,
     ) : PasskeyControllerState
 
+    /** A ceremony completed successfully for [action]. */
     public data class Success(
         public val action: PasskeyAction,
     ) : PasskeyControllerState
 
+    /** A ceremony failed for [action] with [error]. */
     public data class Failure(
         public val action: PasskeyAction,
         public val error: PasskeyClientError,
     ) : PasskeyControllerState
 }
 
+/** Backend contract used by [PasskeyController] to start/finish ceremonies. */
 public interface PasskeyServerClient<RegisterParams, SignInParams> {
     public suspend fun getRegisterOptions(params: RegisterParams): ValidationResult<PublicKeyCredentialCreationOptions>
-    public suspend fun finishRegister(params: RegisterParams, response: RegistrationResponse, challengeAsBase64Url: String): Boolean
+    public suspend fun finishRegister(
+        params: RegisterParams,
+        response: RegistrationResponse,
+        challengeAsBase64Url: String,
+    ): Boolean
 
     public suspend fun getSignInOptions(params: SignInParams): ValidationResult<PublicKeyCredentialRequestOptions>
-    public suspend fun finishSignIn(params: SignInParams, response: AuthenticationResponse, challengeAsBase64Url: String): Boolean
+    public suspend fun finishSignIn(
+        params: SignInParams,
+        response: AuthenticationResponse,
+        challengeAsBase64Url: String,
+    ): Boolean
 }
 
+/** Shared registration/authentication ceremony coordinator for app-facing flows. */
 public class PasskeyController<RegisterParams, SignInParams>(
     private val passkeyClient: PasskeyClient,
     private val serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
@@ -97,7 +114,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         )
     }
 
-    @Suppress("MaxLineLength", "TooGenericExceptionCaught")
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <OptionsT, ResponseT> runCeremony(
         action: PasskeyAction,
         getOptions: suspend () -> ValidationResult<OptionsT>,
@@ -117,7 +134,10 @@ public class PasskeyController<RegisterParams, SignInParams>(
                 is ValidationResult.Valid -> optionsResult.value
                 is ValidationResult.Invalid -> {
                     val message = optionsResult.errors.joinToString("; ") { "${it.field}: ${it.message}" }
-                    _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.InvalidOptions("Options validation failed: $message"))
+                    _uiState.value = PasskeyControllerState.Failure(
+                        action,
+                        PasskeyClientError.InvalidOptions("Options validation failed: $message"),
+                    )
                     return
                 }
             }
@@ -139,7 +159,10 @@ public class PasskeyController<RegisterParams, SignInParams>(
             val isVerified = finish(platformResponse, challengeBase64Url)
 
             if (!isVerified) {
-                _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.Transport("${action.name} verification was rejected by the server."))
+                _uiState.value = PasskeyControllerState.Failure(
+                    action,
+                    PasskeyClientError.Transport("${action.name} verification was rejected by the server."),
+                )
                 return
             }
 

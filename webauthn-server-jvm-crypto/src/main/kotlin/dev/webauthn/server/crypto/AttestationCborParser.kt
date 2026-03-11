@@ -1,5 +1,3 @@
-@file:Suppress("CyclomaticComplexMethod", "LongMethod", "MagicNumber")
-
 package dev.webauthn.server.crypto
 
 import dev.webauthn.internal.cbor.MAJOR_ARRAY
@@ -30,11 +28,11 @@ internal class ParsedAttestationObject(
 )
 
 // This parser is intentionally fail-fast and branch-heavy to preserve exact WebAuthn CBOR semantics.
-@Suppress("ReturnCount")
+@Suppress("CyclomaticComplexMethod", "LongMethod", "MagicNumber", "ReturnCount")
 internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? {
     var offset = 0
     val mapHeader = readCborHeader(bytes, offset) ?: return null
-    val mapLength = mapHeader.length ?: return null
+    val mapLength = toValidLength(mapHeader.length) ?: return null
     if (mapHeader.majorType != MAJOR_MAP) return null
     offset = mapHeader.nextOffset
 
@@ -49,7 +47,7 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
     var certInfo: ByteArray? = null
     var response: ByteArray? = null
 
-    repeat(mapLength.toInt()) {
+    repeat(mapLength) {
         val key = readCborText(bytes, offset) ?: return null
         offset = key.second
         when (key.first) {
@@ -65,9 +63,9 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
             }
             "attStmt" -> {
                 val stmtHeader = readCborHeader(bytes, offset) ?: return null
-                val stmtLength = stmtHeader.length ?: return null
+                val stmtLength = toValidLength(stmtHeader.length) ?: return null
                 if (stmtHeader.majorType != MAJOR_MAP) return null
-                attStmtEntryCount = stmtLength.toInt()
+                attStmtEntryCount = stmtLength
                 offset = stmtHeader.nextOffset
                 repeat(attStmtEntryCount) {
                     val stmtKey = readCborText(bytes, offset) ?: return null
@@ -85,11 +83,11 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
                         }
                         "x5c" -> {
                             val arrayHeader = readCborHeader(bytes, offset) ?: return null
-                            val arrayLength = arrayHeader.length ?: return null
+                            val arrayLength = toValidLength(arrayHeader.length) ?: return null
                             if (arrayHeader.majorType != MAJOR_ARRAY) return null
                             offset = arrayHeader.nextOffset
                             val certs = mutableListOf<ByteArray>()
-                            repeat(arrayLength.toInt()) {
+                            repeat(arrayLength) {
                                 val cert = readCborBytes(bytes, offset) ?: return null
                                 certs.add(cert.first)
                                 offset = cert.second
@@ -129,7 +127,12 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
         }
     }
 
-    return if (fmt != null && attStmtEntryCount != null) {
+    return if (
+        fmt != null &&
+        attStmtEntryCount != null &&
+        authDataBytes != null &&
+        offset == bytes.size
+    ) {
         ParsedAttestationObject(
             fmt = fmt,
             attStmtEntryCount = attStmtEntryCount,
@@ -145,4 +148,12 @@ internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? 
     } else {
         null
     }
+}
+
+private fun toValidLength(value: Long?): Int? {
+    val length = value ?: return null
+    if (length < 0 || length > Int.MAX_VALUE.toLong()) {
+        return null
+    }
+    return length.toInt()
 }

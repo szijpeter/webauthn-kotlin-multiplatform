@@ -1,4 +1,4 @@
-@file:Suppress("MagicNumber", "MaxLineLength", "TooGenericExceptionCaught")
+@file:Suppress("MagicNumber", "MaxLineLength")
 
 package dev.webauthn.server.crypto
 import dev.webauthn.model.Aaguid
@@ -9,6 +9,7 @@ import java.util.Arrays
 internal object AaguidMismatchVerifier {
     private const val AAGUID_OID = "1.3.6.1.4.1.45724.1.1.4" // id-fido-gen-ce-aaguid
 
+    @Suppress("TooGenericExceptionCaught")
     fun verify(
         certificateDer: ByteArray,
         aaguid: Aaguid,

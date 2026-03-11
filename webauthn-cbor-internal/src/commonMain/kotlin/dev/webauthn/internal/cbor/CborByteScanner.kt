@@ -1,5 +1,3 @@
-@file:Suppress("CyclomaticComplexMethod", "MagicNumber")
-
 package dev.webauthn.internal.cbor
 
 /**
@@ -14,6 +12,7 @@ public data class CborHeader(
     val nextOffset: Int,
 )
 
+@Suppress("MagicNumber")
 public fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     if (offset >= bytes.size) return null
     val initial = bytes[offset].toInt() and 0xFF
@@ -28,6 +27,7 @@ public fun readCborHeader(bytes: ByteArray, offset: Int): CborHeader? {
     )
 }
 
+@Suppress("CyclomaticComplexMethod", "MagicNumber")
 public fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additionalInfo: Int): Pair<Long?, Int>? {
     return when {
         additionalInfo < 24 -> additionalInfo.toLong() to offset
@@ -64,20 +64,22 @@ public fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additio
     }
 }
 
+@Suppress("MagicNumber")
 public fun readCborText(bytes: ByteArray, offset: Int): Pair<String, Int>? {
     val header = readCborHeader(bytes, offset) ?: return null
     if (header.majorType != MAJOR_TEXT || header.length == null) return null
-    val length = header.length.toInt()
-    if (length < 0 || header.nextOffset + length > bytes.size) return null
+    val length = header.length.toValidCborLengthInt() ?: return null
+    if (header.nextOffset + length > bytes.size) return null
     val value = bytes.copyOfRange(header.nextOffset, header.nextOffset + length).decodeToString()
     return value to (header.nextOffset + length)
 }
 
+@Suppress("MagicNumber")
 public fun readCborBytes(bytes: ByteArray, offset: Int): Pair<ByteArray, Int>? {
     val header = readCborHeader(bytes, offset) ?: return null
     if (header.majorType != MAJOR_BYTE_STRING || header.length == null) return null
-    val length = header.length.toInt()
-    if (length < 0 || header.nextOffset + length > bytes.size) return null
+    val length = header.length.toValidCborLengthInt() ?: return null
+    if (header.nextOffset + length > bytes.size) return null
     val value = bytes.copyOfRange(header.nextOffset, header.nextOffset + length)
     return value to (header.nextOffset + length)
 }
@@ -91,27 +93,28 @@ public fun readCborInt(bytes: ByteArray, offset: Int): Pair<Long, Int>? {
     }
 }
 
+@Suppress("CyclomaticComplexMethod", "MagicNumber")
 public fun skipCborItem(bytes: ByteArray, offset: Int, depth: Int = 0): Int? {
-    if (depth > 32) return null
+    if (depth > MAX_CBOR_RECURSION) return null
     val header = readCborHeader(bytes, offset) ?: return null
     return when (header.majorType) {
         MAJOR_UNSIGNED_INT, MAJOR_NEGATIVE_INT -> header.nextOffset
         MAJOR_BYTE_STRING, MAJOR_TEXT -> {
-            val length = header.length?.toInt() ?: return null
+            val length = header.length.toValidCborLengthInt() ?: return null
             val end = header.nextOffset + length
             if (end > bytes.size) return null
             return end
         }
 
         MAJOR_ARRAY -> {
-            val count = header.length?.toInt() ?: return null
+            val count = header.length.toValidCborLengthInt() ?: return null
             var next = header.nextOffset
             repeat(count) { next = skipCborItem(bytes, next, depth + 1) ?: return null }
             next
         }
 
         MAJOR_MAP -> {
-            val count = header.length?.toInt() ?: return null
+            val count = header.length.toValidCborLengthInt() ?: return null
             var next = header.nextOffset
             repeat(count) {
                 next = skipCborItem(bytes, next, depth + 1) ?: return null
@@ -126,11 +129,13 @@ public fun skipCborItem(bytes: ByteArray, offset: Int, depth: Int = 0): Int? {
     }
 }
 
+@Suppress("MagicNumber")
 public fun ByteArray.readUint16(offset: Int): Int {
     return ((this[offset].toInt() and 0xFF) shl 8) or
         (this[offset + 1].toInt() and 0xFF)
 }
 
+@Suppress("MagicNumber")
 public fun ByteArray.readUint32(offset: Int): Long {
     return ((this[offset].toLong() and 0xFF) shl 24) or
         ((this[offset + 1].toLong() and 0xFF) shl 16) or
@@ -138,6 +143,7 @@ public fun ByteArray.readUint32(offset: Int): Long {
         (this[offset + 3].toLong() and 0xFF)
 }
 
+@Suppress("MagicNumber")
 internal fun ByteArray.readUint64(offset: Int): Long {
     return ((this[offset].toLong() and 0xFF) shl 56) or
         ((this[offset + 1].toLong() and 0xFF) shl 48) or
@@ -157,3 +163,13 @@ public const val MAJOR_ARRAY: Int = 4
 public const val MAJOR_MAP: Int = 5
 public const val MAJOR_TAG: Int = 6
 public const val MAJOR_SIMPLE_FLOAT: Int = 7
+
+private const val MAX_CBOR_RECURSION: Int = 32
+
+private fun Long?.toValidCborLengthInt(): Int? {
+    val length = this ?: return null
+    if (length < 0 || length > Int.MAX_VALUE.toLong()) {
+        return null
+    }
+    return length.toInt()
+}

@@ -29,6 +29,7 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 
+/** Android `CredentialManager` backed [PasskeyClient] implementation. */
 public class AndroidPasskeyClient(
     private val context: Context,
     private val credentialManager: CredentialManager = CredentialManager.create(context),

@@ -1,11 +1,3 @@
-@file:Suppress(
-    "CyclomaticComplexMethod",
-    "LongMethod",
-    "MagicNumber",
-    "MaxLineLength",
-    "TooGenericExceptionCaught",
-)
-
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
@@ -24,6 +16,7 @@ internal class AndroidKeyAttestationStatementVerifier(
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
     private val certificateChainValidator: JvmCertificateChainValidator = JvmCertificateChainValidator(),
 ) : AttestationVerifier {
+    @Suppress("MagicNumber")
     companion object {
         private const val TAG_PURPOSE = 0xA1
         private const val TAG_ALGORITHM = 0xA2
@@ -41,6 +34,13 @@ internal class AndroidKeyAttestationStatementVerifier(
         private const val KM_ORIGIN_GENERATED = 0
     }
 
+    @Suppress(
+        "CyclomaticComplexMethod",
+        "LongMethod",
+        "MagicNumber",
+        "MaxLineLength",
+        "TooGenericExceptionCaught",
+    )
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(
@@ -163,7 +163,7 @@ internal class AndroidKeyAttestationStatementVerifier(
     }
 
     // Throw-based guards keep attestation requirement violations precise and composable for callers.
-    @Suppress("ThrowsCount")
+    @Suppress("CyclomaticComplexMethod", "ThrowsCount", "MagicNumber", "MaxLineLength")
     private fun checkKeyRequirements(tags: Map<Int, ByteArray>, key: CosePublicKeyMaterial) {
         if (tags.containsKey(TAG_ALL_APPLICATIONS)) {
             throw IllegalArgumentException("Key is not restricted to this application (allApplications present)")

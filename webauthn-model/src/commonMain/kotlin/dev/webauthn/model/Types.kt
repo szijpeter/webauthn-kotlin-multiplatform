@@ -6,7 +6,8 @@ public value class RpId private constructor(public val value: String) {
     /** Parsers and constructors for RP ID values validated against host-like constraints. */
     public companion object {
         private const val MAX_DNS_LENGTH = 253
-        private val allowed: Regex = Regex("^[a-z0-9.-]+$")
+        private const val MAX_LABEL_LENGTH = 63
+        private val allowedLabel: Regex = Regex("^[a-z0-9-]+$")
 
         public fun parse(value: String): ValidationResult<RpId> {
             val errors = mutableListOf<WebAuthnValidationError>()
@@ -16,11 +17,32 @@ public value class RpId private constructor(public val value: String) {
             if (value.length > MAX_DNS_LENGTH) {
                 errors += WebAuthnValidationError.InvalidValue("rpId", "RP ID exceeds max DNS length")
             }
-            if (!allowed.matches(value)) {
-                errors += WebAuthnValidationError.InvalidFormat("rpId", "RP ID must be a lowercase host")
-            }
             if (value.startsWith('.') || value.endsWith('.')) {
                 errors += WebAuthnValidationError.InvalidFormat("rpId", "RP ID must not start or end with a dot")
+            }
+            for (label in value.split('.')) {
+                if (label.isEmpty()) {
+                    errors += WebAuthnValidationError.InvalidFormat("rpId", "RP ID must not contain empty labels")
+                    continue
+                }
+                if (label.length > MAX_LABEL_LENGTH) {
+                    errors += WebAuthnValidationError.InvalidValue(
+                        "rpId",
+                        "RP ID labels must be at most $MAX_LABEL_LENGTH characters",
+                    )
+                }
+                if (label.startsWith('-') || label.endsWith('-')) {
+                    errors += WebAuthnValidationError.InvalidFormat(
+                        "rpId",
+                        "RP ID labels must not start or end with a hyphen",
+                    )
+                }
+                if (!allowedLabel.matches(label)) {
+                    errors += WebAuthnValidationError.InvalidFormat(
+                        "rpId",
+                        "RP ID labels must use lowercase letters, digits, or hyphen",
+                    )
+                }
             }
             if (errors.isNotEmpty()) {
                 return ValidationResult.Invalid(errors)

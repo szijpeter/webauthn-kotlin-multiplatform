@@ -270,29 +270,47 @@ class AttestationCborParserTest {
 
     @Test
     fun parseAttestationObjectReturnsNullForMissingAttStmt() {
-        // map(1) { "fmt": "none" }
-        val bytes = cborMap("fmt" to cborText("none"))
+        // map(2) { "fmt": "none", "authData": h'AA' }
+        val bytes = cborMap(
+            "fmt" to cborText("none"),
+            "authData" to cborBytes(byteArrayOf(0xAA.toByte())),
+        )
         assertNull(parseAttestationObject(bytes))
     }
 
     @Test
     fun parseAttestationObjectReturnsNullWhenAttStmtIsNotMap() {
-        // map(2) { "fmt": "none", "attStmt": 42 }
-        val bytes = cborMap("fmt" to cborText("none"), "attStmt" to cborUint(42))
+        // map(3) { "fmt": "none", "authData": h'AA', "attStmt": 42 }
+        val bytes = cborMap(
+            "fmt" to cborText("none"),
+            "authData" to cborBytes(byteArrayOf(0xAA.toByte())),
+            "attStmt" to cborUint(42),
+        )
+        assertNull(parseAttestationObject(bytes))
+    }
+
+    @Test
+    fun parseAttestationObjectReturnsNullForMissingAuthData() {
+        val bytes = cborMap(
+            "fmt" to cborText("none"),
+            "attStmt" to cborMap(),
+        )
         assertNull(parseAttestationObject(bytes))
     }
 
     @Test
     fun parseAttestationObjectParsesValidNoneFmt() {
+        val authData = byteArrayOf(0x01, 0x02)
         val bytes = cborMap(
             "fmt" to cborText("none"),
+            "authData" to cborBytes(authData),
             "attStmt" to cborMap(),
         )
         val parsed = parseAttestationObject(bytes)
         assertNotNull(parsed)
         assertEquals("none", parsed.fmt)
         assertEquals(0, parsed.attStmtEntryCount)
-        assertNull(parsed.authDataBytes)
+        assertTrue(authData.contentEquals(parsed.authDataBytes!!))
         assertNull(parsed.alg)
         assertNull(parsed.sig)
         assertNull(parsed.x5c)
@@ -320,9 +338,9 @@ class AttestationCborParserTest {
         assertTrue(authData.contentEquals(parsed.authDataBytes!!))
         assertEquals(-7L, parsed.alg)
         assertTrue(sigBytes.contentEquals(parsed.sig!!))
-        assertNotNull(parsed.x5c)
-        assertEquals(1, parsed.x5c!!.size)
-        assertTrue(certBytes.contentEquals(parsed.x5c!![0]))
+        val certs = requireNotNull(parsed.x5c)
+        assertEquals(1, certs.size)
+        assertTrue(certBytes.contentEquals(certs[0]))
     }
 
     @Test
@@ -337,6 +355,22 @@ class AttestationCborParserTest {
         // map(3) but only one entry follows
         val bytes = byteArrayOf(0xA3.toByte()) +
             cborText("fmt") + cborText("none")
+        assertNull(parseAttestationObject(bytes))
+    }
+
+    @Test
+    fun parseAttestationObjectReturnsNullForOversizedMapLength() {
+        val bytes = byteArrayOf(
+            0xBB.toByte(),
+            0x7F,
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+            0xFF.toByte(),
+        )
         assertNull(parseAttestationObject(bytes))
     }
 
@@ -443,6 +477,7 @@ class AttestationCborParserTest {
     fun parseAttestationObjectSkipsUnknownTopLevelKeys() {
         val bytes = cborMap(
             "fmt" to cborText("none"),
+            "authData" to cborBytes(byteArrayOf(0x01)),
             "unknownField" to cborUint(42),
             "attStmt" to cborMap(),
         )
@@ -455,6 +490,7 @@ class AttestationCborParserTest {
     fun parseAttestationObjectSkipsUnknownAttStmtFields() {
         val bytes = cborMap(
             "fmt" to cborText("packed"),
+            "authData" to cborBytes(byteArrayOf(0x01)),
             "attStmt" to cborMap(
                 "alg" to cborNegInt(7),
                 "unknownStmtField" to cborBytes(byteArrayOf(0x01)),
@@ -473,6 +509,7 @@ class AttestationCborParserTest {
         val cert2 = byteArrayOf(0x40, 0x41, 0x42)
         val bytes = cborMap(
             "fmt" to cborText("packed"),
+            "authData" to cborBytes(byteArrayOf(0x01)),
             "attStmt" to cborMap(
                 "alg" to cborNegInt(7),
                 "sig" to cborBytes(byteArrayOf(0x0A)),
@@ -481,10 +518,10 @@ class AttestationCborParserTest {
         )
         val parsed = parseAttestationObject(bytes)
         assertNotNull(parsed)
-        assertNotNull(parsed.x5c)
-        assertEquals(2, parsed.x5c!!.size)
-        assertTrue(cert1.contentEquals(parsed.x5c!![0]))
-        assertTrue(cert2.contentEquals(parsed.x5c!![1]))
+        val certs = requireNotNull(parsed.x5c)
+        assertEquals(2, certs.size)
+        assertTrue(cert1.contentEquals(certs[0]))
+        assertTrue(cert2.contentEquals(certs[1]))
     }
 
     @Test
@@ -493,6 +530,7 @@ class AttestationCborParserTest {
         val responseData = byteArrayOf(0x05, 0x06)
         val bytes = cborMap(
             "fmt" to cborText("tpm"),
+            "authData" to cborBytes(byteArrayOf(0xAA.toByte())),
             "attStmt" to cborMap(
                 "ver" to cborText("2.0"),
                 "certInfo" to cborBytes(certInfoData),
@@ -505,6 +543,17 @@ class AttestationCborParserTest {
         assertEquals("2.0", parsed.ver)
         assertTrue(certInfoData.contentEquals(parsed.certInfo!!))
         assertTrue(responseData.contentEquals(parsed.response!!))
+    }
+
+    @Test
+    fun parseAttestationObjectReturnsNullForTrailingBytes() {
+        val bytes = cborMap(
+            "fmt" to cborText("none"),
+            "authData" to cborBytes(byteArrayOf(0x01)),
+            "attStmt" to cborMap(),
+        ) + byteArrayOf(0x00)
+
+        assertNull(parseAttestationObject(bytes))
     }
 
     @Test

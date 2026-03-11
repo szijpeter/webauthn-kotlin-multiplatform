@@ -65,7 +65,9 @@ public object WebAuthnCoreValidator {
         }
     }
 
-    public fun validateRegistration(input: RegistrationValidationInput): ValidationResult<RegistrationValidationOutput> {
+    public fun validateRegistration(
+        input: RegistrationValidationInput,
+    ): ValidationResult<RegistrationValidationOutput> {
         val clientDataResult = validateClientData(
             clientData = input.clientData,
             expectedType = "webauthn.create",
@@ -95,7 +97,9 @@ public object WebAuthnCoreValidator {
         )
     }
 
-    public fun validateAuthentication(input: AuthenticationValidationInput): ValidationResult<AuthenticationValidationOutput> {
+    public fun validateAuthentication(
+        input: AuthenticationValidationInput,
+    ): ValidationResult<AuthenticationValidationOutput> {
         val clientDataResult = validateClientData(
             clientData = input.clientData,
             expectedType = "webauthn.get",
@@ -159,7 +163,8 @@ public object WebAuthnCoreValidator {
             }
         }
 
-        // W3C WebAuthn L3 §7.1 Step 16 / §7.2 Step 22: Verify that the "backup eligibility" and "backup state" bits match.
+        // W3C WebAuthn L3 §7.1 Step 16 / §7.2 Step 22: Verify that the
+        // "backup eligibility" and "backup state" bits match.
         val beSet = (data.flags and BACKUP_ELIGIBLE_FLAG) != 0
         val bsSet = (data.flags and BACKUP_STATE_FLAG) != 0
         if (bsSet && !beSet) {
@@ -169,7 +174,8 @@ public object WebAuthnCoreValidator {
             )
         }
 
-        // W3C WebAuthn L3 §7.2 Step 24: Verify that the signature counter value is strictly greater than the stored counter.
+        // W3C WebAuthn L3 §7.2 Step 24: Verify that the signature counter value
+        // is strictly greater than the stored counter.
         if (previousSignCount > 0 && data.signCount > 0 && data.signCount <= previousSignCount) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "authenticatorData.signCount",

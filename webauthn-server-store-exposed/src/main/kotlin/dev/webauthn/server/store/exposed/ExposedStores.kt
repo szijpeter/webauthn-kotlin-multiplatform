@@ -36,6 +36,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 
+/** Exposed table storing one-time challenge sessions. */
 public object ChallengeSessions : Table("challenge_sessions") {
     public val challengeKey: Column<String> = varchar("challenge_key", 255)
     public val challengeValue: Column<String> = varchar("challenge_value", 255)
@@ -51,6 +52,7 @@ public object ChallengeSessions : Table("challenge_sessions") {
     override val primaryKey: PrimaryKey = PrimaryKey(challengeKey)
 }
 
+/** Exposed table storing registered credentials and counters. */
 public object Credentials : Table("credentials") {
     public val credentialId: Column<String> = varchar("credential_id", 255)
     public val userId: Column<String> = varchar("user_id", 255)
@@ -61,6 +63,7 @@ public object Credentials : Table("credentials") {
     override val primaryKey: PrimaryKey = PrimaryKey(credentialId)
 }
 
+/** Exposed table storing account identity records keyed by username. */
 public object UserAccounts : Table("user_accounts") {
     public val userName: Column<String> = varchar("user_name", 255)
     public val userId: Column<String> = varchar("user_id", 255)
@@ -121,6 +124,7 @@ private suspend fun <T> Database.ioTransaction(statement: suspend JdbcTransactio
         suspendTransaction(db = this@ioTransaction, statement = statement)
     }
 
+/** JDBC-backed [ChallengeStore] implementation using Exposed tables. */
 public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
     override suspend fun put(session: ChallengeSession) {
         db.ioTransaction {
@@ -191,6 +195,7 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
     }
 }
 
+/** JDBC-backed [CredentialStore] implementation using Exposed tables. */
 public class ExposedCredentialStore(private val db: Database) : CredentialStore {
     override suspend fun save(credential: StoredCredential) {
         db.ioTransaction {
@@ -253,6 +258,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
     }
 }
 
+/** JDBC-backed [UserAccountStore] implementation using Exposed tables. */
 public class ExposedUserAccountStore(private val db: Database) : UserAccountStore {
     override suspend fun findByName(name: String): UserAccount? {
         return db.ioTransaction {

@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
@@ -156,7 +154,7 @@ public class PackedAttestationStatementVerifier internal constructor(
         }
 
         val flags = authDataBytes[FLAGS_OFFSET]
-        val hasAt = (flags.toInt() and 0x40) != 0
+        val hasAt = (flags.toInt() and AT_FLAG_MASK) != 0
         val aaguid = when {
             !hasAt -> null
             authDataBytes.size < AAGUID_END_OFFSET ->
@@ -188,6 +186,7 @@ public class PackedAttestationStatementVerifier internal constructor(
     }
 
     private companion object {
+        private const val AT_FLAG_MASK = 0x40
         private const val FLAGS_OFFSET = 32
         private const val AAGUID_START_OFFSET = 37
         private const val AAGUID_END_OFFSET = AAGUID_START_OFFSET + 16

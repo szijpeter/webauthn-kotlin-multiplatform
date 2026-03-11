@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package dev.webauthn.network
 
 import dev.webauthn.client.PasskeyServerClient
@@ -24,6 +22,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
+/** Backend API contract consumed by [KtorPasskeyServerClient]. */
 public interface BackendContract {
     public suspend fun getRegisterOptions(
         httpClient: HttpClient,
@@ -54,6 +53,7 @@ public interface BackendContract {
     ): Boolean
 }
 
+/** Default backend contract matching the sample/server route structure. */
 public class DefaultBackendContract(
     private val registerOptionsPath: String = "/webauthn/registration/start",
     private val registerVerifyPath: String = "/webauthn/registration/finish",
@@ -169,6 +169,7 @@ public class DefaultBackendContract(
     }
 }
 
+/** Ktor-based [PasskeyServerClient] implementation for JSON WebAuthn backend endpoints. */
 public class KtorPasskeyServerClient(
     private val httpClient: HttpClient,
     endpointBase: String,
@@ -223,6 +224,7 @@ public class KtorPasskeyServerClient(
 }
 
 @Serializable
+/** Payload for registration-start endpoint requests. */
 public data class RegistrationStartPayload(
     public val rpId: String,
     public val rpName: String,
@@ -233,6 +235,7 @@ public data class RegistrationStartPayload(
 )
 
 @Serializable
+/** Payload for authentication-start endpoint requests. */
 public data class AuthenticationStartPayload(
     public val rpId: String,
     public val origin: String,
@@ -290,7 +293,7 @@ private inline fun <reified T> decodeOrThrow(
 ): T {
     return runCatching { contractJson.decodeFromString<T>(body) }
         .getOrElse { error ->
-            val preview = body.trim().take(512).ifBlank { "<empty>" }
+            val preview = body.trim().take(ERROR_BODY_PREVIEW_LIMIT).ifBlank { "<empty>" }
             throw IllegalStateException("$operation could not be parsed: ${error.message}. Body: $preview")
         }
 }
@@ -306,5 +309,7 @@ private fun serverErrorMessage(body: String): String {
             ?.filter { it.isNotBlank() }
             ?.joinToString("; ")
     }.getOrNull()?.takeIf { it.isNotBlank() }
-    return fromErrors ?: trimmed.take(512)
+    return fromErrors ?: trimmed.take(ERROR_BODY_PREVIEW_LIMIT)
 }
+
+private const val ERROR_BODY_PREVIEW_LIMIT: Int = 512

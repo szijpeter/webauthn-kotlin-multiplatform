@@ -1,5 +1,3 @@
-@file:Suppress("MaxLineLength")
-
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
@@ -36,7 +34,9 @@ public class FidoU2fAttestationStatementVerifier(
         val publicKeyU2F = extractRawPublicKey(attestedData.cosePublicKey)
             ?: return failure("cosePublicKey", "Could not extract U2F public key from COSE")
 
-        // W3C WebAuthn L3: §8.6 Step 2: Let verificationData be the concatenation of (0x00 || rpIdHash || clientDataHash || credentialId || publicKeyU2F)
+        // W3C WebAuthn L3: §8.6 Step 2: Let verificationData be the
+        // concatenation of (0x00 || rpIdHash || clientDataHash || credentialId
+        // || publicKeyU2F).
         val verificationData = concat(
             byteArrayOf(0x00),
             input.response.rawAuthenticatorData.rpIdHash.bytes(),
@@ -45,8 +45,16 @@ public class FidoU2fAttestationStatementVerifier(
             publicKeyU2F,
         )
 
-        // W3C WebAuthn L3: §8.6 Step 3: Verify the sig using verificationData and the public key of the attestation certificate
-        if (!SignumPrimitives.verifyWithCertificate(CoseAlgorithm.ES256, attCertDer, verificationData, sig)) {
+        // W3C WebAuthn L3: §8.6 Step 3: Verify the signature over
+        // verificationData using the attestation certificate public key.
+        if (
+            !SignumPrimitives.verifyWithCertificate(
+                CoseAlgorithm.ES256,
+                attCertDer,
+                verificationData,
+                sig,
+            )
+        ) {
             return failure("sig", "Invalid fido-u2f attestation signature")
         }
 
