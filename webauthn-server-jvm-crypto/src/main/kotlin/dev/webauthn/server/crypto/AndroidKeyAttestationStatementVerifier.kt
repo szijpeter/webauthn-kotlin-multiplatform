@@ -1,3 +1,11 @@
+@file:Suppress(
+    "CyclomaticComplexMethod",
+    "LongMethod",
+    "MagicNumber",
+    "MaxLineLength",
+    "TooGenericExceptionCaught",
+)
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
@@ -154,6 +162,8 @@ internal class AndroidKeyAttestationStatementVerifier(
         return tags
     }
 
+    // Throw-based guards keep attestation requirement violations precise and composable for callers.
+    @Suppress("ThrowsCount")
     private fun checkKeyRequirements(tags: Map<Int, ByteArray>, key: CosePublicKeyMaterial) {
         if (tags.containsKey(TAG_ALL_APPLICATIONS)) {
             throw IllegalArgumentException("Key is not restricted to this application (allApplications present)")

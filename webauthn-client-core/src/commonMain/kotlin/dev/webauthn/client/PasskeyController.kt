@@ -97,6 +97,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         )
     }
 
+    @Suppress("MaxLineLength", "TooGenericExceptionCaught")
     private suspend fun <OptionsT, ResponseT> runCeremony(
         action: PasskeyAction,
         getOptions: suspend () -> ValidationResult<OptionsT>,

@@ -83,9 +83,8 @@ public class RegistrationService(
     /**
      * W3C WebAuthn L3: §7.1. Registering a New Credential
      */
-    public suspend fun finish(
-        request: RegistrationFinishRequest,
-    ): ValidationResult<RegistrationResponse> {
+    @Suppress("LongMethod")
+    public suspend fun finish(request: RegistrationFinishRequest): ValidationResult<RegistrationResponse> {
         val parsed = parseRegistrationResponse(request)
         if (parsed is ValidationResult.Invalid) {
             return parsed
@@ -139,7 +138,8 @@ public class RegistrationService(
         }
 
         val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
-        // W3C WebAuthn L3: §7.1 Step 14: Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
+        // W3C WebAuthn L3: §7.1 Step 14: Verify that authData.rpIdHash is the
+        // SHA-256 hash of the expected RP ID.
         if (response.rawAuthenticatorData.rpIdHash != rpHashExpected) {
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }
@@ -159,14 +159,19 @@ public class RegistrationService(
             return attestationResult
         }
 
-        credentialStore.save(storedCredentialFromAttestedData(response, request = RegistrationStartRequest(
-            rpId = session.rpId,
-            rpName = session.rpId.value,
-            origin = session.origin,
-            userName = session.userName,
-            userDisplayName = session.userName,
-            userHandle = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id,
-        )))
+        credentialStore.save(
+            storedCredentialFromAttestedData(
+                response,
+                request = RegistrationStartRequest(
+                    rpId = session.rpId,
+                    rpName = session.rpId.value,
+                    origin = session.origin,
+                    userName = session.userName,
+                    userDisplayName = session.userName,
+                    userHandle = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id,
+                ),
+            ),
+        )
 
         @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
         for (hook in extensionHooks) {
@@ -227,6 +232,8 @@ public class AuthenticationService(
     /**
      * W3C WebAuthn L3: §7.2. Verifying an Authentication Assertion
      */
+    // Spec-step validation is intentionally structured as fail-fast guards for auditability.
+    @Suppress("LongMethod", "ReturnCount")
     public suspend fun finish(request: AuthenticationFinishRequest): ValidationResult<AuthenticationResponse> {
         val parsed = parseAuthenticationResponse(request)
         if (parsed is ValidationResult.Invalid) {
@@ -280,7 +287,8 @@ public class AuthenticationService(
         }
 
         val rpHashExpected = rpIdHasher.hashRpId(session.rpId.value)
-        // W3C WebAuthn L3: §7.2 Step 19: Verify that the rpIdHash in authData is the SHA-256 hash of the RP ID expected by the Relying Party.
+        // W3C WebAuthn L3: §7.2 Step 19: Verify that authData.rpIdHash is the
+        // SHA-256 hash of the expected RP ID.
         if (response.authenticatorData.rpIdHash != rpHashExpected) {
             return failure("authenticatorData.rpIdHash", "rpId hash does not match")
         }

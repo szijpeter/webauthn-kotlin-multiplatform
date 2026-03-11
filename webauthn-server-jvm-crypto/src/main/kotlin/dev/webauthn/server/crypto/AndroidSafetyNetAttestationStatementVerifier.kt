@@ -1,3 +1,10 @@
+@file:Suppress(
+    "CyclomaticComplexMethod",
+    "LongMethod",
+    "MaxLineLength",
+    "TooGenericExceptionCaught",
+)
+
 package dev.webauthn.server.crypto
 
 import at.asitplus.signum.indispensable.josef.JwsAlgorithm
@@ -40,6 +47,8 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
         ignoreUnknownKeys = true
     }
 
+    // WebAuthn step-by-step validation here prefers explicit early exits over nested control flow.
+    @Suppress("ReturnCount")
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(

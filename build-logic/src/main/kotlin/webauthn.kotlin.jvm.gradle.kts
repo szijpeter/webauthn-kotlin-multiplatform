@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 plugins {
     kotlin("jvm")
 }

@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.webauthn.server.crypto
 
 import java.io.ByteArrayInputStream

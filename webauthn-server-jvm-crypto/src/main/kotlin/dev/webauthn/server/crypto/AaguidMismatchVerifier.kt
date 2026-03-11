@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber", "MaxLineLength", "TooGenericExceptionCaught")
+
 package dev.webauthn.server.crypto
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.ValidationResult

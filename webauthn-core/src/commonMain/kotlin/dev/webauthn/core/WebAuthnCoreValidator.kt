@@ -7,12 +7,14 @@ import dev.webauthn.model.Origin
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
+/** User verification policy mapped from ceremony options to core validation behavior. */
 public enum class UserVerificationPolicy {
     REQUIRED,
     PREFERRED,
     DISCOURAGED,
 }
 
+/** Core validator implementing the WebAuthn L3 ceremony checks shared by server adapters. */
 public object WebAuthnCoreValidator {
     /**
      * W3C WebAuthn L3:
@@ -135,7 +137,8 @@ public object WebAuthnCoreValidator {
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
-        // W3C WebAuthn L3 §7.1 Step 15 / §7.2 Step 20: Verify that the User Presence bit of the flags in authData is set.
+        // W3C WebAuthn L3 §7.1 Step 15 / §7.2 Step 20: verify that the User Presence
+        // bit of the flags in authData is set.
         val upSet = (data.flags and USER_PRESENCE_FLAG) != 0
         if (!upSet) {
             errors += WebAuthnValidationError.InvalidValue(
@@ -144,7 +147,8 @@ public object WebAuthnCoreValidator {
             )
         }
 
-        // W3C WebAuthn L3 §7.2 Step 21: If user verification is required, verify that the User Verification bit of the flags in authData is set.
+        // W3C WebAuthn L3 §7.2 Step 21: if user verification is required, verify that
+        // the User Verification bit of the flags in authData is set.
         if (uvPolicy == UserVerificationPolicy.REQUIRED) {
             val uvSet = (data.flags and USER_VERIFICATION_FLAG) != 0
             if (!uvSet) {

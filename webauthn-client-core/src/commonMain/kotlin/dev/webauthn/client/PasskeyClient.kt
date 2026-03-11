@@ -122,6 +122,7 @@ public class DefaultPasskeyClient(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <T> suspendCatching(block: suspend () -> T): KmmResult<T> {
         return try {
             KmmResult(block())

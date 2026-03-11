@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.webauthn.network
 
 import dev.webauthn.client.PasskeyServerClient

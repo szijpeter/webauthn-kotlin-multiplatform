@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod")
+
 package dev.webauthn.samples.backend
 
 import dev.webauthn.server.AttestationPolicy

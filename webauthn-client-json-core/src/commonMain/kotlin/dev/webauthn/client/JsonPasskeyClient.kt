@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package dev.webauthn.client
 
 import at.asitplus.KmmResult

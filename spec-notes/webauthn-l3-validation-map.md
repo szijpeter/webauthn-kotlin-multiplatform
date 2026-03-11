@@ -2,6 +2,10 @@
 
 This document maps currently implemented validation behavior to normative requirements.
 
+## Trace updates
+
+- 2026-03-11: Detekt tightening phase 2 updated documentation/static-analysis constraints (including spec-facing KDoc) only; no validator/model runtime semantics changed.
+
 ## Implemented rules
 
 | Rule | Normative source | Implementation | Negative-path test coverage |

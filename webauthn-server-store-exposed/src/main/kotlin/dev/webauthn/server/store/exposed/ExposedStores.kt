@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber", "MaxLineLength")
+
 package dev.webauthn.server.store.exposed
 
 import dev.webauthn.core.CeremonyType

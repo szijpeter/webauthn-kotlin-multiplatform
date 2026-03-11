@@ -1,3 +1,11 @@
+@file:Suppress(
+    "CyclomaticComplexMethod",
+    "LongMethod",
+    "MagicNumber",
+    "MaxLineLength",
+    "TooGenericExceptionCaught",
+)
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
@@ -23,6 +31,8 @@ internal class TpmAttestationStatementVerifier(
         private const val OID_TCG_KP_AIK_CERTIFICATE = "2.23.133.8.3"
     }
 
+    // TPM verification uses explicit fail-fast exits to mirror spec steps and preserve error locality.
+    @Suppress("ReturnCount", "ThrowsCount")
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(

@@ -1,3 +1,5 @@
+@file:Suppress("CyclomaticComplexMethod", "LongMethod", "MagicNumber")
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.internal.cbor.MAJOR_ARRAY
@@ -27,6 +29,8 @@ internal class ParsedAttestationObject(
     val response: ByteArray? = null,
 )
 
+// This parser is intentionally fail-fast and branch-heavy to preserve exact WebAuthn CBOR semantics.
+@Suppress("ReturnCount")
 internal fun parseAttestationObject(bytes: ByteArray): ParsedAttestationObject? {
     var offset = 0
     val mapHeader = readCborHeader(bytes, offset) ?: return null

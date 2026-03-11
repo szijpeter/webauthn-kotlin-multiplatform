@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.webauthn.samples.composepasskey
 
 import androidx.compose.runtime.mutableStateListOf

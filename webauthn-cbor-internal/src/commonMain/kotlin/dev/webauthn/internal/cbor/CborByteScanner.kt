@@ -1,3 +1,5 @@
+@file:Suppress("CyclomaticComplexMethod", "MagicNumber")
+
 package dev.webauthn.internal.cbor
 
 /**

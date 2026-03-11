@@ -1,3 +1,5 @@
+@file:Suppress("TooGenericExceptionCaught")
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.crypto.TrustAnchorSource

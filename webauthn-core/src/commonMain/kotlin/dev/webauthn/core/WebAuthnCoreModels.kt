@@ -14,6 +14,7 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.ValidationResult
 
+/** WebAuthn ceremony discriminator used for challenge lifecycle management. */
 public enum class CeremonyType {
     REGISTRATION,
     AUTHENTICATION,
@@ -35,7 +36,7 @@ public data class ChallengeSession(
     public val userVerification: dev.webauthn.model.UserVerificationRequirement? = null,
 )
 
-
+/** Input contract for W3C WebAuthn L3 §7.1 registration validation steps. */
 public data class RegistrationValidationInput(
     public val options: PublicKeyCredentialCreationOptions,
     public val response: RegistrationResponse,
@@ -45,6 +46,7 @@ public data class RegistrationValidationInput(
     public val userVerificationPolicy: UserVerificationPolicy = UserVerificationPolicy.PREFERRED,
 )
 
+/** Input contract for W3C WebAuthn L3 §7.2 authentication validation steps. */
 public data class AuthenticationValidationInput(
     public val options: PublicKeyCredentialRequestOptions,
     public val response: AuthenticationResponse,
@@ -55,19 +57,21 @@ public data class AuthenticationValidationInput(
     public val userVerificationPolicy: UserVerificationPolicy = UserVerificationPolicy.PREFERRED,
 )
 
+/** Output model produced by successful registration validation. */
 public data class RegistrationValidationOutput(
     public val credentialId: CredentialId,
     public val signCount: Long,
     public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
 
+/** Output model produced by successful authentication validation. */
 public data class AuthenticationValidationOutput(
     public val credentialId: CredentialId,
     public val signCount: Long,
     public val extensions: AuthenticationExtensionsClientOutputs? = null,
 )
 
-
+/** Extension validation hook for optional WebAuthn Level 3 client extension processing. */
 @ExperimentalWebAuthnL3Api
 public interface WebAuthnExtensionHook {
     public fun validateRegistrationExtensions(
@@ -80,4 +84,3 @@ public interface WebAuthnExtensionHook {
         outputs: AuthenticationExtensionsClientOutputs?,
     ): ValidationResult<Unit>
 }
-

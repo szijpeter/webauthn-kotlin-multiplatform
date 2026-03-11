@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod", "MagicNumber", "MaxLineLength")
+
 package dev.webauthn.samples.composepasskey
 
 import androidx.compose.foundation.layout.Arrangement

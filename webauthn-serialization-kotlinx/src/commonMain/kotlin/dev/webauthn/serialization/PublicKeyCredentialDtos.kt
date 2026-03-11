@@ -1,3 +1,12 @@
+@file:Suppress(
+    "CyclomaticComplexMethod",
+    "LargeClass",
+    "LongMethod",
+    "MagicNumber",
+    "TooManyFunctions",
+    "UndocumentedPublicClass",
+)
+
 package dev.webauthn.serialization
 
 import dev.webauthn.internal.cbor.skipCborItem

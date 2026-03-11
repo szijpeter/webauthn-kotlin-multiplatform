@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength", "TooGenericExceptionCaught")
+
 package dev.webauthn.client.ios
 
 import dev.webauthn.model.AttestationConveyancePreference

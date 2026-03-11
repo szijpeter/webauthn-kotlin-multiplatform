@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.webauthn.server.crypto
 
 /**
@@ -76,6 +78,8 @@ internal class DerParser(private val data: ByteArray) {
         return Header(tag, value)
     }
 
+    // DER length decoding validates multiple malformed cases and throws intentionally on protocol violations.
+    @Suppress("ThrowsCount")
     private fun readLength(): Int {
         if (pos >= data.size) throw IllegalArgumentException("Unexpected end of DER data")
 

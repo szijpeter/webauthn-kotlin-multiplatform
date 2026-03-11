@@ -1,3 +1,9 @@
+@file:Suppress(
+    "CyclomaticComplexMethod",
+    "LongMethod",
+    "TooGenericExceptionCaught",
+)
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput

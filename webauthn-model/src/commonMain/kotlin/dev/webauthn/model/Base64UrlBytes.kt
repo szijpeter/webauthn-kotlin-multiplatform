@@ -3,6 +3,7 @@ package dev.webauthn.model
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+/** RFC 4648 §5 base64url bytes without padding, as required by WebAuthn JSON fields. */
 @OptIn(ExperimentalEncodingApi::class)
 @kotlin.jvm.JvmInline
 public value class Base64UrlBytes private constructor(private val encodedValue: String) {
@@ -12,6 +13,7 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
 
     override fun toString(): String = "Base64UrlBytes(${bytes().size} bytes)"
 
+    /** Parsing and construction helpers for RFC 4648 URL-safe base64 values without padding. */
     public companion object {
         public fun parse(value: String, field: String = "base64url"): ValidationResult<Base64UrlBytes> {
             if (value.contains('=')) {

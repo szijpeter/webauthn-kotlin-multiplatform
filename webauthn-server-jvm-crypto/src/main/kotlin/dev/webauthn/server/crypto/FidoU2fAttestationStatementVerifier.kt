@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength")
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput

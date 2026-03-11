@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.webauthn.samples.composepasskey.ui.theme
 
 import androidx.compose.material3.Typography

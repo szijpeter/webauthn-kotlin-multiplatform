@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod")
+
 package dev.webauthn.server.ktor
 
 import dev.webauthn.model.Challenge
