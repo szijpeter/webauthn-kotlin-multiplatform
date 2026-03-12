@@ -26,7 +26,7 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 3. If any published module changes, release the full published set plus the BOM under a new coordinated version.
 4. If only docs, samples, internal modules, or build logic change, a Maven Central release is not required.
 5. GitHub release tags follow the coordinated version, for example `v0.1.0`.
-6. Maintain `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` while the first release effort is active, update it when decisions drift, and delete it once the effort is complete.
+6. For major release initiatives, maintain a temporary execution-map doc under `docs/ai/`, keep it updated when decisions drift, and delete it once the effort is complete.
 
 ## Published Artifact Surface
 
@@ -139,7 +139,7 @@ A change is done only when all apply:
 6. If publishing, coordinates, or metadata changed, `publishToMavenLocal` has been run locally or the gap is called out explicitly.
 7. Documentation is updated when workflow/contracts/change adoption guidance changed.
 8. If CI/security posture changed, `SECURITY.md` and `docs/PUBLIC_LAUNCH_CHECKLIST.md` are updated in the same change.
-9. If the first-public-release effort scope changed, `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` is updated in the same change.
+9. If a temporary release execution-map doc is active for the current effort, keep it updated in the same change when scope/sequence decisions change.
 
 ## Quality Gate Contract
 
@@ -177,7 +177,6 @@ Stop and ask before continuing when:
 
 ## Source Pointers
 
-- Temporary release execution map: `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md`
 - Architecture: `docs/architecture.md`
 - Dependency policy: `docs/dependency-decisions.md`
 - Implementation status: `docs/IMPLEMENTATION_STATUS.md`

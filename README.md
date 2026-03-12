@@ -1,7 +1,7 @@
 <p align="left">
   <img src="https://img.shields.io/github/actions/workflow/status/szijpeter/webauthn-kotlin-multiplatform/ci.yml?branch=main&label=CI" alt="CI status" />
   <img src="https://img.shields.io/github/actions/workflow/status/szijpeter/webauthn-kotlin-multiplatform/codeql.yml?branch=main&label=CodeQL" alt="CodeQL status" />
-  <img src="https://img.shields.io/badge/Maven%20Central-planned-orange" alt="Maven Central planned" />
+  <img src="https://img.shields.io/maven-central/v/io.github.szijpeter/webauthn-bom?label=Maven%20Central" alt="Maven Central" />
   <img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="Apache 2.0" />
 </p>
 
@@ -73,7 +73,7 @@ dependencies {
 }
 ```
 
-First public Maven Central release is being prepared now. Until that release lands, maintainers can validate publication locally with:
+Published to Maven Central (first public release: `0.1.0`). Maintainers can still validate publication locally with:
 
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
@@ -134,7 +134,7 @@ Start with:
 
 ## Status and Current Limits
 
-This repository is approaching its first public release and is still pre-1.0.
+This repository is publicly released and still pre-1.0.
 
 Current state:
 
