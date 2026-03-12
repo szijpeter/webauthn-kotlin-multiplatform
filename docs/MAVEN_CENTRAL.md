@@ -93,4 +93,4 @@ Guardrails:
 
 ## Current State
 
-The first public release is being prepared. Planned initial stable coordinates use version `0.1.0`.
+First public release is complete: `0.1.0` was published on 2026-03-12.

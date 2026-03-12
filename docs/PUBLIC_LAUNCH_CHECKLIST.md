@@ -16,7 +16,7 @@ Use this checklist when moving from private to public operation.
    - `./gradlew apiCheck --stacktrace`
    - `./gradlew publishToMavenLocal --stacktrace`
 6. Demo/sample runtime security defaults are explicit (sample backend attestation mode defaults to `STRICT`; relaxed `NONE` mode is opt-in only).
-7. `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` reflects the current release-prep sequence while the first public release effort is still active.
+7. If a temporary release execution-map doc is active, keep it current with scope/sequence changes.
 
 ## GitHub Repository Settings
 
@@ -43,4 +43,4 @@ Use this checklist when moving from private to public operation.
 3. `SECURITY.md` appears in repository security surfaces.
 4. Maven Central artifacts resolve using the published coordinates and BOM.
 5. No secret findings exist in baseline scans; if any are found, rotate credentials immediately and evaluate targeted history rewrite.
-6. Delete `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` once the full first-release effort is complete.
+6. Delete any temporary release execution-map doc once that release effort is complete.
