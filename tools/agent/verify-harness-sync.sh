@@ -16,7 +16,6 @@ contains_pattern() {
 
 required_files=(
   "docs/ai/STEERING.md"
-  "docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md"
   "AGENTS.md"
   "CLAUDE.md"
   ".cursor/rules/00-core.mdc"

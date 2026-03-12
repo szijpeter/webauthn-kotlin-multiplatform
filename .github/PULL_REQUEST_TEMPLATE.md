@@ -12,7 +12,7 @@
 ## Docs
 
 - [ ] Docs updated if public behavior, release workflow, or security posture changed
-- [ ] `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` updated if the first-release sequence or decisions changed
+- [ ] Temporary release execution-map doc updated if one is active for this effort
 - [ ] `CHANGELOG.md` updated if the change affects published consumers
 
 ## Notes
