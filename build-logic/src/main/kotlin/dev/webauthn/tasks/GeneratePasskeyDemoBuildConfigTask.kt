@@ -53,5 +53,7 @@ abstract class GeneratePasskeyDemoBuildConfigTask : DefaultTask() {
         value
             .replace("\\", "\\\\")
             .replace("\"", "\\\"")
+            .replace("\$", "\\\$")
             .replace("\n", "\\n")
+            .replace("\r", "\\r")
 }
