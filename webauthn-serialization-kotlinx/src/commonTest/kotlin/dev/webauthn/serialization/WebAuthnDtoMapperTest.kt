@@ -16,6 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WebAuthnDtoMapperTest {
@@ -50,6 +51,23 @@ class WebAuthnDtoMapperTest {
             extensions = AuthenticationExtensionsClientInputsDto(
                 largeBlob = LargeBlobExtensionInputDto(support = "invalid"),
             ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun creationOptionsRejectMissingRpId() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = null, name = "Example"),
+            user = UserEntityDto(
+                id = "YWFhYWFhYWFhYWFhYWFhYQ",
+                name = "alice",
+                displayName = "Alice",
+            ),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
@@ -348,6 +366,29 @@ class WebAuthnDtoMapperTest {
         assertEquals(AuthenticatorTransport.BLE, requestResult.value.allowCredentials[0].transports[0])
         assertEquals(AuthenticatorTransport.INTERNAL, requestResult.value.allowCredentials[0].transports[1])
         assertEquals(AuthenticatorTransport.HYBRID, requestResult.value.allowCredentials[0].transports[2])
+    }
+
+    @Test
+    fun requestOptionsAllowMissingRpId() {
+        val dto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = null,
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertNull(result.value.rpId)
+    }
+
+    @Test
+    fun requestOptionsFromModelOmitsRpIdWhenNotProvided() {
+        val model = dev.webauthn.model.PublicKeyCredentialRequestOptions(
+            challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(32) { 9 }),
+            rpId = null,
+        )
+
+        val dto = WebAuthnDtoMapper.fromModel(model)
+        assertNull(dto.rpId)
     }
 
     @Test

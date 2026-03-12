@@ -443,18 +443,18 @@ public final class dev/webauthn/model/PublicKeyCredentialRequestOptions {
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-FoFKi_4 ()Ljava/lang/String;
-	public final fun component2-Xrhg-t4 ()Ljava/lang/String;
+	public final fun component2-hdcespg ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Long;
 	public final fun component4 ()Ljava/util/List;
 	public final fun component5 ()Ldev/webauthn/model/UserVerificationRequirement;
 	public final fun component6 ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
-	public final fun copy-uMJoLP8 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
-	public static synthetic fun copy-uMJoLP8$default (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public final fun copy-skbOvTk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public static synthetic fun copy-skbOvTk$default (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAllowCredentials ()Ljava/util/List;
 	public final fun getChallenge-FoFKi_4 ()Ljava/lang/String;
 	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
-	public final fun getRpId-Xrhg-t4 ()Ljava/lang/String;
+	public final fun getRpId-hdcespg ()Ljava/lang/String;
 	public final fun getTimeoutMs ()Ljava/lang/Long;
 	public final fun getUserVerification ()Ldev/webauthn/model/UserVerificationRequirement;
 	public fun hashCode ()I

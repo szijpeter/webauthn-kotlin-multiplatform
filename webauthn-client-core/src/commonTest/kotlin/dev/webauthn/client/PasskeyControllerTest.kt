@@ -40,9 +40,6 @@ class PasskeyControllerTest {
 
         assertEquals(PasskeyControllerState.Idle, controller.uiState.value)
 
-        val deferredOptions = CompletableDeferred<ValidationResult<PublicKeyCredentialCreationOptions>>()
-        val deferredFinish = CompletableDeferred<Boolean>()
-
         val job = launch {
             controller.register(Unit)
         }
@@ -62,7 +59,7 @@ class PasskeyControllerTest {
             controller.uiState.value,
         )
 
-        serverClient.finishRegisterDeferred.complete(true)
+        serverClient.finishRegisterDeferred.complete(PasskeyFinishResult.Verified)
 
         // After finish, state should be Success
         assertEquals(
@@ -107,13 +104,13 @@ class PasskeyControllerTest {
     }
 
     @Test
-    fun finish_returning_false_transitions_to_transport_error() = runTest(UnconfinedTestDispatcher()) {
+    fun finish_rejected_result_transitions_to_transport_error() = runTest(UnconfinedTestDispatcher()) {
         val fakeClient = FakePasskeyClient(
             createResult = PasskeyResult.Success(validRegistrationResponse())
         )
         val serverClient = FakePasskeyServerClient()
         serverClient.registerOptionsDeferred.complete(ValidationResult.Valid(validCreationOptions()))
-        serverClient.finishRegisterDeferred.complete(false) // Backend rejects logic
+        serverClient.finishRegisterDeferred.complete(PasskeyFinishResult.Rejected())
         val controller = PasskeyController(fakeClient, serverClient)
 
         controller.register(Unit)
@@ -186,18 +183,26 @@ class PasskeyControllerTest {
 
     private class FakePasskeyServerClient(
         val registerOptionsDeferred: CompletableDeferred<ValidationResult<PublicKeyCredentialCreationOptions>> = CompletableDeferred(),
-        val finishRegisterDeferred: CompletableDeferred<Boolean> = CompletableDeferred(),
+        val finishRegisterDeferred: CompletableDeferred<PasskeyFinishResult> = CompletableDeferred(),
         val signInOptionsDeferred: CompletableDeferred<ValidationResult<PublicKeyCredentialRequestOptions>> = CompletableDeferred(),
-        val finishSignInDeferred: CompletableDeferred<Boolean> = CompletableDeferred(),
+        val finishSignInDeferred: CompletableDeferred<PasskeyFinishResult> = CompletableDeferred(),
         val signInOptionsException: Throwable? = null,
     ) : PasskeyServerClient<Unit, Unit> {
         override suspend fun getRegisterOptions(params: Unit): ValidationResult<PublicKeyCredentialCreationOptions> = registerOptionsDeferred.await()
-        override suspend fun finishRegister(params: Unit, response: RegistrationResponse, challengeAsBase64Url: String): Boolean = finishRegisterDeferred.await()
+        override suspend fun finishRegister(
+            params: Unit,
+            response: RegistrationResponse,
+            challengeAsBase64Url: String,
+        ): PasskeyFinishResult = finishRegisterDeferred.await()
         override suspend fun getSignInOptions(params: Unit): ValidationResult<PublicKeyCredentialRequestOptions> {
             signInOptionsException?.let { throw it }
             return signInOptionsDeferred.await()
         }
-        override suspend fun finishSignIn(params: Unit, response: AuthenticationResponse, challengeAsBase64Url: String): Boolean = finishSignInDeferred.await()
+        override suspend fun finishSignIn(
+            params: Unit,
+            response: AuthenticationResponse,
+            challengeAsBase64Url: String,
+        ): PasskeyFinishResult = finishSignInDeferred.await()
     }
 
     private class FakePasskeyClient(

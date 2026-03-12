@@ -563,6 +563,7 @@ public final class dev/webauthn/serialization/RelatedOriginsDto$Companion {
 public final class dev/webauthn/serialization/RpEntityDto {
 	public static final field Companion Ldev/webauthn/serialization/RpEntityDto$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/RpEntityDto;

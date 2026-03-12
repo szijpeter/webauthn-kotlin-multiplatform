@@ -36,8 +36,8 @@ class WebAuthnCoreValidatorTest {
                 challenge = challenge,
                 origin = sampleOrigin(),
             ),
-            expectedType = "webauthn.create",
-            expectedChallenge = challenge.value.encoded(),
+            expectedType = WebAuthnClientDataType.CREATE,
+            expectedChallenge = challenge,
             expectedOrigin = sampleOrigin(),
         )
 
@@ -52,8 +52,8 @@ class WebAuthnCoreValidatorTest {
                 challenge = sampleChallenge(2),
                 origin = sampleOrigin(),
             ),
-            expectedType = "webauthn.get",
-            expectedChallenge = sampleChallenge(3).value.encoded(),
+            expectedType = WebAuthnClientDataType.GET,
+            expectedChallenge = sampleChallenge(3),
             expectedOrigin = sampleOrigin(),
         )
 
@@ -68,8 +68,8 @@ class WebAuthnCoreValidatorTest {
                 challenge = sampleChallenge(4),
                 origin = Origin.parseOrThrow("https://example.com"),
             ),
-            expectedType = "webauthn.get",
-            expectedChallenge = sampleChallenge(4).value.encoded(),
+            expectedType = WebAuthnClientDataType.GET,
+            expectedChallenge = sampleChallenge(4),
             expectedOrigin = Origin.parseOrThrow("https://login.example.com"),
         )
 
@@ -85,8 +85,8 @@ class WebAuthnCoreValidatorTest {
                 challenge = challenge,
                 origin = sampleOrigin(),
             ),
-            expectedType = "webauthn.get",
-            expectedChallenge = challenge.value.encoded(),
+            expectedType = WebAuthnClientDataType.GET,
+            expectedChallenge = challenge,
             expectedOrigin = sampleOrigin(),
         )
 
@@ -102,8 +102,8 @@ class WebAuthnCoreValidatorTest {
                 challenge = challenge,
                 origin = Origin.parseOrThrow("https://other.example.com"),
             ),
-            expectedType = "webauthn.get",
-            expectedChallenge = challenge.value.encoded(),
+            expectedType = WebAuthnClientDataType.GET,
+            expectedChallenge = challenge,
             expectedOrigin = sampleOrigin(),
             allowedOrigins = setOf(Origin.parseOrThrow("https://other.example.com")),
         )
@@ -119,8 +119,8 @@ class WebAuthnCoreValidatorTest {
                 challenge = sampleChallenge(11),
                 origin = Origin.parseOrThrow("https://evil.com"),
             ),
-            expectedType = "webauthn.get",
-            expectedChallenge = sampleChallenge(11).value.encoded(),
+            expectedType = WebAuthnClientDataType.GET,
+            expectedChallenge = sampleChallenge(11),
             expectedOrigin = sampleOrigin(),
             allowedOrigins = setOf(Origin.parseOrThrow("https://other.example.com")),
         )
@@ -274,7 +274,7 @@ class WebAuthnCoreValidatorTest {
     fun requireAllowedCredentialFailsForCredentialOutsideAllowList() {
         val result = WebAuthnCoreValidator.requireAllowedCredential(
             response = sampleAuthenticationResponse(sampleCredentialId(2)),
-            allowedCredentialIds = setOf(sampleCredentialId(3).value.encoded()),
+            allowedCredentialIds = setOf(sampleCredentialId(3)),
         )
         assertTrue(result is ValidationResult.Invalid)
     }
@@ -284,7 +284,7 @@ class WebAuthnCoreValidatorTest {
         val credential = sampleCredentialId(4)
         val result = WebAuthnCoreValidator.requireAllowedCredential(
             response = sampleAuthenticationResponse(credential),
-            allowedCredentialIds = setOf(credential.value.encoded()),
+            allowedCredentialIds = setOf(credential),
         )
         assertTrue(result is ValidationResult.Valid)
     }

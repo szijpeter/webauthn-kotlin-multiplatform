@@ -471,7 +471,7 @@ final class dev.webauthn.model/PublicKeyCredentialParameters { // dev.webauthn.m
 }
 
 final class dev.webauthn.model/PublicKeyCredentialRequestOptions { // dev.webauthn.model/PublicKeyCredentialRequestOptions|null[0]
-    constructor <init>(dev.webauthn.model/Challenge, dev.webauthn.model/RpId, kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...) // dev.webauthn.model/PublicKeyCredentialRequestOptions.<init>|<init>(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
+    constructor <init>(dev.webauthn.model/Challenge, dev.webauthn.model/RpId? = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...) // dev.webauthn.model/PublicKeyCredentialRequestOptions.<init>|<init>(dev.webauthn.model.Challenge;dev.webauthn.model.RpId?;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
 
     final val allowCredentials // dev.webauthn.model/PublicKeyCredentialRequestOptions.allowCredentials|{}allowCredentials[0]
         final fun <get-allowCredentials>(): kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> // dev.webauthn.model/PublicKeyCredentialRequestOptions.allowCredentials.<get-allowCredentials>|<get-allowCredentials>(){}[0]
@@ -480,19 +480,19 @@ final class dev.webauthn.model/PublicKeyCredentialRequestOptions { // dev.webaut
     final val extensions // dev.webauthn.model/PublicKeyCredentialRequestOptions.extensions|{}extensions[0]
         final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.model/PublicKeyCredentialRequestOptions.extensions.<get-extensions>|<get-extensions>(){}[0]
     final val rpId // dev.webauthn.model/PublicKeyCredentialRequestOptions.rpId|{}rpId[0]
-        final fun <get-rpId>(): dev.webauthn.model/RpId // dev.webauthn.model/PublicKeyCredentialRequestOptions.rpId.<get-rpId>|<get-rpId>(){}[0]
+        final fun <get-rpId>(): dev.webauthn.model/RpId? // dev.webauthn.model/PublicKeyCredentialRequestOptions.rpId.<get-rpId>|<get-rpId>(){}[0]
     final val timeoutMs // dev.webauthn.model/PublicKeyCredentialRequestOptions.timeoutMs|{}timeoutMs[0]
         final fun <get-timeoutMs>(): kotlin/Long? // dev.webauthn.model/PublicKeyCredentialRequestOptions.timeoutMs.<get-timeoutMs>|<get-timeoutMs>(){}[0]
     final val userVerification // dev.webauthn.model/PublicKeyCredentialRequestOptions.userVerification|{}userVerification[0]
         final fun <get-userVerification>(): dev.webauthn.model/UserVerificationRequirement // dev.webauthn.model/PublicKeyCredentialRequestOptions.userVerification.<get-userVerification>|<get-userVerification>(){}[0]
 
     final fun component1(): dev.webauthn.model/Challenge // dev.webauthn.model/PublicKeyCredentialRequestOptions.component1|component1(){}[0]
-    final fun component2(): dev.webauthn.model/RpId // dev.webauthn.model/PublicKeyCredentialRequestOptions.component2|component2(){}[0]
+    final fun component2(): dev.webauthn.model/RpId? // dev.webauthn.model/PublicKeyCredentialRequestOptions.component2|component2(){}[0]
     final fun component3(): kotlin/Long? // dev.webauthn.model/PublicKeyCredentialRequestOptions.component3|component3(){}[0]
     final fun component4(): kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> // dev.webauthn.model/PublicKeyCredentialRequestOptions.component4|component4(){}[0]
     final fun component5(): dev.webauthn.model/UserVerificationRequirement // dev.webauthn.model/PublicKeyCredentialRequestOptions.component5|component5(){}[0]
     final fun component6(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.model/PublicKeyCredentialRequestOptions.component6|component6(){}[0]
-    final fun copy(dev.webauthn.model/Challenge = ..., dev.webauthn.model/RpId = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.model/PublicKeyCredentialRequestOptions.copy|copy(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
+    final fun copy(dev.webauthn.model/Challenge = ..., dev.webauthn.model/RpId? = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.model/PublicKeyCredentialRequestOptions.copy|copy(dev.webauthn.model.Challenge;dev.webauthn.model.RpId?;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/PublicKeyCredentialRequestOptions.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.model/PublicKeyCredentialRequestOptions.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.model/PublicKeyCredentialRequestOptions.toString|toString(){}[0]

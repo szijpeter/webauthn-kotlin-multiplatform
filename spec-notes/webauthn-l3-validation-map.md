@@ -2,6 +2,10 @@
 
 This document maps currently implemented validation behavior to normative requirements.
 
+## Trace updates
+
+- 2026-03-12: API boundary hardening for `validateClientData` and `requireAllowedCredential` moved these core contracts from stringly-typed inputs to domain wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`) without changing the underlying validation semantics mapped below.
+
 ## Implemented rules
 
 | Rule | Normative source | Implementation | Negative-path test coverage |

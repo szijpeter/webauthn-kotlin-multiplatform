@@ -155,6 +155,29 @@ public final class dev/webauthn/client/PasskeyControllerState$Success : dev/weba
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class dev/webauthn/client/PasskeyFinishResult {
+}
+
+public final class dev/webauthn/client/PasskeyFinishResult$Rejected : dev/webauthn/client/PasskeyFinishResult {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyFinishResult$Rejected;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyFinishResult$Rejected;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyFinishResult$Rejected;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyFinishResult$Verified : dev/webauthn/client/PasskeyFinishResult {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyFinishResult$Verified;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/webauthn/client/PasskeyPhase : java/lang/Enum {
 	public static final field FINISHING Ldev/webauthn/client/PasskeyPhase;
 	public static final field PLATFORM_PROMPT Ldev/webauthn/client/PasskeyPhase;

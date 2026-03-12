@@ -30,8 +30,8 @@ final enum class dev.webauthn.client/PasskeyPhase : kotlin/Enum<dev.webauthn.cli
 }
 
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyServerClient { // dev.webauthn.client/PasskeyServerClient|null[0]
-    abstract suspend fun finishRegister(#A, dev.webauthn.model/RegistrationResponse, kotlin/String): kotlin/Boolean // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RegistrationResponse;kotlin.String){}[0]
-    abstract suspend fun finishSignIn(#B, dev.webauthn.model/AuthenticationResponse, kotlin/String): kotlin/Boolean // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.AuthenticationResponse;kotlin.String){}[0]
+    abstract suspend fun finishRegister(#A, dev.webauthn.model/RegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RegistrationResponse;kotlin.String){}[0]
+    abstract suspend fun finishSignIn(#B, dev.webauthn.model/AuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.AuthenticationResponse;kotlin.String){}[0]
     abstract suspend fun getRegisterOptions(#A): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.client/PasskeyServerClient.getRegisterOptions|getRegisterOptions(1:0){}[0]
     abstract suspend fun getSignInOptions(#B): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.client/PasskeyServerClient.getSignInOptions|getSignInOptions(1:1){}[0]
 }
@@ -190,6 +190,27 @@ sealed interface dev.webauthn.client/PasskeyControllerState { // dev.webauthn.cl
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyControllerState.Idle.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyControllerState.Idle.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyControllerState.Idle.toString|toString(){}[0]
+    }
+}
+
+sealed interface dev.webauthn.client/PasskeyFinishResult { // dev.webauthn.client/PasskeyFinishResult|null[0]
+    final class Rejected : dev.webauthn.client/PasskeyFinishResult { // dev.webauthn.client/PasskeyFinishResult.Rejected|null[0]
+        constructor <init>(kotlin/String? = ...) // dev.webauthn.client/PasskeyFinishResult.Rejected.<init>|<init>(kotlin.String?){}[0]
+
+        final val message // dev.webauthn.client/PasskeyFinishResult.Rejected.message|{}message[0]
+            final fun <get-message>(): kotlin/String? // dev.webauthn.client/PasskeyFinishResult.Rejected.message.<get-message>|<get-message>(){}[0]
+
+        final fun component1(): kotlin/String? // dev.webauthn.client/PasskeyFinishResult.Rejected.component1|component1(){}[0]
+        final fun copy(kotlin/String? = ...): dev.webauthn.client/PasskeyFinishResult.Rejected // dev.webauthn.client/PasskeyFinishResult.Rejected.copy|copy(kotlin.String?){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyFinishResult.Rejected.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyFinishResult.Rejected.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyFinishResult.Rejected.toString|toString(){}[0]
+    }
+
+    final object Verified : dev.webauthn.client/PasskeyFinishResult { // dev.webauthn.client/PasskeyFinishResult.Verified|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyFinishResult.Verified.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyFinishResult.Verified.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyFinishResult.Verified.toString|toString(){}[0]
     }
 }
 

@@ -2,7 +2,9 @@ package dev.webauthn.core
 
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
@@ -13,6 +15,11 @@ public enum class UserVerificationPolicy {
     DISCOURAGED,
 }
 
+public enum class WebAuthnClientDataType(public val wireValue: String) {
+    CREATE("webauthn.create"),
+    GET("webauthn.get"),
+}
+
 public object WebAuthnCoreValidator {
     /**
      * W3C WebAuthn L3:
@@ -21,8 +28,8 @@ public object WebAuthnCoreValidator {
      */
     public fun validateClientData(
         clientData: CollectedClientData,
-        expectedType: String,
-        expectedChallenge: String,
+        expectedType: WebAuthnClientDataType,
+        expectedChallenge: Challenge,
         expectedOrigin: Origin,
         allowedOrigins: Set<Origin> = emptySet(),
     ): ValidationResult<Unit> {
@@ -30,16 +37,16 @@ public object WebAuthnCoreValidator {
 
         // W3C WebAuthn L3 §7.1 Step 8 / §7.2 Step 11: Verify that the value of
         // C.type is webauthn.create or webauthn.get.
-        if (clientData.type != expectedType) {
+        if (clientData.type != expectedType.wireValue) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.type",
-                message = "Expected $expectedType but got ${clientData.type}",
+                message = "Expected ${expectedType.wireValue} but got ${clientData.type}",
             )
         }
 
         // W3C WebAuthn L3 §7.1 Step 9 / §7.2 Step 12: Verify that the value of
         // C.challenge equals the base64url encoding of options.challenge.
-        if (clientData.challenge.value.encoded() != expectedChallenge) {
+        if (clientData.challenge != expectedChallenge) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.challenge",
                 message = "Challenge does not match the original ceremony challenge",
@@ -66,8 +73,8 @@ public object WebAuthnCoreValidator {
     public fun validateRegistration(input: RegistrationValidationInput): ValidationResult<RegistrationValidationOutput> {
         val clientDataResult = validateClientData(
             clientData = input.clientData,
-            expectedType = "webauthn.create",
-            expectedChallenge = input.options.challenge.value.encoded(),
+            expectedType = WebAuthnClientDataType.CREATE,
+            expectedChallenge = input.options.challenge,
             expectedOrigin = input.expectedOrigin,
             allowedOrigins = input.allowedOrigins,
         )
@@ -96,8 +103,8 @@ public object WebAuthnCoreValidator {
     public fun validateAuthentication(input: AuthenticationValidationInput): ValidationResult<AuthenticationValidationOutput> {
         val clientDataResult = validateClientData(
             clientData = input.clientData,
-            expectedType = "webauthn.get",
-            expectedChallenge = input.options.challenge.value.encoded(),
+            expectedType = WebAuthnClientDataType.GET,
+            expectedChallenge = input.options.challenge,
             expectedOrigin = input.expectedOrigin,
             allowedOrigins = input.allowedOrigins,
         )
@@ -182,12 +189,12 @@ public object WebAuthnCoreValidator {
 
     public fun requireAllowedCredential(
         response: AuthenticationResponse,
-        allowedCredentialIds: Set<String>,
+        allowedCredentialIds: Set<CredentialId>,
     ): ValidationResult<Unit> {
         if (allowedCredentialIds.isEmpty()) {
             return ValidationResult.Valid(Unit)
         }
-        return if (allowedCredentialIds.contains(response.credentialId.value.encoded())) {
+        return if (allowedCredentialIds.contains(response.credentialId)) {
             ValidationResult.Valid(Unit)
         } else {
             ValidationResult.Invalid(

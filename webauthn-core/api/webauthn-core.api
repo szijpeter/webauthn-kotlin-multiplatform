@@ -130,6 +130,15 @@ public final class dev/webauthn/core/UserVerificationPolicy : java/lang/Enum {
 	public static fun values ()[Ldev/webauthn/core/UserVerificationPolicy;
 }
 
+public final class dev/webauthn/core/WebAuthnClientDataType : java/lang/Enum {
+	public static final field CREATE Ldev/webauthn/core/WebAuthnClientDataType;
+	public static final field GET Ldev/webauthn/core/WebAuthnClientDataType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getWireValue ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/core/WebAuthnClientDataType;
+	public static fun values ()[Ldev/webauthn/core/WebAuthnClientDataType;
+}
+
 public final class dev/webauthn/core/WebAuthnCoreValidator {
 	public static final field BACKUP_ELIGIBLE_FLAG I
 	public static final field BACKUP_STATE_FLAG I
@@ -140,8 +149,8 @@ public final class dev/webauthn/core/WebAuthnCoreValidator {
 	public final fun validateAuthentication (Ldev/webauthn/core/AuthenticationValidationInput;)Ldev/webauthn/model/ValidationResult;
 	public final fun validateAuthenticatorData (Ldev/webauthn/model/AuthenticatorData;JLdev/webauthn/core/UserVerificationPolicy;)Ldev/webauthn/model/ValidationResult;
 	public static synthetic fun validateAuthenticatorData$default (Ldev/webauthn/core/WebAuthnCoreValidator;Ldev/webauthn/model/AuthenticatorData;JLdev/webauthn/core/UserVerificationPolicy;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
-	public final fun validateClientData-hT3BX6Q (Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;)Ldev/webauthn/model/ValidationResult;
-	public static synthetic fun validateClientData-hT3BX6Q$default (Ldev/webauthn/core/WebAuthnCoreValidator;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun validateClientData-bfWEliE (Ldev/webauthn/model/CollectedClientData;Ldev/webauthn/core/WebAuthnClientDataType;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun validateClientData-bfWEliE$default (Ldev/webauthn/core/WebAuthnCoreValidator;Ldev/webauthn/model/CollectedClientData;Ldev/webauthn/core/WebAuthnClientDataType;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
 	public final fun validateRegistration (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
 }
 
