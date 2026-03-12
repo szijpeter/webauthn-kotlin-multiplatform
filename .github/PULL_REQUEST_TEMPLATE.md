@@ -7,7 +7,7 @@
 - [ ] `tools/agent/quality-gate.sh --mode fast --scope changed --block false`
 - [ ] `tools/agent/quality-gate.sh --mode strict --scope changed --block false`
 - [ ] `./gradlew apiCheck --stacktrace` (if BCV-covered public API changed)
-- [ ] `./gradlew publishToMavenLocal --stacktrace` (if publishing/build metadata changed)
+- [ ] `./gradlew publishToMavenLocal --stacktrace` (if public API or publishing/build metadata changed)
 
 ## Docs
 

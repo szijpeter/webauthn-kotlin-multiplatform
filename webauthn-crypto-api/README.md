@@ -8,7 +8,12 @@ Use this module when you want the public crypto contracts without binding your h
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.model.RpIdHash
 
-val hasher = RpIdHasher { rpId -> RpIdHash.fromBytes(rpId.encodeToByteArray()) }
+// Example wiring only.
+// Production implementations must SHA-256 hash the RP ID bytes first.
+val hasher = RpIdHasher { rpId ->
+    val rpIdSha256 = sha256(rpId.encodeToByteArray())
+    RpIdHash.fromBytes(rpIdSha256)
+}
 ```
 
 Choose this when you need contracts such as `SignatureVerifier`, `AttestationVerifier`, `TrustAnchorSource`, or `RpIdHasher`.
