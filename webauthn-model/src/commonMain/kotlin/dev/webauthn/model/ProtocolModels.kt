@@ -95,7 +95,7 @@ public data class PublicKeyCredentialCreationOptions(
 /** W3C WebAuthn L3: §5.5. Options for Assertion Generation (PublicKeyCredentialRequestOptions) */
 public data class PublicKeyCredentialRequestOptions(
     public val challenge: Challenge,
-    public val rpId: RpId,
+    public val rpId: RpId? = null,
     public val timeoutMs: Long? = null,
     public val allowCredentials: List<PublicKeyCredentialDescriptor> = emptyList(),
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,

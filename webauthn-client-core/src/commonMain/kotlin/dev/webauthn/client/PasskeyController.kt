@@ -42,10 +42,24 @@ public sealed interface PasskeyControllerState {
 
 public interface PasskeyServerClient<RegisterParams, SignInParams> {
     public suspend fun getRegisterOptions(params: RegisterParams): ValidationResult<PublicKeyCredentialCreationOptions>
-    public suspend fun finishRegister(params: RegisterParams, response: RegistrationResponse, challengeAsBase64Url: String): Boolean
+    public suspend fun finishRegister(
+        params: RegisterParams,
+        response: RegistrationResponse,
+        challengeAsBase64Url: String,
+    ): PasskeyFinishResult
 
     public suspend fun getSignInOptions(params: SignInParams): ValidationResult<PublicKeyCredentialRequestOptions>
-    public suspend fun finishSignIn(params: SignInParams, response: AuthenticationResponse, challengeAsBase64Url: String): Boolean
+    public suspend fun finishSignIn(
+        params: SignInParams,
+        response: AuthenticationResponse,
+        challengeAsBase64Url: String,
+    ): PasskeyFinishResult
+}
+
+public sealed interface PasskeyFinishResult {
+    public data object Verified : PasskeyFinishResult
+
+    public data class Rejected(public val message: String? = null) : PasskeyFinishResult
 }
 
 public class PasskeyController<RegisterParams, SignInParams>(
@@ -102,7 +116,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         getOptions: suspend () -> ValidationResult<OptionsT>,
         extractChallenge: (OptionsT) -> String,
         interactWithPlatform: suspend (options: OptionsT) -> PasskeyResult<ResponseT>,
-        finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> Boolean,
+        finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> PasskeyFinishResult,
     ) {
         if (!ceremonyMutex.tryLock()) {
             return
@@ -135,15 +149,17 @@ public class PasskeyController<RegisterParams, SignInParams>(
 
             // 3. Finishing (Network)
             _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.FINISHING)
-            val isVerified = finish(platformResponse, challengeBase64Url)
-
-            if (!isVerified) {
-                _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.Transport("${action.name} verification was rejected by the server."))
-                return
+            when (val finishResult = finish(platformResponse, challengeBase64Url)) {
+                PasskeyFinishResult.Verified -> {
+                    // 4. Success
+                    _uiState.value = PasskeyControllerState.Success(action)
+                }
+                is PasskeyFinishResult.Rejected -> {
+                    val message = finishResult.message ?: "${action.name} verification was rejected by the server."
+                    _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.Transport(message))
+                    return
+                }
             }
-
-            // 4. Success
-            _uiState.value = PasskeyControllerState.Success(action)
 
         } catch (e: CancellationException) {
             if (_uiState.value is PasskeyControllerState.InProgress) {

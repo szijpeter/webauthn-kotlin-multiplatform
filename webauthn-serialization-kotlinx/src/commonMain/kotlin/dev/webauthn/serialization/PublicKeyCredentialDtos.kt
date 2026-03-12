@@ -63,7 +63,7 @@ public data class PublicKeyCredentialCreationOptionsDto(
 @Serializable
 public data class PublicKeyCredentialRequestOptionsDto(
     @SerialName("challenge") public val challenge: String,
-    @SerialName("rpId") public val rpId: String,
+    @SerialName("rpId") public val rpId: String? = null,
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("allowCredentials") public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
     @SerialName("userVerification") public val userVerification: String = "preferred",
@@ -106,7 +106,7 @@ public data class PublicKeyCredentialDescriptorDto(
 
 @Serializable
 public data class RpEntityDto(
-    @SerialName("id") public val id: String,
+    @SerialName("id") public val id: String? = null,
     @SerialName("name") public val name: String,
 )
 
@@ -210,10 +210,15 @@ public object WebAuthnDtoMapper {
     public fun toModel(value: PublicKeyCredentialCreationOptionsDto): ValidationResult<PublicKeyCredentialCreationOptions> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
-        val rpId = RpId.parse(value.rp.id).fold(
-            onValid = { it },
-            onInvalid = { errors += it; null },
-        )
+        val rpId = value.rp.id?.let { encodedRpId ->
+            RpId.parse(encodedRpId).fold(
+                onValid = { it },
+                onInvalid = { errors += it; null },
+            )
+        } ?: run {
+            errors += WebAuthnValidationError.MissingValue(field = "rp.id", message = "RP ID is required")
+            null
+        }
         val userId = UserHandle.parse(value.user.id).fold(
             onValid = { it },
             onInvalid = { errors += it; null },
@@ -327,7 +332,7 @@ public object WebAuthnDtoMapper {
     public fun fromModel(value: PublicKeyCredentialRequestOptions): PublicKeyCredentialRequestOptionsDto {
         return PublicKeyCredentialRequestOptionsDto(
             challenge = value.challenge.value.encoded(),
-            rpId = value.rpId.value,
+            rpId = value.rpId?.value,
             timeoutMs = value.timeoutMs,
             allowCredentials = value.allowCredentials.map {
                 PublicKeyCredentialDescriptorDto(
@@ -348,10 +353,12 @@ public object WebAuthnDtoMapper {
             onValid = { it },
             onInvalid = { errors += it; null },
         )
-        val rpId = RpId.parse(value.rpId).fold(
-            onValid = { it },
-            onInvalid = { errors += it; null },
-        )
+        val rpId = value.rpId?.let { encodedRpId ->
+            RpId.parse(encodedRpId).fold(
+                onValid = { it },
+                onInvalid = { errors += it; null },
+            )
+        }
 
         val allowCredentials = value.allowCredentials.mapNotNull { descriptor ->
             val id = CredentialId.parse(descriptor.id).fold(
@@ -377,7 +384,7 @@ public object WebAuthnDtoMapper {
             }
         }
 
-        if (challenge == null || rpId == null || errors.isNotEmpty()) {
+        if (challenge == null || errors.isNotEmpty()) {
             return ValidationResult.Invalid(errors)
         }
 

@@ -1,6 +1,7 @@
 package dev.webauthn.network
 
 import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -35,7 +36,7 @@ public interface BackendContract {
         params: RegistrationStartPayload,
         response: RegistrationResponse,
         challengeAsBase64Url: String,
-    ): Boolean
+    ): PasskeyFinishResult
 
     public suspend fun getSignInOptions(
         httpClient: HttpClient,
@@ -49,7 +50,7 @@ public interface BackendContract {
         params: AuthenticationStartPayload,
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
-    ): Boolean
+    ): PasskeyFinishResult
 }
 
 public class DefaultBackendContract(
@@ -87,7 +88,7 @@ public class DefaultBackendContract(
         params: RegistrationStartPayload,
         response: RegistrationResponse,
         challengeAsBase64Url: String,
-    ): Boolean {
+    ): PasskeyFinishResult {
         val responseDto = WebAuthnDtoMapper.fromModel(response)
         val finishPayload = RegistrationFinishPayload(
             response = responseDto,
@@ -109,7 +110,11 @@ public class DefaultBackendContract(
             body = responseText,
             operation = "Registration finish response",
         )
-        return result.status == "ok"
+        return if (result.status == "ok") {
+            PasskeyFinishResult.Verified
+        } else {
+            PasskeyFinishResult.Rejected("Registration verification was rejected by the server with status '${result.status}'.")
+        }
     }
 
     override suspend fun getSignInOptions(
@@ -141,7 +146,7 @@ public class DefaultBackendContract(
         params: AuthenticationStartPayload,
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
-    ): Boolean {
+    ): PasskeyFinishResult {
         val responseDto = WebAuthnDtoMapper.fromModel(response)
         val finishPayload = AuthenticationFinishPayload(
             response = responseDto,
@@ -163,7 +168,11 @@ public class DefaultBackendContract(
             body = responseText,
             operation = "Authentication finish response",
         )
-        return result.status == "ok"
+        return if (result.status == "ok") {
+            PasskeyFinishResult.Verified
+        } else {
+            PasskeyFinishResult.Rejected("Authentication verification was rejected by the server with status '${result.status}'.")
+        }
     }
 }
 
@@ -186,7 +195,7 @@ public class KtorPasskeyServerClient(
         params: RegistrationStartPayload,
         response: RegistrationResponse,
         challengeAsBase64Url: String,
-    ): Boolean = backendContract.finishRegister(
+    ): PasskeyFinishResult = backendContract.finishRegister(
         httpClient = httpClient,
         endpointFor = ::endpointFor,
         params = params,
@@ -206,7 +215,7 @@ public class KtorPasskeyServerClient(
         params: AuthenticationStartPayload,
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
-    ): Boolean = backendContract.finishSignIn(
+    ): PasskeyFinishResult = backendContract.finishSignIn(
         httpClient = httpClient,
         endpointFor = ::endpointFor,
         params = params,
@@ -228,7 +237,11 @@ public data class RegistrationStartPayload(
     public val userName: String,
     public val userDisplayName: String,
     public val userHandle: String,
-)
+) {
+    override fun toString(): String {
+        return "RegistrationStartPayload(rpId=$rpId, rpName=$rpName, origin=$origin, userName=<redacted>, userDisplayName=<redacted>, userHandle=<redacted>)"
+    }
+}
 
 @Serializable
 public data class AuthenticationStartPayload(
@@ -236,7 +249,12 @@ public data class AuthenticationStartPayload(
     public val origin: String,
     public val userName: String,
     public val userHandle: String? = null,
-)
+) {
+    override fun toString(): String {
+        val userHandleValue = if (userHandle == null) "null" else "<redacted>"
+        return "AuthenticationStartPayload(rpId=$rpId, origin=$origin, userName=<redacted>, userHandle=$userHandleValue)"
+    }
+}
 
 @Serializable
 private data class RegistrationFinishPayload(

@@ -126,6 +126,9 @@ internal class AuthenticationServicesAuthorizationBridge(
      * Maps to Apple ASAuthorizationPlatformPublicKeyCredentialProvider createCredentialAssertionRequestWithChallenge
      */
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload {
+        val rpId = requireNotNull(options.rpId) {
+            "PublicKeyCredentialRequestOptions.rpId is required by the iOS AuthenticationServices bridge."
+        }
         return runAuthorizationRequest(
             buildRequests = {
                 val requests = mutableListOf<Any>()
@@ -135,7 +138,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                 val useSecurityKey = true
 
                 if (usePlatform) {
-                    val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rpId.value)
+                    val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(rpId.value)
                     val request = provider.createCredentialAssertionRequestWithChallenge(
                         options.challenge.value.bytes().toNSData(),
                     )
@@ -144,7 +147,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                 }
 
                 if (useSecurityKey && NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
-                    val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rpId.value)
+                    val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(rpId.value)
                     val request = provider.createCredentialAssertionRequestWithChallenge(
                         options.challenge.value.bytes().toNSData(),
                     )

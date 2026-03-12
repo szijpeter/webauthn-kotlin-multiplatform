@@ -14,6 +14,7 @@ Status: active temporary execution document for release-prep work.
 - Coordinated repo versioning is in place via `GROUP` + `VERSION_NAME` in `gradle.properties`.
 - Publishing conventions, Maven Central workflow wiring, and BCV baselines are implemented in-repo.
 - Local release-prep verification is green as of 2026-03-12: strict full quality gate, `apiCheck`, `publishToMavenLocal`, and `verify-harness-sync`.
+- Public API hardening follow-up [#59](https://github.com/szijpeter/webauthn-kotlin-multiplatform/issues/59) is being landed as a release-cut prerequisite before the final publish/tag PR.
 - Final release cut (`0.1.0`, Maven Central publish, GitHub tag/release, post-release snapshot bump) remains pending.
 
 ## Planned Sequence
