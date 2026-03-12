@@ -13,7 +13,7 @@ fun Project.demoConfigValue(envName: String, defaultValue: String): Provider<Str
             .map { content ->
                 runCatching {
                     val properties = Properties()
-                    content.byteInputStream().use(properties::load)
+                    content.reader().use(properties::load)
                     properties.getProperty(envName)?.trim().orEmpty()
                 }.getOrDefault("")
             }

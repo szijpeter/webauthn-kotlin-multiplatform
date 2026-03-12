@@ -11,6 +11,7 @@ Use this checklist when moving from private to public operation.
 5. Required quality and release-preflight gates pass:
    - `tools/agent/quality-gate.sh --mode fast --scope changed --block false`
    - `tools/agent/quality-gate.sh --mode strict --scope changed --block false`
+   - `tools/agent/verify-harness-sync.sh`
    - `tools/agent/quality-gate.sh --mode strict --scope full --block true`
    - `./gradlew apiCheck --stacktrace`
    - `./gradlew publishToMavenLocal --stacktrace`
