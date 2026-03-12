@@ -35,6 +35,8 @@ Last updated: 2026-03-12
 - Release-mode infrastructure is now active: coordinated `GROUP`/`VERSION_NAME` metadata, Maven Central publishing workflow, BCV baselines for supported published modules, and `publishToMavenLocal` preflight wiring.
 - PR CI is now the blocking authority; local pre-push checks remain advisory so release work can iterate in PRs without bypassing verification.
 - Local release-prep audit is green on 2026-03-12: strict full quality gate, `apiCheck`, `publishToMavenLocal`, and `verify-harness-sync`.
+- Release docs now clarify that RP ID hashing examples are illustrative and production implementations must use SHA-256 before `RpIdHash.fromBytes`; PR template checks also require `publishToMavenLocal` when public API changes.
+- MDS integration docs now call out the required initial `refreshIfStale(...)` load so `FidoMdsTrustSource` is populated before attestation verification begins.
 
 ## Plan Progress (Estimated)
 
