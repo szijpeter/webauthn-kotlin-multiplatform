@@ -1,26 +1,27 @@
 import dev.webauthn.tasks.GeneratePasskeyDemoBuildConfigTask
 import java.util.Properties
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-fun Project.demoConfigValue(envName: String, defaultValue: String): String {
-    val localProperties = Properties().apply {
-        val file = rootProject.file("local.properties")
-        if (file.exists()) {
-            file.inputStream().use(::load)
-        }
+fun Project.demoConfigValue(envName: String, defaultValue: String): Provider<String> {
+    val localPropertiesValue =
+        providers
+            .fileContents(rootProject.layout.projectDirectory.file("local.properties"))
+            .asText
+            .orElse("")
+            .map { content ->
+                val properties = Properties()
+                content.byteInputStream().use(properties::load)
+                properties.getProperty(envName)?.trim().orEmpty()
+            }
+
+    return providers.provider {
+        providers.gradleProperty(envName).orNull?.trim()?.takeIf { it.isNotEmpty() }
+            ?: providers.environmentVariable(envName).orNull?.trim()?.takeIf { it.isNotEmpty() }
+            ?: localPropertiesValue.get().takeIf { it.isNotEmpty() }
+            ?: defaultValue
     }
-
-    val fromGradleProperty = providers.gradleProperty(envName).orNull?.trim()
-    if (!fromGradleProperty.isNullOrEmpty()) return fromGradleProperty
-
-    val fromEnvironment = providers.environmentVariable(envName).orNull?.trim()
-    if (!fromEnvironment.isNullOrEmpty()) return fromEnvironment
-
-    val fromLocalProperties = localProperties.getProperty(envName)?.trim()
-    if (!fromLocalProperties.isNullOrEmpty()) return fromLocalProperties
-
-    return defaultValue
 }
 
 val generatePasskeyDemoBuildConfig =

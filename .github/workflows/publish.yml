@@ -72,7 +72,7 @@ jobs:
           fi
 
           if [ "${{ inputs.release_mode }}" = "publish-and-release" ]; then
-            ./gradlew publishAndReleaseToMavenCentral --no-daemon $VERSION_ARG
+            ./gradlew publishAndReleaseToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
           else
-            ./gradlew publishToMavenCentral --no-daemon $VERSION_ARG
+            ./gradlew publishToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
           fi
