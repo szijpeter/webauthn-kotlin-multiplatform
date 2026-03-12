@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew detekt :build-logic:detekt --stacktrace --continue
       - name: Upload Detekt Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: detekt-reports
           if-no-files-found: error
