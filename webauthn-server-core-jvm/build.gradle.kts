@@ -1,5 +1,6 @@
 plugins {
     id("webauthn.kotlin.jvm")
+    id("webauthn.published-library")
     id("java-test-fixtures")
 }
 

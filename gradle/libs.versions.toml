@@ -12,6 +12,7 @@ androidx-lifecycle = "2.9.6"
 kmmresult = "1.9.3"
 bcv = "0.18.1"
 dokka = "2.1.0"
+vanniktech-maven-publish = "0.36.0"
 # Detekt 1.x does not support Kotlin 2.x; 2.x is currently alpha-only.
 detekt = "2.0.0-alpha.2"
 junit = "6.0.3"
@@ -89,6 +90,10 @@ exposed-migration-jdbc = { module = "org.jetbrains.exposed:exposed-migration-jdb
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+bcv-gradlePlugin = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "bcv" }
+dokka-gradlePlugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+vanniktech-mavenPublish-gradlePlugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "vanniktech-maven-publish" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

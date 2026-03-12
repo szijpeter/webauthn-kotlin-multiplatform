@@ -1,0 +1,59 @@
+public final class dev/webauthn/server/store/exposed/ChallengeSessions : org/jetbrains/exposed/v1/core/Table {
+	public static final field INSTANCE Ldev/webauthn/server/store/exposed/ChallengeSessions;
+	public final fun getCeremonyType ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getChallengeKey ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getChallengeValue ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getCreatedAtEpochMs ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getExpiresAtEpochMs ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getExtensions ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getOriginValue ()Lorg/jetbrains/exposed/v1/core/Column;
+	public fun getPrimaryKey ()Lorg/jetbrains/exposed/v1/core/Table$PrimaryKey;
+	public final fun getRpId ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getUserName ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getUserVerification ()Lorg/jetbrains/exposed/v1/core/Column;
+}
+
+public final class dev/webauthn/server/store/exposed/Credentials : org/jetbrains/exposed/v1/core/Table {
+	public static final field INSTANCE Ldev/webauthn/server/store/exposed/Credentials;
+	public final fun getCredentialId ()Lorg/jetbrains/exposed/v1/core/Column;
+	public fun getPrimaryKey ()Lorg/jetbrains/exposed/v1/core/Table$PrimaryKey;
+	public final fun getPublicKey ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getRpId ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getSignCount ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getUserId ()Lorg/jetbrains/exposed/v1/core/Column;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedChallengeStore : dev/webauthn/server/ChallengeStore {
+	public fun <init> (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public fun consume-yUutMSc (Ljava/lang/String;Ldev/webauthn/core/CeremonyType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun put (Ldev/webauthn/core/ChallengeSession;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedCredentialStore : dev/webauthn/server/CredentialStore {
+	public fun <init> (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public fun findById-p0pl7WU (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun findByUserId-g1vyaHY (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun save (Ldev/webauthn/server/StoredCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun updateSignCount-RPMM9Pc (Ljava/lang/String;JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedStoresKt {
+	public static final fun initializeWebAuthnSchema (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public static final fun validateWebAuthnSchema (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public static final fun webAuthnSchemaMigrationStatements (Lorg/jetbrains/exposed/v1/jdbc/Database;)Ljava/util/List;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedUserAccountStore : dev/webauthn/server/UserAccountStore {
+	public fun <init> (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public fun findByName (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun save (Ldev/webauthn/server/UserAccount;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/server/store/exposed/UserAccounts : org/jetbrains/exposed/v1/core/Table {
+	public static final field INSTANCE Ldev/webauthn/server/store/exposed/UserAccounts;
+	public final fun getDisplayName ()Lorg/jetbrains/exposed/v1/core/Column;
+	public fun getPrimaryKey ()Lorg/jetbrains/exposed/v1/core/Table$PrimaryKey;
+	public final fun getUserId ()Lorg/jetbrains/exposed/v1/core/Column;
+	public final fun getUserName ()Lorg/jetbrains/exposed/v1/core/Column;
+}
+

@@ -1,5 +1,6 @@
 plugins {
     id("webauthn.kotlin.multiplatform")
+    id("webauthn.published-library")
 }
 
 kotlin {

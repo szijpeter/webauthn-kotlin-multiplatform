@@ -1,0 +1,199 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-core>
+final enum class dev.webauthn.core/CeremonyType : kotlin/Enum<dev.webauthn.core/CeremonyType> { // dev.webauthn.core/CeremonyType|null[0]
+    enum entry AUTHENTICATION // dev.webauthn.core/CeremonyType.AUTHENTICATION|null[0]
+    enum entry REGISTRATION // dev.webauthn.core/CeremonyType.REGISTRATION|null[0]
+
+    final val entries // dev.webauthn.core/CeremonyType.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.core/CeremonyType> // dev.webauthn.core/CeremonyType.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.webauthn.core/CeremonyType // dev.webauthn.core/CeremonyType.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.webauthn.core/CeremonyType> // dev.webauthn.core/CeremonyType.values|values#static(){}[0]
+}
+
+final enum class dev.webauthn.core/UserVerificationPolicy : kotlin/Enum<dev.webauthn.core/UserVerificationPolicy> { // dev.webauthn.core/UserVerificationPolicy|null[0]
+    enum entry DISCOURAGED // dev.webauthn.core/UserVerificationPolicy.DISCOURAGED|null[0]
+    enum entry PREFERRED // dev.webauthn.core/UserVerificationPolicy.PREFERRED|null[0]
+    enum entry REQUIRED // dev.webauthn.core/UserVerificationPolicy.REQUIRED|null[0]
+
+    final val entries // dev.webauthn.core/UserVerificationPolicy.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.core/UserVerificationPolicy> // dev.webauthn.core/UserVerificationPolicy.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.webauthn.core/UserVerificationPolicy // dev.webauthn.core/UserVerificationPolicy.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.webauthn.core/UserVerificationPolicy> // dev.webauthn.core/UserVerificationPolicy.values|values#static(){}[0]
+}
+
+abstract interface dev.webauthn.core/OriginMetadataProvider { // dev.webauthn.core/OriginMetadataProvider|null[0]
+    abstract suspend fun getRelatedOrigins(dev.webauthn.model/Origin): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/OriginMetadataProvider.getRelatedOrigins|getRelatedOrigins(dev.webauthn.model.Origin){}[0]
+}
+
+abstract interface dev.webauthn.core/WebAuthnExtensionHook { // dev.webauthn.core/WebAuthnExtensionHook|null[0]
+    abstract fun validateAuthenticationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnExtensionHook.validateAuthenticationExtensions|validateAuthenticationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    abstract fun validateRegistrationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnExtensionHook.validateRegistrationExtensions|validateRegistrationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+}
+
+final class dev.webauthn.core/AuthenticationValidationInput { // dev.webauthn.core/AuthenticationValidationInput|null[0]
+    constructor <init>(dev.webauthn.model/PublicKeyCredentialRequestOptions, dev.webauthn.model/AuthenticationResponse, dev.webauthn.model/CollectedClientData, dev.webauthn.model/Origin, kotlin.collections/Set<dev.webauthn.model/Origin> = ..., kotlin/Long, dev.webauthn.core/UserVerificationPolicy = ...) // dev.webauthn.core/AuthenticationValidationInput.<init>|<init>(dev.webauthn.model.PublicKeyCredentialRequestOptions;dev.webauthn.model.AuthenticationResponse;dev.webauthn.model.CollectedClientData;dev.webauthn.model.Origin;kotlin.collections.Set<dev.webauthn.model.Origin>;kotlin.Long;dev.webauthn.core.UserVerificationPolicy){}[0]
+
+    final val allowedOrigins // dev.webauthn.core/AuthenticationValidationInput.allowedOrigins|{}allowedOrigins[0]
+        final fun <get-allowedOrigins>(): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/AuthenticationValidationInput.allowedOrigins.<get-allowedOrigins>|<get-allowedOrigins>(){}[0]
+    final val clientData // dev.webauthn.core/AuthenticationValidationInput.clientData|{}clientData[0]
+        final fun <get-clientData>(): dev.webauthn.model/CollectedClientData // dev.webauthn.core/AuthenticationValidationInput.clientData.<get-clientData>|<get-clientData>(){}[0]
+    final val expectedOrigin // dev.webauthn.core/AuthenticationValidationInput.expectedOrigin|{}expectedOrigin[0]
+        final fun <get-expectedOrigin>(): dev.webauthn.model/Origin // dev.webauthn.core/AuthenticationValidationInput.expectedOrigin.<get-expectedOrigin>|<get-expectedOrigin>(){}[0]
+    final val options // dev.webauthn.core/AuthenticationValidationInput.options|{}options[0]
+        final fun <get-options>(): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.core/AuthenticationValidationInput.options.<get-options>|<get-options>(){}[0]
+    final val previousSignCount // dev.webauthn.core/AuthenticationValidationInput.previousSignCount|{}previousSignCount[0]
+        final fun <get-previousSignCount>(): kotlin/Long // dev.webauthn.core/AuthenticationValidationInput.previousSignCount.<get-previousSignCount>|<get-previousSignCount>(){}[0]
+    final val response // dev.webauthn.core/AuthenticationValidationInput.response|{}response[0]
+        final fun <get-response>(): dev.webauthn.model/AuthenticationResponse // dev.webauthn.core/AuthenticationValidationInput.response.<get-response>|<get-response>(){}[0]
+    final val userVerificationPolicy // dev.webauthn.core/AuthenticationValidationInput.userVerificationPolicy|{}userVerificationPolicy[0]
+        final fun <get-userVerificationPolicy>(): dev.webauthn.core/UserVerificationPolicy // dev.webauthn.core/AuthenticationValidationInput.userVerificationPolicy.<get-userVerificationPolicy>|<get-userVerificationPolicy>(){}[0]
+
+    final fun component1(): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.core/AuthenticationValidationInput.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.model/AuthenticationResponse // dev.webauthn.core/AuthenticationValidationInput.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/CollectedClientData // dev.webauthn.core/AuthenticationValidationInput.component3|component3(){}[0]
+    final fun component4(): dev.webauthn.model/Origin // dev.webauthn.core/AuthenticationValidationInput.component4|component4(){}[0]
+    final fun component5(): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/AuthenticationValidationInput.component5|component5(){}[0]
+    final fun component6(): kotlin/Long // dev.webauthn.core/AuthenticationValidationInput.component6|component6(){}[0]
+    final fun component7(): dev.webauthn.core/UserVerificationPolicy // dev.webauthn.core/AuthenticationValidationInput.component7|component7(){}[0]
+    final fun copy(dev.webauthn.model/PublicKeyCredentialRequestOptions = ..., dev.webauthn.model/AuthenticationResponse = ..., dev.webauthn.model/CollectedClientData = ..., dev.webauthn.model/Origin = ..., kotlin.collections/Set<dev.webauthn.model/Origin> = ..., kotlin/Long = ..., dev.webauthn.core/UserVerificationPolicy = ...): dev.webauthn.core/AuthenticationValidationInput // dev.webauthn.core/AuthenticationValidationInput.copy|copy(dev.webauthn.model.PublicKeyCredentialRequestOptions;dev.webauthn.model.AuthenticationResponse;dev.webauthn.model.CollectedClientData;dev.webauthn.model.Origin;kotlin.collections.Set<dev.webauthn.model.Origin>;kotlin.Long;dev.webauthn.core.UserVerificationPolicy){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.core/AuthenticationValidationInput.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.core/AuthenticationValidationInput.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.core/AuthenticationValidationInput.toString|toString(){}[0]
+}
+
+final class dev.webauthn.core/AuthenticationValidationOutput { // dev.webauthn.core/AuthenticationValidationOutput|null[0]
+    constructor <init>(dev.webauthn.model/CredentialId, kotlin/Long, dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...) // dev.webauthn.core/AuthenticationValidationOutput.<init>|<init>(dev.webauthn.model.CredentialId;kotlin.Long;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+
+    final val credentialId // dev.webauthn.core/AuthenticationValidationOutput.credentialId|{}credentialId[0]
+        final fun <get-credentialId>(): dev.webauthn.model/CredentialId // dev.webauthn.core/AuthenticationValidationOutput.credentialId.<get-credentialId>|<get-credentialId>(){}[0]
+    final val extensions // dev.webauthn.core/AuthenticationValidationOutput.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.core/AuthenticationValidationOutput.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val signCount // dev.webauthn.core/AuthenticationValidationOutput.signCount|{}signCount[0]
+        final fun <get-signCount>(): kotlin/Long // dev.webauthn.core/AuthenticationValidationOutput.signCount.<get-signCount>|<get-signCount>(){}[0]
+
+    final fun component1(): dev.webauthn.model/CredentialId // dev.webauthn.core/AuthenticationValidationOutput.component1|component1(){}[0]
+    final fun component2(): kotlin/Long // dev.webauthn.core/AuthenticationValidationOutput.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.core/AuthenticationValidationOutput.component3|component3(){}[0]
+    final fun copy(dev.webauthn.model/CredentialId = ..., kotlin/Long = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...): dev.webauthn.core/AuthenticationValidationOutput // dev.webauthn.core/AuthenticationValidationOutput.copy|copy(dev.webauthn.model.CredentialId;kotlin.Long;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.core/AuthenticationValidationOutput.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.core/AuthenticationValidationOutput.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.core/AuthenticationValidationOutput.toString|toString(){}[0]
+}
+
+final class dev.webauthn.core/ChallengeSession { // dev.webauthn.core/ChallengeSession|null[0]
+    constructor <init>(dev.webauthn.model/Challenge, dev.webauthn.model/RpId, dev.webauthn.model/Origin, kotlin/String, kotlin/Long, kotlin/Long, dev.webauthn.core/CeremonyType, dev.webauthn.model/AuthenticationExtensionsClientInputs? = ..., dev.webauthn.model/UserVerificationRequirement? = ...) // dev.webauthn.core/ChallengeSession.<init>|<init>(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;dev.webauthn.model.Origin;kotlin.String;kotlin.Long;kotlin.Long;dev.webauthn.core.CeremonyType;dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.UserVerificationRequirement?){}[0]
+
+    final val challenge // dev.webauthn.core/ChallengeSession.challenge|{}challenge[0]
+        final fun <get-challenge>(): dev.webauthn.model/Challenge // dev.webauthn.core/ChallengeSession.challenge.<get-challenge>|<get-challenge>(){}[0]
+    final val createdAtEpochMs // dev.webauthn.core/ChallengeSession.createdAtEpochMs|{}createdAtEpochMs[0]
+        final fun <get-createdAtEpochMs>(): kotlin/Long // dev.webauthn.core/ChallengeSession.createdAtEpochMs.<get-createdAtEpochMs>|<get-createdAtEpochMs>(){}[0]
+    final val expiresAtEpochMs // dev.webauthn.core/ChallengeSession.expiresAtEpochMs|{}expiresAtEpochMs[0]
+        final fun <get-expiresAtEpochMs>(): kotlin/Long // dev.webauthn.core/ChallengeSession.expiresAtEpochMs.<get-expiresAtEpochMs>|<get-expiresAtEpochMs>(){}[0]
+    final val extensions // dev.webauthn.core/ChallengeSession.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.core/ChallengeSession.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val origin // dev.webauthn.core/ChallengeSession.origin|{}origin[0]
+        final fun <get-origin>(): dev.webauthn.model/Origin // dev.webauthn.core/ChallengeSession.origin.<get-origin>|<get-origin>(){}[0]
+    final val rpId // dev.webauthn.core/ChallengeSession.rpId|{}rpId[0]
+        final fun <get-rpId>(): dev.webauthn.model/RpId // dev.webauthn.core/ChallengeSession.rpId.<get-rpId>|<get-rpId>(){}[0]
+    final val type // dev.webauthn.core/ChallengeSession.type|{}type[0]
+        final fun <get-type>(): dev.webauthn.core/CeremonyType // dev.webauthn.core/ChallengeSession.type.<get-type>|<get-type>(){}[0]
+    final val userName // dev.webauthn.core/ChallengeSession.userName|{}userName[0]
+        final fun <get-userName>(): kotlin/String // dev.webauthn.core/ChallengeSession.userName.<get-userName>|<get-userName>(){}[0]
+    final val userVerification // dev.webauthn.core/ChallengeSession.userVerification|{}userVerification[0]
+        final fun <get-userVerification>(): dev.webauthn.model/UserVerificationRequirement? // dev.webauthn.core/ChallengeSession.userVerification.<get-userVerification>|<get-userVerification>(){}[0]
+
+    final fun component1(): dev.webauthn.model/Challenge // dev.webauthn.core/ChallengeSession.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.model/RpId // dev.webauthn.core/ChallengeSession.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/Origin // dev.webauthn.core/ChallengeSession.component3|component3(){}[0]
+    final fun component4(): kotlin/String // dev.webauthn.core/ChallengeSession.component4|component4(){}[0]
+    final fun component5(): kotlin/Long // dev.webauthn.core/ChallengeSession.component5|component5(){}[0]
+    final fun component6(): kotlin/Long // dev.webauthn.core/ChallengeSession.component6|component6(){}[0]
+    final fun component7(): dev.webauthn.core/CeremonyType // dev.webauthn.core/ChallengeSession.component7|component7(){}[0]
+    final fun component8(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.core/ChallengeSession.component8|component8(){}[0]
+    final fun component9(): dev.webauthn.model/UserVerificationRequirement? // dev.webauthn.core/ChallengeSession.component9|component9(){}[0]
+    final fun copy(dev.webauthn.model/Challenge = ..., dev.webauthn.model/RpId = ..., dev.webauthn.model/Origin = ..., kotlin/String = ..., kotlin/Long = ..., kotlin/Long = ..., dev.webauthn.core/CeremonyType = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ..., dev.webauthn.model/UserVerificationRequirement? = ...): dev.webauthn.core/ChallengeSession // dev.webauthn.core/ChallengeSession.copy|copy(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;dev.webauthn.model.Origin;kotlin.String;kotlin.Long;kotlin.Long;dev.webauthn.core.CeremonyType;dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.UserVerificationRequirement?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.core/ChallengeSession.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.core/ChallengeSession.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.core/ChallengeSession.toString|toString(){}[0]
+}
+
+final class dev.webauthn.core/RegistrationValidationInput { // dev.webauthn.core/RegistrationValidationInput|null[0]
+    constructor <init>(dev.webauthn.model/PublicKeyCredentialCreationOptions, dev.webauthn.model/RegistrationResponse, dev.webauthn.model/CollectedClientData, dev.webauthn.model/Origin, kotlin.collections/Set<dev.webauthn.model/Origin> = ..., dev.webauthn.core/UserVerificationPolicy = ...) // dev.webauthn.core/RegistrationValidationInput.<init>|<init>(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.model.RegistrationResponse;dev.webauthn.model.CollectedClientData;dev.webauthn.model.Origin;kotlin.collections.Set<dev.webauthn.model.Origin>;dev.webauthn.core.UserVerificationPolicy){}[0]
+
+    final val allowedOrigins // dev.webauthn.core/RegistrationValidationInput.allowedOrigins|{}allowedOrigins[0]
+        final fun <get-allowedOrigins>(): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/RegistrationValidationInput.allowedOrigins.<get-allowedOrigins>|<get-allowedOrigins>(){}[0]
+    final val clientData // dev.webauthn.core/RegistrationValidationInput.clientData|{}clientData[0]
+        final fun <get-clientData>(): dev.webauthn.model/CollectedClientData // dev.webauthn.core/RegistrationValidationInput.clientData.<get-clientData>|<get-clientData>(){}[0]
+    final val expectedOrigin // dev.webauthn.core/RegistrationValidationInput.expectedOrigin|{}expectedOrigin[0]
+        final fun <get-expectedOrigin>(): dev.webauthn.model/Origin // dev.webauthn.core/RegistrationValidationInput.expectedOrigin.<get-expectedOrigin>|<get-expectedOrigin>(){}[0]
+    final val options // dev.webauthn.core/RegistrationValidationInput.options|{}options[0]
+        final fun <get-options>(): dev.webauthn.model/PublicKeyCredentialCreationOptions // dev.webauthn.core/RegistrationValidationInput.options.<get-options>|<get-options>(){}[0]
+    final val response // dev.webauthn.core/RegistrationValidationInput.response|{}response[0]
+        final fun <get-response>(): dev.webauthn.model/RegistrationResponse // dev.webauthn.core/RegistrationValidationInput.response.<get-response>|<get-response>(){}[0]
+    final val userVerificationPolicy // dev.webauthn.core/RegistrationValidationInput.userVerificationPolicy|{}userVerificationPolicy[0]
+        final fun <get-userVerificationPolicy>(): dev.webauthn.core/UserVerificationPolicy // dev.webauthn.core/RegistrationValidationInput.userVerificationPolicy.<get-userVerificationPolicy>|<get-userVerificationPolicy>(){}[0]
+
+    final fun component1(): dev.webauthn.model/PublicKeyCredentialCreationOptions // dev.webauthn.core/RegistrationValidationInput.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.model/RegistrationResponse // dev.webauthn.core/RegistrationValidationInput.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/CollectedClientData // dev.webauthn.core/RegistrationValidationInput.component3|component3(){}[0]
+    final fun component4(): dev.webauthn.model/Origin // dev.webauthn.core/RegistrationValidationInput.component4|component4(){}[0]
+    final fun component5(): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/RegistrationValidationInput.component5|component5(){}[0]
+    final fun component6(): dev.webauthn.core/UserVerificationPolicy // dev.webauthn.core/RegistrationValidationInput.component6|component6(){}[0]
+    final fun copy(dev.webauthn.model/PublicKeyCredentialCreationOptions = ..., dev.webauthn.model/RegistrationResponse = ..., dev.webauthn.model/CollectedClientData = ..., dev.webauthn.model/Origin = ..., kotlin.collections/Set<dev.webauthn.model/Origin> = ..., dev.webauthn.core/UserVerificationPolicy = ...): dev.webauthn.core/RegistrationValidationInput // dev.webauthn.core/RegistrationValidationInput.copy|copy(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.model.RegistrationResponse;dev.webauthn.model.CollectedClientData;dev.webauthn.model.Origin;kotlin.collections.Set<dev.webauthn.model.Origin>;dev.webauthn.core.UserVerificationPolicy){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.core/RegistrationValidationInput.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.core/RegistrationValidationInput.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.core/RegistrationValidationInput.toString|toString(){}[0]
+}
+
+final class dev.webauthn.core/RegistrationValidationOutput { // dev.webauthn.core/RegistrationValidationOutput|null[0]
+    constructor <init>(dev.webauthn.model/CredentialId, kotlin/Long, dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...) // dev.webauthn.core/RegistrationValidationOutput.<init>|<init>(dev.webauthn.model.CredentialId;kotlin.Long;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+
+    final val credentialId // dev.webauthn.core/RegistrationValidationOutput.credentialId|{}credentialId[0]
+        final fun <get-credentialId>(): dev.webauthn.model/CredentialId // dev.webauthn.core/RegistrationValidationOutput.credentialId.<get-credentialId>|<get-credentialId>(){}[0]
+    final val extensions // dev.webauthn.core/RegistrationValidationOutput.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.core/RegistrationValidationOutput.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val signCount // dev.webauthn.core/RegistrationValidationOutput.signCount|{}signCount[0]
+        final fun <get-signCount>(): kotlin/Long // dev.webauthn.core/RegistrationValidationOutput.signCount.<get-signCount>|<get-signCount>(){}[0]
+
+    final fun component1(): dev.webauthn.model/CredentialId // dev.webauthn.core/RegistrationValidationOutput.component1|component1(){}[0]
+    final fun component2(): kotlin/Long // dev.webauthn.core/RegistrationValidationOutput.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.core/RegistrationValidationOutput.component3|component3(){}[0]
+    final fun copy(dev.webauthn.model/CredentialId = ..., kotlin/Long = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...): dev.webauthn.core/RegistrationValidationOutput // dev.webauthn.core/RegistrationValidationOutput.copy|copy(dev.webauthn.model.CredentialId;kotlin.Long;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.core/RegistrationValidationOutput.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.core/RegistrationValidationOutput.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.core/RegistrationValidationOutput.toString|toString(){}[0]
+}
+
+final object dev.webauthn.core/NoOpOriginMetadataProvider : dev.webauthn.core/OriginMetadataProvider { // dev.webauthn.core/NoOpOriginMetadataProvider|null[0]
+    final suspend fun getRelatedOrigins(dev.webauthn.model/Origin): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/NoOpOriginMetadataProvider.getRelatedOrigins|getRelatedOrigins(dev.webauthn.model.Origin){}[0]
+}
+
+final object dev.webauthn.core/WebAuthnCoreValidator { // dev.webauthn.core/WebAuthnCoreValidator|null[0]
+    final const val BACKUP_ELIGIBLE_FLAG // dev.webauthn.core/WebAuthnCoreValidator.BACKUP_ELIGIBLE_FLAG|{}BACKUP_ELIGIBLE_FLAG[0]
+        final fun <get-BACKUP_ELIGIBLE_FLAG>(): kotlin/Int // dev.webauthn.core/WebAuthnCoreValidator.BACKUP_ELIGIBLE_FLAG.<get-BACKUP_ELIGIBLE_FLAG>|<get-BACKUP_ELIGIBLE_FLAG>(){}[0]
+    final const val BACKUP_STATE_FLAG // dev.webauthn.core/WebAuthnCoreValidator.BACKUP_STATE_FLAG|{}BACKUP_STATE_FLAG[0]
+        final fun <get-BACKUP_STATE_FLAG>(): kotlin/Int // dev.webauthn.core/WebAuthnCoreValidator.BACKUP_STATE_FLAG.<get-BACKUP_STATE_FLAG>|<get-BACKUP_STATE_FLAG>(){}[0]
+    final const val USER_PRESENCE_FLAG // dev.webauthn.core/WebAuthnCoreValidator.USER_PRESENCE_FLAG|{}USER_PRESENCE_FLAG[0]
+        final fun <get-USER_PRESENCE_FLAG>(): kotlin/Int // dev.webauthn.core/WebAuthnCoreValidator.USER_PRESENCE_FLAG.<get-USER_PRESENCE_FLAG>|<get-USER_PRESENCE_FLAG>(){}[0]
+    final const val USER_VERIFICATION_FLAG // dev.webauthn.core/WebAuthnCoreValidator.USER_VERIFICATION_FLAG|{}USER_VERIFICATION_FLAG[0]
+        final fun <get-USER_VERIFICATION_FLAG>(): kotlin/Int // dev.webauthn.core/WebAuthnCoreValidator.USER_VERIFICATION_FLAG.<get-USER_VERIFICATION_FLAG>|<get-USER_VERIFICATION_FLAG>(){}[0]
+
+    final fun requireAllowedCredential(dev.webauthn.model/AuthenticationResponse, kotlin.collections/Set<kotlin/String>): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnCoreValidator.requireAllowedCredential|requireAllowedCredential(dev.webauthn.model.AuthenticationResponse;kotlin.collections.Set<kotlin.String>){}[0]
+    final fun validateAuthentication(dev.webauthn.core/AuthenticationValidationInput): dev.webauthn.model/ValidationResult<dev.webauthn.core/AuthenticationValidationOutput> // dev.webauthn.core/WebAuthnCoreValidator.validateAuthentication|validateAuthentication(dev.webauthn.core.AuthenticationValidationInput){}[0]
+    final fun validateAuthenticatorData(dev.webauthn.model/AuthenticatorData, kotlin/Long, dev.webauthn.core/UserVerificationPolicy = ...): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnCoreValidator.validateAuthenticatorData|validateAuthenticatorData(dev.webauthn.model.AuthenticatorData;kotlin.Long;dev.webauthn.core.UserVerificationPolicy){}[0]
+    final fun validateClientData(dev.webauthn.model/CollectedClientData, kotlin/String, kotlin/String, dev.webauthn.model/Origin, kotlin.collections/Set<dev.webauthn.model/Origin> = ...): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnCoreValidator.validateClientData|validateClientData(dev.webauthn.model.CollectedClientData;kotlin.String;kotlin.String;dev.webauthn.model.Origin;kotlin.collections.Set<dev.webauthn.model.Origin>){}[0]
+    final fun validateRegistration(dev.webauthn.core/RegistrationValidationInput): dev.webauthn.model/ValidationResult<dev.webauthn.core/RegistrationValidationOutput> // dev.webauthn.core/WebAuthnCoreValidator.validateRegistration|validateRegistration(dev.webauthn.core.RegistrationValidationInput){}[0]
+}
+
+final object dev.webauthn.core/WebAuthnExtensionValidator : dev.webauthn.core/WebAuthnExtensionHook { // dev.webauthn.core/WebAuthnExtensionValidator|null[0]
+    final fun validateAuthenticationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnExtensionValidator.validateAuthenticationExtensions|validateAuthenticationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun validateRegistrationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnExtensionValidator.validateRegistrationExtensions|validateRegistrationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+}

@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-10
+Last updated: 2026-03-12
 
 ## Status Legend
 
@@ -32,13 +32,16 @@ Last updated: 2026-03-10
 - Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 - Repository quality gates now run detekt across all Kotlin modules plus `build-logic` with a shared strict config (`maxIssues=0`, no baseline); CI uploads XML/HTML detekt reports per run.
 - Review follow-up keeps `Base64UrlBytes.parse` and Related Origins fetch error handling on explicit `try/catch` paths, with coroutine cancellation propagation preserved in the Ktor metadata provider.
+- Release-mode infrastructure is now active: coordinated `GROUP`/`VERSION_NAME` metadata, Maven Central publishing workflow, BCV baselines for supported published modules, and `publishToMavenLocal` preflight wiring.
+- PR CI is now the blocking authority; local pre-push checks remain advisory so release work can iterate in PRs without bypassing verification.
+- Local release-prep audit is green on 2026-03-12: strict full quality gate, `apiCheck`, `publishToMavenLocal`, and `verify-harness-sync`.
 
 ## Plan Progress (Estimated)
 
 - Phase 1 (Client readiness/interoperability): ~75% complete.
 - Phase 2 (Conformance/Security): ~85% complete.
 - Phase 3 (Server robustness): ~80% complete.
-- Phase 4-5 (DX/release): mostly pending.
+- Phase 4-5 (DX/release): in progress.
 
 ## Module Maturity
 
@@ -81,7 +84,9 @@ Pending high-impact coverage:
 Local:
 
 - Fast advisory: `tools/agent/quality-gate.sh --mode fast --scope changed --block false`
-- Strict blocking: `tools/agent/quality-gate.sh --mode strict --scope changed --block true`
+- Strict advisory: `tools/agent/quality-gate.sh --mode strict --scope changed --block false`
+- API compatibility: `./gradlew apiCheck --stacktrace`
+- Publish preflight: `./gradlew publishToMavenLocal --stacktrace`
 
 Docs trace requirements in strict mode:
 

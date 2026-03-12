@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("webauthn.dokka")
 }
 
 kotlin {

@@ -1,5 +1,6 @@
 plugins {
     `java-platform`
+    id("webauthn.published-platform")
 }
 
 javaPlatform {

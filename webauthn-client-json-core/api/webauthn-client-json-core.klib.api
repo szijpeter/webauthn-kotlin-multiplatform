@@ -1,0 +1,43 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-client-json-core>
+abstract interface dev.webauthn.client/JsonPasskeyClient { // dev.webauthn.client/JsonPasskeyClient|null[0]
+    abstract suspend fun createCredentialJson(kotlin/String): dev.webauthn.client/PasskeyResult<kotlin/String> // dev.webauthn.client/JsonPasskeyClient.createCredentialJson|createCredentialJson(kotlin.String){}[0]
+    abstract suspend fun getAssertionJson(kotlin/String): dev.webauthn.client/PasskeyResult<kotlin/String> // dev.webauthn.client/JsonPasskeyClient.getAssertionJson|getAssertionJson(kotlin.String){}[0]
+}
+
+abstract interface dev.webauthn.client/PasskeyJsonMapper { // dev.webauthn.client/PasskeyJsonMapper|null[0]
+    abstract fun <#A1: kotlin/Any?> decode(kotlin/String, kotlinx.serialization/DeserializationStrategy<#A1>): #A1 // dev.webauthn.client/PasskeyJsonMapper.decode|decode(kotlin.String;kotlinx.serialization.DeserializationStrategy<0:0>){0§<kotlin.Any?>}[0]
+    abstract fun <#A1: kotlin/Any?> encode(#A1, kotlinx.serialization/SerializationStrategy<#A1>): kotlin/String // dev.webauthn.client/PasskeyJsonMapper.encode|encode(0:0;kotlinx.serialization.SerializationStrategy<0:0>){0§<kotlin.Any?>}[0]
+}
+
+final class dev.webauthn.client/DefaultJsonPasskeyClient : dev.webauthn.client/JsonPasskeyClient { // dev.webauthn.client/DefaultJsonPasskeyClient|null[0]
+    constructor <init>(dev.webauthn.client/PasskeyClient, dev.webauthn.client/PasskeyJsonMapper = ...) // dev.webauthn.client/DefaultJsonPasskeyClient.<init>|<init>(dev.webauthn.client.PasskeyClient;dev.webauthn.client.PasskeyJsonMapper){}[0]
+
+    final suspend fun createCredentialJson(kotlin/String): dev.webauthn.client/PasskeyResult<kotlin/String> // dev.webauthn.client/DefaultJsonPasskeyClient.createCredentialJson|createCredentialJson(kotlin.String){}[0]
+    final suspend fun getAssertionJson(kotlin/String): dev.webauthn.client/PasskeyResult<kotlin/String> // dev.webauthn.client/DefaultJsonPasskeyClient.getAssertionJson|getAssertionJson(kotlin.String){}[0]
+}
+
+final class dev.webauthn.client/KotlinxPasskeyJsonMapper : dev.webauthn.client/PasskeyJsonMapper { // dev.webauthn.client/KotlinxPasskeyJsonMapper|null[0]
+    constructor <init>(kotlinx.serialization.json/Json = ...) // dev.webauthn.client/KotlinxPasskeyJsonMapper.<init>|<init>(kotlinx.serialization.json.Json){}[0]
+
+    final fun <#A1: kotlin/Any?> decode(kotlin/String, kotlinx.serialization/DeserializationStrategy<#A1>): #A1 // dev.webauthn.client/KotlinxPasskeyJsonMapper.decode|decode(kotlin.String;kotlinx.serialization.DeserializationStrategy<0:0>){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> encode(#A1, kotlinx.serialization/SerializationStrategy<#A1>): kotlin/String // dev.webauthn.client/KotlinxPasskeyJsonMapper.encode|encode(0:0;kotlinx.serialization.SerializationStrategy<0:0>){0§<kotlin.Any?>}[0]
+}
+
+final fun (dev.webauthn.client/PasskeyClient).dev.webauthn.client/withJsonSupport(dev.webauthn.client/PasskeyJsonMapper = ...): dev.webauthn.client/JsonPasskeyClient // dev.webauthn.client/withJsonSupport|withJsonSupport@dev.webauthn.client.PasskeyClient(dev.webauthn.client.PasskeyJsonMapper){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/decodeAssertionOptionsOrThrowInvalid(kotlin/String): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.client/decodeAssertionOptionsOrThrowInvalid|decodeAssertionOptionsOrThrowInvalid@dev.webauthn.client.PasskeyJsonMapper(kotlin.String){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/decodeAuthenticationResponseOrThrowPlatform(kotlin/String): dev.webauthn.model/AuthenticationResponse // dev.webauthn.client/decodeAuthenticationResponseOrThrowPlatform|decodeAuthenticationResponseOrThrowPlatform@dev.webauthn.client.PasskeyJsonMapper(kotlin.String){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/decodeCreationOptionsOrThrowInvalid(kotlin/String): dev.webauthn.model/PublicKeyCredentialCreationOptions // dev.webauthn.client/decodeCreationOptionsOrThrowInvalid|decodeCreationOptionsOrThrowInvalid@dev.webauthn.client.PasskeyJsonMapper(kotlin.String){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/decodeRegistrationResponseOrThrowPlatform(kotlin/String): dev.webauthn.model/RegistrationResponse // dev.webauthn.client/decodeRegistrationResponseOrThrowPlatform|decodeRegistrationResponseOrThrowPlatform@dev.webauthn.client.PasskeyJsonMapper(kotlin.String){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/encodeAssertionOptionsOrThrowInvalid(dev.webauthn.model/PublicKeyCredentialRequestOptions): kotlin/String // dev.webauthn.client/encodeAssertionOptionsOrThrowInvalid|encodeAssertionOptionsOrThrowInvalid@dev.webauthn.client.PasskeyJsonMapper(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/encodeAuthenticationResponse(dev.webauthn.model/AuthenticationResponse): kotlin/String // dev.webauthn.client/encodeAuthenticationResponse|encodeAuthenticationResponse@dev.webauthn.client.PasskeyJsonMapper(dev.webauthn.model.AuthenticationResponse){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/encodeCreationOptionsOrThrowInvalid(dev.webauthn.model/PublicKeyCredentialCreationOptions): kotlin/String // dev.webauthn.client/encodeCreationOptionsOrThrowInvalid|encodeCreationOptionsOrThrowInvalid@dev.webauthn.client.PasskeyJsonMapper(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+final fun (dev.webauthn.client/PasskeyJsonMapper).dev.webauthn.client/encodeRegistrationResponse(dev.webauthn.model/RegistrationResponse): kotlin/String // dev.webauthn.client/encodeRegistrationResponse|encodeRegistrationResponse@dev.webauthn.client.PasskeyJsonMapper(dev.webauthn.model.RegistrationResponse){}[0]
+final inline fun <#A: reified kotlin/Any?> (#A).dev.webauthn.client/serializeToJson(dev.webauthn.client/PasskeyJsonMapper, kotlinx.serialization/SerializationStrategy<#A> = ...): kotlin/String // dev.webauthn.client/serializeToJson|serializeToJson@0:0(dev.webauthn.client.PasskeyJsonMapper;kotlinx.serialization.SerializationStrategy<0:0>){0§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Any?> (kotlin/String).dev.webauthn.client/deserializeFromJson(dev.webauthn.client/PasskeyJsonMapper, kotlinx.serialization/DeserializationStrategy<#A> = ...): #A // dev.webauthn.client/deserializeFromJson|deserializeFromJson@kotlin.String(dev.webauthn.client.PasskeyJsonMapper;kotlinx.serialization.DeserializationStrategy<0:0>){0§<kotlin.Any?>}[0]

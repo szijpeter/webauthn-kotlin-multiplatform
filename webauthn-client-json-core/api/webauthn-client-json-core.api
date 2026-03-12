@@ -1,0 +1,38 @@
+public final class dev/webauthn/client/DefaultJsonPasskeyClient : dev/webauthn/client/JsonPasskeyClient {
+	public fun <init> (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/client/PasskeyJsonMapper;)V
+	public synthetic fun <init> (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/client/PasskeyJsonMapper;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun createCredentialJson (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getAssertionJson (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/JsonPasskeyClient {
+	public abstract fun createCredentialJson (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAssertionJson (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/client/JsonPasskeyClientKt {
+	public static final fun decodeAssertionOptionsOrThrowInvalid (Ldev/webauthn/client/PasskeyJsonMapper;Ljava/lang/String;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public static final fun decodeAuthenticationResponseOrThrowPlatform (Ldev/webauthn/client/PasskeyJsonMapper;Ljava/lang/String;)Ldev/webauthn/model/AuthenticationResponse;
+	public static final fun decodeCreationOptionsOrThrowInvalid (Ldev/webauthn/client/PasskeyJsonMapper;Ljava/lang/String;)Ldev/webauthn/model/PublicKeyCredentialCreationOptions;
+	public static final fun decodeRegistrationResponseOrThrowPlatform (Ldev/webauthn/client/PasskeyJsonMapper;Ljava/lang/String;)Ldev/webauthn/model/RegistrationResponse;
+	public static final fun encodeAssertionOptionsOrThrowInvalid (Ldev/webauthn/client/PasskeyJsonMapper;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ljava/lang/String;
+	public static final fun encodeAuthenticationResponse (Ldev/webauthn/client/PasskeyJsonMapper;Ldev/webauthn/model/AuthenticationResponse;)Ljava/lang/String;
+	public static final fun encodeCreationOptionsOrThrowInvalid (Ldev/webauthn/client/PasskeyJsonMapper;Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ljava/lang/String;
+	public static final fun encodeRegistrationResponse (Ldev/webauthn/client/PasskeyJsonMapper;Ldev/webauthn/model/RegistrationResponse;)Ljava/lang/String;
+	public static final fun withJsonSupport (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/client/PasskeyJsonMapper;)Ldev/webauthn/client/JsonPasskeyClient;
+	public static synthetic fun withJsonSupport$default (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/client/PasskeyJsonMapper;ILjava/lang/Object;)Ldev/webauthn/client/JsonPasskeyClient;
+}
+
+public final class dev/webauthn/client/KotlinxPasskeyJsonMapper : dev/webauthn/client/PasskeyJsonMapper {
+	public fun <init> ()V
+	public fun <init> (Lkotlinx/serialization/json/Json;)V
+	public synthetic fun <init> (Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun decode (Ljava/lang/String;Lkotlinx/serialization/DeserializationStrategy;)Ljava/lang/Object;
+	public fun encode (Ljava/lang/Object;Lkotlinx/serialization/SerializationStrategy;)Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyJsonMapper {
+	public abstract fun decode (Ljava/lang/String;Lkotlinx/serialization/DeserializationStrategy;)Ljava/lang/Object;
+	public abstract fun encode (Ljava/lang/Object;Lkotlinx/serialization/SerializationStrategy;)Ljava/lang/String;
+}
+

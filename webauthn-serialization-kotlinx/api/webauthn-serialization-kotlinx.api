@@ -1,0 +1,642 @@
+public final class dev/webauthn/serialization/AuthenticationExtensionsClientInputsDto {
+	public static final field Companion Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/serialization/PrfExtensionInputDto;Ldev/webauthn/serialization/LargeBlobExtensionInputDto;Ljava/util/List;)V
+	public synthetic fun <init> (Ldev/webauthn/serialization/PrfExtensionInputDto;Ldev/webauthn/serialization/LargeBlobExtensionInputDto;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/serialization/PrfExtensionInputDto;
+	public final fun component2 ()Ldev/webauthn/serialization/LargeBlobExtensionInputDto;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ldev/webauthn/serialization/PrfExtensionInputDto;Ldev/webauthn/serialization/LargeBlobExtensionInputDto;Ljava/util/List;)Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;Ldev/webauthn/serialization/PrfExtensionInputDto;Ldev/webauthn/serialization/LargeBlobExtensionInputDto;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLargeBlob ()Ldev/webauthn/serialization/LargeBlobExtensionInputDto;
+	public final fun getPrf ()Ldev/webauthn/serialization/PrfExtensionInputDto;
+	public final fun getRelatedOrigins ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/AuthenticationExtensionsClientInputsDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationExtensionsClientInputsDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto {
+	public static final field Companion Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/serialization/PrfExtensionOutputDto;Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;)V
+	public synthetic fun <init> (Ldev/webauthn/serialization/PrfExtensionOutputDto;Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/serialization/PrfExtensionOutputDto;
+	public final fun component2 ()Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;
+	public final fun copy (Ldev/webauthn/serialization/PrfExtensionOutputDto;Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;)Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;Ldev/webauthn/serialization/PrfExtensionOutputDto;Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLargeBlob ()Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;
+	public final fun getPrf ()Ldev/webauthn/serialization/PrfExtensionOutputDto;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationResponseDto {
+	public static final field Companion Ldev/webauthn/serialization/AuthenticationResponseDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)Ldev/webauthn/serialization/AuthenticationResponseDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticationResponseDto;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticationResponseDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthenticatorAttachment ()Ljava/lang/String;
+	public final fun getClientExtensionResults ()Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getRawId ()Ljava/lang/String;
+	public final fun getResponse ()Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/AuthenticationResponseDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/AuthenticationResponseDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/AuthenticationResponseDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/AuthenticationResponseDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationResponseDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationResponsePayloadDto {
+	public static final field Companion Ldev/webauthn/serialization/AuthenticationResponsePayloadDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthenticatorData ()Ljava/lang/String;
+	public final fun getClientDataJson ()Ljava/lang/String;
+	public final fun getSignature ()Ljava/lang/String;
+	public final fun getUserHandle ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/AuthenticationResponsePayloadDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/AuthenticationResponsePayloadDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/AuthenticationResponsePayloadDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticationResponsePayloadDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticatorSelectionCriteriaDto {
+	public static final field Companion Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthenticatorAttachment ()Ljava/lang/String;
+	public final fun getRequireResidentKey ()Ljava/lang/Boolean;
+	public final fun getResidentKey ()Ljava/lang/String;
+	public final fun getUserVerification ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/AuthenticatorSelectionCriteriaDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/AuthenticatorSelectionCriteriaDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/LargeBlobExtensionInputDto {
+	public static final field Companion Ldev/webauthn/serialization/LargeBlobExtensionInputDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Boolean;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)Ldev/webauthn/serialization/LargeBlobExtensionInputDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/LargeBlobExtensionInputDto;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/LargeBlobExtensionInputDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRead ()Ljava/lang/Boolean;
+	public final fun getSupport ()Ljava/lang/String;
+	public final fun getWrite ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/LargeBlobExtensionInputDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/LargeBlobExtensionInputDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/LargeBlobExtensionInputDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/LargeBlobExtensionInputDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/LargeBlobExtensionInputDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/LargeBlobExtensionOutputDto {
+	public static final field Companion Ldev/webauthn/serialization/LargeBlobExtensionOutputDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Boolean;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun copy (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;)Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBlob ()Ljava/lang/String;
+	public final fun getSupported ()Ljava/lang/Boolean;
+	public final fun getWritten ()Ljava/lang/Boolean;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/LargeBlobExtensionOutputDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/LargeBlobExtensionOutputDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/LargeBlobExtensionOutputDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/LargeBlobExtensionOutputDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PrfExtensionInputDto {
+	public static final field Companion Ldev/webauthn/serialization/PrfExtensionInputDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/serialization/PrfValuesDto;Ljava/util/Map;)V
+	public synthetic fun <init> (Ldev/webauthn/serialization/PrfValuesDto;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/serialization/PrfValuesDto;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun copy (Ldev/webauthn/serialization/PrfValuesDto;Ljava/util/Map;)Ldev/webauthn/serialization/PrfExtensionInputDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PrfExtensionInputDto;Ldev/webauthn/serialization/PrfValuesDto;Ljava/util/Map;ILjava/lang/Object;)Ldev/webauthn/serialization/PrfExtensionInputDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEval ()Ldev/webauthn/serialization/PrfValuesDto;
+	public final fun getEvalByCredential ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PrfExtensionInputDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PrfExtensionInputDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PrfExtensionInputDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PrfExtensionInputDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PrfExtensionInputDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PrfExtensionOutputDto {
+	public static final field Companion Ldev/webauthn/serialization/PrfExtensionOutputDto$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Boolean;Ldev/webauthn/serialization/PrfValuesDto;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ldev/webauthn/serialization/PrfValuesDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Boolean;
+	public final fun component2 ()Ldev/webauthn/serialization/PrfValuesDto;
+	public final fun copy (Ljava/lang/Boolean;Ldev/webauthn/serialization/PrfValuesDto;)Ldev/webauthn/serialization/PrfExtensionOutputDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PrfExtensionOutputDto;Ljava/lang/Boolean;Ldev/webauthn/serialization/PrfValuesDto;ILjava/lang/Object;)Ldev/webauthn/serialization/PrfExtensionOutputDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnabled ()Ljava/lang/Boolean;
+	public final fun getResults ()Ldev/webauthn/serialization/PrfValuesDto;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PrfExtensionOutputDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PrfExtensionOutputDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PrfExtensionOutputDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PrfExtensionOutputDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PrfExtensionOutputDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PrfValuesDto {
+	public static final field Companion Ldev/webauthn/serialization/PrfValuesDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/PrfValuesDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PrfValuesDto;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/PrfValuesDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFirst ()Ljava/lang/String;
+	public final fun getSecond ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PrfValuesDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PrfValuesDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PrfValuesDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PrfValuesDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PrfValuesDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto {
+	public static final field Companion Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto$Companion;
+	public fun <init> (Ldev/webauthn/serialization/RpEntityDto;Ldev/webauthn/serialization/UserEntityDto;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
+	public synthetic fun <init> (Ldev/webauthn/serialization/RpEntityDto;Ldev/webauthn/serialization/UserEntityDto;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/serialization/RpEntityDto;
+	public final fun component2 ()Ldev/webauthn/serialization/UserEntityDto;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/Long;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun copy (Ldev/webauthn/serialization/RpEntityDto;Ldev/webauthn/serialization/UserEntityDto;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;Ldev/webauthn/serialization/RpEntityDto;Ldev/webauthn/serialization/UserEntityDto;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILjava/lang/Object;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttestation ()Ljava/lang/String;
+	public final fun getAuthenticatorSelection ()Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public final fun getChallenge ()Ljava/lang/String;
+	public final fun getExcludeCredentials ()Ljava/util/List;
+	public final fun getExtensions ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun getPubKeyCredParams ()Ljava/util/List;
+	public final fun getRp ()Ldev/webauthn/serialization/RpEntityDto;
+	public final fun getTimeoutMs ()Ljava/lang/Long;
+	public final fun getUser ()Ldev/webauthn/serialization/UserEntityDto;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialDescriptorDto {
+	public static final field Companion Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getTransports ()Ljava/util/List;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PublicKeyCredentialDescriptorDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PublicKeyCredentialDescriptorDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialDescriptorDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialParametersDto {
+	public static final field Companion Ldev/webauthn/serialization/PublicKeyCredentialParametersDto$Companion;
+	public fun <init> (Ljava/lang/String;I)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun copy (Ljava/lang/String;I)Ldev/webauthn/serialization/PublicKeyCredentialParametersDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PublicKeyCredentialParametersDto;Ljava/lang/String;IILjava/lang/Object;)Ldev/webauthn/serialization/PublicKeyCredentialParametersDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlg ()I
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PublicKeyCredentialParametersDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PublicKeyCredentialParametersDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PublicKeyCredentialParametersDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PublicKeyCredentialParametersDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialParametersDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto {
+	public static final field Companion Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILjava/lang/Object;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAllowCredentials ()Ljava/util/List;
+	public final fun getChallenge ()Ljava/lang/String;
+	public final fun getExtensions ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun getRpId ()Ljava/lang/String;
+	public final fun getTimeoutMs ()Ljava/lang/Long;
+	public final fun getUserVerification ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RegistrationResponseDto {
+	public static final field Companion Ldev/webauthn/serialization/RegistrationResponseDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/RegistrationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/RegistrationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ldev/webauthn/serialization/RegistrationResponsePayloadDto;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/RegistrationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)Ldev/webauthn/serialization/RegistrationResponseDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/RegistrationResponseDto;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/RegistrationResponsePayloadDto;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;ILjava/lang/Object;)Ldev/webauthn/serialization/RegistrationResponseDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthenticatorAttachment ()Ljava/lang/String;
+	public final fun getClientExtensionResults ()Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getRawId ()Ljava/lang/String;
+	public final fun getResponse ()Ldev/webauthn/serialization/RegistrationResponsePayloadDto;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/RegistrationResponseDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/RegistrationResponseDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/RegistrationResponseDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/RegistrationResponseDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RegistrationResponseDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RegistrationResponsePayloadDto {
+	public static final field Companion Ldev/webauthn/serialization/RegistrationResponsePayloadDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/RegistrationResponsePayloadDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/RegistrationResponsePayloadDto;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/RegistrationResponsePayloadDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttestationObject ()Ljava/lang/String;
+	public final fun getClientDataJson ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/RegistrationResponsePayloadDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/RegistrationResponsePayloadDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/RegistrationResponsePayloadDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/RegistrationResponsePayloadDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RegistrationResponsePayloadDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RelatedOriginsDto {
+	public static final field Companion Ldev/webauthn/serialization/RelatedOriginsDto$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Ldev/webauthn/serialization/RelatedOriginsDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/RelatedOriginsDto;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/serialization/RelatedOriginsDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOrigins ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/RelatedOriginsDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/RelatedOriginsDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/RelatedOriginsDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/RelatedOriginsDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RelatedOriginsDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RpEntityDto {
+	public static final field Companion Ldev/webauthn/serialization/RpEntityDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/RpEntityDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/RpEntityDto;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/RpEntityDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/RpEntityDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/RpEntityDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/RpEntityDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/RpEntityDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/RpEntityDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/UserEntityDto {
+	public static final field Companion Ldev/webauthn/serialization/UserEntityDto$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/UserEntityDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/UserEntityDto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/UserEntityDto;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class dev/webauthn/serialization/UserEntityDto$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Ldev/webauthn/serialization/UserEntityDto$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ldev/webauthn/serialization/UserEntityDto;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Ldev/webauthn/serialization/UserEntityDto;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/UserEntityDto$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class dev/webauthn/serialization/WebAuthnDtoMapper {
+	public static final field INSTANCE Ldev/webauthn/serialization/WebAuthnDtoMapper;
+	public final fun fromModel (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;)Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun fromModel (Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;
+	public final fun fromModel (Ldev/webauthn/model/AuthenticationResponse;)Ldev/webauthn/serialization/AuthenticationResponseDto;
+	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
+	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
+	public final fun fromModel (Ldev/webauthn/model/RegistrationResponse;)Ldev/webauthn/serialization/RegistrationResponseDto;
+	public final fun toModel (Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun toModel (Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun toModel (Ldev/webauthn/serialization/AuthenticationResponseDto;)Ldev/webauthn/model/ValidationResult;
+	public final fun toModel (Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;)Ldev/webauthn/model/ValidationResult;
+	public final fun toModel (Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;)Ldev/webauthn/model/ValidationResult;
+	public final fun toModel (Ldev/webauthn/serialization/RegistrationResponseDto;)Ldev/webauthn/model/ValidationResult;
+	public final fun toModelValidated (Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public final fun toModelValidated (Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun toModelValidated$default (Ldev/webauthn/serialization/WebAuthnDtoMapper;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun toModelValidated$default (Ldev/webauthn/serialization/WebAuthnDtoMapper;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+}
+
