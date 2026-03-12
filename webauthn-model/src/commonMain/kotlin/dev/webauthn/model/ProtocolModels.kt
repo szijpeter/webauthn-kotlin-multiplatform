@@ -95,6 +95,10 @@ public data class PublicKeyCredentialCreationOptions(
 /** W3C WebAuthn L3: §5.5. Options for Assertion Generation (PublicKeyCredentialRequestOptions) */
 public data class PublicKeyCredentialRequestOptions(
     public val challenge: Challenge,
+    /**
+     * Optional per WebAuthn. Browser callers can omit this and rely on the effective domain.
+     * Native bridges may still require an explicit RP ID (for example, iOS bridge validation).
+     */
     public val rpId: RpId? = null,
     public val timeoutMs: Long? = null,
     public val allowCredentials: List<PublicKeyCredentialDescriptor> = emptyList(),

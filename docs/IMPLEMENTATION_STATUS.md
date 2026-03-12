@@ -38,6 +38,7 @@ Last updated: 2026-03-12
 - Release docs now clarify that RP ID hashing examples are illustrative and production implementations must use SHA-256 before `RpIdHash.fromBytes`; PR template checks also require `publishToMavenLocal` when public API changes.
 - MDS integration docs now call out the required initial `refreshIfStale(...)` load so `FidoMdsTrustSource` is populated before attestation verification begins.
 - Public API hardening follow-up #59 is implemented in code: core validator boundaries now use typed wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), request-options `rpId` is optional in model/DTO ABI, sensitive network payload `toString()` values are redacted, and client finish calls now return structured `PasskeyFinishResult`.
+- Snapshot adopter note: recompile and update call sites for nullable request-options `rpId`, typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), and `PasskeyFinishResult` handling; sensitive payload `toString()` output is now redacted.
 
 ## Plan Progress (Estimated)
 
