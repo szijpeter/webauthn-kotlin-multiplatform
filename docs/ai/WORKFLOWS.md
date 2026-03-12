@@ -45,7 +45,7 @@ Only when the API change is intentional, regenerate baselines and re-check:
 
 ## Docs-Only Workflow
 
-For docs-only changes, `tools/agent/quality-gate.sh` intentionally skips heavy compile/test tasks. Update the temporary release plan doc as well when release scope or sequencing changes.
+For docs-only changes, `tools/agent/quality-gate.sh` intentionally skips heavy compile/test tasks. Update the temporary release execution-map doc as well when release scope or sequencing changes.
 
 ## Public Security Hygiene Workflow
 
@@ -88,4 +88,4 @@ tools/agent/quality-gate.sh --mode strict --scope full --block true
 ```
 
 3. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`.
-4. After the release effort is complete, delete the temporary execution-map doc in the cleanup PR.
+4. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
