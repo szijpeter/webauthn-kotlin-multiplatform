@@ -35,4 +35,6 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - CodeQL runs on GitHub Actions workflow files (`language: actions`).
 - Java/Kotlin CodeQL scanning is temporarily disabled while the current CodeQL CLI toolchain does not support Kotlin `2.3.10`.
 - Dependency risk is enforced on pull requests via `actions/dependency-review-action`.
+- Renovate manages dependency and GitHub Actions updates.
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
+- Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.

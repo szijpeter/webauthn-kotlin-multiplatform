@@ -38,7 +38,7 @@ public data class PublicKeyCredentialCreationOptionsDto(
 @Serializable
 public data class PublicKeyCredentialRequestOptionsDto(
     @SerialName("challenge") public val challenge: String,
-    @SerialName("rpId") public val rpId: String,
+    @SerialName("rpId") public val rpId: String? = null,
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("allowCredentials") public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
     @SerialName("userVerification") public val userVerification: String = "preferred",
@@ -81,7 +81,7 @@ public data class PublicKeyCredentialDescriptorDto(
 
 @Serializable
 public data class RpEntityDto(
-    @SerialName("id") public val id: String,
+    @SerialName("id") public val id: String? = null,
     @SerialName("name") public val name: String,
 )
 

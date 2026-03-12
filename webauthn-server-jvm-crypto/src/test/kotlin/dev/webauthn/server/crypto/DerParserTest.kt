@@ -62,7 +62,7 @@ class DerParserTest {
 
     @Test
     fun testRejectsNonCanonicalLongFormForShortLength() {
-        val der = byteArrayOf(0x04, 0x81.toByte(), 0x7F)
+        val der = byteArrayOf(0x04, 0x81.toByte(), 0x7F) + ByteArray(0x7F)
         assertFailsWith<IllegalArgumentException> {
             DerParser(der).readOctetString()
         }

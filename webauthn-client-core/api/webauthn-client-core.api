@@ -1,0 +1,243 @@
+public final class dev/webauthn/client/DefaultPasskeyClient : dev/webauthn/client/PasskeyClient {
+	public fun <init> (Ldev/webauthn/client/PasskeyPlatformBridge;)V
+	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun getAssertion (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/client/PasskeyAction : java/lang/Enum {
+	public static final field REGISTER Ldev/webauthn/client/PasskeyAction;
+	public static final field SIGN_IN Ldev/webauthn/client/PasskeyAction;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/PasskeyAction;
+	public static fun values ()[Ldev/webauthn/client/PasskeyAction;
+}
+
+public final class dev/webauthn/client/PasskeyCapabilities {
+	public fun <init> ()V
+	public fun <init> (ZZZZLjava/util/List;)V
+	public synthetic fun <init> (ZZZZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Z
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (ZZZZLjava/util/List;)Ldev/webauthn/client/PasskeyCapabilities;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapabilities;ZZZZLjava/util/List;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapabilities;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPlatformVersionHints ()Ljava/util/List;
+	public final fun getSupportsLargeBlobRead ()Z
+	public final fun getSupportsLargeBlobWrite ()Z
+	public final fun getSupportsPrf ()Z
+	public final fun getSupportsSecurityKey ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyClient {
+	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAssertion (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/client/PasskeyClient$DefaultImpls {
+	public static fun capabilities (Ldev/webauthn/client/PasskeyClient;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyClientError {
+	public abstract fun getMessage ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyClientError$InvalidOptions : dev/webauthn/client/PasskeyClientError {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyClientError$InvalidOptions;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$InvalidOptions;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$InvalidOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyClientError$Platform : dev/webauthn/client/PasskeyClientError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Throwable;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Throwable;)Ldev/webauthn/client/PasskeyClientError$Platform;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Platform;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Platform;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCause ()Ljava/lang/Throwable;
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyClientError$Transport : dev/webauthn/client/PasskeyClientError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Throwable;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Throwable;)Ldev/webauthn/client/PasskeyClientError$Transport;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Transport;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Transport;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCause ()Ljava/lang/Throwable;
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyClientError$UserCancelled : dev/webauthn/client/PasskeyClientError {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyClientError$UserCancelled;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$UserCancelled;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$UserCancelled;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyController {
+	public fun <init> (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/client/PasskeyServerClient;)V
+	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun register (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun resetToIdle ()V
+	public final fun signIn (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyControllerState {
+}
+
+public final class dev/webauthn/client/PasskeyControllerState$Failure : dev/webauthn/client/PasskeyControllerState {
+	public fun <init> (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyClientError;)V
+	public final fun component1 ()Ldev/webauthn/client/PasskeyAction;
+	public final fun component2 ()Ldev/webauthn/client/PasskeyClientError;
+	public final fun copy (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyClientError;)Ldev/webauthn/client/PasskeyControllerState$Failure;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyControllerState$Failure;Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyClientError;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyControllerState$Failure;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAction ()Ldev/webauthn/client/PasskeyAction;
+	public final fun getError ()Ldev/webauthn/client/PasskeyClientError;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyControllerState$Idle : dev/webauthn/client/PasskeyControllerState {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyControllerState$Idle;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyControllerState$InProgress : dev/webauthn/client/PasskeyControllerState {
+	public fun <init> (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyPhase;)V
+	public final fun component1 ()Ldev/webauthn/client/PasskeyAction;
+	public final fun component2 ()Ldev/webauthn/client/PasskeyPhase;
+	public final fun copy (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyPhase;)Ldev/webauthn/client/PasskeyControllerState$InProgress;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyControllerState$InProgress;Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyPhase;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyControllerState$InProgress;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAction ()Ldev/webauthn/client/PasskeyAction;
+	public final fun getPhase ()Ldev/webauthn/client/PasskeyPhase;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyControllerState$Success : dev/webauthn/client/PasskeyControllerState {
+	public fun <init> (Ldev/webauthn/client/PasskeyAction;)V
+	public final fun component1 ()Ldev/webauthn/client/PasskeyAction;
+	public final fun copy (Ldev/webauthn/client/PasskeyAction;)Ldev/webauthn/client/PasskeyControllerState$Success;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyControllerState$Success;Ldev/webauthn/client/PasskeyAction;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyControllerState$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAction ()Ldev/webauthn/client/PasskeyAction;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyFinishResult {
+}
+
+public final class dev/webauthn/client/PasskeyFinishResult$Rejected : dev/webauthn/client/PasskeyFinishResult {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyFinishResult$Rejected;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyFinishResult$Rejected;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyFinishResult$Rejected;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyFinishResult$Verified : dev/webauthn/client/PasskeyFinishResult {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyFinishResult$Verified;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyPhase : java/lang/Enum {
+	public static final field FINISHING Ldev/webauthn/client/PasskeyPhase;
+	public static final field PLATFORM_PROMPT Ldev/webauthn/client/PasskeyPhase;
+	public static final field STARTING Ldev/webauthn/client/PasskeyPhase;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/PasskeyPhase;
+	public static fun values ()[Ldev/webauthn/client/PasskeyPhase;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyPlatformBridge {
+	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAssertion (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun mapPlatformError (Ljava/lang/Throwable;)Ldev/webauthn/client/PasskeyClientError;
+}
+
+public final class dev/webauthn/client/PasskeyPlatformBridge$DefaultImpls {
+	public static fun capabilities (Ldev/webauthn/client/PasskeyPlatformBridge;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyResult {
+}
+
+public final class dev/webauthn/client/PasskeyResult$Failure : dev/webauthn/client/PasskeyResult {
+	public fun <init> (Ldev/webauthn/client/PasskeyClientError;)V
+	public final fun component1 ()Ldev/webauthn/client/PasskeyClientError;
+	public final fun copy (Ldev/webauthn/client/PasskeyClientError;)Ldev/webauthn/client/PasskeyResult$Failure;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyResult$Failure;Ldev/webauthn/client/PasskeyClientError;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyResult$Failure;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ldev/webauthn/client/PasskeyClientError;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyResult$Success : dev/webauthn/client/PasskeyResult {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Ldev/webauthn/client/PasskeyResult$Success;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyResult$Success;Ljava/lang/Object;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyResult$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/client/PasskeyServerClient {
+	public abstract fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getSignInOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/client/PrfEvaluationRequest {
+	public fun <init> (Z)V
+	public final fun component1 ()Z
+	public final fun copy (Z)Ldev/webauthn/client/PrfEvaluationRequest;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PrfEvaluationRequest;ZILjava/lang/Object;)Ldev/webauthn/client/PrfEvaluationRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnabled ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

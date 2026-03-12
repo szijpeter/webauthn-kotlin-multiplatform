@@ -211,10 +211,12 @@ abstract class StoreContractTestBase {
                 ),
             )
 
+            val credentialIdBytes = byteArrayOf(1)
+            val credentialId = CredentialId.fromBytes(credentialIdBytes)
             val request = RegistrationFinishRequest(
                 responseDto = RegistrationResponseDto(
-                    id = "YWFh",
-                    rawId = "YWFh",
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(
@@ -223,7 +225,7 @@ abstract class StoreContractTestBase {
                                     rpIdHash = rpIdHasher.hashRpId("example.com").bytes(),
                                     flags = 0x41,
                                     signCount = 1,
-                                    credentialId = byteArrayOf(1),
+                                    credentialId = credentialIdBytes,
                                     cosePublicKey = byteArrayOf(0xA1.toByte(), 1, 2),
                                 ),
                             ),

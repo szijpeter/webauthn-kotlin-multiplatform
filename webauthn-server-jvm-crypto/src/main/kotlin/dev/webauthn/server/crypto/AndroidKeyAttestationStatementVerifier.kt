@@ -39,6 +39,7 @@ internal class AndroidKeyAttestationStatementVerifier(
         "LongMethod",
         "MagicNumber",
         "MaxLineLength",
+        "ReturnCount",
         "TooGenericExceptionCaught",
     )
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
@@ -114,7 +115,7 @@ internal class AndroidKeyAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.InvalidValue("coseKey", "Failed to parse COSE key")),
             )
 
-        try {
+        val allTags = try {
             val outerParser = DerParser(extensionVal)
             val seqBytes = outerParser.readOctetString()
 
@@ -140,13 +141,19 @@ internal class AndroidKeyAttestationStatementVerifier(
             val teeEnforcedSeq = sequence.readSequence()
             val teeTags = parseAuthorizationList(teeEnforcedSeq)
 
-            val allTags = swTags + teeTags
-            
-            // W3C WebAuthn L3: §8.4 Step 5.4 to 5.6: Check AuthorizationList contents
-            checkKeyRequirements(allTags, metadata)
+            swTags + teeTags
         } catch (e: Exception) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse Android Key Attestation extension: ${e.message}")),
+            )
+        }
+
+        // W3C WebAuthn L3: §8.4 Step 5.4 to 5.6: Check AuthorizationList contents
+        try {
+            checkKeyRequirements(allTags, metadata)
+        } catch (e: IllegalArgumentException) {
+            return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", e.message ?: "Android Key requirements not satisfied")),
             )
         }
 

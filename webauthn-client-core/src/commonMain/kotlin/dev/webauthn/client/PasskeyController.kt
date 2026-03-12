@@ -1,3 +1,5 @@
+@file:Suppress("UndocumentedPublicFunction", "UndocumentedPublicProperty")
+
 package dev.webauthn.client
 
 import dev.webauthn.model.AuthenticationResponse
@@ -50,18 +52,43 @@ public sealed interface PasskeyControllerState {
 /** Backend contract used by [PasskeyController] to start/finish ceremonies. */
 public interface PasskeyServerClient<RegisterParams, SignInParams> {
     public suspend fun getRegisterOptions(params: RegisterParams): ValidationResult<PublicKeyCredentialCreationOptions>
+
+    /**
+     * Completes registration.
+     *
+     * `challengeAsBase64Url` is an echoed client value and must be checked against
+     * server-trusted state (or an equivalent signed challenge envelope). It is
+     * not authoritative on its own.
+     */
     public suspend fun finishRegister(
         params: RegisterParams,
         response: RegistrationResponse,
         challengeAsBase64Url: String,
-    ): Boolean
+    ): PasskeyFinishResult
 
     public suspend fun getSignInOptions(params: SignInParams): ValidationResult<PublicKeyCredentialRequestOptions>
+
+    /**
+     * Completes authentication.
+     *
+     * `challengeAsBase64Url` is an echoed client value and must be checked against
+     * server-trusted state (or an equivalent signed challenge envelope). It is
+     * not authoritative on its own.
+     */
     public suspend fun finishSignIn(
         params: SignInParams,
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
-    ): Boolean
+    ): PasskeyFinishResult
+}
+
+/** Result returned by backend finish endpoints for passkey ceremonies. */
+public sealed interface PasskeyFinishResult {
+    /** Ceremony verification succeeded on the backend. */
+    public data object Verified : PasskeyFinishResult
+
+    /** Ceremony verification was rejected with an optional explanatory message. */
+    public data class Rejected(public val message: String? = null) : PasskeyFinishResult
 }
 
 /** Shared registration/authentication ceremony coordinator for app-facing flows. */
@@ -114,13 +141,13 @@ public class PasskeyController<RegisterParams, SignInParams>(
         )
     }
 
-    @Suppress("TooGenericExceptionCaught")
+    @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
     private suspend fun <OptionsT, ResponseT> runCeremony(
         action: PasskeyAction,
         getOptions: suspend () -> ValidationResult<OptionsT>,
         extractChallenge: (OptionsT) -> String,
         interactWithPlatform: suspend (options: OptionsT) -> PasskeyResult<ResponseT>,
-        finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> Boolean,
+        finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> PasskeyFinishResult,
     ) {
         if (!ceremonyMutex.tryLock()) {
             return
@@ -156,18 +183,17 @@ public class PasskeyController<RegisterParams, SignInParams>(
 
             // 3. Finishing (Network)
             _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.FINISHING)
-            val isVerified = finish(platformResponse, challengeBase64Url)
-
-            if (!isVerified) {
-                _uiState.value = PasskeyControllerState.Failure(
-                    action,
-                    PasskeyClientError.Transport("${action.name} verification was rejected by the server."),
-                )
-                return
+            when (val finishResult = finish(platformResponse, challengeBase64Url)) {
+                PasskeyFinishResult.Verified -> {
+                    // 4. Success
+                    _uiState.value = PasskeyControllerState.Success(action)
+                }
+                is PasskeyFinishResult.Rejected -> {
+                    val message = finishResult.message ?: "${action.name} verification was rejected by the server."
+                    _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.Transport(message))
+                    return
+                }
             }
-
-            // 4. Success
-            _uiState.value = PasskeyControllerState.Success(action)
 
         } catch (e: CancellationException) {
             if (_uiState.value is PasskeyControllerState.InProgress) {

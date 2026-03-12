@@ -55,7 +55,10 @@ public fun readCborLength(bytes: ByteArray, offset: Int, majorType: Int, additio
         additionalInfo == 27 -> {
             if (offset + 8 > bytes.size) return null
             val value = bytes.readUint64(offset)
-            if (majorType != MAJOR_SIMPLE_FLOAT && value in 0 until 4294967296L) return null
+            if (majorType != MAJOR_SIMPLE_FLOAT) {
+                if (value < 0) return null
+                if (value < 4294967296L) return null
+            }
             value to (offset + 8)
         }
 
@@ -70,7 +73,13 @@ public fun readCborText(bytes: ByteArray, offset: Int): Pair<String, Int>? {
     if (header.majorType != MAJOR_TEXT || header.length == null) return null
     val length = header.length.toValidCborLengthInt() ?: return null
     if (header.nextOffset + length > bytes.size) return null
-    val value = bytes.copyOfRange(header.nextOffset, header.nextOffset + length).decodeToString()
+    val value = runCatching {
+        bytes.decodeToString(
+            startIndex = header.nextOffset,
+            endIndex = header.nextOffset + length,
+            throwOnInvalidSequence = true,
+        )
+    }.getOrNull() ?: return null
     return value to (header.nextOffset + length)
 }
 

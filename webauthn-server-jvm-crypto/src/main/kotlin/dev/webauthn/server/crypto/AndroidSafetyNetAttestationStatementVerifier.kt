@@ -86,11 +86,18 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
         val certsDer = certificateChain.map { it.encodeToDer() }
         val leafCertDer = certsDer.first()
 
-        try {
+        val leafCertificate = try {
             certificateInspector.inspect(leafCertDer)
         } catch (e: Exception) {
             return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")),
+            )
+        }
+
+        val subjectDn = leafCertificate.subjectDistinguishedName.lowercase()
+        if (!subjectDn.contains(SAFETYNET_ATTESTATION_SUBJECT)) {
+            return ValidationResult.Invalid(
+                listOf(WebAuthnValidationError.InvalidValue("x5c", "SafetyNet attestation certificate subject is invalid")),
             )
         }
 
@@ -167,3 +174,5 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
         return ValidationResult.Valid(Unit)
     }
 }
+
+private const val SAFETYNET_ATTESTATION_SUBJECT: String = "cn=attest.android.com"

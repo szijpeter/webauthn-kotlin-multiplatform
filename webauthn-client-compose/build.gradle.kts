@@ -1,5 +1,6 @@
 plugins {
     id("webauthn.kotlin.multiplatform")
+    id("webauthn.published-library")
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.compose.compiler)
 }

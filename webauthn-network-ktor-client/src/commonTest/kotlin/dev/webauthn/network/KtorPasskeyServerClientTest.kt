@@ -1,5 +1,6 @@
 package dev.webauthn.network
 
+import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorAttachment
@@ -94,7 +95,7 @@ class KtorPasskeyServerClientTest {
             response = validRegistrationResponse(),
             challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         )
-        assertTrue(finished)
+        assertEquals(PasskeyFinishResult.Verified, finished)
 
         val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/start")).jsonObject
         assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
@@ -159,7 +160,7 @@ class KtorPasskeyServerClientTest {
             response = validAuthenticationResponse(),
             challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         )
-        assertTrue(finished)
+        assertEquals(PasskeyFinishResult.Verified, finished)
 
         val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
         assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
@@ -245,7 +246,8 @@ class KtorPasskeyServerClientTest {
         )
 
         assertTrue(serverClient.getRegisterOptions(registerParams) is ValidationResult.Valid)
-        assertTrue(
+        assertEquals(
+            PasskeyFinishResult.Verified,
             serverClient.finishRegister(
                 params = registerParams,
                 response = validRegistrationResponse(),
@@ -253,7 +255,8 @@ class KtorPasskeyServerClientTest {
             ),
         )
         assertTrue(serverClient.getSignInOptions(signInParams) is ValidationResult.Valid)
-        assertTrue(
+        assertEquals(
+            PasskeyFinishResult.Verified,
             serverClient.finishSignIn(
                 params = signInParams,
                 response = validAuthenticationResponse(),
@@ -318,6 +321,47 @@ class KtorPasskeyServerClientTest {
     }
 
     @Test
+    fun finishRegister_returnsRejectedResult_whenServerStatusIsNotOk() = runTest {
+        val client = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/webauthn/registration/finish" -> respond(
+                    content = """{"status":"rejected"}""",
+                    status = HttpStatusCode.OK,
+                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+                )
+
+                else -> error("Unexpected path: ${request.url.encodedPath}")
+            }
+        }
+        val contract = DefaultBackendContract(
+            registerOptionsPath = "/unused/register/start",
+            registerVerifyPath = "/webauthn/registration/finish",
+            authenticateOptionsPath = "/unused/auth/start",
+            authenticateVerifyPath = "/unused/auth/finish",
+        )
+        val serverClient = KtorPasskeyServerClient(
+            httpClient = client,
+            endpointBase = "https://example.test",
+            backendContract = contract,
+        )
+        val params = RegistrationStartPayload(
+            rpId = "example.com",
+            rpName = "Example",
+            origin = "https://example.com",
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = "AQID",
+        )
+
+        val result = serverClient.finishRegister(
+            params = params,
+            response = validRegistrationResponse(),
+            challengeAsBase64Url = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        )
+        assertTrue(result is PasskeyFinishResult.Rejected)
+    }
+
+    @Test
     fun finishSignIn_throwsDetailedError_whenServerReturnsValidationPayloadWithoutStatus() = runTest {
         val client = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -358,6 +402,38 @@ class KtorPasskeyServerClientTest {
         }
         assertTrue(failure.message?.contains("Authentication finish failed with HTTP 400") == true)
         assertTrue(failure.message?.contains("invalid assertion") == true)
+    }
+
+    @Test
+    fun payloadToString_redactsSensitiveUserFields() {
+        val registrationPayload = RegistrationStartPayload(
+            rpId = "example.com",
+            rpName = "Example",
+            origin = "https://example.com",
+            userName = "alice-sensitive",
+            userDisplayName = "Alice Sensitive",
+            userHandle = "AQID-sensitive",
+        )
+        val authPayload = AuthenticationStartPayload(
+            rpId = "example.com",
+            origin = "https://example.com",
+            userName = "bob-sensitive",
+            userHandle = "Qk9CLXNlbnNpdGl2ZQ",
+        )
+
+        val registrationText = registrationPayload.toString()
+        assertTrue(!registrationText.contains("alice-sensitive"))
+        assertTrue(!registrationText.contains("Alice Sensitive"))
+        assertTrue(!registrationText.contains("AQID-sensitive"))
+        assertTrue(registrationText.contains("userName=<redacted>"))
+        assertTrue(registrationText.contains("userDisplayName=<redacted>"))
+        assertTrue(registrationText.contains("userHandle=<redacted>"))
+
+        val authText = authPayload.toString()
+        assertTrue(!authText.contains("bob-sensitive"))
+        assertTrue(!authText.contains("Qk9CLXNlbnNpdGl2ZQ"))
+        assertTrue(authText.contains("userName=<redacted>"))
+        assertTrue(authText.contains("userHandle=<redacted>"))
     }
 
     private fun createMockClient(

@@ -5,6 +5,7 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
+import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.PasskeyServerClient
@@ -182,8 +183,12 @@ private class FakeServerClient(
         params: RegistrationStartPayload,
         response: RegistrationResponse,
         challengeAsBase64Url: String,
-    ): Boolean {
-        return registerVerifyResult
+    ): PasskeyFinishResult {
+        return if (registerVerifyResult) {
+            PasskeyFinishResult.Verified
+        } else {
+            PasskeyFinishResult.Rejected()
+        }
     }
 
     override suspend fun getSignInOptions(params: AuthenticationStartPayload): ValidationResult<PublicKeyCredentialRequestOptions> {
@@ -194,8 +199,12 @@ private class FakeServerClient(
         params: AuthenticationStartPayload,
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
-    ): Boolean {
-        return signInVerifyResult
+    ): PasskeyFinishResult {
+        return if (signInVerifyResult) {
+            PasskeyFinishResult.Verified
+        } else {
+            PasskeyFinishResult.Rejected()
+        }
     }
 }
 

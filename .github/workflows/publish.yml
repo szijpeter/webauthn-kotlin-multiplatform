@@ -1,0 +1,87 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_mode:
+        description: "Publish mode"
+        required: true
+        default: "publish-and-release"
+        type: choice
+        options:
+          - publish-only
+          - publish-and-release
+      version_name:
+        description: "Optional VERSION_NAME override (for example 0.1.0)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: publish-maven-central
+      cancel-in-progress: false
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Validate Maven Central secrets
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          test -n "$MAVEN_CENTRAL_USERNAME" || (echo "Missing secret: MAVEN_CENTRAL_USERNAME" && exit 1)
+          test -n "$MAVEN_CENTRAL_PASSWORD" || (echo "Missing secret: MAVEN_CENTRAL_PASSWORD" && exit 1)
+          test -n "$SIGNING_KEY" || (echo "Missing secret: SIGNING_KEY" && exit 1)
+          test -n "$SIGNING_KEY_PASSWORD" || (echo "Missing secret: SIGNING_KEY_PASSWORD" && exit 1)
+
+      - name: Guard release mode against snapshot versions
+        env:
+          VERSION_NAME_INPUT: ${{ inputs.version_name }}
+          RELEASE_MODE_INPUT: ${{ inputs.release_mode }}
+        run: |
+          RESOLVED_VERSION="$VERSION_NAME_INPUT"
+          if [ -z "$RESOLVED_VERSION" ]; then
+            RESOLVED_VERSION="$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)"
+          fi
+
+          test -n "$RESOLVED_VERSION" || (echo "Unable to resolve VERSION_NAME" && exit 1)
+          echo "Resolved VERSION_NAME=$RESOLVED_VERSION"
+
+          if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ] && [[ "$RESOLVED_VERSION" == *SNAPSHOT* ]]; then
+            echo "Refusing publish-and-release for SNAPSHOT version: $RESOLVED_VERSION"
+            exit 1
+          fi
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          VERSION_NAME_INPUT: ${{ inputs.version_name }}
+          RELEASE_MODE_INPUT: ${{ inputs.release_mode }}
+        run: |
+          VERSION_ARG=""
+          if [ -n "$VERSION_NAME_INPUT" ]; then
+            VERSION_ARG="-PVERSION_NAME=$VERSION_NAME_INPUT"
+          fi
+
+          if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ]; then
+            ./gradlew publishAndReleaseToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
+          else
+            ./gradlew publishToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
+          fi

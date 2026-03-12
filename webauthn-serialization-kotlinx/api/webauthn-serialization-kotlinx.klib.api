@@ -1,0 +1,662 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-serialization-kotlinx>
+final class dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto { // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto|null[0]
+    constructor <init>(dev.webauthn.serialization/PrfExtensionInputDto? = ..., dev.webauthn.serialization/LargeBlobExtensionInputDto? = ..., kotlin.collections/List<kotlin/String>? = ...) // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.<init>|<init>(dev.webauthn.serialization.PrfExtensionInputDto?;dev.webauthn.serialization.LargeBlobExtensionInputDto?;kotlin.collections.List<kotlin.String>?){}[0]
+
+    final val largeBlob // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.largeBlob|{}largeBlob[0]
+        final fun <get-largeBlob>(): dev.webauthn.serialization/LargeBlobExtensionInputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.largeBlob.<get-largeBlob>|<get-largeBlob>(){}[0]
+    final val prf // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.prf|{}prf[0]
+        final fun <get-prf>(): dev.webauthn.serialization/PrfExtensionInputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.prf.<get-prf>|<get-prf>(){}[0]
+    final val relatedOrigins // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.relatedOrigins|{}relatedOrigins[0]
+        final fun <get-relatedOrigins>(): kotlin.collections/List<kotlin/String>? // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.relatedOrigins.<get-relatedOrigins>|<get-relatedOrigins>(){}[0]
+
+    final fun component1(): dev.webauthn.serialization/PrfExtensionInputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.serialization/LargeBlobExtensionInputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.component2|component2(){}[0]
+    final fun component3(): kotlin.collections/List<kotlin/String>? // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.component3|component3(){}[0]
+    final fun copy(dev.webauthn.serialization/PrfExtensionInputDto? = ..., dev.webauthn.serialization/LargeBlobExtensionInputDto? = ..., kotlin.collections/List<kotlin/String>? = ...): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.copy|copy(dev.webauthn.serialization.PrfExtensionInputDto?;dev.webauthn.serialization.LargeBlobExtensionInputDto?;kotlin.collections.List<kotlin.String>?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto> { // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto) // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.Companion|null[0]
+        final val $childSerializers // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.Companion.$childSerializers|{}$childSerializers[0]
+
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto> // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto { // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto|null[0]
+    constructor <init>(dev.webauthn.serialization/PrfExtensionOutputDto? = ..., dev.webauthn.serialization/LargeBlobExtensionOutputDto? = ...) // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.<init>|<init>(dev.webauthn.serialization.PrfExtensionOutputDto?;dev.webauthn.serialization.LargeBlobExtensionOutputDto?){}[0]
+
+    final val largeBlob // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.largeBlob|{}largeBlob[0]
+        final fun <get-largeBlob>(): dev.webauthn.serialization/LargeBlobExtensionOutputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.largeBlob.<get-largeBlob>|<get-largeBlob>(){}[0]
+    final val prf // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.prf|{}prf[0]
+        final fun <get-prf>(): dev.webauthn.serialization/PrfExtensionOutputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.prf.<get-prf>|<get-prf>(){}[0]
+
+    final fun component1(): dev.webauthn.serialization/PrfExtensionOutputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.serialization/LargeBlobExtensionOutputDto? // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.component2|component2(){}[0]
+    final fun copy(dev.webauthn.serialization/PrfExtensionOutputDto? = ..., dev.webauthn.serialization/LargeBlobExtensionOutputDto? = ...): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.copy|copy(dev.webauthn.serialization.PrfExtensionOutputDto?;dev.webauthn.serialization.LargeBlobExtensionOutputDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto> { // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto) // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto> // dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/AuthenticationResponseDto { // dev.webauthn.serialization/AuthenticationResponseDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String, dev.webauthn.serialization/AuthenticationResponsePayloadDto, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...) // dev.webauthn.serialization/AuthenticationResponseDto.<init>|<init>(kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+
+    final val authenticatorAttachment // dev.webauthn.serialization/AuthenticationResponseDto.authenticatorAttachment|{}authenticatorAttachment[0]
+        final fun <get-authenticatorAttachment>(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponseDto.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
+    final val clientExtensionResults // dev.webauthn.serialization/AuthenticationResponseDto.clientExtensionResults|{}clientExtensionResults[0]
+        final fun <get-clientExtensionResults>(): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? // dev.webauthn.serialization/AuthenticationResponseDto.clientExtensionResults.<get-clientExtensionResults>|<get-clientExtensionResults>(){}[0]
+    final val id // dev.webauthn.serialization/AuthenticationResponseDto.id|{}id[0]
+        final fun <get-id>(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.id.<get-id>|<get-id>(){}[0]
+    final val rawId // dev.webauthn.serialization/AuthenticationResponseDto.rawId|{}rawId[0]
+        final fun <get-rawId>(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.rawId.<get-rawId>|<get-rawId>(){}[0]
+    final val response // dev.webauthn.serialization/AuthenticationResponseDto.response|{}response[0]
+        final fun <get-response>(): dev.webauthn.serialization/AuthenticationResponsePayloadDto // dev.webauthn.serialization/AuthenticationResponseDto.response.<get-response>|<get-response>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.serialization/AuthenticationResponsePayloadDto // dev.webauthn.serialization/AuthenticationResponseDto.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponseDto.component4|component4(){}[0]
+    final fun component5(): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? // dev.webauthn.serialization/AuthenticationResponseDto.component5|component5(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/AuthenticationResponsePayloadDto = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/AuthenticationResponseDto.copy|copy(kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticationResponseDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticationResponseDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/AuthenticationResponseDto> { // dev.webauthn.serialization/AuthenticationResponseDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/AuthenticationResponseDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/AuthenticationResponseDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/AuthenticationResponseDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/AuthenticationResponseDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/AuthenticationResponseDto) // dev.webauthn.serialization/AuthenticationResponseDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.AuthenticationResponseDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/AuthenticationResponseDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/AuthenticationResponseDto> // dev.webauthn.serialization/AuthenticationResponseDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/AuthenticationResponsePayloadDto { // dev.webauthn.serialization/AuthenticationResponsePayloadDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String? = ...) // dev.webauthn.serialization/AuthenticationResponsePayloadDto.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String?){}[0]
+
+    final val authenticatorData // dev.webauthn.serialization/AuthenticationResponsePayloadDto.authenticatorData|{}authenticatorData[0]
+        final fun <get-authenticatorData>(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.authenticatorData.<get-authenticatorData>|<get-authenticatorData>(){}[0]
+    final val clientDataJson // dev.webauthn.serialization/AuthenticationResponsePayloadDto.clientDataJson|{}clientDataJson[0]
+        final fun <get-clientDataJson>(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.clientDataJson.<get-clientDataJson>|<get-clientDataJson>(){}[0]
+    final val signature // dev.webauthn.serialization/AuthenticationResponsePayloadDto.signature|{}signature[0]
+        final fun <get-signature>(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.signature.<get-signature>|<get-signature>(){}[0]
+    final val userHandle // dev.webauthn.serialization/AuthenticationResponsePayloadDto.userHandle|{}userHandle[0]
+        final fun <get-userHandle>(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponsePayloadDto.userHandle.<get-userHandle>|<get-userHandle>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.component2|component2(){}[0]
+    final fun component3(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponsePayloadDto.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String? = ...): dev.webauthn.serialization/AuthenticationResponsePayloadDto // dev.webauthn.serialization/AuthenticationResponsePayloadDto.copy|copy(kotlin.String;kotlin.String;kotlin.String;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticationResponsePayloadDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticationResponsePayloadDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticationResponsePayloadDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/AuthenticationResponsePayloadDto> { // dev.webauthn.serialization/AuthenticationResponsePayloadDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/AuthenticationResponsePayloadDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/AuthenticationResponsePayloadDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/AuthenticationResponsePayloadDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/AuthenticationResponsePayloadDto // dev.webauthn.serialization/AuthenticationResponsePayloadDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/AuthenticationResponsePayloadDto) // dev.webauthn.serialization/AuthenticationResponsePayloadDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.AuthenticationResponsePayloadDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/AuthenticationResponsePayloadDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/AuthenticationResponsePayloadDto> // dev.webauthn.serialization/AuthenticationResponsePayloadDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto { // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto|null[0]
+    constructor <init>(kotlin/String? = ..., kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ...) // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.<init>|<init>(kotlin.String?;kotlin.String?;kotlin.Boolean?;kotlin.String?){}[0]
+
+    final val authenticatorAttachment // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.authenticatorAttachment|{}authenticatorAttachment[0]
+        final fun <get-authenticatorAttachment>(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
+    final val requireResidentKey // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.requireResidentKey|{}requireResidentKey[0]
+        final fun <get-requireResidentKey>(): kotlin/Boolean? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.requireResidentKey.<get-requireResidentKey>|<get-requireResidentKey>(){}[0]
+    final val residentKey // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.residentKey|{}residentKey[0]
+        final fun <get-residentKey>(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.residentKey.<get-residentKey>|<get-residentKey>(){}[0]
+    final val userVerification // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.userVerification|{}userVerification[0]
+        final fun <get-userVerification>(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.userVerification.<get-userVerification>|<get-userVerification>(){}[0]
+
+    final fun component1(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component2|component2(){}[0]
+    final fun component3(): kotlin/Boolean? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component4|component4(){}[0]
+    final fun copy(kotlin/String? = ..., kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ...): dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.copy|copy(kotlin.String?;kotlin.String?;kotlin.Boolean?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto> { // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto) // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.AuthenticatorSelectionCriteriaDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto> // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/LargeBlobExtensionInputDto { // dev.webauthn.serialization/LargeBlobExtensionInputDto|null[0]
+    constructor <init>(kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ...) // dev.webauthn.serialization/LargeBlobExtensionInputDto.<init>|<init>(kotlin.String?;kotlin.Boolean?;kotlin.String?){}[0]
+
+    final val read // dev.webauthn.serialization/LargeBlobExtensionInputDto.read|{}read[0]
+        final fun <get-read>(): kotlin/Boolean? // dev.webauthn.serialization/LargeBlobExtensionInputDto.read.<get-read>|<get-read>(){}[0]
+    final val support // dev.webauthn.serialization/LargeBlobExtensionInputDto.support|{}support[0]
+        final fun <get-support>(): kotlin/String? // dev.webauthn.serialization/LargeBlobExtensionInputDto.support.<get-support>|<get-support>(){}[0]
+    final val write // dev.webauthn.serialization/LargeBlobExtensionInputDto.write|{}write[0]
+        final fun <get-write>(): kotlin/String? // dev.webauthn.serialization/LargeBlobExtensionInputDto.write.<get-write>|<get-write>(){}[0]
+
+    final fun component1(): kotlin/String? // dev.webauthn.serialization/LargeBlobExtensionInputDto.component1|component1(){}[0]
+    final fun component2(): kotlin/Boolean? // dev.webauthn.serialization/LargeBlobExtensionInputDto.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // dev.webauthn.serialization/LargeBlobExtensionInputDto.component3|component3(){}[0]
+    final fun copy(kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ...): dev.webauthn.serialization/LargeBlobExtensionInputDto // dev.webauthn.serialization/LargeBlobExtensionInputDto.copy|copy(kotlin.String?;kotlin.Boolean?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/LargeBlobExtensionInputDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/LargeBlobExtensionInputDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/LargeBlobExtensionInputDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/LargeBlobExtensionInputDto> { // dev.webauthn.serialization/LargeBlobExtensionInputDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/LargeBlobExtensionInputDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/LargeBlobExtensionInputDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/LargeBlobExtensionInputDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/LargeBlobExtensionInputDto // dev.webauthn.serialization/LargeBlobExtensionInputDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/LargeBlobExtensionInputDto) // dev.webauthn.serialization/LargeBlobExtensionInputDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.LargeBlobExtensionInputDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/LargeBlobExtensionInputDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/LargeBlobExtensionInputDto> // dev.webauthn.serialization/LargeBlobExtensionInputDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/LargeBlobExtensionOutputDto { // dev.webauthn.serialization/LargeBlobExtensionOutputDto|null[0]
+    constructor <init>(kotlin/Boolean? = ..., kotlin/String? = ..., kotlin/Boolean? = ...) // dev.webauthn.serialization/LargeBlobExtensionOutputDto.<init>|<init>(kotlin.Boolean?;kotlin.String?;kotlin.Boolean?){}[0]
+
+    final val blob // dev.webauthn.serialization/LargeBlobExtensionOutputDto.blob|{}blob[0]
+        final fun <get-blob>(): kotlin/String? // dev.webauthn.serialization/LargeBlobExtensionOutputDto.blob.<get-blob>|<get-blob>(){}[0]
+    final val supported // dev.webauthn.serialization/LargeBlobExtensionOutputDto.supported|{}supported[0]
+        final fun <get-supported>(): kotlin/Boolean? // dev.webauthn.serialization/LargeBlobExtensionOutputDto.supported.<get-supported>|<get-supported>(){}[0]
+    final val written // dev.webauthn.serialization/LargeBlobExtensionOutputDto.written|{}written[0]
+        final fun <get-written>(): kotlin/Boolean? // dev.webauthn.serialization/LargeBlobExtensionOutputDto.written.<get-written>|<get-written>(){}[0]
+
+    final fun component1(): kotlin/Boolean? // dev.webauthn.serialization/LargeBlobExtensionOutputDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String? // dev.webauthn.serialization/LargeBlobExtensionOutputDto.component2|component2(){}[0]
+    final fun component3(): kotlin/Boolean? // dev.webauthn.serialization/LargeBlobExtensionOutputDto.component3|component3(){}[0]
+    final fun copy(kotlin/Boolean? = ..., kotlin/String? = ..., kotlin/Boolean? = ...): dev.webauthn.serialization/LargeBlobExtensionOutputDto // dev.webauthn.serialization/LargeBlobExtensionOutputDto.copy|copy(kotlin.Boolean?;kotlin.String?;kotlin.Boolean?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/LargeBlobExtensionOutputDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/LargeBlobExtensionOutputDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/LargeBlobExtensionOutputDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/LargeBlobExtensionOutputDto> { // dev.webauthn.serialization/LargeBlobExtensionOutputDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/LargeBlobExtensionOutputDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/LargeBlobExtensionOutputDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/LargeBlobExtensionOutputDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/LargeBlobExtensionOutputDto // dev.webauthn.serialization/LargeBlobExtensionOutputDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/LargeBlobExtensionOutputDto) // dev.webauthn.serialization/LargeBlobExtensionOutputDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.LargeBlobExtensionOutputDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/LargeBlobExtensionOutputDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/LargeBlobExtensionOutputDto> // dev.webauthn.serialization/LargeBlobExtensionOutputDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PrfExtensionInputDto { // dev.webauthn.serialization/PrfExtensionInputDto|null[0]
+    constructor <init>(dev.webauthn.serialization/PrfValuesDto? = ..., kotlin.collections/Map<kotlin/String, dev.webauthn.serialization/PrfValuesDto>? = ...) // dev.webauthn.serialization/PrfExtensionInputDto.<init>|<init>(dev.webauthn.serialization.PrfValuesDto?;kotlin.collections.Map<kotlin.String,dev.webauthn.serialization.PrfValuesDto>?){}[0]
+
+    final val eval // dev.webauthn.serialization/PrfExtensionInputDto.eval|{}eval[0]
+        final fun <get-eval>(): dev.webauthn.serialization/PrfValuesDto? // dev.webauthn.serialization/PrfExtensionInputDto.eval.<get-eval>|<get-eval>(){}[0]
+    final val evalByCredential // dev.webauthn.serialization/PrfExtensionInputDto.evalByCredential|{}evalByCredential[0]
+        final fun <get-evalByCredential>(): kotlin.collections/Map<kotlin/String, dev.webauthn.serialization/PrfValuesDto>? // dev.webauthn.serialization/PrfExtensionInputDto.evalByCredential.<get-evalByCredential>|<get-evalByCredential>(){}[0]
+
+    final fun component1(): dev.webauthn.serialization/PrfValuesDto? // dev.webauthn.serialization/PrfExtensionInputDto.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/Map<kotlin/String, dev.webauthn.serialization/PrfValuesDto>? // dev.webauthn.serialization/PrfExtensionInputDto.component2|component2(){}[0]
+    final fun copy(dev.webauthn.serialization/PrfValuesDto? = ..., kotlin.collections/Map<kotlin/String, dev.webauthn.serialization/PrfValuesDto>? = ...): dev.webauthn.serialization/PrfExtensionInputDto // dev.webauthn.serialization/PrfExtensionInputDto.copy|copy(dev.webauthn.serialization.PrfValuesDto?;kotlin.collections.Map<kotlin.String,dev.webauthn.serialization.PrfValuesDto>?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PrfExtensionInputDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PrfExtensionInputDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PrfExtensionInputDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PrfExtensionInputDto> { // dev.webauthn.serialization/PrfExtensionInputDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PrfExtensionInputDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PrfExtensionInputDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PrfExtensionInputDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PrfExtensionInputDto // dev.webauthn.serialization/PrfExtensionInputDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PrfExtensionInputDto) // dev.webauthn.serialization/PrfExtensionInputDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PrfExtensionInputDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PrfExtensionInputDto.Companion|null[0]
+        final val $childSerializers // dev.webauthn.serialization/PrfExtensionInputDto.Companion.$childSerializers|{}$childSerializers[0]
+
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PrfExtensionInputDto> // dev.webauthn.serialization/PrfExtensionInputDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PrfExtensionOutputDto { // dev.webauthn.serialization/PrfExtensionOutputDto|null[0]
+    constructor <init>(kotlin/Boolean? = ..., dev.webauthn.serialization/PrfValuesDto? = ...) // dev.webauthn.serialization/PrfExtensionOutputDto.<init>|<init>(kotlin.Boolean?;dev.webauthn.serialization.PrfValuesDto?){}[0]
+
+    final val enabled // dev.webauthn.serialization/PrfExtensionOutputDto.enabled|{}enabled[0]
+        final fun <get-enabled>(): kotlin/Boolean? // dev.webauthn.serialization/PrfExtensionOutputDto.enabled.<get-enabled>|<get-enabled>(){}[0]
+    final val results // dev.webauthn.serialization/PrfExtensionOutputDto.results|{}results[0]
+        final fun <get-results>(): dev.webauthn.serialization/PrfValuesDto? // dev.webauthn.serialization/PrfExtensionOutputDto.results.<get-results>|<get-results>(){}[0]
+
+    final fun component1(): kotlin/Boolean? // dev.webauthn.serialization/PrfExtensionOutputDto.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.serialization/PrfValuesDto? // dev.webauthn.serialization/PrfExtensionOutputDto.component2|component2(){}[0]
+    final fun copy(kotlin/Boolean? = ..., dev.webauthn.serialization/PrfValuesDto? = ...): dev.webauthn.serialization/PrfExtensionOutputDto // dev.webauthn.serialization/PrfExtensionOutputDto.copy|copy(kotlin.Boolean?;dev.webauthn.serialization.PrfValuesDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PrfExtensionOutputDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PrfExtensionOutputDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PrfExtensionOutputDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PrfExtensionOutputDto> { // dev.webauthn.serialization/PrfExtensionOutputDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PrfExtensionOutputDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PrfExtensionOutputDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PrfExtensionOutputDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PrfExtensionOutputDto // dev.webauthn.serialization/PrfExtensionOutputDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PrfExtensionOutputDto) // dev.webauthn.serialization/PrfExtensionOutputDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PrfExtensionOutputDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PrfExtensionOutputDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PrfExtensionOutputDto> // dev.webauthn.serialization/PrfExtensionOutputDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PrfValuesDto { // dev.webauthn.serialization/PrfValuesDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String? = ...) // dev.webauthn.serialization/PrfValuesDto.<init>|<init>(kotlin.String;kotlin.String?){}[0]
+
+    final val first // dev.webauthn.serialization/PrfValuesDto.first|{}first[0]
+        final fun <get-first>(): kotlin/String // dev.webauthn.serialization/PrfValuesDto.first.<get-first>|<get-first>(){}[0]
+    final val second // dev.webauthn.serialization/PrfValuesDto.second|{}second[0]
+        final fun <get-second>(): kotlin/String? // dev.webauthn.serialization/PrfValuesDto.second.<get-second>|<get-second>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/PrfValuesDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String? // dev.webauthn.serialization/PrfValuesDto.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String? = ...): dev.webauthn.serialization/PrfValuesDto // dev.webauthn.serialization/PrfValuesDto.copy|copy(kotlin.String;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PrfValuesDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PrfValuesDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PrfValuesDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PrfValuesDto> { // dev.webauthn.serialization/PrfValuesDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PrfValuesDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PrfValuesDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PrfValuesDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PrfValuesDto // dev.webauthn.serialization/PrfValuesDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PrfValuesDto) // dev.webauthn.serialization/PrfValuesDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PrfValuesDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PrfValuesDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PrfValuesDto> // dev.webauthn.serialization/PrfValuesDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto { // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto|null[0]
+    constructor <init>(dev.webauthn.serialization/RpEntityDto, dev.webauthn.serialization/UserEntityDto, kotlin/String, kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialParametersDto>, kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> = ..., dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto? = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.<init>|<init>(dev.webauthn.serialization.RpEntityDto;dev.webauthn.serialization.UserEntityDto;kotlin.String;kotlin.collections.List<dev.webauthn.serialization.PublicKeyCredentialParametersDto>;kotlin.Long?;kotlin.collections.List<dev.webauthn.serialization.PublicKeyCredentialDescriptorDto>;dev.webauthn.serialization.AuthenticatorSelectionCriteriaDto?;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+
+    final val attestation // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.attestation|{}attestation[0]
+        final fun <get-attestation>(): kotlin/String? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.attestation.<get-attestation>|<get-attestation>(){}[0]
+    final val authenticatorSelection // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.authenticatorSelection|{}authenticatorSelection[0]
+        final fun <get-authenticatorSelection>(): dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.authenticatorSelection.<get-authenticatorSelection>|<get-authenticatorSelection>(){}[0]
+    final val challenge // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.challenge|{}challenge[0]
+        final fun <get-challenge>(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.challenge.<get-challenge>|<get-challenge>(){}[0]
+    final val excludeCredentials // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.excludeCredentials|{}excludeCredentials[0]
+        final fun <get-excludeCredentials>(): kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.excludeCredentials.<get-excludeCredentials>|<get-excludeCredentials>(){}[0]
+    final val extensions // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val pubKeyCredParams // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.pubKeyCredParams|{}pubKeyCredParams[0]
+        final fun <get-pubKeyCredParams>(): kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialParametersDto> // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.pubKeyCredParams.<get-pubKeyCredParams>|<get-pubKeyCredParams>(){}[0]
+    final val rp // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.rp|{}rp[0]
+        final fun <get-rp>(): dev.webauthn.serialization/RpEntityDto // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.rp.<get-rp>|<get-rp>(){}[0]
+    final val timeoutMs // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.timeoutMs|{}timeoutMs[0]
+        final fun <get-timeoutMs>(): kotlin/Long? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.timeoutMs.<get-timeoutMs>|<get-timeoutMs>(){}[0]
+    final val user // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.user|{}user[0]
+        final fun <get-user>(): dev.webauthn.serialization/UserEntityDto // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.user.<get-user>|<get-user>(){}[0]
+
+    final fun component1(): dev.webauthn.serialization/RpEntityDto // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.serialization/UserEntityDto // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component2|component2(){}[0]
+    final fun component3(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component3|component3(){}[0]
+    final fun component4(): kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialParametersDto> // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component4|component4(){}[0]
+    final fun component5(): kotlin/Long? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component5|component5(){}[0]
+    final fun component6(): kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component6|component6(){}[0]
+    final fun component7(): dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component7|component7(){}[0]
+    final fun component8(): kotlin/String? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component8|component8(){}[0]
+    final fun component9(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.component9|component9(){}[0]
+    final fun copy(dev.webauthn.serialization/RpEntityDto = ..., dev.webauthn.serialization/UserEntityDto = ..., kotlin/String = ..., kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialParametersDto> = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> = ..., dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto? = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.copy|copy(dev.webauthn.serialization.RpEntityDto;dev.webauthn.serialization.UserEntityDto;kotlin.String;kotlin.collections.List<dev.webauthn.serialization.PublicKeyCredentialParametersDto>;kotlin.Long?;kotlin.collections.List<dev.webauthn.serialization.PublicKeyCredentialDescriptorDto>;dev.webauthn.serialization.AuthenticatorSelectionCriteriaDto?;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto> { // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto) // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.Companion|null[0]
+        final val $childSerializers // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.Companion.$childSerializers|{}$childSerializers[0]
+
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto> // dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PublicKeyCredentialDescriptorDto { // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin.collections/List<kotlin/String>? = ...) // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.<init>|<init>(kotlin.String;kotlin.String;kotlin.collections.List<kotlin.String>?){}[0]
+
+    final val id // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.id|{}id[0]
+        final fun <get-id>(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.id.<get-id>|<get-id>(){}[0]
+    final val transports // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.transports|{}transports[0]
+        final fun <get-transports>(): kotlin.collections/List<kotlin/String>? // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.transports.<get-transports>|<get-transports>(){}[0]
+    final val type // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.type|{}type[0]
+        final fun <get-type>(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.type.<get-type>|<get-type>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.component2|component2(){}[0]
+    final fun component3(): kotlin.collections/List<kotlin/String>? // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.component3|component3(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin.collections/List<kotlin/String>? = ...): dev.webauthn.serialization/PublicKeyCredentialDescriptorDto // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.copy|copy(kotlin.String;kotlin.String;kotlin.collections.List<kotlin.String>?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> { // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PublicKeyCredentialDescriptorDto // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PublicKeyCredentialDescriptorDto) // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PublicKeyCredentialDescriptorDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.Companion|null[0]
+        final val $childSerializers // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.Companion.$childSerializers|{}$childSerializers[0]
+
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> // dev.webauthn.serialization/PublicKeyCredentialDescriptorDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PublicKeyCredentialParametersDto { // dev.webauthn.serialization/PublicKeyCredentialParametersDto|null[0]
+    constructor <init>(kotlin/String, kotlin/Int) // dev.webauthn.serialization/PublicKeyCredentialParametersDto.<init>|<init>(kotlin.String;kotlin.Int){}[0]
+
+    final val alg // dev.webauthn.serialization/PublicKeyCredentialParametersDto.alg|{}alg[0]
+        final fun <get-alg>(): kotlin/Int // dev.webauthn.serialization/PublicKeyCredentialParametersDto.alg.<get-alg>|<get-alg>(){}[0]
+    final val type // dev.webauthn.serialization/PublicKeyCredentialParametersDto.type|{}type[0]
+        final fun <get-type>(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialParametersDto.type.<get-type>|<get-type>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialParametersDto.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // dev.webauthn.serialization/PublicKeyCredentialParametersDto.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/Int = ...): dev.webauthn.serialization/PublicKeyCredentialParametersDto // dev.webauthn.serialization/PublicKeyCredentialParametersDto.copy|copy(kotlin.String;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PublicKeyCredentialParametersDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PublicKeyCredentialParametersDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialParametersDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PublicKeyCredentialParametersDto> { // dev.webauthn.serialization/PublicKeyCredentialParametersDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PublicKeyCredentialParametersDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PublicKeyCredentialParametersDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PublicKeyCredentialParametersDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PublicKeyCredentialParametersDto // dev.webauthn.serialization/PublicKeyCredentialParametersDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PublicKeyCredentialParametersDto) // dev.webauthn.serialization/PublicKeyCredentialParametersDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PublicKeyCredentialParametersDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PublicKeyCredentialParametersDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PublicKeyCredentialParametersDto> // dev.webauthn.serialization/PublicKeyCredentialParametersDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto { // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String? = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> = ..., kotlin/String = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.<init>|<init>(kotlin.String;kotlin.String?;kotlin.Long?;kotlin.collections.List<dev.webauthn.serialization.PublicKeyCredentialDescriptorDto>;kotlin.String;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+
+    final val allowCredentials // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.allowCredentials|{}allowCredentials[0]
+        final fun <get-allowCredentials>(): kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.allowCredentials.<get-allowCredentials>|<get-allowCredentials>(){}[0]
+    final val challenge // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.challenge|{}challenge[0]
+        final fun <get-challenge>(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.challenge.<get-challenge>|<get-challenge>(){}[0]
+    final val extensions // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val rpId // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.rpId|{}rpId[0]
+        final fun <get-rpId>(): kotlin/String? // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.rpId.<get-rpId>|<get-rpId>(){}[0]
+    final val timeoutMs // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.timeoutMs|{}timeoutMs[0]
+        final fun <get-timeoutMs>(): kotlin/Long? // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.timeoutMs.<get-timeoutMs>|<get-timeoutMs>(){}[0]
+    final val userVerification // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.userVerification|{}userVerification[0]
+        final fun <get-userVerification>(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.userVerification.<get-userVerification>|<get-userVerification>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String? // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.component2|component2(){}[0]
+    final fun component3(): kotlin/Long? // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.component3|component3(){}[0]
+    final fun component4(): kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.component4|component4(){}[0]
+    final fun component5(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.component5|component5(){}[0]
+    final fun component6(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.component6|component6(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String? = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.serialization/PublicKeyCredentialDescriptorDto> = ..., kotlin/String = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.copy|copy(kotlin.String;kotlin.String?;kotlin.Long?;kotlin.collections.List<dev.webauthn.serialization.PublicKeyCredentialDescriptorDto>;kotlin.String;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto> { // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto) // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.Companion|null[0]
+        final val $childSerializers // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.Companion.$childSerializers|{}$childSerializers[0]
+
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto> // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/RegistrationResponseDto { // dev.webauthn.serialization/RegistrationResponseDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String, dev.webauthn.serialization/RegistrationResponsePayloadDto, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...) // dev.webauthn.serialization/RegistrationResponseDto.<init>|<init>(kotlin.String;kotlin.String;dev.webauthn.serialization.RegistrationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+
+    final val authenticatorAttachment // dev.webauthn.serialization/RegistrationResponseDto.authenticatorAttachment|{}authenticatorAttachment[0]
+        final fun <get-authenticatorAttachment>(): kotlin/String? // dev.webauthn.serialization/RegistrationResponseDto.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
+    final val clientExtensionResults // dev.webauthn.serialization/RegistrationResponseDto.clientExtensionResults|{}clientExtensionResults[0]
+        final fun <get-clientExtensionResults>(): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? // dev.webauthn.serialization/RegistrationResponseDto.clientExtensionResults.<get-clientExtensionResults>|<get-clientExtensionResults>(){}[0]
+    final val id // dev.webauthn.serialization/RegistrationResponseDto.id|{}id[0]
+        final fun <get-id>(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.id.<get-id>|<get-id>(){}[0]
+    final val rawId // dev.webauthn.serialization/RegistrationResponseDto.rawId|{}rawId[0]
+        final fun <get-rawId>(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.rawId.<get-rawId>|<get-rawId>(){}[0]
+    final val response // dev.webauthn.serialization/RegistrationResponseDto.response|{}response[0]
+        final fun <get-response>(): dev.webauthn.serialization/RegistrationResponsePayloadDto // dev.webauthn.serialization/RegistrationResponseDto.response.<get-response>|<get-response>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.serialization/RegistrationResponsePayloadDto // dev.webauthn.serialization/RegistrationResponseDto.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // dev.webauthn.serialization/RegistrationResponseDto.component4|component4(){}[0]
+    final fun component5(): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? // dev.webauthn.serialization/RegistrationResponseDto.component5|component5(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/RegistrationResponsePayloadDto = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/RegistrationResponseDto.copy|copy(kotlin.String;kotlin.String;dev.webauthn.serialization.RegistrationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/RegistrationResponseDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/RegistrationResponseDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/RegistrationResponseDto> { // dev.webauthn.serialization/RegistrationResponseDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/RegistrationResponseDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/RegistrationResponseDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/RegistrationResponseDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/RegistrationResponseDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/RegistrationResponseDto) // dev.webauthn.serialization/RegistrationResponseDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.RegistrationResponseDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/RegistrationResponseDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/RegistrationResponseDto> // dev.webauthn.serialization/RegistrationResponseDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/RegistrationResponsePayloadDto { // dev.webauthn.serialization/RegistrationResponsePayloadDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String) // dev.webauthn.serialization/RegistrationResponsePayloadDto.<init>|<init>(kotlin.String;kotlin.String){}[0]
+
+    final val attestationObject // dev.webauthn.serialization/RegistrationResponsePayloadDto.attestationObject|{}attestationObject[0]
+        final fun <get-attestationObject>(): kotlin/String // dev.webauthn.serialization/RegistrationResponsePayloadDto.attestationObject.<get-attestationObject>|<get-attestationObject>(){}[0]
+    final val clientDataJson // dev.webauthn.serialization/RegistrationResponsePayloadDto.clientDataJson|{}clientDataJson[0]
+        final fun <get-clientDataJson>(): kotlin/String // dev.webauthn.serialization/RegistrationResponsePayloadDto.clientDataJson.<get-clientDataJson>|<get-clientDataJson>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/RegistrationResponsePayloadDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/RegistrationResponsePayloadDto.component2|component2(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ...): dev.webauthn.serialization/RegistrationResponsePayloadDto // dev.webauthn.serialization/RegistrationResponsePayloadDto.copy|copy(kotlin.String;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/RegistrationResponsePayloadDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/RegistrationResponsePayloadDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/RegistrationResponsePayloadDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/RegistrationResponsePayloadDto> { // dev.webauthn.serialization/RegistrationResponsePayloadDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/RegistrationResponsePayloadDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/RegistrationResponsePayloadDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/RegistrationResponsePayloadDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/RegistrationResponsePayloadDto // dev.webauthn.serialization/RegistrationResponsePayloadDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/RegistrationResponsePayloadDto) // dev.webauthn.serialization/RegistrationResponsePayloadDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.RegistrationResponsePayloadDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/RegistrationResponsePayloadDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/RegistrationResponsePayloadDto> // dev.webauthn.serialization/RegistrationResponsePayloadDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/RelatedOriginsDto { // dev.webauthn.serialization/RelatedOriginsDto|null[0]
+    constructor <init>(kotlin.collections/List<kotlin/String>) // dev.webauthn.serialization/RelatedOriginsDto.<init>|<init>(kotlin.collections.List<kotlin.String>){}[0]
+
+    final val origins // dev.webauthn.serialization/RelatedOriginsDto.origins|{}origins[0]
+        final fun <get-origins>(): kotlin.collections/List<kotlin/String> // dev.webauthn.serialization/RelatedOriginsDto.origins.<get-origins>|<get-origins>(){}[0]
+
+    final fun component1(): kotlin.collections/List<kotlin/String> // dev.webauthn.serialization/RelatedOriginsDto.component1|component1(){}[0]
+    final fun copy(kotlin.collections/List<kotlin/String> = ...): dev.webauthn.serialization/RelatedOriginsDto // dev.webauthn.serialization/RelatedOriginsDto.copy|copy(kotlin.collections.List<kotlin.String>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/RelatedOriginsDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/RelatedOriginsDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/RelatedOriginsDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/RelatedOriginsDto> { // dev.webauthn.serialization/RelatedOriginsDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/RelatedOriginsDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/RelatedOriginsDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/RelatedOriginsDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/RelatedOriginsDto // dev.webauthn.serialization/RelatedOriginsDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/RelatedOriginsDto) // dev.webauthn.serialization/RelatedOriginsDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.RelatedOriginsDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/RelatedOriginsDto.Companion|null[0]
+        final val $childSerializers // dev.webauthn.serialization/RelatedOriginsDto.Companion.$childSerializers|{}$childSerializers[0]
+
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/RelatedOriginsDto> // dev.webauthn.serialization/RelatedOriginsDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/RpEntityDto { // dev.webauthn.serialization/RpEntityDto|null[0]
+    constructor <init>(kotlin/String? = ..., kotlin/String) // dev.webauthn.serialization/RpEntityDto.<init>|<init>(kotlin.String?;kotlin.String){}[0]
+
+    final val id // dev.webauthn.serialization/RpEntityDto.id|{}id[0]
+        final fun <get-id>(): kotlin/String? // dev.webauthn.serialization/RpEntityDto.id.<get-id>|<get-id>(){}[0]
+    final val name // dev.webauthn.serialization/RpEntityDto.name|{}name[0]
+        final fun <get-name>(): kotlin/String // dev.webauthn.serialization/RpEntityDto.name.<get-name>|<get-name>(){}[0]
+
+    final fun component1(): kotlin/String? // dev.webauthn.serialization/RpEntityDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/RpEntityDto.component2|component2(){}[0]
+    final fun copy(kotlin/String? = ..., kotlin/String = ...): dev.webauthn.serialization/RpEntityDto // dev.webauthn.serialization/RpEntityDto.copy|copy(kotlin.String?;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/RpEntityDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/RpEntityDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/RpEntityDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/RpEntityDto> { // dev.webauthn.serialization/RpEntityDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/RpEntityDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/RpEntityDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/RpEntityDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/RpEntityDto // dev.webauthn.serialization/RpEntityDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/RpEntityDto) // dev.webauthn.serialization/RpEntityDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.RpEntityDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/RpEntityDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/RpEntityDto> // dev.webauthn.serialization/RpEntityDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.serialization/UserEntityDto { // dev.webauthn.serialization/UserEntityDto|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String) // dev.webauthn.serialization/UserEntityDto.<init>|<init>(kotlin.String;kotlin.String;kotlin.String){}[0]
+
+    final val displayName // dev.webauthn.serialization/UserEntityDto.displayName|{}displayName[0]
+        final fun <get-displayName>(): kotlin/String // dev.webauthn.serialization/UserEntityDto.displayName.<get-displayName>|<get-displayName>(){}[0]
+    final val id // dev.webauthn.serialization/UserEntityDto.id|{}id[0]
+        final fun <get-id>(): kotlin/String // dev.webauthn.serialization/UserEntityDto.id.<get-id>|<get-id>(){}[0]
+    final val name // dev.webauthn.serialization/UserEntityDto.name|{}name[0]
+        final fun <get-name>(): kotlin/String // dev.webauthn.serialization/UserEntityDto.name.<get-name>|<get-name>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.serialization/UserEntityDto.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.serialization/UserEntityDto.component2|component2(){}[0]
+    final fun component3(): kotlin/String // dev.webauthn.serialization/UserEntityDto.component3|component3(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ...): dev.webauthn.serialization/UserEntityDto // dev.webauthn.serialization/UserEntityDto.copy|copy(kotlin.String;kotlin.String;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/UserEntityDto.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.serialization/UserEntityDto.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.serialization/UserEntityDto.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.serialization/UserEntityDto> { // dev.webauthn.serialization/UserEntityDto.$serializer|null[0]
+        final val descriptor // dev.webauthn.serialization/UserEntityDto.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.serialization/UserEntityDto.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.serialization/UserEntityDto.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.serialization/UserEntityDto // dev.webauthn.serialization/UserEntityDto.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.serialization/UserEntityDto) // dev.webauthn.serialization/UserEntityDto.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.serialization.UserEntityDto){}[0]
+    }
+
+    final object Companion { // dev.webauthn.serialization/UserEntityDto.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/UserEntityDto> // dev.webauthn.serialization/UserEntityDto.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final object dev.webauthn.serialization/WebAuthnDtoMapper { // dev.webauthn.serialization/WebAuthnDtoMapper|null[0]
+    final fun fromModel(dev.webauthn.model/AuthenticationExtensionsClientInputs): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.AuthenticationExtensionsClientInputs){}[0]
+    final fun fromModel(dev.webauthn.model/AuthenticationExtensionsClientOutputs): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.AuthenticationExtensionsClientOutputs){}[0]
+    final fun fromModel(dev.webauthn.model/AuthenticationResponse): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.AuthenticationResponse){}[0]
+    final fun fromModel(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final fun fromModel(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    final fun fromModel(dev.webauthn.model/RegistrationResponse): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.RegistrationResponse){}[0]
+    final fun toModel(dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto): dev.webauthn.model/AuthenticationExtensionsClientInputs // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto){}[0]
+    final fun toModel(dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto): dev.webauthn.model/AuthenticationExtensionsClientOutputs // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto){}[0]
+    final fun toModel(dev.webauthn.serialization/AuthenticationResponseDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.AuthenticationResponseDto){}[0]
+    final fun toModel(dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto){}[0]
+    final fun toModel(dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto){}[0]
+    final fun toModel(dev.webauthn.serialization/RegistrationResponseDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.RegistrationResponseDto){}[0]
+    final fun toModelValidated(dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationExtensionsClientInputs> // dev.webauthn.serialization/WebAuthnDtoMapper.toModelValidated|toModelValidated(dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto;kotlin.String){}[0]
+    final fun toModelValidated(dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationExtensionsClientOutputs> // dev.webauthn.serialization/WebAuthnDtoMapper.toModelValidated|toModelValidated(dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto;kotlin.String){}[0]
+}

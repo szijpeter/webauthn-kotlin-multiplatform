@@ -1,0 +1,45 @@
+public abstract interface class dev/webauthn/crypto/AttestationVerifier {
+	public abstract fun verify (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/crypto/CoseAlgorithm : java/lang/Enum {
+	public static final field ES256 Ldev/webauthn/crypto/CoseAlgorithm;
+	public static final field EdDSA Ldev/webauthn/crypto/CoseAlgorithm;
+	public static final field RS256 Ldev/webauthn/crypto/CoseAlgorithm;
+	public final fun getCode ()I
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/crypto/CoseAlgorithm;
+	public static fun values ()[Ldev/webauthn/crypto/CoseAlgorithm;
+}
+
+public final class dev/webauthn/crypto/CryptoApiKt {
+	public static final fun coseAlgorithmFromCode (I)Ldev/webauthn/crypto/CoseAlgorithm;
+}
+
+public abstract interface class dev/webauthn/crypto/RpIdHasher {
+	public abstract fun hashRpId-yHJgWRc (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/crypto/SignatureVerifier {
+	public abstract fun verify-wR3EP5c (Ldev/webauthn/crypto/CoseAlgorithm;Ljava/lang/String;[B[B)Z
+}
+
+public final class dev/webauthn/crypto/SignedAuthenticationPayload {
+	public synthetic fun <init> (Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/AuthenticatorData;
+	public final fun component2-0quCsfM ()Ljava/lang/String;
+	public final fun component3-o3JijnE ()Ljava/lang/String;
+	public final fun copy-lDDK3o0 (Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/crypto/SignedAuthenticationPayload;
+	public static synthetic fun copy-lDDK3o0$default (Ldev/webauthn/crypto/SignedAuthenticationPayload;Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/crypto/SignedAuthenticationPayload;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthenticatorData ()Ldev/webauthn/model/AuthenticatorData;
+	public final fun getClientDataHash-0quCsfM ()Ljava/lang/String;
+	public final fun getSignature-o3JijnE ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/crypto/TrustAnchorSource {
+	public abstract fun findTrustAnchors-vqj9O5k (Ljava/lang/String;)Ljava/util/List;
+}
+

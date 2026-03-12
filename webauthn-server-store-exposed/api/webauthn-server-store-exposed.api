@@ -1,0 +1,26 @@
+public final class dev/webauthn/server/store/exposed/ExposedChallengeStore : dev/webauthn/server/ChallengeStore {
+	public fun <init> (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public fun consume-yUutMSc (Ljava/lang/String;Ldev/webauthn/core/CeremonyType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun put (Ldev/webauthn/core/ChallengeSession;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedCredentialStore : dev/webauthn/server/CredentialStore {
+	public fun <init> (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public fun findById-p0pl7WU (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun findByUserId-g1vyaHY (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun save (Ldev/webauthn/server/StoredCredential;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun updateSignCount-RPMM9Pc (Ljava/lang/String;JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedStoresKt {
+	public static final fun initializeWebAuthnSchema (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public static final fun validateWebAuthnSchema (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public static final fun webAuthnSchemaMigrationStatements (Lorg/jetbrains/exposed/v1/jdbc/Database;)Ljava/util/List;
+}
+
+public final class dev/webauthn/server/store/exposed/ExposedUserAccountStore : dev/webauthn/server/UserAccountStore {
+	public fun <init> (Lorg/jetbrains/exposed/v1/jdbc/Database;)V
+	public fun findByName (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun save (Ldev/webauthn/server/UserAccount;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

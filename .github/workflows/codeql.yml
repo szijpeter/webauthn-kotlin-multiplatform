@@ -15,36 +15,25 @@ permissions:
   security-events: write
 
 jobs:
-  analyze:
-    name: analyze (${{ matrix.language }})
+  analyze-actions:
+    name: analyze (actions)
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: actions
-            build-mode: none
-
     steps:
       - uses: actions/checkout@v6
-
       - name: Initialize CodeQL
-        if: matrix.run-codeql
         uses: github/codeql-action/init@v4
         with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
-
-      - name: Autobuild
-        if: matrix.run-codeql && matrix.build-mode == 'autobuild'
-        uses: github/codeql-action/autobuild@v4
-
+          languages: actions
+          build-mode: none
       - name: Analyze
-        if: matrix.run-codeql
         uses: github/codeql-action/analyze@v4
 
+  skip-java-kotlin:
+    name: skip (java-kotlin)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
       - name: Skip unsupported Kotlin CodeQL scan
-        if: ${{ !matrix.run-codeql }}
         run: |
           echo "::notice::Skipping java-kotlin CodeQL scan because Kotlin 2.3.10 is not yet supported by the current CodeQL CLI on GitHub-hosted runners."

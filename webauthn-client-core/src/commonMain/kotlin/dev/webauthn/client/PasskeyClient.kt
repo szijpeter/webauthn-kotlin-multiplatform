@@ -1,3 +1,5 @@
+@file:Suppress("UndocumentedPublicFunction", "UndocumentedPublicProperty")
+
 package dev.webauthn.client
 
 import at.asitplus.KmmResult

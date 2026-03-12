@@ -1,3 +1,5 @@
+@file:Suppress("UndocumentedPublicFunction")
+
 package dev.webauthn.client
 
 import kotlinx.serialization.DeserializationStrategy

@@ -34,13 +34,21 @@ Last updated: 2026-03-12
 - Detekt hardening phase 2 tightened `ReturnCount`, `ThrowsCount`, and `UnusedParameter`; spec-facing public models now carry W3C section KDoc while DTO-heavy mapping code uses targeted local suppressions where documentation noise would not improve signal.
 - Review follow-up keeps `Base64UrlBytes.parse` and Related Origins fetch error handling on explicit `try/catch` paths, with coroutine cancellation propagation preserved in the Ktor metadata provider.
 - Detekt hardening follow-up now covers public production server/crypto/store APIs with explicit KDoc and narrow local suppressions for spec-shaped complexity hot paths; strict changed-scope quality gates are green after attestation parser regression tests were updated.
+- Release-mode infrastructure is now active: coordinated `GROUP`/`VERSION_NAME` metadata, Maven Central publishing workflow, BCV baselines for supported published modules, and `publishToMavenLocal` preflight wiring.
+- PR CI is now the blocking authority; local pre-push checks remain advisory so release work can iterate in PRs without bypassing verification.
+- Local release-prep audit is green on 2026-03-12: strict full quality gate, `apiCheck`, `publishToMavenLocal`, and `verify-harness-sync`.
+- First public release is complete: `0.1.0` published to Maven Central on 2026-03-12 with tag/release `v0.1.0`.
+- Release docs now clarify that RP ID hashing examples are illustrative and production implementations must use SHA-256 before `RpIdHash.fromBytes`; PR template checks also require `publishToMavenLocal` when public API changes.
+- MDS integration docs now call out the required initial `refreshIfStale(...)` load so `FidoMdsTrustSource` is populated before attestation verification begins.
+- Public API hardening follow-up #59 is implemented in code: core validator boundaries now use typed wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), request-options `rpId` is optional in model/DTO ABI, sensitive network payload `toString()` values are redacted, and client finish calls now return structured `PasskeyFinishResult`.
+- Snapshot adopter note: recompile and update call sites for nullable request-options `rpId`, typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), and `PasskeyFinishResult` handling; sensitive payload `toString()` output is now redacted.
 
 ## Plan Progress (Estimated)
 
 - Phase 1 (Client readiness/interoperability): ~75% complete.
 - Phase 2 (Conformance/Security): ~85% complete.
 - Phase 3 (Server robustness): ~80% complete.
-- Phase 4-5 (DX/release): mostly pending.
+- Phase 4-5 (DX/release): in progress.
 
 ## Module Maturity
 
@@ -83,7 +91,9 @@ Pending high-impact coverage:
 Local:
 
 - Fast advisory: `tools/agent/quality-gate.sh --mode fast --scope changed --block false`
-- Strict blocking: `tools/agent/quality-gate.sh --mode strict --scope changed --block true`
+- Strict advisory: `tools/agent/quality-gate.sh --mode strict --scope changed --block false`
+- API compatibility: `./gradlew apiCheck --stacktrace`
+- Publish preflight: `./gradlew publishToMavenLocal --stacktrace`
 
 Docs trace requirements in strict mode:
 

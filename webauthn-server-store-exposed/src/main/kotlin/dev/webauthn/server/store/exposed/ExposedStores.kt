@@ -37,37 +37,37 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 
 /** Exposed table storing one-time challenge sessions. */
-public object ChallengeSessions : Table("challenge_sessions") {
-    public val challengeKey: Column<String> = varchar("challenge_key", 255)
-    public val challengeValue: Column<String> = varchar("challenge_value", 255)
-    public val ceremonyType: Column<String> = varchar("ceremony_type", 50)
-    public val rpId: Column<String> = varchar("rp_id", 255)
-    public val originValue: Column<String> = varchar("origin_value", 1024)
-    public val userName: Column<String> = varchar("user_name", 255)
-    public val createdAtEpochMs: Column<Long> = long("created_at_epoch_ms")
-    public val expiresAtEpochMs: Column<Long> = long("expires_at_epoch_ms")
-    public val userVerification: Column<String?> = varchar("user_verification", 50).nullable()
-    public val extensions: Column<String?> = varchar("extensions", 4096).nullable()
+internal object ChallengeSessions : Table("challenge_sessions") {
+    val challengeKey: Column<String> = varchar("challenge_key", 255)
+    val challengeValue: Column<String> = varchar("challenge_value", 255)
+    val ceremonyType: Column<String> = varchar("ceremony_type", 50)
+    val rpId: Column<String> = varchar("rp_id", 255)
+    val originValue: Column<String> = varchar("origin_value", 1024)
+    val userName: Column<String> = varchar("user_name", 255)
+    val createdAtEpochMs: Column<Long> = long("created_at_epoch_ms")
+    val expiresAtEpochMs: Column<Long> = long("expires_at_epoch_ms")
+    val userVerification: Column<String?> = varchar("user_verification", 50).nullable()
+    val extensions: Column<String?> = varchar("extensions", 4096).nullable()
 
     override val primaryKey: PrimaryKey = PrimaryKey(challengeKey)
 }
 
 /** Exposed table storing registered credentials and counters. */
-public object Credentials : Table("credentials") {
-    public val credentialId: Column<String> = varchar("credential_id", 255)
-    public val userId: Column<String> = varchar("user_id", 255)
-    public val rpId: Column<String> = varchar("rp_id", 255)
-    public val publicKey: Column<ByteArray> = binary("public_key")
-    public val signCount: Column<Long> = long("sign_count")
+internal object Credentials : Table("credentials") {
+    val credentialId: Column<String> = varchar("credential_id", 255)
+    val userId: Column<String> = varchar("user_id", 255)
+    val rpId: Column<String> = varchar("rp_id", 255)
+    val publicKey: Column<ByteArray> = binary("public_key")
+    val signCount: Column<Long> = long("sign_count")
 
     override val primaryKey: PrimaryKey = PrimaryKey(credentialId)
 }
 
 /** Exposed table storing account identity records keyed by username. */
-public object UserAccounts : Table("user_accounts") {
-    public val userName: Column<String> = varchar("user_name", 255)
-    public val userId: Column<String> = varchar("user_id", 255)
-    public val displayName: Column<String> = varchar("display_name", 255)
+internal object UserAccounts : Table("user_accounts") {
+    val userName: Column<String> = varchar("user_name", 255)
+    val userId: Column<String> = varchar("user_id", 255)
+    val displayName: Column<String> = varchar("display_name", 255)
 
     override val primaryKey: PrimaryKey = PrimaryKey(userName)
 }

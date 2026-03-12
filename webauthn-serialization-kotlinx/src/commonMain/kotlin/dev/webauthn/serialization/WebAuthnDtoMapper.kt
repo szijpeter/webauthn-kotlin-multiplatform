@@ -73,10 +73,15 @@ public object WebAuthnDtoMapper {
     public fun toModel(value: PublicKeyCredentialCreationOptionsDto): ValidationResult<PublicKeyCredentialCreationOptions> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
-        val rpId = RpId.parse(value.rp.id).fold(
-            onValid = { it },
-            onInvalid = { errors += it; null },
-        )
+        val rpId = value.rp.id?.let { encodedRpId ->
+            RpId.parse(encodedRpId).fold(
+                onValid = { it },
+                onInvalid = { errors += it; null },
+            )
+        } ?: run {
+            errors += WebAuthnValidationError.MissingValue(field = "rp.id", message = "RP ID is required")
+            null
+        }
         val userId = UserHandle.parse(value.user.id).fold(
             onValid = { it },
             onInvalid = { errors += it; null },
@@ -99,6 +104,9 @@ public object WebAuthnDtoMapper {
         }
 
         val excludeCredentials = value.excludeCredentials.mapNotNull { descriptor ->
+            if (descriptor.type != "public-key") {
+                return@mapNotNull null
+            }
             val id = CredentialId.parse(descriptor.id).fold(
                 onValid = { it },
                 onInvalid = { err ->
@@ -126,18 +134,36 @@ public object WebAuthnDtoMapper {
             return ValidationResult.Invalid(errors)
         }
 
-        val residentKey = value.authenticatorSelection?.residentKey?.let { rk ->
-            ResidentKeyRequirement.entries.find { it.name.equals(rk, ignoreCase = true) }
-        } ?: if (value.authenticatorSelection?.requireResidentKey == true) {
-            ResidentKeyRequirement.REQUIRED
-        } else {
-            ResidentKeyRequirement.PREFERRED
-        }
-        val userVerification = value.authenticatorSelection?.userVerification?.let { uv ->
-            UserVerificationRequirement.entries.find {
-                it.name.equals(uv, ignoreCase = true)
+        val residentKey = when (val wireValue = value.authenticatorSelection?.residentKey) {
+            null -> if (value.authenticatorSelection?.requireResidentKey == true) {
+                ResidentKeyRequirement.REQUIRED
+            } else {
+                ResidentKeyRequirement.DISCOURAGED
             }
-        } ?: UserVerificationRequirement.PREFERRED
+            else -> {
+                ResidentKeyRequirement.entries.find { it.name.equals(wireValue, ignoreCase = true) } ?: run {
+                    errors += WebAuthnValidationError.InvalidValue(
+                        field = "authenticatorSelection.residentKey",
+                        message = "Unknown residentKey value: $wireValue",
+                    )
+                    null
+                }
+            }
+        }
+        val userVerification = when (val wireValue = value.authenticatorSelection?.userVerification) {
+            null -> UserVerificationRequirement.PREFERRED
+            else -> {
+                UserVerificationRequirement.entries.find {
+                    it.name.equals(wireValue, ignoreCase = true)
+                } ?: run {
+                    errors += WebAuthnValidationError.InvalidValue(
+                        field = "authenticatorSelection.userVerification",
+                        message = "Unknown userVerification value: $wireValue",
+                    )
+                    null
+                }
+            }
+        }
         val authenticatorAttachment = value.authenticatorSelection?.authenticatorAttachment?.let {
             when (val parsed = parseAuthenticatorAttachment(it, "authenticatorAttachment")) {
                 is ValidationResult.Valid -> parsed.value
@@ -166,7 +192,7 @@ public object WebAuthnDtoMapper {
             }
         }
 
-        if (errors.isNotEmpty()) {
+        if (errors.isNotEmpty() || residentKey == null || userVerification == null) {
             return ValidationResult.Invalid(errors)
         }
 
@@ -190,7 +216,7 @@ public object WebAuthnDtoMapper {
     public fun fromModel(value: PublicKeyCredentialRequestOptions): PublicKeyCredentialRequestOptionsDto {
         return PublicKeyCredentialRequestOptionsDto(
             challenge = value.challenge.value.encoded(),
-            rpId = value.rpId.value,
+            rpId = value.rpId?.value,
             timeoutMs = value.timeoutMs,
             allowCredentials = value.allowCredentials.map {
                 PublicKeyCredentialDescriptorDto(
@@ -212,12 +238,17 @@ public object WebAuthnDtoMapper {
             onValid = { it },
             onInvalid = { errors += it; null },
         )
-        val rpId = RpId.parse(value.rpId).fold(
-            onValid = { it },
-            onInvalid = { errors += it; null },
-        )
+        val rpId = value.rpId?.let { encodedRpId ->
+            RpId.parse(encodedRpId).fold(
+                onValid = { it },
+                onInvalid = { errors += it; null },
+            )
+        }
 
         val allowCredentials = value.allowCredentials.mapNotNull { descriptor ->
+            if (descriptor.type != "public-key") {
+                return@mapNotNull null
+            }
             val id = CredentialId.parse(descriptor.id).fold(
                 onValid = { it },
                 onInvalid = { err ->
@@ -241,7 +272,7 @@ public object WebAuthnDtoMapper {
             }
         }
 
-        if (challenge == null || rpId == null || errors.isNotEmpty()) {
+        if (challenge == null || errors.isNotEmpty()) {
             return ValidationResult.Invalid(errors)
         }
 
@@ -274,8 +305,9 @@ public object WebAuthnDtoMapper {
         )
     }
 
+    @Suppress("LongMethod")
     public fun toModel(value: RegistrationResponseDto): ValidationResult<RegistrationResponse> {
-        val credentialId = CredentialId.parse(value.rawId)
+        val credentialId = parseMatchingCredentialId(value.id, value.rawId)
         return when (credentialId) {
             is ValidationResult.Invalid -> credentialId
             is ValidationResult.Valid -> {
@@ -312,6 +344,16 @@ public object WebAuthnDtoMapper {
                             ),
                         ),
                     )
+                if (attestedCredentialData.credentialId != credentialId.value) {
+                    return ValidationResult.Invalid(
+                        listOf(
+                            WebAuthnValidationError.InvalidFormat(
+                                field = "id/rawId",
+                                message = "id/rawId must match attested credential ID",
+                            ),
+                        ),
+                    )
+                }
                 val extensions = value.clientExtensionResults?.let {
                     when (val parsed = toModelValidated(it, fieldPrefix = "clientExtensionResults")) {
                         is ValidationResult.Valid -> parsed.value
@@ -326,7 +368,7 @@ public object WebAuthnDtoMapper {
                 }
                 ValidationResult.Valid(
                     RegistrationResponse(
-                        credentialId = credentialId.value,
+                        credentialId = attestedCredentialData.credentialId,
                         clientDataJson = (clientData as ValidationResult.Valid).value,
                         attestationObject = attestation.value,
                         rawAuthenticatorData = parsedAuthDataValue.authenticatorData,
@@ -355,7 +397,7 @@ public object WebAuthnDtoMapper {
 
     @Suppress("CyclomaticComplexMethod")
     public fun toModel(value: AuthenticationResponseDto): ValidationResult<AuthenticationResponse> {
-        val credentialId = CredentialId.parse(value.id)
+        val credentialId = parseMatchingCredentialId(value.id, value.rawId)
         return when (credentialId) {
             is ValidationResult.Invalid -> credentialId
             is ValidationResult.Valid -> {
@@ -790,6 +832,33 @@ private data class AttestationObjectCborDto(
     @ByteString
     val authData: ByteArray? = null,
 )
+
+private fun parseMatchingCredentialId(id: String, rawId: String): ValidationResult<CredentialId> {
+    val parsedId = CredentialId.parse(id)
+    if (parsedId is ValidationResult.Invalid) {
+        return parsedId
+    }
+
+    val parsedRawId = CredentialId.parse(rawId)
+    if (parsedRawId is ValidationResult.Invalid) {
+        return parsedRawId
+    }
+
+    val idValue = (parsedId as ValidationResult.Valid).value
+    val rawIdValue = (parsedRawId as ValidationResult.Valid).value
+    return if (idValue == rawIdValue) {
+        ValidationResult.Valid(idValue)
+    } else {
+        ValidationResult.Invalid(
+            listOf(
+                WebAuthnValidationError.InvalidFormat(
+                    field = "id/rawId",
+                    message = "id and rawId must match",
+                ),
+            ),
+        )
+    }
+}
 
 @Suppress("MagicNumber")
 private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationResult<ParsedAuthenticatorData> {

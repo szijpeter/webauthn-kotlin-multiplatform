@@ -16,6 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WebAuthnDtoMapperTest {
@@ -50,6 +51,23 @@ class WebAuthnDtoMapperTest {
             extensions = AuthenticationExtensionsClientInputsDto(
                 largeBlob = LargeBlobExtensionInputDto(support = "invalid"),
             ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun creationOptionsRejectMissingRpId() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = null, name = "Example"),
+            user = UserEntityDto(
+                id = "YWFhYWFhYWFhYWFhYWFhYQ",
+                name = "alice",
+                displayName = "Alice",
+            ),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
@@ -174,7 +192,7 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
-    fun registrationResponsePrefersRawIdOverId() {
+    fun registrationResponseRejectsMismatchedIdAndRawId() {
         val rawCredentialBytes = ByteArray(16) { 0x33 }
         val rawCredentialId = CredentialId.fromBytes(rawCredentialBytes)
         val mismatchedId = CredentialId.fromBytes(ByteArray(16) { 0x66 })
@@ -196,9 +214,7 @@ class WebAuthnDtoMapperTest {
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
-        assertTrue(result is ValidationResult.Valid)
-        assertEquals(rawCredentialId, result.value.credentialId)
-        assertEquals(rawCredentialId, result.value.attestedCredentialData.credentialId)
+        assertTrue(result is ValidationResult.Invalid)
     }
 
     @Test
@@ -348,6 +364,29 @@ class WebAuthnDtoMapperTest {
         assertEquals(AuthenticatorTransport.BLE, requestResult.value.allowCredentials[0].transports[0])
         assertEquals(AuthenticatorTransport.INTERNAL, requestResult.value.allowCredentials[0].transports[1])
         assertEquals(AuthenticatorTransport.HYBRID, requestResult.value.allowCredentials[0].transports[2])
+    }
+
+    @Test
+    fun requestOptionsAllowMissingRpId() {
+        val dto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = null,
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Valid)
+        assertNull(result.value.rpId)
+    }
+
+    @Test
+    fun requestOptionsFromModelOmitsRpIdWhenNotProvided() {
+        val model = dev.webauthn.model.PublicKeyCredentialRequestOptions(
+            challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(32) { 9 }),
+            rpId = null,
+        )
+
+        val dto = WebAuthnDtoMapper.fromModel(model)
+        assertNull(dto.rpId)
     }
 
     @Test

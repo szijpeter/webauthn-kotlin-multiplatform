@@ -1,0 +1,167 @@
+public final class dev/webauthn/core/AuthenticationValidationInput {
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;JLdev/webauthn/core/UserVerificationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;JLdev/webauthn/core/UserVerificationPolicy;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public final fun component2 ()Ldev/webauthn/model/AuthenticationResponse;
+	public final fun component3 ()Ldev/webauthn/model/CollectedClientData;
+	public final fun component4-XTytudI ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/Set;
+	public final fun component6 ()J
+	public final fun component7 ()Ldev/webauthn/core/UserVerificationPolicy;
+	public final fun copy-ZLon1Js (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;JLdev/webauthn/core/UserVerificationPolicy;)Ldev/webauthn/core/AuthenticationValidationInput;
+	public static synthetic fun copy-ZLon1Js$default (Ldev/webauthn/core/AuthenticationValidationInput;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;JLdev/webauthn/core/UserVerificationPolicy;ILjava/lang/Object;)Ldev/webauthn/core/AuthenticationValidationInput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAllowedOrigins ()Ljava/util/Set;
+	public final fun getClientData ()Ldev/webauthn/model/CollectedClientData;
+	public final fun getExpectedOrigin-XTytudI ()Ljava/lang/String;
+	public final fun getOptions ()Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public final fun getPreviousSignCount ()J
+	public final fun getResponse ()Ldev/webauthn/model/AuthenticationResponse;
+	public final fun getUserVerificationPolicy ()Ldev/webauthn/core/UserVerificationPolicy;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/core/AuthenticationValidationOutput {
+	public synthetic fun <init> (Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-fGACWzo ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun component3 ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun copy-RPMM9Pc (Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/core/AuthenticationValidationOutput;
+	public static synthetic fun copy-RPMM9Pc$default (Ldev/webauthn/core/AuthenticationValidationOutput;Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;ILjava/lang/Object;)Ldev/webauthn/core/AuthenticationValidationOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCredentialId-fGACWzo ()Ljava/lang/String;
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun getSignCount ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/core/CeremonyType : java/lang/Enum {
+	public static final field AUTHENTICATION Ldev/webauthn/core/CeremonyType;
+	public static final field REGISTRATION Ldev/webauthn/core/CeremonyType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/core/CeremonyType;
+	public static fun values ()[Ldev/webauthn/core/CeremonyType;
+}
+
+public final class dev/webauthn/core/ChallengeSession {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLdev/webauthn/core/CeremonyType;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/UserVerificationRequirement;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLdev/webauthn/core/CeremonyType;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/UserVerificationRequirement;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-FoFKi_4 ()Ljava/lang/String;
+	public final fun component2-Xrhg-t4 ()Ljava/lang/String;
+	public final fun component3-XTytudI ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()J
+	public final fun component6 ()J
+	public final fun component7 ()Ldev/webauthn/core/CeremonyType;
+	public final fun component8 ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun component9 ()Ldev/webauthn/model/UserVerificationRequirement;
+	public final fun copy-3XCHU7k (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLdev/webauthn/core/CeremonyType;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/UserVerificationRequirement;)Ldev/webauthn/core/ChallengeSession;
+	public static synthetic fun copy-3XCHU7k$default (Ldev/webauthn/core/ChallengeSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLdev/webauthn/core/CeremonyType;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/UserVerificationRequirement;ILjava/lang/Object;)Ldev/webauthn/core/ChallengeSession;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChallenge-FoFKi_4 ()Ljava/lang/String;
+	public final fun getCreatedAtEpochMs ()J
+	public final fun getExpiresAtEpochMs ()J
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun getOrigin-XTytudI ()Ljava/lang/String;
+	public final fun getRpId-Xrhg-t4 ()Ljava/lang/String;
+	public final fun getType ()Ldev/webauthn/core/CeremonyType;
+	public final fun getUserName ()Ljava/lang/String;
+	public final fun getUserVerification ()Ldev/webauthn/model/UserVerificationRequirement;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/core/NoOpOriginMetadataProvider : dev/webauthn/core/OriginMetadataProvider {
+	public static final field INSTANCE Ldev/webauthn/core/NoOpOriginMetadataProvider;
+	public fun getRelatedOrigins-w6KIa9k (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/core/OriginMetadataProvider {
+	public abstract fun getRelatedOrigins-w6KIa9k (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/core/RegistrationValidationInput {
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/model/RegistrationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;Ldev/webauthn/core/UserVerificationPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/model/RegistrationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;Ldev/webauthn/core/UserVerificationPolicy;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/PublicKeyCredentialCreationOptions;
+	public final fun component2 ()Ldev/webauthn/model/RegistrationResponse;
+	public final fun component3 ()Ldev/webauthn/model/CollectedClientData;
+	public final fun component4-XTytudI ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/Set;
+	public final fun component6 ()Ldev/webauthn/core/UserVerificationPolicy;
+	public final fun copy-tlF6aF8 (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/model/RegistrationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;Ldev/webauthn/core/UserVerificationPolicy;)Ldev/webauthn/core/RegistrationValidationInput;
+	public static synthetic fun copy-tlF6aF8$default (Ldev/webauthn/core/RegistrationValidationInput;Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/model/RegistrationResponse;Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/util/Set;Ldev/webauthn/core/UserVerificationPolicy;ILjava/lang/Object;)Ldev/webauthn/core/RegistrationValidationInput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAllowedOrigins ()Ljava/util/Set;
+	public final fun getClientData ()Ldev/webauthn/model/CollectedClientData;
+	public final fun getExpectedOrigin-XTytudI ()Ljava/lang/String;
+	public final fun getOptions ()Ldev/webauthn/model/PublicKeyCredentialCreationOptions;
+	public final fun getResponse ()Ldev/webauthn/model/RegistrationResponse;
+	public final fun getUserVerificationPolicy ()Ldev/webauthn/core/UserVerificationPolicy;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/core/RegistrationValidationOutput {
+	public synthetic fun <init> (Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-fGACWzo ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun component3 ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun copy-RPMM9Pc (Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/core/RegistrationValidationOutput;
+	public static synthetic fun copy-RPMM9Pc$default (Ldev/webauthn/core/RegistrationValidationOutput;Ljava/lang/String;JLdev/webauthn/model/AuthenticationExtensionsClientOutputs;ILjava/lang/Object;)Ldev/webauthn/core/RegistrationValidationOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCredentialId-fGACWzo ()Ljava/lang/String;
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun getSignCount ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/core/UserVerificationPolicy : java/lang/Enum {
+	public static final field DISCOURAGED Ldev/webauthn/core/UserVerificationPolicy;
+	public static final field PREFERRED Ldev/webauthn/core/UserVerificationPolicy;
+	public static final field REQUIRED Ldev/webauthn/core/UserVerificationPolicy;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/core/UserVerificationPolicy;
+	public static fun values ()[Ldev/webauthn/core/UserVerificationPolicy;
+}
+
+public final class dev/webauthn/core/WebAuthnClientDataType : java/lang/Enum {
+	public static final field CREATE Ldev/webauthn/core/WebAuthnClientDataType;
+	public static final field GET Ldev/webauthn/core/WebAuthnClientDataType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getWireValue ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/core/WebAuthnClientDataType;
+	public static fun values ()[Ldev/webauthn/core/WebAuthnClientDataType;
+}
+
+public final class dev/webauthn/core/WebAuthnCoreValidator {
+	public static final field BACKUP_ELIGIBLE_FLAG I
+	public static final field BACKUP_STATE_FLAG I
+	public static final field INSTANCE Ldev/webauthn/core/WebAuthnCoreValidator;
+	public static final field USER_PRESENCE_FLAG I
+	public static final field USER_VERIFICATION_FLAG I
+	public final fun requireAllowedCredential (Ldev/webauthn/model/AuthenticationResponse;Ljava/util/Set;)Ldev/webauthn/model/ValidationResult;
+	public final fun validateAuthentication (Ldev/webauthn/core/AuthenticationValidationInput;)Ldev/webauthn/model/ValidationResult;
+	public final fun validateAuthenticatorData (Ldev/webauthn/model/AuthenticatorData;JLdev/webauthn/core/UserVerificationPolicy;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun validateAuthenticatorData$default (Ldev/webauthn/core/WebAuthnCoreValidator;Ldev/webauthn/model/AuthenticatorData;JLdev/webauthn/core/UserVerificationPolicy;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun validateClientData-bfWEliE (Ldev/webauthn/model/CollectedClientData;Ldev/webauthn/core/WebAuthnClientDataType;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun validateClientData-bfWEliE$default (Ldev/webauthn/core/WebAuthnCoreValidator;Ldev/webauthn/model/CollectedClientData;Ldev/webauthn/core/WebAuthnClientDataType;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun validateRegistration (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public abstract interface class dev/webauthn/core/WebAuthnExtensionHook {
+	public abstract fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/core/WebAuthnExtensionValidator : dev/webauthn/core/WebAuthnExtensionHook {
+	public static final field INSTANCE Ldev/webauthn/core/WebAuthnExtensionValidator;
+	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+}
+

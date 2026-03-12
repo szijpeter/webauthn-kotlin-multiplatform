@@ -134,6 +134,14 @@ public class RegistrationService(
                     PublicKeyCredentialType.PUBLIC_KEY,
                     CoseAlgorithm.ES256.code,
                 ),
+                PublicKeyCredentialParameters(
+                    PublicKeyCredentialType.PUBLIC_KEY,
+                    CoseAlgorithm.RS256.code,
+                ),
+                PublicKeyCredentialParameters(
+                    PublicKeyCredentialType.PUBLIC_KEY,
+                    CoseAlgorithm.EdDSA.code,
+                ),
             ),
             extensions = session.extensions,
         )
@@ -175,6 +183,14 @@ public class RegistrationService(
             return attestationResult
         }
 
+        @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+        for (hook in extensionHooks) {
+            val hookResult = hook.validateRegistrationExtensions(options.extensions, response.extensions)
+            if (hookResult is ValidationResult.Invalid) {
+                return hookResult
+            }
+        }
+
         credentialStore.save(
             storedCredentialFromAttestedData(
                 response,
@@ -188,14 +204,6 @@ public class RegistrationService(
                 ),
             ),
         )
-
-        @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
-        for (hook in extensionHooks) {
-            val hookResult = hook.validateRegistrationExtensions(options.extensions, response.extensions)
-            if (hookResult is ValidationResult.Invalid) {
-                return hookResult
-            }
-        }
 
         return ValidationResult.Valid(response)
     }

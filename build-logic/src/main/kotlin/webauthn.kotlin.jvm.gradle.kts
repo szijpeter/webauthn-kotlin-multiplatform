@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    id("webauthn.dokka")
 }
 
 kotlin {

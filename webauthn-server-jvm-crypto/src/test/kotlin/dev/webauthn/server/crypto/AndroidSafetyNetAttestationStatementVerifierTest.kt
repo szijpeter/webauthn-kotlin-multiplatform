@@ -203,16 +203,19 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         return sig.sign()
     }
     
-    private fun generateSelfSignedCert(keyPair: java.security.KeyPair): ByteArray {
+    private fun generateSelfSignedCert(
+        keyPair: java.security.KeyPair,
+        subjectCn: String = "attest.android.com",
+    ): ByteArray {
         // Minimal valid self-signed RSA cert
         val subjectPublicKeyInfo = keyPair.public.encoded
         val tbsCert = derSequence(
             derExplicit(0, derInteger(byteArrayOf(2))), // v3
             derInteger(byteArrayOf(1)), 
             derSequence(derOid(byteArrayOf(0x2A, 0x86.toByte(), 0x48, 0x86.toByte(), 0xF7.toByte(), 0x0D, 0x01, 0x01, 0x0B))), // sha256WithRSAEncryption
-            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test")))),
+            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String(subjectCn)))),
             derSequence(derUtcTime("260101000000Z"), derUtcTime("270101000000Z")),
-            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test")))),
+            derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String(subjectCn)))),
             derRaw(subjectPublicKeyInfo)
         )
         val sig = Signature.getInstance("SHA256withRSA")

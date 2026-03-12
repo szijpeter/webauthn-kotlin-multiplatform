@@ -8,4 +8,4 @@ git config core.hooksPath .githooks
 chmod +x tools/agent/*.sh .githooks/pre-commit .githooks/pre-push
 
 echo "Configured git hooks path: .githooks"
-echo "Installed hooks: pre-commit (advisory), pre-push (blocking)"
+echo "Installed hooks: pre-commit (advisory), pre-push (advisory strict), PR CI (blocking)"

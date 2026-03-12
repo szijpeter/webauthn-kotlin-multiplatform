@@ -6,6 +6,7 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyServerClient
 
+/** Remembers a [PasskeyController] instance for the provided [serverClient]. */
 @Composable
 public fun <R, S> rememberPasskeyController(
     serverClient: PasskeyServerClient<R, S>,
@@ -16,5 +17,6 @@ public fun <R, S> rememberPasskeyController(
     }
 }
 
+/** Remembers a platform-specific [PasskeyClient]. */
 @Composable
 public expect fun rememberPasskeyClient(): PasskeyClient

@@ -12,6 +12,10 @@ internal class DebugLogStore(
     private val logger: Logger = Logger.withTag("PasskeyDemo"),
     private val maxEntries: Int = DEFAULT_MAX_ENTRIES,
 ) {
+    init {
+        require(maxEntries >= 0) { "maxEntries must be non-negative" }
+    }
+
     private val entriesState = mutableStateListOf<DebugLogEntry>()
     private var nextId: Long = 1L
 

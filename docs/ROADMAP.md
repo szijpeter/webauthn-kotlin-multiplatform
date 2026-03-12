@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-03-06
+Last updated: 2026-03-12
 
 ## North-Star Exit Criteria
 
@@ -68,6 +68,7 @@ Definition of done:
 1. Release checklist formalization and CI parity confirmation.
 2. Stabilization pass on performance, logging, and diagnostics.
 3. Versioning/release notes discipline with migration notes.
+4. Maven Central publication path, BOM guidance, and public-module documentation.
 
 Definition of done:
 
@@ -75,8 +76,7 @@ Definition of done:
 
 ## Active Priorities (Next 3)
 
-1. Finish client-first execution docs and sample wiring for external/default backend flows.
-2. Expand client extension interop tests (PRF, Large Blob, authenticatorAttachment/transports round-trip) (done).
-3. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
-4. Implement iOS external security-key provider bridging and enable `supportsSecurityKey` only after end-to-end support exists (done).
-5. Finalize API surface and lock public `expect/actual` or interface contracts.
+1. Finish first-public-release preparation: compatibility baselines, Maven Central pipeline, BOM install guidance, and OSS-facing docs.
+2. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
+3. Resolve the remaining iOS external security-key readiness gap and document limitations until that work lands.
+4. Keep the temporary first-release execution map current until the release is complete, then remove it.
