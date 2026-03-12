@@ -1,4 +1,4 @@
-import dev.webauthn.build.GeneratePasskeyDemoBuildConfigTask
+import dev.webauthn.tasks.GeneratePasskeyDemoBuildConfigTask
 import java.util.Properties
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
