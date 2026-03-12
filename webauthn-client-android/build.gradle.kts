@@ -1,5 +1,6 @@
 plugins {
     id("webauthn.android.library")
+    id("webauthn.published-library")
 }
 
 kotlin {

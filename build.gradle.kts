@@ -11,11 +11,12 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.compose.multiplatform) apply false
     alias(libs.plugins.dokka)
+    alias(libs.plugins.binary.compatibility.validator)
     alias(libs.plugins.detekt) apply false
 }
 
-group = "dev.webauthn"
-version = "0.1.0-SNAPSHOT"
+group = providers.gradleProperty("GROUP").get()
+version = providers.gradleProperty("VERSION_NAME").get()
 
 allprojects {
     group = rootProject.group
@@ -24,6 +25,25 @@ allprojects {
     dependencyLocking {
         lockAllConfigurations()
     }
+}
+
+@OptIn(kotlinx.validation.ExperimentalBCVApi::class)
+apiValidation {
+    klib {
+        enabled = true
+    }
+
+    ignoredProjects += listOf(
+        "bom",
+        "constraints",
+        "samples",
+        "android-passkey",
+        "backend-ktor",
+        "compose-passkey",
+        "compose-passkey-android",
+        "ios-passkey",
+        "webauthn-cbor-internal",
+    )
 }
 
 subprojects {

@@ -15,6 +15,9 @@ repositories {
 dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.agp)
+    implementation(libs.dokka.gradlePlugin)
+    implementation(libs.bcv.gradlePlugin)
+    implementation(libs.vanniktech.mavenPublish.gradlePlugin)
 }
 
 extensions.configure<DetektExtension> {

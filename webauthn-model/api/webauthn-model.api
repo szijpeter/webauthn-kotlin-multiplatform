@@ -1,0 +1,678 @@
+public final class dev/webauthn/model/Aaguid {
+	public static final field Companion Ldev/webauthn/model/Aaguid$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/Aaguid;
+	public static final fun bytes-impl (Ljava/lang/String;)[B
+	public static final fun contentEquals-impl (Ljava/lang/String;[B)Z
+	public static final fun encoded-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun getSize-impl (Ljava/lang/String;)I
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/Aaguid$Companion {
+	public final fun fromBytes-rgDFJP8 ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun parse$default (Ldev/webauthn/model/Aaguid$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-M6DPwEA (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun parseOrThrow-M6DPwEA$default (Ldev/webauthn/model/Aaguid$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AttestationConveyancePreference : java/lang/Enum {
+	public static final field DIRECT Ldev/webauthn/model/AttestationConveyancePreference;
+	public static final field ENTERPRISE Ldev/webauthn/model/AttestationConveyancePreference;
+	public static final field INDIRECT Ldev/webauthn/model/AttestationConveyancePreference;
+	public static final field NONE Ldev/webauthn/model/AttestationConveyancePreference;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/AttestationConveyancePreference;
+	public static fun values ()[Ldev/webauthn/model/AttestationConveyancePreference;
+}
+
+public final class dev/webauthn/model/AttestedCredentialData {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-ZNkumtg ()Ljava/lang/String;
+	public final fun component2-fGACWzo ()Ljava/lang/String;
+	public final fun component3-KGgtqR0 ()Ljava/lang/String;
+	public final fun copy-BHrHhyI (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/AttestedCredentialData;
+	public static synthetic fun copy-BHrHhyI$default (Ldev/webauthn/model/AttestedCredentialData;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/AttestedCredentialData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAaguid-ZNkumtg ()Ljava/lang/String;
+	public final fun getCosePublicKey-KGgtqR0 ()Ljava/lang/String;
+	public final fun getCredentialId-fGACWzo ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AuthenticationExtensionsClientInputs {
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/model/PrfExtensionInput;Ldev/webauthn/model/LargeBlobExtensionInput;Ljava/util/List;)V
+	public synthetic fun <init> (Ldev/webauthn/model/PrfExtensionInput;Ldev/webauthn/model/LargeBlobExtensionInput;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/PrfExtensionInput;
+	public final fun component2 ()Ldev/webauthn/model/LargeBlobExtensionInput;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ldev/webauthn/model/PrfExtensionInput;Ldev/webauthn/model/LargeBlobExtensionInput;Ljava/util/List;)Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public static synthetic fun copy$default (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/PrfExtensionInput;Ldev/webauthn/model/LargeBlobExtensionInput;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLargeBlob ()Ldev/webauthn/model/LargeBlobExtensionInput;
+	public final fun getPrf ()Ldev/webauthn/model/PrfExtensionInput;
+	public final fun getRelatedOrigins ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AuthenticationExtensionsClientOutputs {
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/model/PrfExtensionOutput;Ldev/webauthn/model/LargeBlobExtensionOutput;)V
+	public synthetic fun <init> (Ldev/webauthn/model/PrfExtensionOutput;Ldev/webauthn/model/LargeBlobExtensionOutput;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/PrfExtensionOutput;
+	public final fun component2 ()Ldev/webauthn/model/LargeBlobExtensionOutput;
+	public final fun copy (Ldev/webauthn/model/PrfExtensionOutput;Ldev/webauthn/model/LargeBlobExtensionOutput;)Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public static synthetic fun copy$default (Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;Ldev/webauthn/model/PrfExtensionOutput;Ldev/webauthn/model/LargeBlobExtensionOutput;ILjava/lang/Object;)Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLargeBlob ()Ldev/webauthn/model/LargeBlobExtensionOutput;
+	public final fun getPrf ()Ldev/webauthn/model/PrfExtensionOutput;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AuthenticationExtensionsPRFValues {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-o3JijnE ()Ljava/lang/String;
+	public final fun component2-r3Lsh1o ()Ljava/lang/String;
+	public final fun copy-lJfZ6bU (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public static synthetic fun copy-lJfZ6bU$default (Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFirst-o3JijnE ()Ljava/lang/String;
+	public final fun getSecond-r3Lsh1o ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AuthenticationResponse {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-fGACWzo ()Ljava/lang/String;
+	public final fun component2-o3JijnE ()Ljava/lang/String;
+	public final fun component3-o3JijnE ()Ljava/lang/String;
+	public final fun component4 ()Ldev/webauthn/model/AuthenticatorData;
+	public final fun component5-o3JijnE ()Ljava/lang/String;
+	public final fun component6-QM_Xtvk ()Ljava/lang/String;
+	public final fun component7 ()Ldev/webauthn/model/AuthenticatorAttachment;
+	public final fun component8 ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun copy-T2QWppQ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/AuthenticationResponse;
+	public static synthetic fun copy-T2QWppQ$default (Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;ILjava/lang/Object;)Ldev/webauthn/model/AuthenticationResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthenticatorAttachment ()Ldev/webauthn/model/AuthenticatorAttachment;
+	public final fun getAuthenticatorData ()Ldev/webauthn/model/AuthenticatorData;
+	public final fun getClientDataJson-o3JijnE ()Ljava/lang/String;
+	public final fun getCredentialId-fGACWzo ()Ljava/lang/String;
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun getRawAuthenticatorData-o3JijnE ()Ljava/lang/String;
+	public final fun getSignature-o3JijnE ()Ljava/lang/String;
+	public final fun getUserHandle-QM_Xtvk ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AuthenticatorAttachment : java/lang/Enum {
+	public static final field CROSS_PLATFORM Ldev/webauthn/model/AuthenticatorAttachment;
+	public static final field PLATFORM Ldev/webauthn/model/AuthenticatorAttachment;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/AuthenticatorAttachment;
+	public static fun values ()[Ldev/webauthn/model/AuthenticatorAttachment;
+}
+
+public final class dev/webauthn/model/AuthenticatorData {
+	public synthetic fun <init> (Ljava/lang/String;IJLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-K3Ruk90 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()J
+	public final fun copy-6-wb8jI (Ljava/lang/String;IJ)Ldev/webauthn/model/AuthenticatorData;
+	public static synthetic fun copy-6-wb8jI$default (Ldev/webauthn/model/AuthenticatorData;Ljava/lang/String;IJILjava/lang/Object;)Ldev/webauthn/model/AuthenticatorData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFlags ()I
+	public final fun getRpIdHash-K3Ruk90 ()Ljava/lang/String;
+	public final fun getSignCount ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/AuthenticatorTransport : java/lang/Enum {
+	public static final field BLE Ldev/webauthn/model/AuthenticatorTransport;
+	public static final field HYBRID Ldev/webauthn/model/AuthenticatorTransport;
+	public static final field INTERNAL Ldev/webauthn/model/AuthenticatorTransport;
+	public static final field NFC Ldev/webauthn/model/AuthenticatorTransport;
+	public static final field SMART_CARD Ldev/webauthn/model/AuthenticatorTransport;
+	public static final field USB Ldev/webauthn/model/AuthenticatorTransport;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/AuthenticatorTransport;
+	public static fun values ()[Ldev/webauthn/model/AuthenticatorTransport;
+}
+
+public final class dev/webauthn/model/Base64UrlBytes {
+	public static final field Companion Ldev/webauthn/model/Base64UrlBytes$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/Base64UrlBytes;
+	public static final fun bytes-impl (Ljava/lang/String;)[B
+	public static final fun encoded-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/Base64UrlBytes$Companion {
+	public final fun fromBytes-Tl_atBY ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun parse$default (Ldev/webauthn/model/Base64UrlBytes$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-VSWCsE0 (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun parseOrThrow-VSWCsE0$default (Ldev/webauthn/model/Base64UrlBytes$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/Challenge {
+	public static final field Companion Ldev/webauthn/model/Challenge$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/Challenge;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue-o3JijnE ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/Challenge$Companion {
+	public final fun fromBytes-HTPp-J4 ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-HTPp-J4 (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/ClientDataHash {
+	public static final field Companion Ldev/webauthn/model/ClientDataHash$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/ClientDataHash;
+	public static final fun bytes-impl (Ljava/lang/String;)[B
+	public static final fun contentEquals-impl (Ljava/lang/String;[B)Z
+	public static final fun encoded-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun getSize-impl (Ljava/lang/String;)I
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/ClientDataHash$Companion {
+	public final fun fromBytes-UMiNcYU ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun parse$default (Ldev/webauthn/model/ClientDataHash$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-AYCFMig (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun parseOrThrow-AYCFMig$default (Ldev/webauthn/model/ClientDataHash$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/CollectedClientData {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-FoFKi_4 ()Ljava/lang/String;
+	public final fun component3-XTytudI ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/Boolean;
+	public final fun copy-vfjfW5E (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Ldev/webauthn/model/CollectedClientData;
+	public static synthetic fun copy-vfjfW5E$default (Ldev/webauthn/model/CollectedClientData;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Ldev/webauthn/model/CollectedClientData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChallenge-FoFKi_4 ()Ljava/lang/String;
+	public final fun getCrossOrigin ()Ljava/lang/Boolean;
+	public final fun getOrigin-XTytudI ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/CosePublicKey {
+	public static final field Companion Ldev/webauthn/model/CosePublicKey$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/CosePublicKey;
+	public static final fun bytes-impl (Ljava/lang/String;)[B
+	public static final fun contentEquals-impl (Ljava/lang/String;[B)Z
+	public static final fun encoded-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun getSize-impl (Ljava/lang/String;)I
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/CosePublicKey$Companion {
+	public final fun fromBytes-gpVlFwU ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun parse$default (Ldev/webauthn/model/CosePublicKey$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-5CeEJ4g (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun parseOrThrow-5CeEJ4g$default (Ldev/webauthn/model/CosePublicKey$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/CredentialId {
+	public static final field Companion Ldev/webauthn/model/CredentialId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/CredentialId;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue-o3JijnE ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/CredentialId$Companion {
+	public final fun fromBytes-IiiQG1A ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-IiiQG1A (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface annotation class dev/webauthn/model/ExperimentalWebAuthnL3Api : java/lang/annotation/Annotation {
+}
+
+public final class dev/webauthn/model/LargeBlobExtensionInput {
+	public synthetic fun <init> (Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;Ljava/lang/Boolean;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;
+	public final fun component2 ()Ljava/lang/Boolean;
+	public final fun component3-r3Lsh1o ()Ljava/lang/String;
+	public final fun copy-aaCkn9c (Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;Ljava/lang/Boolean;Ljava/lang/String;)Ldev/webauthn/model/LargeBlobExtensionInput;
+	public static synthetic fun copy-aaCkn9c$default (Ldev/webauthn/model/LargeBlobExtensionInput;Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/LargeBlobExtensionInput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRead ()Ljava/lang/Boolean;
+	public final fun getSupport ()Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;
+	public final fun getWrite-r3Lsh1o ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport : java/lang/Enum {
+	public static final field PREFERRED Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;
+	public static final field REQUIRED Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;
+	public static fun values ()[Ldev/webauthn/model/LargeBlobExtensionInput$LargeBlobSupport;
+}
+
+public final class dev/webauthn/model/LargeBlobExtensionOutput {
+	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Boolean;
+	public final fun component2-r3Lsh1o ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun copy-zIiwfbY (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;)Ldev/webauthn/model/LargeBlobExtensionOutput;
+	public static synthetic fun copy-zIiwfbY$default (Ldev/webauthn/model/LargeBlobExtensionOutput;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Ldev/webauthn/model/LargeBlobExtensionOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBlob-r3Lsh1o ()Ljava/lang/String;
+	public final fun getSupported ()Ljava/lang/Boolean;
+	public final fun getWritten ()Ljava/lang/Boolean;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/Origin {
+	public static final field Companion Ldev/webauthn/model/Origin$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/Origin;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/Origin$Companion {
+	public final fun parse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-h3atZwM (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PrfExtensionInput {
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/util/Map;)V
+	public synthetic fun <init> (Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun copy (Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/util/Map;)Ldev/webauthn/model/PrfExtensionInput;
+	public static synthetic fun copy$default (Ldev/webauthn/model/PrfExtensionInput;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/util/Map;ILjava/lang/Object;)Ldev/webauthn/model/PrfExtensionInput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEval ()Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun getEvalByCredential ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PrfExtensionOutput {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Boolean;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Boolean;
+	public final fun component2 ()Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun copy (Ljava/lang/Boolean;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;)Ldev/webauthn/model/PrfExtensionOutput;
+	public static synthetic fun copy$default (Ldev/webauthn/model/PrfExtensionOutput;Ljava/lang/Boolean;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;ILjava/lang/Object;)Ldev/webauthn/model/PrfExtensionOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnabled ()Ljava/lang/Boolean;
+	public final fun getResults ()Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialCreationOptions {
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialRpEntity;Ldev/webauthn/model/PublicKeyCredentialUserEntity;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/ResidentKeyRequirement;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AttestationConveyancePreference;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialRpEntity;Ldev/webauthn/model/PublicKeyCredentialUserEntity;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/ResidentKeyRequirement;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AttestationConveyancePreference;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/PublicKeyCredentialRpEntity;
+	public final fun component10 ()Ldev/webauthn/model/AttestationConveyancePreference;
+	public final fun component11 ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun component2 ()Ldev/webauthn/model/PublicKeyCredentialUserEntity;
+	public final fun component3-FoFKi_4 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/Long;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ldev/webauthn/model/AuthenticatorAttachment;
+	public final fun component8 ()Ldev/webauthn/model/ResidentKeyRequirement;
+	public final fun component9 ()Ldev/webauthn/model/UserVerificationRequirement;
+	public final fun copy-hK2E9dU (Ldev/webauthn/model/PublicKeyCredentialRpEntity;Ldev/webauthn/model/PublicKeyCredentialUserEntity;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/ResidentKeyRequirement;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AttestationConveyancePreference;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;)Ldev/webauthn/model/PublicKeyCredentialCreationOptions;
+	public static synthetic fun copy-hK2E9dU$default (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/model/PublicKeyCredentialRpEntity;Ldev/webauthn/model/PublicKeyCredentialUserEntity;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/ResidentKeyRequirement;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AttestationConveyancePreference;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialCreationOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttestation ()Ldev/webauthn/model/AttestationConveyancePreference;
+	public final fun getAuthenticatorAttachment ()Ldev/webauthn/model/AuthenticatorAttachment;
+	public final fun getChallenge-FoFKi_4 ()Ljava/lang/String;
+	public final fun getExcludeCredentials ()Ljava/util/List;
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun getPubKeyCredParams ()Ljava/util/List;
+	public final fun getResidentKey ()Ldev/webauthn/model/ResidentKeyRequirement;
+	public final fun getRp ()Ldev/webauthn/model/PublicKeyCredentialRpEntity;
+	public final fun getTimeoutMs ()Ljava/lang/Long;
+	public final fun getUser ()Ldev/webauthn/model/PublicKeyCredentialUserEntity;
+	public final fun getUserVerification ()Ldev/webauthn/model/UserVerificationRequirement;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialDescriptor {
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialType;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/webauthn/model/PublicKeyCredentialType;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/model/PublicKeyCredentialType;
+	public final fun component2-fGACWzo ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy-g-0fd3w (Ldev/webauthn/model/PublicKeyCredentialType;Ljava/lang/String;Ljava/util/List;)Ldev/webauthn/model/PublicKeyCredentialDescriptor;
+	public static synthetic fun copy-g-0fd3w$default (Ldev/webauthn/model/PublicKeyCredentialDescriptor;Ldev/webauthn/model/PublicKeyCredentialType;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialDescriptor;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId-fGACWzo ()Ljava/lang/String;
+	public final fun getTransports ()Ljava/util/List;
+	public final fun getType ()Ldev/webauthn/model/PublicKeyCredentialType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialParameters {
+	public fun <init> (Ldev/webauthn/model/PublicKeyCredentialType;I)V
+	public final fun component1 ()Ldev/webauthn/model/PublicKeyCredentialType;
+	public final fun component2 ()I
+	public final fun copy (Ldev/webauthn/model/PublicKeyCredentialType;I)Ldev/webauthn/model/PublicKeyCredentialParameters;
+	public static synthetic fun copy$default (Ldev/webauthn/model/PublicKeyCredentialParameters;Ldev/webauthn/model/PublicKeyCredentialType;IILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialParameters;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlg ()I
+	public final fun getType ()Ldev/webauthn/model/PublicKeyCredentialType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialRequestOptions {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-FoFKi_4 ()Ljava/lang/String;
+	public final fun component2-Xrhg-t4 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ldev/webauthn/model/UserVerificationRequirement;
+	public final fun component6 ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun copy-uMJoLP8 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public static synthetic fun copy-uMJoLP8$default (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ldev/webauthn/model/UserVerificationRequirement;Ldev/webauthn/model/AuthenticationExtensionsClientInputs;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAllowCredentials ()Ljava/util/List;
+	public final fun getChallenge-FoFKi_4 ()Ljava/lang/String;
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
+	public final fun getRpId-Xrhg-t4 ()Ljava/lang/String;
+	public final fun getTimeoutMs ()Ljava/lang/Long;
+	public final fun getUserVerification ()Ldev/webauthn/model/UserVerificationRequirement;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialRpEntity {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-Xrhg-t4 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy-kwR_KZc (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/PublicKeyCredentialRpEntity;
+	public static synthetic fun copy-kwR_KZc$default (Ldev/webauthn/model/PublicKeyCredentialRpEntity;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialRpEntity;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId-Xrhg-t4 ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialType : java/lang/Enum {
+	public static final field PUBLIC_KEY Ldev/webauthn/model/PublicKeyCredentialType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/PublicKeyCredentialType;
+	public static fun values ()[Ldev/webauthn/model/PublicKeyCredentialType;
+}
+
+public final class dev/webauthn/model/PublicKeyCredentialUserEntity {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-jP9ONq0 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy-7K7UvRA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/PublicKeyCredentialUserEntity;
+	public static synthetic fun copy-7K7UvRA$default (Ldev/webauthn/model/PublicKeyCredentialUserEntity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialUserEntity;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getId-jP9ONq0 ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/RegistrationResponse {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ldev/webauthn/model/AttestedCredentialData;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ldev/webauthn/model/AttestedCredentialData;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-fGACWzo ()Ljava/lang/String;
+	public final fun component2-o3JijnE ()Ljava/lang/String;
+	public final fun component3-o3JijnE ()Ljava/lang/String;
+	public final fun component4 ()Ldev/webauthn/model/AuthenticatorData;
+	public final fun component5 ()Ldev/webauthn/model/AttestedCredentialData;
+	public final fun component6 ()Ldev/webauthn/model/AuthenticatorAttachment;
+	public final fun component7 ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun copy-cvde3tw (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ldev/webauthn/model/AttestedCredentialData;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/RegistrationResponse;
+	public static synthetic fun copy-cvde3tw$default (Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/model/AuthenticatorData;Ldev/webauthn/model/AttestedCredentialData;Ldev/webauthn/model/AuthenticatorAttachment;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;ILjava/lang/Object;)Ldev/webauthn/model/RegistrationResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAttestationObject-o3JijnE ()Ljava/lang/String;
+	public final fun getAttestedCredentialData ()Ldev/webauthn/model/AttestedCredentialData;
+	public final fun getAuthenticatorAttachment ()Ldev/webauthn/model/AuthenticatorAttachment;
+	public final fun getClientDataJson-o3JijnE ()Ljava/lang/String;
+	public final fun getCredentialId-fGACWzo ()Ljava/lang/String;
+	public final fun getExtensions ()Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
+	public final fun getRawAuthenticatorData ()Ldev/webauthn/model/AuthenticatorData;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/ResidentKeyRequirement : java/lang/Enum {
+	public static final field DISCOURAGED Ldev/webauthn/model/ResidentKeyRequirement;
+	public static final field PREFERRED Ldev/webauthn/model/ResidentKeyRequirement;
+	public static final field REQUIRED Ldev/webauthn/model/ResidentKeyRequirement;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/ResidentKeyRequirement;
+	public static fun values ()[Ldev/webauthn/model/ResidentKeyRequirement;
+}
+
+public final class dev/webauthn/model/RpId {
+	public static final field Companion Ldev/webauthn/model/RpId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/RpId;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/RpId$Companion {
+	public final fun parse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-9vhsExY (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/RpIdHash {
+	public static final field Companion Ldev/webauthn/model/RpIdHash$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/RpIdHash;
+	public static final fun bytes-impl (Ljava/lang/String;)[B
+	public static final fun contentEquals-impl (Ljava/lang/String;[B)Z
+	public static final fun encoded-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun getSize-impl (Ljava/lang/String;)I
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/RpIdHash$Companion {
+	public final fun fromBytes-yHJgWRc ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun parse$default (Ldev/webauthn/model/RpIdHash$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-SPplYFs (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun parseOrThrow-SPplYFs$default (Ldev/webauthn/model/RpIdHash$Companion;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/UserHandle {
+	public static final field Companion Ldev/webauthn/model/UserHandle$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Ldev/webauthn/model/UserHandle;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue-o3JijnE ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/UserHandle$Companion {
+	public final fun fromBytes-SkjTW-Q ([B)Ljava/lang/String;
+	public final fun parse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseOrThrow-SkjTW-Q (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/UserVerificationRequirement : java/lang/Enum {
+	public static final field DISCOURAGED Ldev/webauthn/model/UserVerificationRequirement;
+	public static final field PREFERRED Ldev/webauthn/model/UserVerificationRequirement;
+	public static final field REQUIRED Ldev/webauthn/model/UserVerificationRequirement;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/UserVerificationRequirement;
+	public static fun values ()[Ldev/webauthn/model/UserVerificationRequirement;
+}
+
+public final class dev/webauthn/model/ValidationKt {
+	public static final fun getOrNull (Ldev/webauthn/model/ValidationResult;)Ljava/lang/Object;
+	public static final fun getOrThrow (Ldev/webauthn/model/ValidationResult;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/model/ValidationResult {
+}
+
+public final class dev/webauthn/model/ValidationResult$Invalid : dev/webauthn/model/ValidationResult {
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Ldev/webauthn/model/ValidationResult$Invalid;
+	public static synthetic fun copy$default (Ldev/webauthn/model/ValidationResult$Invalid;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult$Invalid;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getErrors ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/ValidationResult$Valid : dev/webauthn/model/ValidationResult {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Ldev/webauthn/model/ValidationResult$Valid;
+	public static synthetic fun copy$default (Ldev/webauthn/model/ValidationResult$Valid;Ljava/lang/Object;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult$Valid;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/model/WebAuthnValidationError {
+	public abstract fun getField ()Ljava/lang/String;
+	public abstract fun getMessage ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/WebAuthnValidationError$InvalidFormat : dev/webauthn/model/WebAuthnValidationError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/WebAuthnValidationError$InvalidFormat;
+	public static synthetic fun copy$default (Ldev/webauthn/model/WebAuthnValidationError$InvalidFormat;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/WebAuthnValidationError$InvalidFormat;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getField ()Ljava/lang/String;
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/WebAuthnValidationError$InvalidValue : dev/webauthn/model/WebAuthnValidationError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/WebAuthnValidationError$InvalidValue;
+	public static synthetic fun copy$default (Ldev/webauthn/model/WebAuthnValidationError$InvalidValue;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/WebAuthnValidationError$InvalidValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getField ()Ljava/lang/String;
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/WebAuthnValidationError$MissingValue : dev/webauthn/model/WebAuthnValidationError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/WebAuthnValidationError$MissingValue;
+	public static synthetic fun copy$default (Ldev/webauthn/model/WebAuthnValidationError$MissingValue;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/WebAuthnValidationError$MissingValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getField ()Ljava/lang/String;
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

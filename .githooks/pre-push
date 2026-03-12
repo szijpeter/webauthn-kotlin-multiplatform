@@ -4,5 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-echo "[pre-push] Running strict quality gate..."
-tools/agent/quality-gate.sh --mode strict --scope changed --block true
+echo "[pre-push] Running advisory strict quality gate..."
+if ! tools/agent/quality-gate.sh --mode strict --scope changed --block false; then
+  echo "[pre-push] advisory gate reported issues (push allowed; PR CI remains blocking)." >&2
+fi

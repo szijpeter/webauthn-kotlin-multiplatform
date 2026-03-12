@@ -1,0 +1,15 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-client-ios>
+final class dev.webauthn.client.ios/IosPasskeyClient : dev.webauthn.client/PasskeyClient { // dev.webauthn.client.ios/IosPasskeyClient|null[0]
+    constructor <init>() // dev.webauthn.client.ios/IosPasskeyClient.<init>|<init>(){}[0]
+
+    final suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client.ios/IosPasskeyClient.capabilities|capabilities(){}[0]
+    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client.ios/IosPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.client.ios/IosPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+}

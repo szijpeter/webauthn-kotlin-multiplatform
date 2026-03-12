@@ -8,8 +8,15 @@ tools/agent/quality-gate.sh --mode fast --scope changed --block false
 ```
 
 3. If fast gate fails, fix and rerun.
-4. Before push, run:
+4. Before updating the PR, run:
 
 ```bash
-tools/agent/quality-gate.sh --mode strict --scope changed --block true
+tools/agent/quality-gate.sh --mode strict --scope changed --block false
+```
+
+5. If public API or publishing changed, also run:
+
+```bash
+./gradlew apiCheck --stacktrace
+./gradlew publishToMavenLocal --stacktrace
 ```

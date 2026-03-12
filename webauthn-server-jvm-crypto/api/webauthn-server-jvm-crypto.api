@@ -1,0 +1,54 @@
+public final class dev/webauthn/server/crypto/CompositeAttestationVerifier : dev/webauthn/crypto/AttestationVerifier {
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/TrustAnchorSource;)V
+	public synthetic fun <init> (Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/TrustAnchorSource;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun verify (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/server/crypto/FidoU2fAttestationStatementVerifier : dev/webauthn/crypto/AttestationVerifier {
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/server/crypto/TrustChainVerifier;)V
+	public synthetic fun <init> (Ldev/webauthn/server/crypto/TrustChainVerifier;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun verify (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/server/crypto/JvmRpIdHasher : dev/webauthn/crypto/RpIdHasher {
+	public fun <init> ()V
+	public fun hashRpId-yHJgWRc (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/webauthn/server/crypto/JvmSignatureVerifier : dev/webauthn/crypto/SignatureVerifier {
+	public fun <init> ()V
+	public fun verify-wR3EP5c (Ldev/webauthn/crypto/CoseAlgorithm;Ljava/lang/String;[B[B)Z
+}
+
+public final class dev/webauthn/server/crypto/NoneAttestationStatementVerifier : dev/webauthn/crypto/AttestationVerifier {
+	public fun <init> ()V
+	public fun verify (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/server/crypto/PackedAttestationStatementVerifier : dev/webauthn/crypto/AttestationVerifier {
+	public fun <init> (Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/server/crypto/TrustChainVerifier;)V
+	public synthetic fun <init> (Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/server/crypto/TrustChainVerifier;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun verify (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/server/crypto/ResourceTrustAnchorSource : dev/webauthn/crypto/TrustAnchorSource {
+	public fun <init> ()V
+	public fun findTrustAnchors-vqj9O5k (Ljava/lang/String;)Ljava/util/List;
+}
+
+public final class dev/webauthn/server/crypto/StrictAttestationVerifier : dev/webauthn/crypto/AttestationVerifier {
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/TrustAnchorSource;)V
+	public synthetic fun <init> (Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/TrustAnchorSource;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun verify (Ldev/webauthn/core/RegistrationValidationInput;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/server/crypto/TrustChainVerifier {
+	public fun <init> (Ldev/webauthn/crypto/TrustAnchorSource;)V
+	public final fun verify-nnhwCOA (Ljava/util/List;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public static synthetic fun verify-nnhwCOA$default (Ldev/webauthn/server/crypto/TrustChainVerifier;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun verifyFallbackSignedByNext (Ljava/util/List;)Ldev/webauthn/model/ValidationResult;
+}
+

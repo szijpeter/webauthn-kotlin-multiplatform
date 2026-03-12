@@ -16,6 +16,7 @@ contains_pattern() {
 
 required_files=(
   "docs/ai/STEERING.md"
+  "docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md"
   "AGENTS.md"
   "CLAUDE.md"
   ".cursor/rules/00-core.mdc"
@@ -61,7 +62,7 @@ if ! contains_pattern "--mode fast --scope changed --block false" .githooks/pre-
   exit 1
 fi
 
-if ! contains_pattern "--mode strict --scope changed --block true" .githooks/pre-push; then
+if ! contains_pattern "--mode strict --scope changed --block false" .githooks/pre-push; then
   echo "pre-push hook is out of policy" >&2
   exit 1
 fi

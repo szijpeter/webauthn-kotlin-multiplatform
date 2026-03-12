@@ -10,29 +10,42 @@ Canonical policy: `docs/ai/STEERING.md`.
 tools/agent/changed-modules.sh --scope changed
 ```
 
-2. Run fast advisory gate during active iteration:
+2. Run the fast advisory gate during active iteration:
 
 ```bash
 tools/agent/quality-gate.sh --mode fast --scope changed --block false
 ```
 
-3. Before push, run strict blocking gate:
+3. Before opening or updating a PR, run the strict advisory gate locally:
 
 ```bash
-tools/agent/quality-gate.sh --mode strict --scope changed --block true
+tools/agent/quality-gate.sh --mode strict --scope changed --block false
 ```
 
-4. If core/model validation behavior changed, ensure:
-- `spec-notes/webauthn-l3-validation-map.md` is updated.
-5. If core/security-critical modules changed, ensure:
-- `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md` is updated.
-6. If API models or error boundaries were modified, manually verify:
-- Use `KmmResult` as a default for internal sequential pipelines, but keep structured multi-error validation flows on `ValidationResult`.
-- Pipeline results (`KmmResult`) must not leak into public contracts (`ValidationResult`, `PasskeyResult`, exceptions).
+4. Let PR CI remain the blocking authority.
+5. If core/model validation behavior changed, update `spec-notes/webauthn-l3-validation-map.md`.
+6. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
+7. If public API changed in a BCV-covered published module, run:
+
+```bash
+./gradlew apiCheck --stacktrace
+```
+
+Only when the API change is intentional, regenerate baselines and re-check:
+
+```bash
+./gradlew apiDump apiCheck --stacktrace
+```
+
+8. If publishing/build metadata changed, run:
+
+```bash
+./gradlew publishToMavenLocal --stacktrace
+```
 
 ## Docs-Only Workflow
 
-For docs-only changes, gates intentionally skip heavy compile/test tasks.
+For docs-only changes, `tools/agent/quality-gate.sh` intentionally skips heavy compile/test tasks. Update the temporary release plan doc as well when release scope or sequencing changes.
 
 ## Public Security Hygiene Workflow
 
@@ -52,11 +65,10 @@ tools/agent/verify-harness-sync.sh
 
 ```bash
 tools/agent/quality-gate.sh --mode fast --scope changed --block false
-tools/agent/quality-gate.sh --mode strict --scope changed --block true
+tools/agent/quality-gate.sh --mode strict --scope changed --block false
 ```
 
-4. Confirm public hardening checklist items:
-- `docs/PUBLIC_LAUNCH_CHECKLIST.md`
+4. Confirm public hardening checklist items in `docs/PUBLIC_LAUNCH_CHECKLIST.md`.
 
 ## Full Validation Workflow
 
@@ -66,46 +78,14 @@ Use for cross-cutting changes:
 tools/agent/quality-gate.sh --mode strict --scope full --block true
 ```
 
-## Next-Step Agent Workflow
+## Release-Prep Workflow
 
-1. Get the next queued implementation prompt:
-
-```bash
-tools/agent/next-step.sh --format prompt
-```
-
-2. Run the prompt with your agent and implement the scoped change.
-3. Update `docs/IMPLEMENTATION_TRACKER.md` status for touched items.
-4. Validate with strict changed-scope gate:
+1. Keep `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` current while the first public release effort is active.
+2. Validate compatibility and publishing preflight:
 
 ```bash
-tools/agent/quality-gate.sh --mode strict --scope changed --block true
+./gradlew apiCheck publishToMavenLocal --stacktrace
 ```
 
-## Progress Tracking Workflow
-
-1. Check current tracker completion:
-
-```bash
-tools/agent/progress-report.sh --format human
-```
-
-2. For automation or dashboards, use JSON:
-
-```bash
-tools/agent/progress-report.sh --format json
-```
-
-## Onboarding Workflow
-
-1. Install repo hooks:
-
-```bash
-tools/agent/setup-hooks.sh
-```
-
-2. Verify harness files:
-
-```bash
-tools/agent/verify-harness-sync.sh
-```
+3. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`.
+4. After the whole public-release effort is complete, delete `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` in the cleanup PR.
