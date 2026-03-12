@@ -114,7 +114,7 @@ Reference/samples:
 2. Read directly impacted module build files/tests.
 3. Read architecture/spec note only if needed for behavior decisions.
 4. Run `tools/agent/quality-gate.sh --mode fast --scope changed --block false`.
-5. Run strict changed-scope gate.
+5. Run `tools/agent/quality-gate.sh --mode strict --scope changed --block false`.
 6. Run `./gradlew apiCheck` when BCV-covered public API changes.
 7. Run `./gradlew publishToMavenLocal` when publishing/build metadata changes.
 8. Run full-repo checks only when cross-cutting risk or requested.

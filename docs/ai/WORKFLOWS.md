@@ -28,6 +28,12 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 7. If public API changed in a BCV-covered published module, run:
 
 ```bash
+./gradlew apiCheck --stacktrace
+```
+
+Only when the API change is intentional, regenerate baselines and re-check:
+
+```bash
 ./gradlew apiDump apiCheck --stacktrace
 ```
 

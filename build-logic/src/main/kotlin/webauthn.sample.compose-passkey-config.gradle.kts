@@ -11,9 +11,11 @@ fun Project.demoConfigValue(envName: String, defaultValue: String): Provider<Str
             .asText
             .orElse("")
             .map { content ->
-                val properties = Properties()
-                content.byteInputStream().use(properties::load)
-                properties.getProperty(envName)?.trim().orEmpty()
+                runCatching {
+                    val properties = Properties()
+                    content.byteInputStream().use(properties::load)
+                    properties.getProperty(envName)?.trim().orEmpty()
+                }.getOrDefault("")
             }
 
     return providers.provider {
