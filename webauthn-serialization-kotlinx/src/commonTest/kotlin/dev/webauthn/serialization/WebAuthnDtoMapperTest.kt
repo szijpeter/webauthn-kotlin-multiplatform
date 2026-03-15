@@ -379,6 +379,24 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
+    fun requestOptionsRejectUnknownUserVerification() {
+        val dto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = "example.com",
+            userVerification = "sometimes",
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            result.errors.any {
+                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                    it.field == "userVerification"
+            }
+        )
+    }
+
+    @Test
     fun requestOptionsFromModelOmitsRpIdWhenNotProvided() {
         val model = dev.webauthn.model.PublicKeyCredentialRequestOptions(
             challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(32) { 9 }),

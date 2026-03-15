@@ -1,3 +1,5 @@
+@file:kotlin.jvm.JvmMultifileClass
+@file:kotlin.jvm.JvmName("JsonPasskeyClientKt")
 @file:Suppress("UndocumentedPublicFunction")
 
 package dev.webauthn.client

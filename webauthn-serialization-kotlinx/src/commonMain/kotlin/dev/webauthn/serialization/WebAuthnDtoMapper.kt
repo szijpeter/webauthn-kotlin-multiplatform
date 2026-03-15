@@ -230,7 +230,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    @Suppress("CyclomaticComplexMethod")
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     public fun toModel(value: PublicKeyCredentialRequestOptionsDto): ValidationResult<PublicKeyCredentialRequestOptions> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
@@ -278,7 +278,13 @@ public object WebAuthnDtoMapper {
 
         val userVerification = UserVerificationRequirement.entries.find {
             it.name.equals(value.userVerification, ignoreCase = true)
-        } ?: UserVerificationRequirement.PREFERRED
+        } ?: run {
+            errors += WebAuthnValidationError.InvalidValue(
+                field = "userVerification",
+                message = "Unknown userVerification value: ${value.userVerification}",
+            )
+            null
+        }
         val extensions = value.extensions?.let {
             when (val parsed = toModelValidated(it, fieldPrefix = "extensions")) {
                 is ValidationResult.Valid -> parsed.value
@@ -289,7 +295,7 @@ public object WebAuthnDtoMapper {
             }
         }
 
-        if (errors.isNotEmpty()) {
+        if (errors.isNotEmpty() || userVerification == null) {
             return ValidationResult.Invalid(errors)
         }
 

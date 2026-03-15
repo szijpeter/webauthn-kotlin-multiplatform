@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-12
+Last updated: 2026-03-15
 
 ## Status Legend
 
@@ -42,6 +42,7 @@ Last updated: 2026-03-12
 - MDS integration docs now call out the required initial `refreshIfStale(...)` load so `FidoMdsTrustSource` is populated before attestation verification begins.
 - Public API hardening follow-up #59 is implemented in code: core validator boundaries now use typed wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), request-options `rpId` is optional in model/DTO ABI, sensitive network payload `toString()` values are redacted, and client finish calls now return structured `PasskeyFinishResult`.
 - Snapshot adopter note: recompile and update call sites for nullable request-options `rpId`, typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), and `PasskeyFinishResult` handling; sensitive payload `toString()` output is now redacted.
+- Review hardening follow-up (PR #53): CBOR byte scanner now rejects negative offsets and applies overflow-safe bounds checks before string/byte reads, request-options DTO mapping now rejects unknown `userVerification` values consistently, and JSON-core top-level mapper extensions are emitted in the legacy JVM owner class (`JsonPasskeyClientKt`) to preserve binary compatibility.
 
 ## Plan Progress (Estimated)
 
