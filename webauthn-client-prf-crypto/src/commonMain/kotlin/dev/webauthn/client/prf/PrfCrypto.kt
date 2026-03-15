@@ -139,11 +139,15 @@ public object PrfCrypto {
             context = context,
             hkdfSalt = hkdfSalt?.bytes(),
         )
-        return PrfCryptoSession(
-            keyBytes = keyBytes,
-            keyFingerprint = keyFingerprint(keyBytes),
-            context = context,
-        )
+        return try {
+            PrfCryptoSession(
+                keyBytes = keyBytes,
+                keyFingerprint = keyFingerprint(keyBytes),
+                context = context,
+            )
+        } finally {
+            keyBytes.fill(0)
+        }
     }
 
     public suspend fun encryptAesGcm(
