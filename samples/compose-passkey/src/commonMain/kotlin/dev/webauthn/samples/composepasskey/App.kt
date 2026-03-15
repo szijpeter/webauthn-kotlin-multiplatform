@@ -186,63 +186,72 @@ public fun App() {
                     onSignInWithPrf = {
                         scope.launch {
                             prfBusy.value = true
-                            debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
-                            val result = prfCryptoDemo.signInWithPrf(
-                                config = config,
-                                supportsPrf = capabilities.value.supportsPrf,
-                            )
-                            when (result) {
-                                is PrfDemoResult.Success -> {
-                                    prfStatusMessage.value = result.message
-                                    prfDecryptedText.value = null
-                                    debugLogs.i(source = "prf", message = result.message)
-                                }
+                            try {
+                                debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
+                                val result = prfCryptoDemo.signInWithPrf(
+                                    config = config,
+                                    supportsPrf = capabilities.value.supportsPrf,
+                                )
+                                when (result) {
+                                    is PrfDemoResult.Success -> {
+                                        prfStatusMessage.value = result.message
+                                        prfDecryptedText.value = null
+                                        debugLogs.i(source = "prf", message = result.message)
+                                    }
 
-                                is PrfDemoResult.Failure -> {
-                                    prfStatusMessage.value = result.message
-                                    prfDecryptedText.value = null
-                                    debugLogs.w(source = "prf", message = result.message)
+                                    is PrfDemoResult.Failure -> {
+                                        prfStatusMessage.value = result.message
+                                        prfDecryptedText.value = null
+                                        debugLogs.w(source = "prf", message = result.message)
+                                    }
                                 }
+                            } finally {
+                                prfBusy.value = false
                             }
-                            prfBusy.value = false
                         }
                     },
                     onEncrypt = {
                         scope.launch {
                             prfBusy.value = true
-                            val result = prfCryptoDemo.encrypt(prfPlaintext.value)
-                            when (result) {
-                                is PrfDemoResult.Success -> {
-                                    prfStatusMessage.value = result.message
-                                    prfDecryptedText.value = null
-                                    debugLogs.i(source = "prf", message = result.message)
-                                }
+                            try {
+                                val result = prfCryptoDemo.encrypt(prfPlaintext.value)
+                                when (result) {
+                                    is PrfDemoResult.Success -> {
+                                        prfStatusMessage.value = result.message
+                                        prfDecryptedText.value = null
+                                        debugLogs.i(source = "prf", message = result.message)
+                                    }
 
-                                is PrfDemoResult.Failure -> {
-                                    prfStatusMessage.value = result.message
-                                    debugLogs.w(source = "prf", message = result.message)
+                                    is PrfDemoResult.Failure -> {
+                                        prfStatusMessage.value = result.message
+                                        debugLogs.w(source = "prf", message = result.message)
+                                    }
                                 }
+                            } finally {
+                                prfBusy.value = false
                             }
-                            prfBusy.value = false
                         }
                     },
                     onDecrypt = {
                         scope.launch {
                             prfBusy.value = true
-                            val result = prfCryptoDemo.decrypt()
-                            when (result) {
-                                is PrfDemoResult.Success -> {
-                                    prfStatusMessage.value = result.message
-                                    prfDecryptedText.value = result.plaintext
-                                    debugLogs.i(source = "prf", message = result.message)
-                                }
+                            try {
+                                val result = prfCryptoDemo.decrypt()
+                                when (result) {
+                                    is PrfDemoResult.Success -> {
+                                        prfStatusMessage.value = result.message
+                                        prfDecryptedText.value = result.plaintext
+                                        debugLogs.i(source = "prf", message = result.message)
+                                    }
 
-                                is PrfDemoResult.Failure -> {
-                                    prfStatusMessage.value = result.message
-                                    debugLogs.w(source = "prf", message = result.message)
+                                    is PrfDemoResult.Failure -> {
+                                        prfStatusMessage.value = result.message
+                                        debugLogs.w(source = "prf", message = result.message)
+                                    }
                                 }
+                            } finally {
+                                prfBusy.value = false
                             }
-                            prfBusy.value = false
                         }
                     },
                     onClearSession = {

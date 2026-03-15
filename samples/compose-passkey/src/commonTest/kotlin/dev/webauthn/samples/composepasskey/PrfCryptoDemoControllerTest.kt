@@ -101,12 +101,76 @@ class PrfCryptoDemoControllerTest {
         assertTrue(result.message.contains("rejected"))
         assertFalse(controller.hasSession)
     }
+
+    @Test
+    fun signInWithPrf_usesStableSaltScope_whenUserNameChanges() = runTest {
+        val saltStore = RecordingSaltStore()
+        val server = PrfTestServerClient()
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = saltStore,
+        )
+
+        controller.signInWithPrf(prfDemoConfig().copy(userName = "first@local"), supportsPrf = true)
+        controller.signInWithPrf(prfDemoConfig().copy(userName = "second@local"), supportsPrf = true)
+
+        assertEquals(
+            listOf("example.test:demo-user-1", "example.test:demo-user-1"),
+            saltStore.loadedKeys,
+        )
+    }
+
+    @Test
+    fun signInWithPrf_mapsStartTransportException_toFailure() = runTest {
+        val server = PrfTestServerClient(startThrowable = IllegalStateException("start exploded"))
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        val result = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+
+        val failure = assertIs<PrfDemoResult.Failure>(result)
+        assertTrue(failure.message.contains("PRF sign-in start failed"))
+        assertTrue(failure.message.contains("start exploded"))
+    }
+
+    @Test
+    fun signInWithPrf_mapsFinishTransportException_toFailure() = runTest {
+        val server = PrfTestServerClient(finishThrowable = IllegalStateException("finish exploded"))
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        val result = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+
+        val failure = assertIs<PrfDemoResult.Failure>(result)
+        assertTrue(failure.message.contains("PRF sign-in finish failed"))
+        assertTrue(failure.message.contains("finish exploded"))
+    }
 }
 
 private class FixedSaltStore : PrfSaltStore {
     val salt: Base64UrlBytes = Base64UrlBytes.fromBytes(ByteArray(32) { 3 })
 
     override fun loadOrCreate(key: String): Base64UrlBytes = salt
+}
+
+private class RecordingSaltStore : PrfSaltStore {
+    private val salt: Base64UrlBytes = Base64UrlBytes.fromBytes(ByteArray(32) { 7 })
+    val loadedKeys: MutableList<String> = mutableListOf()
+
+    override fun loadOrCreate(key: String): Base64UrlBytes {
+        loadedKeys += key
+        return salt
+    }
 }
 
 private class PrfTestServerClient(
@@ -117,6 +181,8 @@ private class PrfTestServerClient(
         ),
     ),
     private val signInVerifyResult: Boolean = true,
+    private val startThrowable: Throwable? = null,
+    private val finishThrowable: Throwable? = null,
 ) : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
     var signInStartCalls: Int = 0
     var lastAuthenticationStartPayload: AuthenticationStartPayload? = null
@@ -134,6 +200,7 @@ private class PrfTestServerClient(
     }
 
     override suspend fun getSignInOptions(params: AuthenticationStartPayload): ValidationResult<PublicKeyCredentialRequestOptions> {
+        startThrowable?.let { throw it }
         signInStartCalls += 1
         lastAuthenticationStartPayload = params
         return signInOptions
@@ -144,6 +211,7 @@ private class PrfTestServerClient(
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
+        finishThrowable?.let { throw it }
         return if (signInVerifyResult) {
             PasskeyFinishResult.Verified
         } else {

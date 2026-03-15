@@ -1,3 +1,7 @@
+public final class dev/webauthn/client/prf/MissingPrfOutputException : java/lang/IllegalArgumentException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
 public final class dev/webauthn/client/prf/PrfAuthenticationResult {
 	public fun <init> (Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ldev/webauthn/client/prf/PrfCryptoSession;)V
 	public final fun component1 ()Ldev/webauthn/model/AuthenticationResponse;

@@ -29,6 +29,8 @@ Examples:
 
 ## Run (Android)
 
+Android requirement: API level 30+ (`minSdk 30`) for the PRF crypto sample flow.
+
 1. Start sample backend:
 
 ```bash

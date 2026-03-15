@@ -28,6 +28,11 @@ public enum class PrfOutputSelection {
     SECOND,
 }
 
+/** Thrown when a requested PRF output value is missing from the authenticator response. */
+public class MissingPrfOutputException(
+    message: String,
+) : IllegalArgumentException(message)
+
 /** Serialized AES-GCM payload emitted by PRF-derived encryption helpers. */
 public data class PrfCiphertext(
     public val nonce: Base64UrlBytes,
@@ -181,7 +186,7 @@ public object PrfCrypto {
         return when (selection) {
             PrfOutputSelection.FIRST -> values.first
             PrfOutputSelection.SECOND -> values.second
-                ?: throw IllegalArgumentException(
+                ?: throw MissingPrfOutputException(
                     "PRF output selection is SECOND but authenticator returned only one output.",
                 )
         }

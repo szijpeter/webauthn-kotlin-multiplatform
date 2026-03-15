@@ -50,7 +50,9 @@ public class PrfCryptoClient(
         outputSelection: PrfOutputSelection = PrfOutputSelection.FIRST,
     ): PasskeyResult<PrfAuthenticationResult> {
         val optionsWithPrf = PrfCrypto.withPrfEvaluation(options, evaluation)
-        return when (val assertion = passkeyClient.getAssertion(optionsWithPrf)) {
+        val assertion = runCatching { passkeyClient.getAssertion(optionsWithPrf) }
+            .getOrElse { error -> return error.toFailure() }
+        return when (assertion) {
             is PasskeyResult.Failure -> assertion
             is PasskeyResult.Success -> {
                 runCatching {
@@ -77,6 +79,10 @@ public class PrfCryptoClient(
 
 private fun Throwable.toFailure(): PasskeyResult.Failure {
     return when (this) {
+        is MissingPrfOutputException -> {
+            PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message ?: "Missing PRF output"))
+        }
+
         is IllegalArgumentException -> {
             PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message ?: "Invalid PRF options"))
         }

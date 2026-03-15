@@ -94,6 +94,21 @@ class PrfCryptoClientTest {
     }
 
     @Test
+    fun createSession_withSecondSelection_throwsTypedError_whenSecondMissing() = runTest {
+        runCatching {
+            PrfCrypto.createSession(
+                prfResults = AuthenticationExtensionsPRFValues(first = bytes(3, 3, 3, 3)),
+                outputSelection = PrfOutputSelection.SECOND,
+                context = "missing-second",
+            )
+        }.onSuccess {
+            fail("Expected MissingPrfOutputException when SECOND output is absent")
+        }.onFailure { error ->
+            assertIs<MissingPrfOutputException>(error)
+        }
+    }
+
+    @Test
     fun requirePrfResults_throws_whenMissing() {
         val response = validAuthenticationResponse(extensions = null)
 
@@ -141,6 +156,42 @@ class PrfCryptoClientTest {
         assertIs<PasskeyClientError.InvalidOptions>(failure.error)
     }
 
+    @Test
+    fun authenticateWithPrf_mapsMissingSelectedSecondOutput_toInvalidOptions() = runTest {
+        val response = validAuthenticationResponse(
+            extensions = AuthenticationExtensionsClientOutputs(
+                prf = PrfExtensionOutput(
+                    results = AuthenticationExtensionsPRFValues(first = bytes(9, 9, 9, 9)),
+                ),
+            ),
+        )
+        val client = PrfCryptoClient(FakePasskeyClient(PasskeyResult.Success(response)))
+
+        val result = client.authenticateWithPrf(
+            options = validRequestOptions(),
+            firstSalt = bytes(1, 1, 1, 1),
+            outputSelection = PrfOutputSelection.SECOND,
+        )
+
+        val failure = assertIs<PasskeyResult.Failure>(result)
+        assertIs<PasskeyClientError.InvalidOptions>(failure.error)
+        assertTrue(failure.error.message.contains("SECOND"))
+    }
+
+    @Test
+    fun authenticateWithPrf_mapsThrownGetAssertion_toFailure() = runTest {
+        val client = PrfCryptoClient(ThrowingPasskeyClient(IllegalStateException("platform boom")))
+
+        val result = client.authenticateWithPrf(
+            options = validRequestOptions(),
+            firstSalt = bytes(1, 2, 3, 4),
+        )
+
+        val failure = assertIs<PasskeyResult.Failure>(result)
+        assertIs<PasskeyClientError.Platform>(failure.error)
+        assertEquals("platform boom", failure.error.message)
+    }
+
     private class FakePasskeyClient(
         private val assertionResult: PasskeyResult<AuthenticationResponse>,
     ) : PasskeyClient {
@@ -150,6 +201,18 @@ class PrfCryptoClientTest {
 
         override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
             return assertionResult
+        }
+    }
+
+    private class ThrowingPasskeyClient(
+        private val throwable: Throwable,
+    ) : PasskeyClient {
+        override suspend fun createCredential(options: dev.webauthn.model.PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+            error("unused in test")
+        }
+
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+            throw throwable
         }
     }
 

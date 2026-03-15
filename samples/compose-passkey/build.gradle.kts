@@ -11,7 +11,7 @@ kotlin {
     android {
         namespace = "dev.webauthn.samples.composepasskey"
         compileSdk = 36
-        minSdk = 26
+        minSdk = 30
     }
     iosX64()
     iosArm64()

@@ -17,6 +17,10 @@ final enum class dev.webauthn.client.prf/PrfOutputSelection : kotlin/Enum<dev.we
     final fun values(): kotlin/Array<dev.webauthn.client.prf/PrfOutputSelection> // dev.webauthn.client.prf/PrfOutputSelection.values|values#static(){}[0]
 }
 
+final class dev.webauthn.client.prf/MissingPrfOutputException : kotlin/IllegalArgumentException { // dev.webauthn.client.prf/MissingPrfOutputException|null[0]
+    constructor <init>(kotlin/String) // dev.webauthn.client.prf/MissingPrfOutputException.<init>|<init>(kotlin.String){}[0]
+}
+
 final class dev.webauthn.client.prf/PrfAuthenticationResult { // dev.webauthn.client.prf/PrfAuthenticationResult|null[0]
     constructor <init>(dev.webauthn.model/AuthenticationResponse, dev.webauthn.model/AuthenticationExtensionsPRFValues, dev.webauthn.client.prf/PrfCryptoSession) // dev.webauthn.client.prf/PrfAuthenticationResult.<init>|<init>(dev.webauthn.model.AuthenticationResponse;dev.webauthn.model.AuthenticationExtensionsPRFValues;dev.webauthn.client.prf.PrfCryptoSession){}[0]
 

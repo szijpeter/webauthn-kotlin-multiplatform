@@ -147,8 +147,15 @@ internal class AuthenticationServicesAuthorizationBridge(
         val rpId = requireNotNull(options.rpId) {
             "PublicKeyCredentialRequestOptions.rpId is required by the iOS AuthenticationServices bridge."
         }
-        val prfEval = options.extensions?.prf?.eval
-        if (prfEval != null && !isPrfRuntimeSupported()) {
+        val prfInput = options.extensions?.prf
+        if (prfInput?.evalByCredential != null) {
+            throw IllegalArgumentException(
+                "PRF extension `evalByCredential` is not yet supported by the iOS bridge. Use `prf.eval` for now.",
+            )
+        }
+        val prfEval = prfInput?.eval
+        val prfRequested = prfEval != null
+        if (prfRequested && !isPrfRuntimeSupported()) {
             throw IllegalArgumentException(
                 "PRF extension requires iOS $MIN_PRF_IOS_VERSION+ with AuthenticationServices PRF APIs.",
             )
@@ -159,6 +166,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     options = options,
                     rpId = rpId.value,
                     prfEval = prfEval,
+                    prfRequested = prfRequested,
                 )
             },
             extractPayload = ::extractAssertionPayload,
@@ -170,6 +178,7 @@ internal class AuthenticationServicesAuthorizationBridge(
         options: PublicKeyCredentialRequestOptions,
         rpId: String,
         prfEval: AuthenticationExtensionsPRFValues?,
+        prfRequested: Boolean,
     ): List<Any> {
         val requests = mutableListOf<Any>()
         val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(rpId)
@@ -182,7 +191,7 @@ internal class AuthenticationServicesAuthorizationBridge(
         }
         requests.add(platformRequest)
 
-        if (NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= MIN_SECURITY_KEY_IOS_VERSION) {
+        if (shouldIncludeSecurityKeyAssertionRequest(prfRequested, currentIosMajorVersion())) {
             val securityProvider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(rpId)
             val securityRequest = securityProvider.createCredentialAssertionRequestWithChallenge(
                 options.challenge.value.bytes().toNSData(),
@@ -300,6 +309,13 @@ internal class AuthenticationServicesAuthorizationBridge(
         NSErrorException(NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null))
 }
 
+internal fun shouldIncludeSecurityKeyAssertionRequest(
+    prfRequested: Boolean,
+    iosMajorVersion: Int,
+): Boolean {
+    return !prfRequested && iosMajorVersion >= MIN_SECURITY_KEY_IOS_VERSION
+}
+
 private fun ASAuthorizationPlatformPublicKeyCredentialAssertionRequest.setPrfInput(
     values: AuthenticationExtensionsPRFValues,
 ) {
@@ -324,8 +340,13 @@ private fun ASAuthorizationPlatformPublicKeyCredentialAssertion.prfExtensionsOrN
 }
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+private fun currentIosMajorVersion(): Int {
+    return NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() }
+}
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private fun isPrfRuntimeSupported(): Boolean {
-    val version = NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() }
+    val version = currentIosMajorVersion()
     if (version < MIN_PRF_IOS_VERSION) return false
     return NSClassFromString("ASAuthorizationPublicKeyCredentialPRFAssertionInput") != null
 }

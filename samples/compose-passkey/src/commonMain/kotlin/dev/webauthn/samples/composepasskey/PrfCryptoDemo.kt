@@ -60,10 +60,17 @@ internal class PrfCryptoDemoController(
         if (!supportsPrf) {
             return PrfDemoResult.Failure("This device does not report PRF support.")
         }
-        val saltScope = "${config.rpId}:${config.userHandle}:${config.userName}"
+        val saltScope = "${config.rpId}:${config.userHandle}"
         val firstSalt = saltStore.loadOrCreate(saltScope)
         val startPayload = config.toAuthenticationStartPayload(prfSalt = firstSalt)
-        val signInOptions = when (val startResult = serverClient.getSignInOptions(startPayload)) {
+        val signInOptions = when (
+            val startResult = runCatching { serverClient.getSignInOptions(startPayload) }
+                .getOrElse { throwable ->
+                    return PrfDemoResult.Failure(
+                        "PRF sign-in start failed: ${throwable.message ?: "unknown error"}",
+                    )
+                }
+        ) {
             is dev.webauthn.model.ValidationResult.Invalid -> {
                 val details = startResult.errors.joinToString("; ") { "${it.field}: ${it.message}" }
                 return PrfDemoResult.Failure("PRF sign-in start failed: $details")
@@ -84,13 +91,18 @@ internal class PrfCryptoDemoController(
 
             is PasskeyResult.Success -> assertionResult.value
         }
-        return when (
-            val finishResult = serverClient.finishSignIn(
+        val finishResult = runCatching {
+            serverClient.finishSignIn(
                 params = startPayload,
                 response = authResult.response,
                 challengeAsBase64Url = signInOptions.challenge.value.encoded(),
             )
-        ) {
+        }.getOrElse { throwable ->
+            return PrfDemoResult.Failure(
+                "PRF sign-in finish failed: ${throwable.message ?: "unknown error"}",
+            )
+        }
+        return when (finishResult) {
             PasskeyFinishResult.Verified -> {
                 session?.clear()
                 session = authResult.session
