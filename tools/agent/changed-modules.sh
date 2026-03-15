@@ -198,6 +198,10 @@ for file in "${changed_files[@]}"; do
             mark_module "webauthn-client-compose"
             mark_category "client"
             ;;
+        webauthn-client-prf-crypto/*)
+            mark_module "webauthn-client-prf-crypto"
+            mark_category "client"
+            ;;
         webauthn-client-android/*)
             mark_module "webauthn-client-android"
             mark_category "android"

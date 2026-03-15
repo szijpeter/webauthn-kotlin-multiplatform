@@ -1,0 +1,79 @@
+public final class dev/webauthn/client/prf/PrfAuthenticationResult {
+	public fun <init> (Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ldev/webauthn/client/prf/PrfCryptoSession;)V
+	public final fun component1 ()Ldev/webauthn/model/AuthenticationResponse;
+	public final fun component2 ()Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun component3 ()Ldev/webauthn/client/prf/PrfCryptoSession;
+	public final fun copy (Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ldev/webauthn/client/prf/PrfCryptoSession;)Ldev/webauthn/client/prf/PrfAuthenticationResult;
+	public static synthetic fun copy$default (Ldev/webauthn/client/prf/PrfAuthenticationResult;Ldev/webauthn/model/AuthenticationResponse;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ldev/webauthn/client/prf/PrfCryptoSession;ILjava/lang/Object;)Ldev/webauthn/client/prf/PrfAuthenticationResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPrfResults ()Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun getResponse ()Ldev/webauthn/model/AuthenticationResponse;
+	public final fun getSession ()Ldev/webauthn/client/prf/PrfCryptoSession;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/prf/PrfCiphertext {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-o3JijnE ()Ljava/lang/String;
+	public final fun component2-o3JijnE ()Ljava/lang/String;
+	public final fun component3-o3JijnE ()Ljava/lang/String;
+	public final fun component4-r3Lsh1o ()Ljava/lang/String;
+	public final fun copy-bA3BvVg (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/client/prf/PrfCiphertext;
+	public static synthetic fun copy-bA3BvVg$default (Ldev/webauthn/client/prf/PrfCiphertext;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/prf/PrfCiphertext;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAssociatedData-r3Lsh1o ()Ljava/lang/String;
+	public final fun getAuthTag-o3JijnE ()Ljava/lang/String;
+	public final fun getCiphertext-o3JijnE ()Ljava/lang/String;
+	public final fun getNonce-o3JijnE ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/prf/PrfCrypto {
+	public static final field DEFAULT_CONTEXT Ljava/lang/String;
+	public static final field INSTANCE Ldev/webauthn/client/prf/PrfCrypto;
+	public final fun createSession-YPfAApI (Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ldev/webauthn/client/prf/PrfOutputSelection;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createSession-YPfAApI$default (Ldev/webauthn/client/prf/PrfCrypto;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ldev/webauthn/client/prf/PrfOutputSelection;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun decryptAesGcm-8eF7YUA (Ljava/lang/String;Ldev/webauthn/client/prf/PrfCiphertext;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun deriveAes256Key-P4Gnong (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun deriveAes256Key-P4Gnong$default (Ldev/webauthn/client/prf/PrfCrypto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun encryptAesGcm-BxO6gLI (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun encryptAesGcm-BxO6gLI$default (Ldev/webauthn/client/prf/PrfCrypto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun prfResultsOrNull (Ldev/webauthn/model/AuthenticationResponse;)Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun requirePrfResults (Ldev/webauthn/model/AuthenticationResponse;)Ldev/webauthn/model/AuthenticationExtensionsPRFValues;
+	public final fun withPrfEvaluation (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public final fun withPrfEvaluation-QM6UKvA (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+	public static synthetic fun withPrfEvaluation-QM6UKvA$default (Ldev/webauthn/client/prf/PrfCrypto;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/PublicKeyCredentialRequestOptions;
+}
+
+public final class dev/webauthn/client/prf/PrfCryptoClient {
+	public fun <init> (Ldev/webauthn/client/PasskeyClient;)V
+	public final fun authenticateWithPrf-8TFZuFA (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun authenticateWithPrf-8TFZuFA$default (Ldev/webauthn/client/prf/PrfCryptoClient;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun authenticateWithPrf-hJIMdZo (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun authenticateWithPrf-hJIMdZo$default (Ldev/webauthn/client/prf/PrfCryptoClient;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/client/prf/PrfCryptoSession {
+	public final fun clear ()V
+	public final fun decrypt (Ldev/webauthn/client/prf/PrfCiphertext;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun decryptToString (Ldev/webauthn/client/prf/PrfCiphertext;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun encrypt ([B[BLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun encrypt$default (Ldev/webauthn/client/prf/PrfCryptoSession;[B[BLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun encryptString (Ljava/lang/String;[BLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun encryptString$default (Ldev/webauthn/client/prf/PrfCryptoSession;Ljava/lang/String;[BLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getContext ()Ljava/lang/String;
+	public final fun getKeyFingerprint ()Ljava/lang/String;
+	public final fun isCleared ()Z
+}
+
+public final class dev/webauthn/client/prf/PrfOutputSelection : java/lang/Enum {
+	public static final field FIRST Ldev/webauthn/client/prf/PrfOutputSelection;
+	public static final field SECOND Ldev/webauthn/client/prf/PrfOutputSelection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/prf/PrfOutputSelection;
+	public static fun values ()[Ldev/webauthn/client/prf/PrfOutputSelection;
+}
+

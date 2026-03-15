@@ -32,6 +32,7 @@ import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
 import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
 import dev.webauthn.samples.composepasskey.ui.components.DebugLogCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
+import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
 import kotlinx.coroutines.launch
@@ -61,14 +62,29 @@ public fun App() {
         serverClient = serverClient,
         passkeyClient = passkeyClient,
     )
+    val prfSaltStore = remember { InMemoryPrfSaltStore() }
+    val prfCryptoDemo = remember(passkeyClient, serverClient, prfSaltStore) {
+        PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = serverClient,
+            saltStore = prfSaltStore,
+        )
+    }
 
     val capabilities = remember { mutableStateOf(PasskeyCapabilities()) }
     val uiState by passkeyController.uiState.collectAsState()
     val previousUiState = remember { mutableStateOf(passkeyController.uiState.value) }
+    val prfBusy = remember { mutableStateOf(false) }
+    val prfPlaintext = remember { mutableStateOf("Top secret from passkey PRF") }
+    val prfStatusMessage = remember { mutableStateOf("Run Sign In + PRF to derive an in-memory AES session key.") }
+    val prfDecryptedText = remember { mutableStateOf<String?>(null) }
 
     DisposableEffect(httpClient) {
         debugLogs.i(source = "app", message = "App composition entered")
-        onDispose { httpClient.close() }
+        onDispose {
+            prfCryptoDemo.clearSession()
+            httpClient.close()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -116,7 +132,7 @@ public fun App() {
     }
 
     val status = uiState.toStatusPresentation()
-    val actionsEnabled = areCeremonyActionsEnabled(uiState)
+    val actionsEnabled = areCeremonyActionsEnabled(uiState) && !prfBusy.value
 
     MaterialTheme(
         colorScheme = EditorialPalette,
@@ -154,6 +170,94 @@ public fun App() {
                                 message = "Sign In tapped endpoint=${config.endpointBase} rpId=${config.rpId} userHandle=${config.userHandle}",
                             )
                             passkeyController.signIn(config.toAuthenticationStartPayload())
+                        }
+                    },
+                )
+
+                PrfCryptoCard(
+                    supportsPrf = capabilities.value.supportsPrf,
+                    actionsEnabled = actionsEnabled,
+                    hasSession = prfCryptoDemo.hasSession,
+                    hasCiphertext = prfCryptoDemo.hasEncryptedPayload,
+                    plaintext = prfPlaintext.value,
+                    decryptedText = prfDecryptedText.value,
+                    statusMessage = prfStatusMessage.value,
+                    onPlaintextChange = { prfPlaintext.value = it },
+                    onSignInWithPrf = {
+                        scope.launch {
+                            prfBusy.value = true
+                            debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
+                            val result = prfCryptoDemo.signInWithPrf(
+                                config = config,
+                                supportsPrf = capabilities.value.supportsPrf,
+                            )
+                            when (result) {
+                                is PrfDemoResult.Success -> {
+                                    prfStatusMessage.value = result.message
+                                    prfDecryptedText.value = null
+                                    debugLogs.i(source = "prf", message = result.message)
+                                }
+
+                                is PrfDemoResult.Failure -> {
+                                    prfStatusMessage.value = result.message
+                                    prfDecryptedText.value = null
+                                    debugLogs.w(source = "prf", message = result.message)
+                                }
+                            }
+                            prfBusy.value = false
+                        }
+                    },
+                    onEncrypt = {
+                        scope.launch {
+                            prfBusy.value = true
+                            val result = prfCryptoDemo.encrypt(prfPlaintext.value)
+                            when (result) {
+                                is PrfDemoResult.Success -> {
+                                    prfStatusMessage.value = result.message
+                                    prfDecryptedText.value = null
+                                    debugLogs.i(source = "prf", message = result.message)
+                                }
+
+                                is PrfDemoResult.Failure -> {
+                                    prfStatusMessage.value = result.message
+                                    debugLogs.w(source = "prf", message = result.message)
+                                }
+                            }
+                            prfBusy.value = false
+                        }
+                    },
+                    onDecrypt = {
+                        scope.launch {
+                            prfBusy.value = true
+                            val result = prfCryptoDemo.decrypt()
+                            when (result) {
+                                is PrfDemoResult.Success -> {
+                                    prfStatusMessage.value = result.message
+                                    prfDecryptedText.value = result.plaintext
+                                    debugLogs.i(source = "prf", message = result.message)
+                                }
+
+                                is PrfDemoResult.Failure -> {
+                                    prfStatusMessage.value = result.message
+                                    debugLogs.w(source = "prf", message = result.message)
+                                }
+                            }
+                            prfBusy.value = false
+                        }
+                    },
+                    onClearSession = {
+                        val result = prfCryptoDemo.clearSession()
+                        when (result) {
+                            is PrfDemoResult.Success -> {
+                                prfStatusMessage.value = result.message
+                                prfDecryptedText.value = null
+                                debugLogs.i(source = "prf", message = result.message)
+                            }
+
+                            is PrfDemoResult.Failure -> {
+                                prfStatusMessage.value = result.message
+                                debugLogs.w(source = "prf", message = result.message)
+                            }
                         }
                     },
                 )

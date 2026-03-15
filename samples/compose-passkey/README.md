@@ -9,8 +9,9 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `samples
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
 5. Direct sample wiring to `KtorPasskeyServerClient` default backend contract.
-6. Single logger-backed debug log panel in UI (wall-clock timestamps, level, source, message).
-7. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
+6. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
+7. Single logger-backed debug log panel in UI (wall-clock timestamps, level, source, message).
+8. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
@@ -69,6 +70,7 @@ The sample emits structured logs with tag `PasskeyDemo` and uses the same entrie
 - `app`: startup and configuration
 - `capabilities`: probe start/success/failure
 - `action`: register/sign-in taps
+- `prf`: PRF sign-in/session/encrypt/decrypt outcomes
 - `controller`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
 - `http`: raw Ktor engine lines
 
@@ -102,3 +104,8 @@ For realistic device passkey prompts, use HTTPS plus associated-domain configura
 - iOS: `/.well-known/apple-app-site-association`
 
 `samples/backend-ktor` serves both endpoints.
+
+## PRF crypto safety note
+
+- Salt persistence is intentionally caller-owned and sample-local (`InMemoryPrfSaltStore`) to keep library storage-independent.
+- Encrypted payloads are tied to passkey PRF output. If the passkey credential is removed, previously encrypted data cannot be recovered.

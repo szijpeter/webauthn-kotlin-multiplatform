@@ -37,6 +37,7 @@ import kotlinx.cinterop.useContents
 import platform.Foundation.NSProcessInfo
 
 private const val MIN_PRF_IOS_VERSION = 18
+private const val MIN_SECURITY_KEY_IOS_VERSION = 15
 
 internal class IosRegistrationPayload(
     val credentialId: ByteArray,
@@ -93,7 +94,9 @@ internal class AuthenticationServicesAuthorizationBridge(
                     requests.add(request)
                 }
 
-                if (useSecurityKey && NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
+                if (useSecurityKey &&
+                    NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= MIN_SECURITY_KEY_IOS_VERSION
+                ) {
                     val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rp.id.value)
                     val request = provider.createCredentialRegistrationRequestWithChallenge(
                         challenge = options.challenge.value.bytes().toNSData(),
@@ -152,71 +155,79 @@ internal class AuthenticationServicesAuthorizationBridge(
         }
         return runAuthorizationRequest(
             buildRequests = {
-                val requests = mutableListOf<Any>()
-
-                // For assertion without attachment constraints we typically request both if possible
-                val usePlatform = true
-                val useSecurityKey = true
-
-                if (usePlatform) {
-                    val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(rpId.value)
-                    val request = provider.createCredentialAssertionRequestWithChallenge(
-                        options.challenge.value.bytes().toNSData(),
-                    )
-                    request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-                    if (prfEval != null) {
-                        request.setPrfInput(prfEval)
-                    }
-                    requests.add(request)
-                }
-
-                if (useSecurityKey && NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= 15) {
-                    val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(rpId.value)
-                    val request = provider.createCredentialAssertionRequestWithChallenge(
-                        options.challenge.value.bytes().toNSData(),
-                    )
-                    request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-                    requests.add(request)
-                }
-
-                check(requests.isNotEmpty()) { "No ASAuthorization providers available" }
-                requests
+                buildAssertionRequests(
+                    options = options,
+                    rpId = rpId.value,
+                    prfEval = prfEval,
+                )
             },
-            extractPayload = { credential ->
-                when (credential) {
-                    is ASAuthorizationPlatformPublicKeyCredentialAssertion -> {
-                        IosAuthenticationPayload(
-                            credentialId = credential.credentialID.toByteArray(),
-                            rawId = credential.credentialID.toByteArray(),
-                            authenticatorData = checkNotNull(
-                                value = credential.rawAuthenticatorData?.toByteArray(),
-                            ) { "Missing rawAuthenticatorData in assertion response" },
-                            signature = credential.signature?.toByteArray()
-                                ?: throw IllegalStateException("Missing signature in assertion response"),
-                            clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                            userHandle = credential.userID?.toByteArray(),
-                            authenticatorAttachment = "platform",
-                            extensions = credential.prfExtensionsOrNull(),
-                        )
-                    }
-                    is platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialAssertion -> {
-                        IosAuthenticationPayload(
-                            credentialId = credential.credentialID.toByteArray(),
-                            rawId = credential.credentialID.toByteArray(),
-                            authenticatorData = credential.rawAuthenticatorData?.toByteArray()
-                                ?: throw IllegalStateException("Missing rawAuthenticatorData in assertion response"),
-                            signature = credential.signature?.toByteArray()
-                                ?: throw IllegalStateException("Missing signature in assertion response"),
-                            clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                            userHandle = credential.userID?.toByteArray(),
-                            authenticatorAttachment = "cross-platform",
-                            extensions = null,
-                        )
-                    }
-                    else -> throw unknownAuthorizationError()
-                }
-            },
+            extractPayload = ::extractAssertionPayload,
         )
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun buildAssertionRequests(
+        options: PublicKeyCredentialRequestOptions,
+        rpId: String,
+        prfEval: AuthenticationExtensionsPRFValues?,
+    ): List<Any> {
+        val requests = mutableListOf<Any>()
+        val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(rpId)
+        val platformRequest = platformProvider.createCredentialAssertionRequestWithChallenge(
+            options.challenge.value.bytes().toNSData(),
+        )
+        platformRequest.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+        if (prfEval != null) {
+            platformRequest.setPrfInput(prfEval)
+        }
+        requests.add(platformRequest)
+
+        if (NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= MIN_SECURITY_KEY_IOS_VERSION) {
+            val securityProvider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(rpId)
+            val securityRequest = securityProvider.createCredentialAssertionRequestWithChallenge(
+                options.challenge.value.bytes().toNSData(),
+            )
+            securityRequest.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+            requests.add(securityRequest)
+        }
+
+        check(requests.isNotEmpty()) { "No ASAuthorization providers available" }
+        return requests
+    }
+
+    private fun extractAssertionPayload(credential: Any?): IosAuthenticationPayload {
+        return when (credential) {
+            is ASAuthorizationPlatformPublicKeyCredentialAssertion -> {
+                IosAuthenticationPayload(
+                    credentialId = credential.credentialID.toByteArray(),
+                    rawId = credential.credentialID.toByteArray(),
+                    authenticatorData = checkNotNull(
+                        value = credential.rawAuthenticatorData?.toByteArray(),
+                    ) { "Missing rawAuthenticatorData in assertion response" },
+                    signature = credential.signature?.toByteArray()
+                        ?: throw IllegalStateException("Missing signature in assertion response"),
+                    clientDataJson = credential.rawClientDataJSON.toByteArray(),
+                    userHandle = credential.userID?.toByteArray(),
+                    authenticatorAttachment = "platform",
+                    extensions = credential.prfExtensionsOrNull(),
+                )
+            }
+            is platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialAssertion -> {
+                IosAuthenticationPayload(
+                    credentialId = credential.credentialID.toByteArray(),
+                    rawId = credential.credentialID.toByteArray(),
+                    authenticatorData = credential.rawAuthenticatorData?.toByteArray()
+                        ?: throw IllegalStateException("Missing rawAuthenticatorData in assertion response"),
+                    signature = credential.signature?.toByteArray()
+                        ?: throw IllegalStateException("Missing signature in assertion response"),
+                    clientDataJson = credential.rawClientDataJSON.toByteArray(),
+                    userHandle = credential.userID?.toByteArray(),
+                    authenticatorAttachment = "cross-platform",
+                    extensions = null,
+                )
+            }
+            else -> throw unknownAuthorizationError()
+        }
     }
 
     @OptIn(ExperimentalForeignApi::class)
