@@ -1,23 +1,48 @@
 package dev.webauthn.model
 
+/** W3C WebAuthn L3: §4 Terminology and RP ID handling rules used by the ceremonies. */
 @kotlin.jvm.JvmInline
 public value class RpId private constructor(public val value: String) {
+    /** Parsers and constructors for RP ID values validated against host-like constraints. */
     public companion object {
-        private val allowed: Regex = Regex("^[a-z0-9.-]+$")
+        private const val MAX_DNS_LENGTH = 253
+        private const val MAX_LABEL_LENGTH = 63
+        private val allowedLabel: Regex = Regex("^[a-z0-9-]+$")
 
         public fun parse(value: String): ValidationResult<RpId> {
             val errors = mutableListOf<WebAuthnValidationError>()
             if (value.isBlank()) {
                 errors += WebAuthnValidationError.MissingValue("rpId", "RP ID must not be empty")
             }
-            if (value.length > 253) {
+            if (value.length > MAX_DNS_LENGTH) {
                 errors += WebAuthnValidationError.InvalidValue("rpId", "RP ID exceeds max DNS length")
-            }
-            if (!allowed.matches(value)) {
-                errors += WebAuthnValidationError.InvalidFormat("rpId", "RP ID must be a lowercase host")
             }
             if (value.startsWith('.') || value.endsWith('.')) {
                 errors += WebAuthnValidationError.InvalidFormat("rpId", "RP ID must not start or end with a dot")
+            }
+            for (label in value.split('.')) {
+                if (label.isEmpty()) {
+                    errors += WebAuthnValidationError.InvalidFormat("rpId", "RP ID must not contain empty labels")
+                    continue
+                }
+                if (label.length > MAX_LABEL_LENGTH) {
+                    errors += WebAuthnValidationError.InvalidValue(
+                        "rpId",
+                        "RP ID labels must be at most $MAX_LABEL_LENGTH characters",
+                    )
+                }
+                if (label.startsWith('-') || label.endsWith('-')) {
+                    errors += WebAuthnValidationError.InvalidFormat(
+                        "rpId",
+                        "RP ID labels must not start or end with a hyphen",
+                    )
+                }
+                if (!allowedLabel.matches(label)) {
+                    errors += WebAuthnValidationError.InvalidFormat(
+                        "rpId",
+                        "RP ID labels must use lowercase letters, digits, or hyphen",
+                    )
+                }
             }
             if (errors.isNotEmpty()) {
                 return ValidationResult.Invalid(errors)
@@ -31,8 +56,10 @@ public value class RpId private constructor(public val value: String) {
     override fun toString(): String = value
 }
 
+/** W3C WebAuthn L3: §5.8.1 / §7 origin validation input. */
 @kotlin.jvm.JvmInline
 public value class Origin private constructor(public val value: String) {
+    /** Parsers and constructors for ceremony origin values. */
     public companion object {
         public fun parse(value: String): ValidationResult<Origin> {
             if (!value.startsWith("https://") && !value.startsWith("android:apk-key-hash:")) {
@@ -54,21 +81,25 @@ public value class Origin private constructor(public val value: String) {
     override fun toString(): String = value
 }
 
+/** W3C WebAuthn L3: §13.4.3 challenge requirements (minimum entropy/length). */
 @kotlin.jvm.JvmInline
 public value class Challenge private constructor(public val value: Base64UrlBytes) {
+    /** Parsers and constructors enforcing minimum challenge length requirements. */
     public companion object {
+        private const val MIN_BYTES = 16
+
         public fun parse(encoded: String): ValidationResult<Challenge> {
             val baseResult = Base64UrlBytes.parse(encoded, "challenge")
             return when (baseResult) {
                 is ValidationResult.Invalid -> baseResult
                 is ValidationResult.Valid -> {
                     val size = baseResult.value.bytes().size
-                    if (size < 16) {
+                    if (size < MIN_BYTES) {
                         ValidationResult.Invalid(
                             listOf(
                                 WebAuthnValidationError.InvalidValue(
                                     field = "challenge",
-                                    message = "Challenge must be at least 16 bytes",
+                                    message = "Challenge must be at least $MIN_BYTES bytes",
                                 ),
                             ),
                         )
@@ -80,7 +111,7 @@ public value class Challenge private constructor(public val value: Base64UrlByte
         }
 
         public fun fromBytes(value: ByteArray): Challenge {
-            require(value.size >= 16) { "Challenge must be at least 16 bytes" }
+            require(value.size >= MIN_BYTES) { "Challenge must be at least $MIN_BYTES bytes" }
             return Challenge(Base64UrlBytes.fromBytes(value))
         }
 
@@ -90,8 +121,10 @@ public value class Challenge private constructor(public val value: Base64UrlByte
     override fun toString(): String = "Challenge(${value.bytes().size} bytes)"
 }
 
+/** W3C WebAuthn L3: §5.1 credential identifier type. */
 @kotlin.jvm.JvmInline
 public value class CredentialId private constructor(public val value: Base64UrlBytes) {
+    /** Parsers and constructors for credential identifier values. */
     public companion object {
         public fun parse(encoded: String): ValidationResult<CredentialId> {
             return when (val parsed = Base64UrlBytes.parse(encoded, "credentialId")) {
@@ -108,8 +141,10 @@ public value class CredentialId private constructor(public val value: Base64UrlB
     override fun toString(): String = "CredentialId(${value.bytes().size} bytes)"
 }
 
+/** W3C WebAuthn L3: §5.4.3 user handle type. */
 @kotlin.jvm.JvmInline
 public value class UserHandle private constructor(public val value: Base64UrlBytes) {
+    /** Parsers and constructors for user handle values. */
     public companion object {
         public fun parse(encoded: String): ValidationResult<UserHandle> {
             return when (val parsed = Base64UrlBytes.parse(encoded, "userHandle")) {
@@ -126,21 +161,25 @@ public value class UserHandle private constructor(public val value: Base64UrlByt
     override fun toString(): String = "UserHandle(${value.bytes().size} bytes)"
 }
 
+/** W3C WebAuthn L3: §5.8 PublicKeyCredential.type values. */
 public enum class PublicKeyCredentialType {
     PUBLIC_KEY,
 }
 
+/** W3C WebAuthn L3: §5.4.6 UserVerificationRequirement enumeration. */
 public enum class UserVerificationRequirement {
     REQUIRED,
     PREFERRED,
     DISCOURAGED,
 }
 
+/** W3C WebAuthn L3: §5.4.5 AuthenticatorAttachment enumeration. */
 public enum class AuthenticatorAttachment {
     PLATFORM,
     CROSS_PLATFORM,
 }
 
+/** W3C WebAuthn L3: §5.8.4 AuthenticatorTransport enumeration. */
 public enum class AuthenticatorTransport {
     USB,
     NFC,
@@ -150,6 +189,7 @@ public enum class AuthenticatorTransport {
     INTERNAL,
 }
 
+/** W3C WebAuthn L3: §5.4.7 AttestationConveyancePreference enumeration. */
 public enum class AttestationConveyancePreference {
     NONE,
     INDIRECT,
@@ -157,6 +197,7 @@ public enum class AttestationConveyancePreference {
     ENTERPRISE,
 }
 
+/** W3C WebAuthn L3: §5.4.6 ResidentKeyRequirement enumeration. */
 public enum class ResidentKeyRequirement {
     REQUIRED,
     PREFERRED,

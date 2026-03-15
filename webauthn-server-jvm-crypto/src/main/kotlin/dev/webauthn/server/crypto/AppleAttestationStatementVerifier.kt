@@ -1,3 +1,9 @@
+@file:Suppress(
+    "CyclomaticComplexMethod",
+    "LongMethod",
+    "TooGenericExceptionCaught",
+)
+
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
@@ -89,7 +95,8 @@ internal class AppleAttestationStatementVerifier(
             )
         }
 
-        // W3C WebAuthn L3: §8.8 Step 2: Verify that credential public key matches the public key in the attestation certificate
+        // W3C WebAuthn L3: §8.8 Step 2: Verify that credential public key
+        // matches the public key in the attestation certificate.
         val credPubKeyBytes = input.response.attestedCredentialData.cosePublicKey
         if (credPubKeyBytes.bytes().isNotEmpty()) {
             val metadata = SignumPrimitives.decodeCoseMaterial(credPubKeyBytes)
@@ -98,7 +105,12 @@ internal class AppleAttestationStatementVerifier(
                     certificateInspector.inspect(leafCertDer)
                 } catch (e: Exception) {
                     return ValidationResult.Invalid(
-                        listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to inspect certificate: ${e.message}")),
+                        listOf(
+                            WebAuthnValidationError.InvalidValue(
+                                "x5c",
+                                "Failed to inspect certificate: ${e.message}",
+                            ),
+                        ),
                     )
                 }
                 if (certMetadata.ecPublicKeyX != null && certMetadata.ecPublicKeyY != null) {

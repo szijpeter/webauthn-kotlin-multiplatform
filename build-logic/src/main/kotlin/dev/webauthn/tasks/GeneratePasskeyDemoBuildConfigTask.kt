@@ -9,6 +9,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
+/** Generates `PasskeyDemoBuildConfig.kt` for the compose sample from Gradle properties. */
 abstract class GeneratePasskeyDemoBuildConfigTask : DefaultTask() {
     @get:OutputDirectory
     abstract val outputDir: DirectoryProperty

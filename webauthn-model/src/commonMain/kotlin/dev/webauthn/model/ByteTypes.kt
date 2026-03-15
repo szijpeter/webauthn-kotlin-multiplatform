@@ -40,6 +40,7 @@ private inline fun <T> fromFixedLengthBase64UrlBytes(
         invalidFixedLengthValue(field, label, length)
     }
 
+/** W3C WebAuthn L3: §5.8.1 hash(clientDataJSON) carried in signature verification inputs. */
 @kotlin.jvm.JvmInline
 public value class ClientDataHash private constructor(private val value: Base64UrlBytes) {
     public val size: Int
@@ -53,6 +54,7 @@ public value class ClientDataHash private constructor(private val value: Base64U
 
     override fun toString(): String = "ClientDataHash($size bytes)"
 
+    /** Constructors and validators for fixed-size clientDataHash values (32 bytes). */
     public companion object {
         private const val LENGTH: Int = 32
 
@@ -73,6 +75,7 @@ public value class ClientDataHash private constructor(private val value: Base64U
     }
 }
 
+/** W3C WebAuthn L3: §6.1 rpIdHash field from authenticator data. */
 @kotlin.jvm.JvmInline
 public value class RpIdHash private constructor(private val value: Base64UrlBytes) {
     public val size: Int
@@ -86,6 +89,7 @@ public value class RpIdHash private constructor(private val value: Base64UrlByte
 
     override fun toString(): String = "RpIdHash($size bytes)"
 
+    /** Constructors and validators for fixed-size rpIdHash values (32 bytes). */
     public companion object {
         private const val LENGTH: Int = 32
 
@@ -102,6 +106,7 @@ public value class RpIdHash private constructor(private val value: Base64UrlByte
     }
 }
 
+/** W3C WebAuthn L3: §6.5 AAGUID value in attested credential data. */
 @kotlin.jvm.JvmInline
 public value class Aaguid private constructor(private val value: Base64UrlBytes) {
     public val size: Int
@@ -115,6 +120,7 @@ public value class Aaguid private constructor(private val value: Base64UrlBytes)
 
     override fun toString(): String = "Aaguid($size bytes)"
 
+    /** Constructors and validators for fixed-size AAGUID values (16 bytes). */
     public companion object {
         private const val LENGTH: Int = 16
 
@@ -131,6 +137,7 @@ public value class Aaguid private constructor(private val value: Base64UrlBytes)
     }
 }
 
+/** W3C WebAuthn L3: §6.5.1 credentialPublicKey (COSE_Key) bytes. */
 @kotlin.jvm.JvmInline
 public value class CosePublicKey private constructor(private val value: Base64UrlBytes) {
     public val size: Int
@@ -144,6 +151,7 @@ public value class CosePublicKey private constructor(private val value: Base64Ur
 
     override fun toString(): String = "CosePublicKey($size bytes)"
 
+    /** Constructors and validators for credential public key COSE bytes. */
     public companion object {
         public fun parse(value: String, field: String = "cosePublicKey"): ValidationResult<CosePublicKey> {
             return when (val parsed = Base64UrlBytes.parse(value, field)) {

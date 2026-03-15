@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.webauthn.server.crypto
 
 /**
@@ -38,7 +40,9 @@ internal class DerParser(private val data: ByteArray) {
         val header = readHeader()
         if (header.tag != TAG_INTEGER && header.tag != TAG_ENUMERATED) {
             // Android Key Attestation sometimes uses ENUMERATED for SecurityLevel, treated same as INTEGER here
-            throw IllegalArgumentException("Expected INTEGER (0x02) or ENUMERATED (0x0A), found 0x${header.tag.toString(16)}")
+            throw IllegalArgumentException(
+                "Expected INTEGER (0x02) or ENUMERATED (0x0A), found 0x${header.tag.toString(16)}",
+            )
         }
         return header.value
     }
@@ -76,6 +80,8 @@ internal class DerParser(private val data: ByteArray) {
         return Header(tag, value)
     }
 
+    // DER length decoding validates multiple malformed cases and throws intentionally on protocol violations.
+    @Suppress("ThrowsCount")
     private fun readLength(): Int {
         if (pos >= data.size) throw IllegalArgumentException("Unexpected end of DER data")
 
@@ -94,12 +100,19 @@ internal class DerParser(private val data: ByteArray) {
             throw IllegalArgumentException("Unexpected end of DER data reading length")
         }
 
+        val firstLengthByte = data[pos].toInt() and 0xFF
         var length = 0
         repeat(byteCount) {
             length = (length shl 8) or (data[pos++].toInt() and 0xFF)
         }
 
         if (length < 0) throw IllegalArgumentException("DER length negative (overflow)")
+        if (byteCount > 1 && firstLengthByte == 0) {
+            throw IllegalArgumentException("DER length has non-canonical leading zero")
+        }
+        if (length < 0x80) {
+            throw IllegalArgumentException("DER length uses long form for short value")
+        }
 
         return length
     }

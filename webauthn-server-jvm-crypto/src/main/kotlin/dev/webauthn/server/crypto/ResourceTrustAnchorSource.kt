@@ -5,8 +5,10 @@ import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import java.io.InputStream
 import java.security.cert.CertificateFactory
+import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 
+/** Loads bundled PEM trust anchors for attestation trust-chain validation. */
 public class ResourceTrustAnchorSource : TrustAnchorSource {
 
     private val trustedCerts: List<Base64UrlBytes> by lazy {
@@ -33,7 +35,9 @@ public class ResourceTrustAnchorSource : TrustAnchorSource {
                                 certs.add(Base64UrlBytes.fromBytes(cert.encoded))
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (e: CertificateException) {
+                        System.err.println("Failed to load trust anchor: $filename - ${e.message}")
+                    } catch (e: IllegalArgumentException) {
                         System.err.println("Failed to load trust anchor: $filename - ${e.message}")
                     }
                 }

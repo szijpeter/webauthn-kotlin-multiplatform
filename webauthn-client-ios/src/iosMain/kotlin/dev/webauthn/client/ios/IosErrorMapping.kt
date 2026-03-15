@@ -13,8 +13,14 @@ internal fun NSError.toPasskeyClientError(): PasskeyClientError {
     if (this.domain == ASAuthorizationErrorDomain) {
         when (this.code) {
             ASAuthorizationErrorCanceled -> return PasskeyClientError.UserCancelled()
-            ASAuthorizationErrorNotHandled -> return PasskeyClientError.Platform("Request not handled", NSErrorException(this))
-            ASAuthorizationErrorFailed -> return PasskeyClientError.Platform("Authorization failed", NSErrorException(this))
+            ASAuthorizationErrorNotHandled -> {
+                return PasskeyClientError.Platform("Request not handled", NSErrorException(this))
+            }
+
+            ASAuthorizationErrorFailed -> {
+                return PasskeyClientError.Platform("Authorization failed", NSErrorException(this))
+            }
+
             else -> return PasskeyClientError.Platform(this.localizedDescription, NSErrorException(this))
         }
     }

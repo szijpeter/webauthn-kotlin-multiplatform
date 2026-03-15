@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength")
+
 package dev.webauthn.client.ios
 
 import dev.webauthn.model.AttestationConveyancePreference
@@ -125,6 +127,7 @@ internal class AuthenticationServicesAuthorizationBridge(
      * W3C WebAuthn L3: §5.1.4. Use an Existing Credential to Make an Assertion
      * Maps to Apple ASAuthorizationPlatformPublicKeyCredentialProvider createCredentialAssertionRequestWithChallenge
      */
+    @Suppress("ThrowsCount")
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload {
         val rpId = requireNotNull(options.rpId) {
             "PublicKeyCredentialRequestOptions.rpId is required by the iOS AuthenticationServices bridge."
@@ -194,6 +197,7 @@ internal class AuthenticationServicesAuthorizationBridge(
     }
 
     @OptIn(ExperimentalForeignApi::class)
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <TPayload> runAuthorizationRequest(
         buildRequests: () -> List<Any>,
         extractPayload: (Any?) -> TPayload,

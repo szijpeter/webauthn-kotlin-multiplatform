@@ -7,10 +7,13 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 
+/** iOS [PasskeyClient] implementation delegated to native AuthenticationServices bridge. */
 public class IosPasskeyClient : PasskeyClient by IosPasskeyDelegate()
 
 internal expect class IosPasskeyDelegate() : PasskeyClient {
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse>
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+    ): PasskeyResult<RegistrationResponse>
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse>
 }

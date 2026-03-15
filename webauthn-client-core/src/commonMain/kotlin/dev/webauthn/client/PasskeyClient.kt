@@ -1,3 +1,5 @@
+@file:Suppress("UndocumentedPublicFunction", "UndocumentedPublicProperty")
+
 package dev.webauthn.client
 
 import at.asitplus.KmmResult
@@ -8,6 +10,7 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 
+/** Public cross-platform API for WebAuthn registration and authentication ceremonies. */
 public interface PasskeyClient {
     /**
      * W3C WebAuthn L3: §5.1. Authentication Credentials Container (navigator.credentials.create)
@@ -28,6 +31,7 @@ public interface PasskeyClient {
     }
 }
 
+/** Capability hints surfaced by platform implementations. */
 public data class PasskeyCapabilities(
     public val supportsPrf: Boolean = false,
     public val supportsLargeBlobRead: Boolean = false,
@@ -36,16 +40,20 @@ public data class PasskeyCapabilities(
     public val platformVersionHints: List<String> = emptyList(),
 )
 
+/** Result wrapper for passkey operations. */
 public sealed interface PasskeyResult<out T> {
     public data class Success<T>(public val value: T) : PasskeyResult<T>
 
     public data class Failure(public val error: PasskeyClientError) : PasskeyResult<Nothing>
 }
 
+/** Error surface returned by passkey operations. */
 public sealed interface PasskeyClientError {
     public val message: String
 
-    public data class UserCancelled(override val message: String = "The user cancelled the passkey prompt") : PasskeyClientError
+    public data class UserCancelled(
+        override val message: String = "The user cancelled the passkey prompt",
+    ) : PasskeyClientError
 
     public data class InvalidOptions(override val message: String) : PasskeyClientError
 
@@ -54,6 +62,7 @@ public sealed interface PasskeyClientError {
     public data class Platform(override val message: String, public val cause: Throwable? = null) : PasskeyClientError
 }
 
+/** Platform bridge contract implemented by target-specific modules. */
 public interface PasskeyPlatformBridge {
     public suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse
 
@@ -66,10 +75,13 @@ public interface PasskeyPlatformBridge {
     }
 }
 
+/** Default [PasskeyClient] orchestration that delegates to a platform bridge. */
 public class DefaultPasskeyClient(
     private val bridge: PasskeyPlatformBridge,
 ) : PasskeyClient {
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+    ): PasskeyResult<RegistrationResponse> {
         return runTypedCeremony(
             options = options,
             validate = ::requireCreationOptions,
@@ -77,7 +89,9 @@ public class DefaultPasskeyClient(
         )
     }
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+    override suspend fun getAssertion(
+        options: PublicKeyCredentialRequestOptions,
+    ): PasskeyResult<AuthenticationResponse> {
         return runTypedCeremony(
             options = options,
             operation = bridge::getAssertion,
@@ -122,6 +136,7 @@ public class DefaultPasskeyClient(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <T> suspendCatching(block: suspend () -> T): KmmResult<T> {
         return try {
             KmmResult(block())
@@ -136,6 +151,7 @@ private class InvalidOptionsException(
     cause: Throwable? = null,
 ) : IllegalArgumentException(message, cause)
 
+/** Request model for evaluating PRF extension support and behavior. */
 @ExperimentalWebAuthnL3Api
 public data class PrfEvaluationRequest(
     public val enabled: Boolean,

@@ -192,7 +192,7 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
-    fun registrationResponsePrefersRawIdOverId() {
+    fun registrationResponseRejectsMismatchedIdAndRawId() {
         val rawCredentialBytes = ByteArray(16) { 0x33 }
         val rawCredentialId = CredentialId.fromBytes(rawCredentialBytes)
         val mismatchedId = CredentialId.fromBytes(ByteArray(16) { 0x66 })
@@ -214,9 +214,7 @@ class WebAuthnDtoMapperTest {
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
-        assertTrue(result is ValidationResult.Valid)
-        assertEquals(rawCredentialId, result.value.credentialId)
-        assertEquals(rawCredentialId, result.value.attestedCredentialData.credentialId)
+        assertTrue(result is ValidationResult.Invalid)
     }
 
     @Test
@@ -378,6 +376,24 @@ class WebAuthnDtoMapperTest {
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Valid)
         assertNull(result.value.rpId)
+    }
+
+    @Test
+    fun requestOptionsRejectUnknownUserVerification() {
+        val dto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = "example.com",
+            userVerification = "sometimes",
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            result.errors.any {
+                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                    it.field == "userVerification"
+            }
+        )
     }
 
     @Test

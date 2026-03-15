@@ -16,13 +16,25 @@ internal class TpmAttestationStatementVerifier(
     private val certificateInspector: JvmCertificateInspector = JvmCertificateInspector(),
 ) : AttestationVerifier {
 
+    @Suppress("MagicNumber")
     companion object {
         private const val TPM_GENERATED_VALUE = 0xFF544347.toInt()
         private const val TPM_ST_ATTEST_CERTIFY = 0x8017.toShort()
         private const val VERSION_2_0 = "2.0"
+        private const val AIK_CERTIFICATE_VERSION = 3
         private const val OID_TCG_KP_AIK_CERTIFICATE = "2.23.133.8.3"
     }
 
+    // TPM verification uses explicit fail-fast exits to mirror spec steps and preserve error locality.
+    @Suppress(
+        "CyclomaticComplexMethod",
+        "LongMethod",
+        "MagicNumber",
+        "MaxLineLength",
+        "ReturnCount",
+        "ThrowsCount",
+        "TooGenericExceptionCaught",
+    )
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(
@@ -145,6 +157,7 @@ internal class TpmAttestationStatementVerifier(
         return ValidationResult.Valid(Unit)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun validateAikCert(certificateDer: ByteArray): ValidationResult<Unit> {
         val cert = try {
             certificateInspector.inspect(certificateDer)
@@ -154,9 +167,14 @@ internal class TpmAttestationStatementVerifier(
             )
         }
 
-        if (cert.version != 3) {
+        if (cert.version != AIK_CERTIFICATE_VERSION) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate version must be 3")),
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        "x5c",
+                        "AIK certificate version must be 3",
+                    ),
+                ),
             )
         }
         if (cert.subjectDistinguishedName.isEmpty()) {
@@ -171,12 +189,22 @@ internal class TpmAttestationStatementVerifier(
         }
         if (!cert.extendedKeyUsageOids.contains(OID_TCG_KP_AIK_CERTIFICATE)) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate missing tcg-kp-AIKCertificate EKU")),
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        "x5c",
+                        "AIK certificate missing tcg-kp-AIKCertificate EKU",
+                    ),
+                ),
             )
         }
         if (cert.criticalExtensionOids.contains("2.5.29.17")) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate SAN extension must not be critical")),
+                listOf(
+                    WebAuthnValidationError.InvalidValue(
+                        "x5c",
+                        "AIK certificate SAN extension must not be critical",
+                    ),
+                ),
             )
         }
 

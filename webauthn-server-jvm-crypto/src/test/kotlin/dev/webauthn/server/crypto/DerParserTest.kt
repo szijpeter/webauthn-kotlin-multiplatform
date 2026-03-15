@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import java.util.Arrays
 
@@ -57,5 +58,21 @@ class DerParserTest {
         val seq = DerParser(der).readSequence()
         val octet = seq.readOctetString()
         assertTrue(Arrays.equals(byteArrayOf(0xFF.toByte()), octet))
+    }
+
+    @Test
+    fun testRejectsNonCanonicalLongFormForShortLength() {
+        val der = byteArrayOf(0x04, 0x81.toByte(), 0x7F) + ByteArray(0x7F)
+        assertFailsWith<IllegalArgumentException> {
+            DerParser(der).readOctetString()
+        }
+    }
+
+    @Test
+    fun testRejectsLeadingZeroInLongFormLength() {
+        val der = byteArrayOf(0x04, 0x82.toByte(), 0x00, 0x80.toByte()) + ByteArray(128)
+        assertFailsWith<IllegalArgumentException> {
+            DerParser(der).readOctetString()
+        }
     }
 }

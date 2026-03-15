@@ -13,6 +13,26 @@ class TypesTest {
     }
 
     @Test
+    fun rpIdRejectsInvalidDnsLabels() {
+        assertTrue(RpId.parse("example..com") is ValidationResult.Invalid)
+        assertTrue(RpId.parse("-example.com") is ValidationResult.Invalid)
+        assertTrue(RpId.parse("example-.com") is ValidationResult.Invalid)
+        assertTrue(RpId.parse("exa_mple.com") is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun rpIdRejectsTooLongLabel() {
+        val tooLongLabel = "a".repeat(64)
+        assertTrue(RpId.parse("$tooLongLabel.example") is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun rpIdAcceptsValidHostLabels() {
+        val result = RpId.parse("login-1.example.com")
+        assertTrue(result is ValidationResult.Valid)
+    }
+
+    @Test
     fun challengeRequiresAtLeast16Bytes() {
         val result = Challenge.parse("YWJj")
         assertTrue(result is ValidationResult.Invalid)

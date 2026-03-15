@@ -7,6 +7,7 @@ import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
+/** Delegates attestation verification to the verifier matching each attestation format. */
 public class CompositeAttestationVerifier internal constructor(
     signatureVerifier: SignatureVerifier? = null,
     trustAnchorSource: TrustAnchorSource? = null,
@@ -69,12 +70,22 @@ public class CompositeAttestationVerifier internal constructor(
         return when (parsed.fmt) {
             "packed" -> packedVerifier?.verify(input)
                 ?: ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("attestationObject.fmt", "Packed attestation not supported: no SignatureVerifier configured")),
+                    listOf(
+                        WebAuthnValidationError.InvalidValue(
+                            "attestationObject.fmt",
+                            "Packed attestation not supported: no SignatureVerifier configured",
+                        ),
+                    ),
                 )
 
             else -> verifiers[parsed.fmt]?.verify(input)
                 ?: ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("attestationObject.fmt", "Unsupported attestation format: ${parsed.fmt}")),
+                    listOf(
+                        WebAuthnValidationError.InvalidValue(
+                            "attestationObject.fmt",
+                            "Unsupported attestation format: ${parsed.fmt}",
+                        ),
+                    ),
                 )
         }
     }

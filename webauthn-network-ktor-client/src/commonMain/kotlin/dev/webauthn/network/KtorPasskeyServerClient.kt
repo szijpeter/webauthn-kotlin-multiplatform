@@ -23,6 +23,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
+/** Backend API contract consumed by [KtorPasskeyServerClient]. */
 public interface BackendContract {
     public suspend fun getRegisterOptions(
         httpClient: HttpClient,
@@ -53,6 +54,7 @@ public interface BackendContract {
     ): PasskeyFinishResult
 }
 
+/** Default backend contract matching the sample/server route structure. */
 public class DefaultBackendContract(
     private val registerOptionsPath: String = "/webauthn/registration/start",
     private val registerVerifyPath: String = "/webauthn/registration/finish",
@@ -113,7 +115,9 @@ public class DefaultBackendContract(
         return if (result.status == "ok") {
             PasskeyFinishResult.Verified
         } else {
-            PasskeyFinishResult.Rejected("Registration verification was rejected by the server with status '${result.status}'.")
+            PasskeyFinishResult.Rejected(
+                "Registration verification was rejected by the server with status '${result.status}'.",
+            )
         }
     }
 
@@ -171,11 +175,14 @@ public class DefaultBackendContract(
         return if (result.status == "ok") {
             PasskeyFinishResult.Verified
         } else {
-            PasskeyFinishResult.Rejected("Authentication verification was rejected by the server with status '${result.status}'.")
+            PasskeyFinishResult.Rejected(
+                "Authentication verification was rejected by the server with status '${result.status}'.",
+            )
         }
     }
 }
 
+/** Ktor-based [PasskeyServerClient] implementation for JSON WebAuthn backend endpoints. */
 public class KtorPasskeyServerClient(
     private val httpClient: HttpClient,
     endpointBase: String,
@@ -229,6 +236,7 @@ public class KtorPasskeyServerClient(
     }
 }
 
+/** Payload for registration-start endpoint requests. */
 @Serializable
 public data class RegistrationStartPayload(
     public val rpId: String,
@@ -239,10 +247,13 @@ public data class RegistrationStartPayload(
     public val userHandle: String,
 ) {
     override fun toString(): String {
-        return "RegistrationStartPayload(rpId=$rpId, rpName=$rpName, origin=$origin, userName=<redacted>, userDisplayName=<redacted>, userHandle=<redacted>)"
+        return "RegistrationStartPayload(" +
+            "rpId=$rpId, rpName=$rpName, origin=$origin, " +
+            "userName=<redacted>, userDisplayName=<redacted>, userHandle=<redacted>)"
     }
 }
 
+/** Payload for authentication-start endpoint requests. */
 @Serializable
 public data class AuthenticationStartPayload(
     public val rpId: String,
@@ -252,7 +263,9 @@ public data class AuthenticationStartPayload(
 ) {
     override fun toString(): String {
         val userHandleValue = if (userHandle == null) "null" else "<redacted>"
-        return "AuthenticationStartPayload(rpId=$rpId, origin=$origin, userName=<redacted>, userHandle=$userHandleValue)"
+        return "AuthenticationStartPayload(" +
+            "rpId=$rpId, origin=$origin, userName=<redacted>, " +
+            "userHandle=$userHandleValue)"
     }
 }
 
@@ -306,8 +319,9 @@ private inline fun <reified T> decodeOrThrow(
 ): T {
     return runCatching { contractJson.decodeFromString<T>(body) }
         .getOrElse { error ->
-            val preview = body.trim().take(512).ifBlank { "<empty>" }
-            throw IllegalStateException("$operation could not be parsed: ${error.message}. Body: $preview")
+            throw IllegalStateException(
+                "$operation could not be parsed: ${error.message}. Body length=${body.length}",
+            )
         }
 }
 
@@ -322,5 +336,5 @@ private fun serverErrorMessage(body: String): String {
             ?.filter { it.isNotBlank() }
             ?.joinToString("; ")
     }.getOrNull()?.takeIf { it.isNotBlank() }
-    return fromErrors ?: trimmed.take(512)
+    return fromErrors ?: "<redacted non-empty body length=${trimmed.length}>"
 }

@@ -1,3 +1,5 @@
+@file:Suppress("UndocumentedPublicFunction", "UndocumentedPublicProperty")
+
 package dev.webauthn.client
 
 import dev.webauthn.model.AuthenticationResponse
@@ -11,37 +13,53 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 
+/** High-level user action currently being executed by the controller. */
 public enum class PasskeyAction {
     REGISTER,
     SIGN_IN,
 }
 
+/** Lifecycle phase of a passkey ceremony. */
 public enum class PasskeyPhase {
     STARTING,
     PLATFORM_PROMPT,
     FINISHING,
 }
 
+/** UI-facing state emitted by [PasskeyController]. */
 public sealed interface PasskeyControllerState {
+    /** No ceremony is currently in progress. */
     public data object Idle : PasskeyControllerState
 
+    /** A ceremony is running with the provided [action] and [phase]. */
     public data class InProgress(
         public val action: PasskeyAction,
         public val phase: PasskeyPhase,
     ) : PasskeyControllerState
 
+    /** A ceremony completed successfully for [action]. */
     public data class Success(
         public val action: PasskeyAction,
     ) : PasskeyControllerState
 
+    /** A ceremony failed for [action] with [error]. */
     public data class Failure(
         public val action: PasskeyAction,
         public val error: PasskeyClientError,
     ) : PasskeyControllerState
 }
 
+/** Backend contract used by [PasskeyController] to start/finish ceremonies. */
 public interface PasskeyServerClient<RegisterParams, SignInParams> {
     public suspend fun getRegisterOptions(params: RegisterParams): ValidationResult<PublicKeyCredentialCreationOptions>
+
+    /**
+     * Completes registration.
+     *
+     * `challengeAsBase64Url` is an echoed client value and must be checked against
+     * server-trusted state (or an equivalent signed challenge envelope). It is
+     * not authoritative on its own.
+     */
     public suspend fun finishRegister(
         params: RegisterParams,
         response: RegistrationResponse,
@@ -49,6 +67,14 @@ public interface PasskeyServerClient<RegisterParams, SignInParams> {
     ): PasskeyFinishResult
 
     public suspend fun getSignInOptions(params: SignInParams): ValidationResult<PublicKeyCredentialRequestOptions>
+
+    /**
+     * Completes authentication.
+     *
+     * `challengeAsBase64Url` is an echoed client value and must be checked against
+     * server-trusted state (or an equivalent signed challenge envelope). It is
+     * not authoritative on its own.
+     */
     public suspend fun finishSignIn(
         params: SignInParams,
         response: AuthenticationResponse,
@@ -56,12 +82,16 @@ public interface PasskeyServerClient<RegisterParams, SignInParams> {
     ): PasskeyFinishResult
 }
 
+/** Result returned by backend finish endpoints for passkey ceremonies. */
 public sealed interface PasskeyFinishResult {
+    /** Ceremony verification succeeded on the backend. */
     public data object Verified : PasskeyFinishResult
 
+    /** Ceremony verification was rejected with an optional explanatory message. */
     public data class Rejected(public val message: String? = null) : PasskeyFinishResult
 }
 
+/** Shared registration/authentication ceremony coordinator for app-facing flows. */
 public class PasskeyController<RegisterParams, SignInParams>(
     private val passkeyClient: PasskeyClient,
     private val serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
@@ -111,6 +141,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         )
     }
 
+    @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
     private suspend fun <OptionsT, ResponseT> runCeremony(
         action: PasskeyAction,
         getOptions: suspend () -> ValidationResult<OptionsT>,
@@ -130,7 +161,10 @@ public class PasskeyController<RegisterParams, SignInParams>(
                 is ValidationResult.Valid -> optionsResult.value
                 is ValidationResult.Invalid -> {
                     val message = optionsResult.errors.joinToString("; ") { "${it.field}: ${it.message}" }
-                    _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.InvalidOptions("Options validation failed: $message"))
+                    _uiState.value = PasskeyControllerState.Failure(
+                        action,
+                        PasskeyClientError.InvalidOptions("Options validation failed: $message"),
+                    )
                     return
                 }
             }

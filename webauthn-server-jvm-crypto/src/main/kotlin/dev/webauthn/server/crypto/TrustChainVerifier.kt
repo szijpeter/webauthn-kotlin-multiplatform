@@ -5,6 +5,7 @@ import dev.webauthn.model.Aaguid
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 
+/** Verifies attestation certificate chains against configured trust anchors. */
 public class TrustChainVerifier internal constructor(
     private val trustAnchorSource: TrustAnchorSource,
     private val certificateChainValidator: JvmCertificateChainValidator = JvmCertificateChainValidator(),

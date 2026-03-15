@@ -1,8 +1,3 @@
-# Detekt rollout rationale:
-# - No baseline: we keep the gate clean with maxIssues=0 and fix/suppress intentionally.
-# - Correctness-first rules stay on; this config only relaxes high-noise style/doc checks.
-# - Complexity limits are currently set to existing project shape and will be tightened in follow-ups.
-# - Exclusions are handled in Gradle task config (for generated/build outputs).
 config:
   validation: true
   warningsAsErrors: false
@@ -11,49 +6,65 @@ config:
 
 comments:
   active: true
-  # Public API docs are tracked via Dokka + docs process; enforcing KDoc presence here would
-  # produce a large migration-only noise set unrelated to runtime correctness.
   UndocumentedPublicClass:
-    active: false
+    active: true
+    searchInNestedClass: false
+    excludes: &test_and_sample_excludes
+      - '**/samples/**'
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/commonTest/**'
+      - '**/jvmTest/**'
+      - '**/androidUnitTest/**'
+      - '**/androidInstrumentedTest/**'
+      - '**/jsTest/**'
+      - '**/iosTest/**'
+      - '**/testFixtures/**'
   UndocumentedPublicFunction:
     active: false
+    excludes: *test_and_sample_excludes
   UndocumentedPublicProperty:
     active: false
+    excludes: *test_and_sample_excludes
 
 complexity:
   active: true
-  # Temporary migration thresholds for no-baseline adoption; tighten after focused refactors.
   ComplexCondition:
     active: true
     allowedConditions: 4
   CyclomaticComplexMethod:
     active: true
-    allowedComplexity: 40
+    allowedComplexity: 15
+    excludes: *test_and_sample_excludes
   LargeClass:
     active: true
-    allowedLines: 2000
+    allowedLines: 600
+    excludes: *test_and_sample_excludes
   LongMethod:
     active: true
-    allowedLines: 140
+    allowedLines: 70
+    excludes: *test_and_sample_excludes
   LongParameterList:
     active: true
-    allowedFunctionParameters: 8
-    allowedConstructorParameters: 10
-    ignoreDefaultParameters: true
+    allowedFunctionParameters: 6
+    allowedConstructorParameters: 7
+    ignoreDefaultParameters: false
     ignoreDataClasses: true
   TooManyFunctions:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    allowedFunctionsPerFile: 20
-    allowedFunctionsPerClass: 20
-    allowedFunctionsPerInterface: 20
-    allowedFunctionsPerObject: 35
-    allowedFunctionsPerEnum: 20
+    excludes: *test_and_sample_excludes
+    allowedFunctionsPerFile: 12
+    allowedFunctionsPerClass: 12
+    allowedFunctionsPerInterface: 12
+    allowedFunctionsPerObject: 15
+    allowedFunctionsPerEnum: 12
 
 exceptions:
   active: true
   TooGenericExceptionCaught:
-    active: false
+    active: true
+    excludes: *test_and_sample_excludes
+    allowedExceptionNameRegex: '_|(ignore|expected).*'
 
 naming:
   active: true
@@ -61,29 +72,62 @@ naming:
     active: false
   FunctionNaming:
     active: true
-    aliases: ['FunctionName']
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
+    aliases:
+      - 'FunctionName'
+    excludes: *test_and_sample_excludes
     functionPattern: '[A-Za-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
   VariableNaming:
     active: true
-    aliases: ['PropertyName']
+    aliases:
+      - 'PropertyName'
     variablePattern: '[a-zA-Z][A-Za-z0-9_]*'
     privateVariablePattern: '(_)?[a-zA-Z][A-Za-z0-9_]*'
     excludeClassPattern: '$^'
 
 style:
   active: true
-  # These are intentionally disabled for the first detekt rollout to avoid broad, low-signal churn.
   ReturnCount:
-    active: false
+    active: true
+    max: 10
+    excludeGuardClauses: true
+    excludedFunctions:
+      - 'equals'
+      - 'hashCode'
+      - 'toString'
   ThrowsCount:
-    active: false
+    active: true
+    max: 2
+    excludeGuardClauses: true
   UnusedParameter:
-    active: false
+    active: true
+    excludes: *test_and_sample_excludes
+    allowedNames: '(ignored|expected|serialVersionUID)'
   MagicNumber:
-    active: false
+    active: true
+    excludes: &magic_number_excludes
+      - '**/*.gradle.kts'
+      - '**/build-logic/**'
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/commonTest/**'
+      - '**/jvmTest/**'
+      - '**/androidUnitTest/**'
+      - '**/androidInstrumentedTest/**'
+      - '**/jsTest/**'
+      - '**/iosTest/**'
+      - '**/testFixtures/**'
+    ignoreNumbers:
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
   MaxLineLength:
-    active: false
+    active: true
+    excludes: *test_and_sample_excludes
+    maxLineLength: 120
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeRawStrings: true
   NewLineAtEndOfFile:
     active: false

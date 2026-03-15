@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber", "TooManyFunctions")
+
 package dev.webauthn.server.crypto
 
 import at.asitplus.KmmResult

@@ -39,6 +39,7 @@ public data class PrfExtensionInput(
     public val evalByCredential: Map<String, AuthenticationExtensionsPRFValues>? = null,
 )
 
+/** W3C WebAuthn L3: §9.2.1. AuthenticationExtensionsPRFValues dictionary */
 public data class AuthenticationExtensionsPRFValues(
     public val first: Base64UrlBytes,
     public val second: Base64UrlBytes? = null,
@@ -50,6 +51,7 @@ public data class LargeBlobExtensionInput(
     public val read: Boolean? = null,
     public val write: Base64UrlBytes? = null,
 ) {
+    /** W3C WebAuthn L3: §9.2.2. Large blob support preference */
     public enum class LargeBlobSupport {
         REQUIRED,
         PREFERRED,
@@ -74,8 +76,6 @@ public data class LargeBlobExtensionOutput(
     public val blob: Base64UrlBytes? = null,
     public val written: Boolean? = null,
 )
-
-
 
 /** W3C WebAuthn L3: §5.4. Options for Credential Creation (PublicKeyCredentialCreationOptions) */
 public data class PublicKeyCredentialCreationOptions(
