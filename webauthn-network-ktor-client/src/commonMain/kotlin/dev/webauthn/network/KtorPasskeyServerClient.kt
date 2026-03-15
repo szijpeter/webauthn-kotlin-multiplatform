@@ -7,6 +7,7 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
 import dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto
 import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
@@ -245,11 +246,14 @@ public data class RegistrationStartPayload(
     public val userName: String,
     public val userDisplayName: String,
     public val userHandle: String,
+    public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 ) {
     override fun toString(): String {
+        val extensionsValue = if (extensions == null) "none" else "present"
         return "RegistrationStartPayload(" +
             "rpId=$rpId, rpName=$rpName, origin=$origin, " +
-            "userName=<redacted>, userDisplayName=<redacted>, userHandle=<redacted>)"
+            "userName=<redacted>, userDisplayName=<redacted>, userHandle=<redacted>, " +
+            "extensions=$extensionsValue)"
     }
 }
 
@@ -260,12 +264,14 @@ public data class AuthenticationStartPayload(
     public val origin: String,
     public val userName: String,
     public val userHandle: String? = null,
+    public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 ) {
     override fun toString(): String {
         val userHandleValue = if (userHandle == null) "null" else "<redacted>"
+        val extensionsValue = if (extensions == null) "none" else "present"
         return "AuthenticationStartPayload(" +
             "rpId=$rpId, origin=$origin, userName=<redacted>, " +
-            "userHandle=$userHandleValue)"
+            "userHandle=$userHandleValue, extensions=$extensionsValue)"
     }
 }
 
