@@ -64,6 +64,19 @@ class PasskeyDemoFlowTest {
     }
 
     @Test
+    fun request_payloads_include_prf_extension_when_salt_provided() {
+        val config = validDemoConfig()
+        val salt = Base64UrlBytes.fromBytes(ByteArray(32) { 7 })
+
+        val authenticationPayload = config.toAuthenticationStartPayload(prfSalt = salt)
+
+        assertEquals(
+            salt.encoded(),
+            authenticationPayload.extensions?.prf?.eval?.first,
+        )
+    }
+
+    @Test
     fun register_success_updates_state_to_success_register() = runTest {
         val controller = createController()
 

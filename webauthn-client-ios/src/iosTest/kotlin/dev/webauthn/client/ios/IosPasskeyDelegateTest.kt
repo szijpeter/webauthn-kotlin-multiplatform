@@ -2,8 +2,11 @@ package dev.webauthn.client.ios
 
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyResult
+import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -82,7 +85,7 @@ class IosPasskeyDelegateTest {
                     clientDataJson = decode("AQID"),
                     authenticatorData = decode("REREREREREREREREREREREREREREREREREREREREREQFAAAAKg"),
                     signature = decode("CQkJ"),
-                    userHandle = null
+                    userHandle = null,
                 )
             )
         )
@@ -91,6 +94,51 @@ class IosPasskeyDelegateTest {
         val result = delegate.getAssertion(mockRequestOptions())
         assertTrue(result is PasskeyResult.Success)
         assertEquals("MzMzMzMzMzMzMzMzMzMzMw", result.value.credentialId.value.encoded())
+    }
+
+    @Test
+    fun getAssertion_maps_prf_extension_results() = runBlocking {
+        val bridge = FakeAuthorizationBridge(
+            getResult = Result.success(
+                IosAuthenticationPayload(
+                    credentialId = decode("MzMzMzMzMzMzMzMzMzMzMw"),
+                    rawId = decode("MzMzMzMzMzMzMzMzMzMzMw"),
+                    clientDataJson = decode("AQID"),
+                    authenticatorData = decode("REREREREREREREREREREREREREREREREREREREREREQFAAAAKg"),
+                    signature = decode("CQkJ"),
+                    userHandle = null,
+                    extensions = AuthenticationExtensionsClientOutputs(
+                        prf = PrfExtensionOutput(
+                            enabled = true,
+                            results = AuthenticationExtensionsPRFValues(
+                                first = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        )
+        val delegate = IosPasskeyDelegate(bridge)
+
+        val result = delegate.getAssertion(mockRequestOptions())
+        assertTrue(result is PasskeyResult.Success)
+        val prfResults = result.value.extensions?.prf?.results
+        assertEquals("AQID", prfResults?.first?.encoded())
+    }
+
+    @Test
+    fun getAssertion_returns_InvalidOptions_on_unsupported_prf() = runBlocking {
+        val bridge = FakeAuthorizationBridge(
+            getResult = Result.failure(
+                IllegalArgumentException("PRF extension requires iOS 18+ with AuthenticationServices PRF APIs."),
+            ),
+        )
+        val delegate = IosPasskeyDelegate(bridge)
+
+        val result = delegate.getAssertion(mockRequestOptions())
+        assertTrue(result is PasskeyResult.Failure)
+        assertTrue(result.error is PasskeyClientError.InvalidOptions)
+        assertTrue(result.error.message.contains("PRF extension requires iOS 18+"))
     }
 
     @Test
@@ -123,7 +171,7 @@ class IosPasskeyDelegateTest {
                     clientDataJson = decode("AQID"),
                     authenticatorData = ByteArray(10), // Invalid auth data (< 37)
                     signature = decode("CQkJ"),
-                    userHandle = null
+                    userHandle = null,
                 )
             )
         )

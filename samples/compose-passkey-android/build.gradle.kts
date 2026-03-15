@@ -37,6 +37,7 @@ android {
 
     defaultConfig {
         applicationId = "dev.webauthn.samples.composepasskey.android"
+        minSdk = 30
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["SERVER_HOST"] = demoRpId
     }

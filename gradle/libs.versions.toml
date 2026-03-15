@@ -77,6 +77,8 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 signum-supreme-jvm = { module = "at.asitplus.signum:supreme-jvm", version.ref = "signum" }
+signum-supreme = { module = "at.asitplus.signum:supreme", version.ref = "signum" }
+signum-indispensable = { module = "at.asitplus.signum:indispensable", version.ref = "signum-indispensable" }
 signum-indispensable-cosef-jvm = { module = "at.asitplus.signum:indispensable-cosef-jvm", version.ref = "signum-indispensable" }
 signum-indispensable-josef-jvm = { module = "at.asitplus.signum:indispensable-josef-jvm", version.ref = "signum-indispensable" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }

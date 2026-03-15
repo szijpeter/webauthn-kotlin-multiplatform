@@ -12,6 +12,9 @@ import dev.webauthn.model.CredentialId
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.PrfExtensionInputDto
+import dev.webauthn.serialization.PrfValuesDto
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
@@ -100,6 +103,7 @@ class KtorPasskeyServerClientTest {
         val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/start")).jsonObject
         assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
         assertEquals("alice", startBody["userName"]?.jsonPrimitive?.content)
+        assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/finish")).jsonObject
         assertEquals("webauthn.create", finishBody["clientDataType"]?.jsonPrimitive?.content)
@@ -165,6 +169,7 @@ class KtorPasskeyServerClientTest {
         val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
         assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
         assertEquals("alice", startBody["userName"]?.jsonPrimitive?.content)
+        assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/finish")).jsonObject
         assertEquals("webauthn.get", finishBody["clientDataType"]?.jsonPrimitive?.content)
@@ -428,12 +433,128 @@ class KtorPasskeyServerClientTest {
         assertTrue(registrationText.contains("userName=<redacted>"))
         assertTrue(registrationText.contains("userDisplayName=<redacted>"))
         assertTrue(registrationText.contains("userHandle=<redacted>"))
+        assertTrue(registrationText.contains("extensions=none"))
 
         val authText = authPayload.toString()
         assertTrue(!authText.contains("bob-sensitive"))
         assertTrue(!authText.contains("Qk9CLXNlbnNpdGl2ZQ"))
         assertTrue(authText.contains("userName=<redacted>"))
         assertTrue(authText.contains("userHandle=<redacted>"))
+        assertTrue(authText.contains("extensions=none"))
+
+        val extensions = AuthenticationExtensionsClientInputsDto(
+            prf = PrfExtensionInputDto(
+                eval = PrfValuesDto(first = "AQID"),
+            ),
+        )
+        assertTrue(
+            RegistrationStartPayload(
+                rpId = "example.com",
+                rpName = "Example",
+                origin = "https://example.com",
+                userName = "alice-sensitive",
+                userDisplayName = "Alice Sensitive",
+                userHandle = "AQID-sensitive",
+                extensions = extensions,
+            ).toString().contains("extensions=present"),
+        )
+        assertTrue(
+            AuthenticationStartPayload(
+                rpId = "example.com",
+                origin = "https://example.com",
+                userName = "bob-sensitive",
+                userHandle = "Qk9CLXNlbnNpdGl2ZQ",
+                extensions = extensions,
+            ).toString().contains("extensions=present"),
+        )
+    }
+
+    @Test
+    fun startPayloads_includeExtensions_whenProvided() = runTest {
+        val requestBodies = mutableMapOf<String, String>()
+        val client = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/webauthn/registration/start" -> {
+                    requestBodies[request.url.encodedPath] = request.bodyText()
+                    respond(
+                        content =
+                            """
+                            {
+                              "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                              "rp": {"id": "example.com", "name": "Example"},
+                              "user": {"id": "AQID", "name": "alice", "displayName": "Alice"},
+                              "pubKeyCredParams": [{"type": "public-key", "alg": -7}]
+                            }
+                            """.trimIndent(),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+                    )
+                }
+
+                "/webauthn/authentication/start" -> {
+                    requestBodies[request.url.encodedPath] = request.bodyText()
+                    respond(
+                        content =
+                            """
+                            {
+                              "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                              "rpId": "example.com",
+                              "allowCredentials": []
+                            }
+                            """.trimIndent(),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+                    )
+                }
+
+                else -> error("Unexpected path: ${request.url.encodedPath}")
+            }
+        }
+
+        val serverClient = KtorPasskeyServerClient(
+            httpClient = client,
+            endpointBase = "https://example.test",
+            backendContract = DefaultBackendContract(),
+        )
+        val extensions = AuthenticationExtensionsClientInputsDto(
+            prf = PrfExtensionInputDto(
+                eval = PrfValuesDto(first = "AQID"),
+            ),
+        )
+
+        serverClient.getRegisterOptions(
+            RegistrationStartPayload(
+                rpId = "example.com",
+                rpName = "Example",
+                origin = "https://example.com",
+                userName = "alice",
+                userDisplayName = "Alice",
+                userHandle = "AQID",
+                extensions = extensions,
+            ),
+        )
+        serverClient.getSignInOptions(
+            AuthenticationStartPayload(
+                rpId = "example.com",
+                origin = "https://example.com",
+                userName = "alice",
+                userHandle = "AQID",
+                extensions = extensions,
+            ),
+        )
+
+        val registerStartBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/start")).jsonObject
+        val authStartBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
+        assertEquals("AQID", registerStartBody["extensions"]?.jsonObject
+            ?.get("prf")?.jsonObject
+            ?.get("eval")?.jsonObject
+            ?.get("first")?.jsonPrimitive
+            ?.content)
+        assertEquals("AQID", authStartBody["extensions"]?.jsonObject
+            ?.get("prf")?.jsonObject
+            ?.get("eval")?.jsonObject
+            ?.get("first")?.jsonPrimitive
+            ?.content)
     }
 
     private fun createMockClient(

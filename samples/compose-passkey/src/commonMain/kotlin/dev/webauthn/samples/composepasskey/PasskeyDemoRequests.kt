@@ -5,6 +5,9 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.PrfExtensionInputDto
+import dev.webauthn.serialization.PrfValuesDto
 
 private const val DEMO_RP_NAME: String = "WebAuthn Kotlin MPP Sample Backend"
 
@@ -20,13 +23,22 @@ internal fun PasskeyDemoConfig.toRegistrationStartPayload(): RegistrationStartPa
     )
 }
 
-internal fun PasskeyDemoConfig.toAuthenticationStartPayload(): AuthenticationStartPayload {
+internal fun PasskeyDemoConfig.toAuthenticationStartPayload(
+    prfSalt: Base64UrlBytes? = null,
+): AuthenticationStartPayload {
     val stableUserHandle = normalizedUserHandle(userHandle)
     return AuthenticationStartPayload(
         rpId = rpId,
         origin = origin,
         userName = userName,
         userHandle = stableUserHandle,
+        extensions = prfSalt?.let { salt ->
+            AuthenticationExtensionsClientInputsDto(
+                prf = PrfExtensionInputDto(
+                    eval = PrfValuesDto(first = salt.encoded()),
+                ),
+            )
+        },
     )
 }
 
