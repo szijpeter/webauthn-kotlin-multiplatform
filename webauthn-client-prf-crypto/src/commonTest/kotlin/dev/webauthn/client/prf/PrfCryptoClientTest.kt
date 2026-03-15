@@ -3,6 +3,7 @@ package dev.webauthn.client.prf
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyResult
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.AuthenticationResponse
@@ -11,16 +12,20 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
+import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -120,6 +125,25 @@ class PrfCryptoClientTest {
     }
 
     @Test
+    fun withPrfEvaluation_clearsEvalByCredential() {
+        val existingOptions = validRequestOptions().copy(
+            extensions = AuthenticationExtensionsClientInputs(
+                prf = PrfExtensionInput(
+                    evalByCredential = mapOf(
+                        "cred-1" to AuthenticationExtensionsPRFValues(first = bytes(7, 7, 7, 7)),
+                    ),
+                ),
+            ),
+        )
+        val evaluation = AuthenticationExtensionsPRFValues(first = bytes(1, 2, 3, 4))
+
+        val updated = PrfCrypto.withPrfEvaluation(existingOptions, evaluation)
+
+        assertEquals(evaluation, updated.extensions?.prf?.eval)
+        assertNull(updated.extensions?.prf?.evalByCredential)
+    }
+
+    @Test
     fun authenticateWithPrf_returnsSessionAndResponse() = runTest {
         val response = validAuthenticationResponse(
             extensions = AuthenticationExtensionsClientOutputs(
@@ -190,6 +214,18 @@ class PrfCryptoClientTest {
         val failure = assertIs<PasskeyResult.Failure>(result)
         assertIs<PasskeyClientError.Platform>(failure.error)
         assertEquals("platform boom", failure.error.message)
+    }
+
+    @Test
+    fun authenticateWithPrf_rethrowsCancellation() = runTest {
+        val client = PrfCryptoClient(ThrowingPasskeyClient(CancellationException("cancelled")))
+
+        assertFailsWith<CancellationException> {
+            client.authenticateWithPrf(
+                options = validRequestOptions(),
+                firstSalt = bytes(1, 2, 3, 4),
+            )
+        }
     }
 
     private class FakePasskeyClient(

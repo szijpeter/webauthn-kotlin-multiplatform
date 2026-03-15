@@ -10,6 +10,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import kotlinx.coroutines.CancellationException
 
 @ExperimentalWebAuthnL3Api
 /** Result bundle for a PRF-enabled assertion and its derived crypto session. */
@@ -78,6 +79,7 @@ public class PrfCryptoClient(
 }
 
 private fun Throwable.toFailure(): PasskeyResult.Failure {
+    if (this is CancellationException) throw this
     return when (this) {
         is MissingPrfOutputException -> {
             PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message ?: "Missing PRF output"))

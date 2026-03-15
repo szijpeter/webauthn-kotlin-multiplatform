@@ -1,9 +1,15 @@
 plugins {
     id("webauthn.kotlin.multiplatform")
     id("webauthn.published-library")
+    alias(libs.plugins.android.kmp.library)
 }
 
 kotlin {
+    android {
+        namespace = "dev.webauthn.client.prf"
+        compileSdk = 36
+        minSdk = 30
+    }
     jvm()
     iosX64()
     iosArm64()

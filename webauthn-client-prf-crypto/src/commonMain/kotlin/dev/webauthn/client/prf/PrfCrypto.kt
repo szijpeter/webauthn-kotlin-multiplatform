@@ -71,7 +71,10 @@ public object PrfCrypto {
         evaluation: AuthenticationExtensionsPRFValues,
     ): PublicKeyCredentialRequestOptions {
         val existingExtensions = options.extensions ?: AuthenticationExtensionsClientInputs()
-        val updatedPrf = (existingExtensions.prf ?: PrfExtensionInput()).copy(eval = evaluation)
+        val updatedPrf = (existingExtensions.prf ?: PrfExtensionInput()).copy(
+            eval = evaluation,
+            evalByCredential = null,
+        )
         return options.copy(
             extensions = existingExtensions.copy(prf = updatedPrf),
         )
@@ -92,24 +95,36 @@ public object PrfCrypto {
         context: String = DEFAULT_CONTEXT,
         hkdfSalt: Base64UrlBytes? = null,
     ): Base64UrlBytes {
+        val derived = deriveAes256KeyBytes(
+            prfOutput = prfOutput.bytes(),
+            context = context,
+            hkdfSalt = hkdfSalt?.bytes(),
+        )
+        return Base64UrlBytes.fromBytes(derived)
+    }
+
+    internal suspend fun deriveAes256KeyBytes(
+        prfOutput: ByteArray,
+        context: String = DEFAULT_CONTEXT,
+        hkdfSalt: ByteArray? = null,
+    ): ByteArray {
         require(context.isNotBlank()) { "context must not be blank" }
-        val saltBytes = hkdfSalt?.bytes()
-        if (saltBytes != null) {
-            require(saltBytes.size == HKDF_SALT_LENGTH_BYTES) {
+        if (hkdfSalt != null) {
+            require(hkdfSalt.size == HKDF_SALT_LENGTH_BYTES) {
                 "hkdfSalt must be exactly $HKDF_SALT_LENGTH_BYTES bytes."
             }
         }
         val derived = HKDF.SHA256(context.encodeToByteArray())
             .deriveKey(
-                salt = saltBytes ?: ByteArray(HKDF_SALT_LENGTH_BYTES),
-                ikm = prfOutput.bytes(),
+                salt = hkdfSalt ?: ByteArray(HKDF_SALT_LENGTH_BYTES),
+                ikm = prfOutput,
                 derivedKeyLength = 256.bit,
             )
             .getOrThrow()
         require(derived.size == AES_KEY_LENGTH_BYTES) {
             "Expected a $AES_KEY_LENGTH_BYTES-byte derived key, got ${derived.size}."
         }
-        return Base64UrlBytes.fromBytes(derived)
+        return derived
     }
 
     public suspend fun createSession(
@@ -119,14 +134,14 @@ public object PrfCrypto {
         hkdfSalt: Base64UrlBytes? = null,
     ): PrfCryptoSession {
         val selectedOutput = selectOutput(prfResults, outputSelection)
-        val key = deriveAes256Key(
-            prfOutput = selectedOutput,
+        val keyBytes = deriveAes256KeyBytes(
+            prfOutput = selectedOutput.bytes(),
             context = context,
-            hkdfSalt = hkdfSalt,
+            hkdfSalt = hkdfSalt?.bytes(),
         )
         return PrfCryptoSession(
-            keyBytes = key.bytes(),
-            keyFingerprint = keyFingerprint(key.bytes()),
+            keyBytes = keyBytes,
+            keyFingerprint = keyFingerprint(keyBytes),
             context = context,
         )
     }
@@ -136,18 +151,30 @@ public object PrfCrypto {
         plaintext: Base64UrlBytes,
         associatedData: Base64UrlBytes? = null,
     ): PrfCiphertext {
-        val symmetricKey = aesGcm.keyFrom(key.bytes()).getOrThrow()
+        return encryptAesGcmWithRawKey(
+            keyBytes = key.bytes(),
+            plaintext = plaintext.bytes(),
+            associatedData = associatedData?.bytes(),
+        )
+    }
+
+    internal suspend fun encryptAesGcmWithRawKey(
+        keyBytes: ByteArray,
+        plaintext: ByteArray,
+        associatedData: ByteArray? = null,
+    ): PrfCiphertext {
+        val symmetricKey = aesGcm.keyFrom(keyBytes).getOrThrow()
         val sealedBox = symmetricKey
             .encrypt(
-                data = plaintext.bytes(),
-                authenticatedData = associatedData?.bytes(),
+                data = plaintext,
+                authenticatedData = associatedData,
             )
             .getOrThrow()
         return PrfCiphertext(
             nonce = Base64UrlBytes.fromBytes(sealedBox.nonce),
             ciphertext = Base64UrlBytes.fromBytes(sealedBox.encryptedData),
             authTag = Base64UrlBytes.fromBytes(sealedBox.authTag),
-            associatedData = associatedData,
+            associatedData = associatedData?.let(Base64UrlBytes::fromBytes),
         )
     }
 
@@ -155,7 +182,18 @@ public object PrfCrypto {
         key: Base64UrlBytes,
         ciphertext: PrfCiphertext,
     ): Base64UrlBytes {
-        val symmetricKey = aesGcm.keyFrom(key.bytes()).getOrThrow()
+        val plaintext = decryptAesGcmWithRawKey(
+            keyBytes = key.bytes(),
+            ciphertext = ciphertext,
+        )
+        return Base64UrlBytes.fromBytes(plaintext)
+    }
+
+    internal suspend fun decryptAesGcmWithRawKey(
+        keyBytes: ByteArray,
+        ciphertext: PrfCiphertext,
+    ): ByteArray {
+        val symmetricKey = aesGcm.keyFrom(keyBytes).getOrThrow()
         val plaintext = symmetricKey
             .decrypt(
                 nonce = ciphertext.nonce.bytes(),
@@ -164,7 +202,7 @@ public object PrfCrypto {
                 authenticatedData = ciphertext.associatedData?.bytes() ?: ByteArray(0),
             )
             .getOrThrow()
-        return Base64UrlBytes.fromBytes(plaintext)
+        return plaintext
     }
 
     internal fun keyFingerprint(keyBytes: ByteArray): String {
@@ -205,26 +243,28 @@ public class PrfCryptoSession internal constructor(
     public val isCleared: Boolean
         get() = cleared
 
+    @OptIn(ExperimentalWebAuthnL3Api::class)
     public suspend fun encrypt(
         plaintext: ByteArray,
         associatedData: ByteArray? = null,
     ): PrfCiphertext {
         ensureValid()
-        return PrfCrypto.encryptAesGcm(
-            key = Base64UrlBytes.fromBytes(aesKeyBytes),
-            plaintext = Base64UrlBytes.fromBytes(plaintext),
-            associatedData = associatedData?.let(Base64UrlBytes::fromBytes),
+        return PrfCrypto.encryptAesGcmWithRawKey(
+            keyBytes = aesKeyBytes,
+            plaintext = plaintext,
+            associatedData = associatedData,
         )
     }
 
+    @OptIn(ExperimentalWebAuthnL3Api::class)
     public suspend fun decrypt(
         ciphertext: PrfCiphertext,
     ): ByteArray {
         ensureValid()
-        return PrfCrypto.decryptAesGcm(
-            key = Base64UrlBytes.fromBytes(aesKeyBytes),
+        return PrfCrypto.decryptAesGcmWithRawKey(
+            keyBytes = aesKeyBytes,
             ciphertext = ciphertext,
-        ).bytes()
+        )
     }
 
     public suspend fun encryptString(
