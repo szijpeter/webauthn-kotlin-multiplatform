@@ -112,6 +112,17 @@ class IosAuthorizationBridgePolicyTest {
     }
 
     @Test
+    fun doesNotTreatEmptyEvalByCredentialAsPrfRequest() {
+        val shaped = shapePrfAssertionInput(
+            PrfExtensionInput(
+                evalByCredential = emptyMap(),
+            ),
+        )
+        assertNull(shaped)
+        assertFalse(isPrfRequested(shaped))
+    }
+
+    @Test
     fun excludesSecurityKeyRequest_whenPrfIsRequestedViaEvalByCredential() {
         val credentialId = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3))
         val shaped = shapePrfAssertionInput(
