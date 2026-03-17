@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-15
+Last updated: 2026-03-17
 
 ## Status Legend
 
@@ -28,6 +28,7 @@ Last updated: 2026-03-15
 - PRF client crypto module (`webauthn-client-prf-crypto`) is now published with Signum-backed HKDF/AES-GCM helpers plus a high-level PRF session facade.
 - Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
 - Compose sample now includes a PRF crypto demo (`Sign In + PRF`, caller-owned salt load/generation, encrypt/decrypt, and explicit key clear) with unrecoverable-data warning when passkeys are removed.
+- iOS PRF assertion input mapping now supports both shared `prf.eval` and per-credential `prf.evalByCredential`, with deterministic malformed-key rejection to invalid-options errors.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.
 - Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
 - `AppleAttestationStatementVerifier` tests now use a hardened `authData` parser that explicitly rejects truncated credential data missing the public key.
