@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-03-12
+Last updated: 2026-03-18
 
 ## North-Star Exit Criteria
 
@@ -76,7 +76,6 @@ Definition of done:
 
 ## Active Priorities (Next 3)
 
-1. Finish first-public-release preparation: compatibility baselines, Maven Central pipeline, BOM install guidance, and OSS-facing docs.
-2. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
-3. Resolve the remaining iOS external security-key readiness gap and document limitations until that work lands.
-4. Keep the temporary first-release execution map current until the release is complete, then remove it.
+1. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
+2. Continue platform runtime edge hardening for lifecycle and error propagation (`P3-001`).
+3. Keep `kotlinx-serialization` pinned to `1.9.0` until Signum compatibility blocker [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved, then rerun captured vector checks during unpin.
