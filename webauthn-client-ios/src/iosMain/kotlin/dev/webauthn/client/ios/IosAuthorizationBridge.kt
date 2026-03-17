@@ -8,10 +8,12 @@ import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.PrfExtensionOutput
+import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.UserVerificationRequirement
+import dev.webauthn.model.ValidationResult
 import platform.AuthenticationServices.ASAuthorization
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
@@ -38,6 +40,11 @@ import platform.Foundation.NSProcessInfo
 
 private const val MIN_PRF_IOS_VERSION = 18
 private const val MIN_SECURITY_KEY_IOS_VERSION = 15
+
+internal data class PrfAssertionInputShape(
+    val eval: AuthenticationExtensionsPRFValues?,
+    val evalByCredential: Map<Base64UrlBytes, AuthenticationExtensionsPRFValues>?,
+)
 
 internal class IosRegistrationPayload(
     val credentialId: ByteArray,
@@ -147,14 +154,8 @@ internal class AuthenticationServicesAuthorizationBridge(
         val rpId = requireNotNull(options.rpId) {
             "PublicKeyCredentialRequestOptions.rpId is required by the iOS AuthenticationServices bridge."
         }
-        val prfInput = options.extensions?.prf
-        if (prfInput?.evalByCredential != null) {
-            throw IllegalArgumentException(
-                "PRF extension `evalByCredential` is not yet supported by the iOS bridge. Use `prf.eval` for now.",
-            )
-        }
-        val prfEval = prfInput?.eval
-        val prfRequested = prfEval != null
+        val prfInput = shapePrfAssertionInput(options.extensions?.prf)
+        val prfRequested = isPrfRequested(prfInput)
         if (prfRequested && !isPrfRuntimeSupported()) {
             throw IllegalArgumentException(
                 "PRF extension requires iOS $MIN_PRF_IOS_VERSION+ with AuthenticationServices PRF APIs.",
@@ -165,7 +166,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                 buildAssertionRequests(
                     options = options,
                     rpId = rpId.value,
-                    prfEval = prfEval,
+                    prfInput = prfInput,
                     prfRequested = prfRequested,
                 )
             },
@@ -177,7 +178,7 @@ internal class AuthenticationServicesAuthorizationBridge(
     private fun buildAssertionRequests(
         options: PublicKeyCredentialRequestOptions,
         rpId: String,
-        prfEval: AuthenticationExtensionsPRFValues?,
+        prfInput: PrfAssertionInputShape?,
         prfRequested: Boolean,
     ): List<Any> {
         val requests = mutableListOf<Any>()
@@ -186,8 +187,8 @@ internal class AuthenticationServicesAuthorizationBridge(
             options.challenge.value.bytes().toNSData(),
         )
         platformRequest.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-        if (prfEval != null) {
-            platformRequest.setPrfInput(prfEval)
+        if (prfInput != null) {
+            platformRequest.setPrfInput(prfInput)
         }
         requests.add(platformRequest)
 
@@ -316,14 +317,50 @@ internal fun shouldIncludeSecurityKeyAssertionRequest(
     return !prfRequested && iosMajorVersion >= MIN_SECURITY_KEY_IOS_VERSION
 }
 
-private fun ASAuthorizationPlatformPublicKeyCredentialAssertionRequest.setPrfInput(
-    values: AuthenticationExtensionsPRFValues,
-) {
-    val inputValues = ASAuthorizationPublicKeyCredentialPRFAssertionInputValues(
-        saltInput1 = values.first.bytes().toNSData(),
-        saltInput2 = values.second?.bytes()?.toNSData(),
+internal fun isPrfRequested(prfInput: PrfAssertionInputShape?): Boolean {
+    return prfInput != null
+}
+
+internal fun shapePrfAssertionInput(prfInput: PrfExtensionInput?): PrfAssertionInputShape? {
+    if (prfInput == null) return null
+    val evalByCredential = prfInput.evalByCredential?.mapKeys { (credentialId, _) ->
+        parsePrfCredentialIdKeyOrThrow(credentialId)
+    }
+    if (prfInput.eval == null && evalByCredential == null) return null
+    return PrfAssertionInputShape(
+        eval = prfInput.eval,
+        evalByCredential = evalByCredential,
     )
-    prf = ASAuthorizationPublicKeyCredentialPRFAssertionInput(inputValues, null)
+}
+
+private fun parsePrfCredentialIdKeyOrThrow(encodedCredentialId: String): Base64UrlBytes {
+    return when (val parsed = Base64UrlBytes.parse(encodedCredentialId, "extensions.prf.evalByCredential")) {
+        is ValidationResult.Valid -> parsed.value
+        is ValidationResult.Invalid -> {
+            val message = parsed.errors.joinToString(separator = "; ") { it.message }
+            throw IllegalArgumentException(
+                "PRF extension `evalByCredential` contains invalid credential ID key `$encodedCredentialId`: $message",
+            )
+        }
+    }
+}
+
+private fun ASAuthorizationPlatformPublicKeyCredentialAssertionRequest.setPrfInput(
+    values: PrfAssertionInputShape,
+) {
+    val inputValues = values.eval?.toPlatformPrfInputValues()
+    val perCredentialInputValues: Map<Any?, *>? = values.evalByCredential
+        ?.mapKeys { (credentialId, _) -> credentialId.bytes().toNSData() }
+        ?.mapValues { (_, prfValues) -> prfValues.toPlatformPrfInputValues() }
+    prf = ASAuthorizationPublicKeyCredentialPRFAssertionInput(inputValues, perCredentialInputValues)
+}
+
+private fun AuthenticationExtensionsPRFValues.toPlatformPrfInputValues():
+    ASAuthorizationPublicKeyCredentialPRFAssertionInputValues {
+    return ASAuthorizationPublicKeyCredentialPRFAssertionInputValues(
+        saltInput1 = first.bytes().toNSData(),
+        saltInput2 = second?.bytes()?.toNSData(),
+    )
 }
 
 private fun ASAuthorizationPlatformPublicKeyCredentialAssertion.prfExtensionsOrNull(): AuthenticationExtensionsClientOutputs? {
