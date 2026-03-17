@@ -334,6 +334,11 @@ internal fun shapePrfAssertionInput(prfInput: PrfExtensionInput?): PrfAssertionI
 }
 
 private fun parsePrfCredentialIdKeyOrThrow(encodedCredentialId: String): Base64UrlBytes {
+    if (encodedCredentialId.isEmpty()) {
+        throw IllegalArgumentException(
+            "PRF extension `evalByCredential` credential ID keys must be non-empty base64url values.",
+        )
+    }
     return when (val parsed = Base64UrlBytes.parse(encodedCredentialId, "extensions.prf.evalByCredential")) {
         is ValidationResult.Valid -> parsed.value
         is ValidationResult.Invalid -> {

@@ -112,6 +112,20 @@ class IosAuthorizationBridgePolicyTest {
     }
 
     @Test
+    fun rejectsEmptyEvalByCredentialKey() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            shapePrfAssertionInput(
+                PrfExtensionInput(
+                    evalByCredential = mapOf(
+                        "" to prfValues(1, 2, 3),
+                    ),
+                ),
+            )
+        }
+        assertTrue(error.message?.contains("non-empty") == true)
+    }
+
+    @Test
     fun doesNotTreatEmptyEvalByCredentialAsPrfRequest() {
         val shaped = shapePrfAssertionInput(
             PrfExtensionInput(
