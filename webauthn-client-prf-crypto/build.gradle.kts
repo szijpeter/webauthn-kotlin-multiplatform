@@ -18,6 +18,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":webauthn-client-core"))
+            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.signum.supreme)
             implementation(libs.signum.indispensable)
         }
