@@ -56,8 +56,6 @@ public final class dev/webauthn/client/prf/PrfCryptoClient {
 	public fun <init> (Ldev/webauthn/client/PasskeyClient;)V
 	public final fun authenticateWithPrf-8TFZuFA (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun authenticateWithPrf-8TFZuFA$default (Ldev/webauthn/client/prf/PrfCryptoClient;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ldev/webauthn/model/AuthenticationExtensionsPRFValues;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun authenticateWithPrf-hJIMdZo (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun authenticateWithPrf-hJIMdZo$default (Ldev/webauthn/client/prf/PrfCryptoClient;Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/client/prf/PrfOutputSelection;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class dev/webauthn/client/prf/PrfCryptoSession {

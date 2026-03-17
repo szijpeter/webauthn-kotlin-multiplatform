@@ -27,30 +27,12 @@ public class PrfCryptoClient(
 ) {
     public suspend fun authenticateWithPrf(
         options: PublicKeyCredentialRequestOptions,
-        firstSalt: Base64UrlBytes,
-        secondSalt: Base64UrlBytes? = null,
+        salts: AuthenticationExtensionsPRFValues,
         context: String = PrfCrypto.DEFAULT_CONTEXT,
         hkdfSalt: Base64UrlBytes? = null,
         outputSelection: PrfOutputSelection = PrfOutputSelection.FIRST,
     ): PasskeyResult<PrfAuthenticationResult> {
-        val evaluation = AuthenticationExtensionsPRFValues(first = firstSalt, second = secondSalt)
-        return authenticateWithPrf(
-            options = options,
-            evaluation = evaluation,
-            context = context,
-            hkdfSalt = hkdfSalt,
-            outputSelection = outputSelection,
-        )
-    }
-
-    public suspend fun authenticateWithPrf(
-        options: PublicKeyCredentialRequestOptions,
-        evaluation: AuthenticationExtensionsPRFValues,
-        context: String = PrfCrypto.DEFAULT_CONTEXT,
-        hkdfSalt: Base64UrlBytes? = null,
-        outputSelection: PrfOutputSelection = PrfOutputSelection.FIRST,
-    ): PasskeyResult<PrfAuthenticationResult> {
-        val optionsWithPrf = PrfCrypto.withPrfEvaluation(options, evaluation)
+        val optionsWithPrf = PrfCrypto.withPrfEvaluation(options, salts)
         val assertion = runCatching { passkeyClient.getAssertion(optionsWithPrf) }
             .getOrElse { error -> return error.toFailure() }
         return when (assertion) {

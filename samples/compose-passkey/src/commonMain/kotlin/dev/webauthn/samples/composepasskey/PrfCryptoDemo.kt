@@ -7,6 +7,7 @@ import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.client.prf.PrfCiphertext
 import dev.webauthn.client.prf.PrfCryptoClient
 import dev.webauthn.client.prf.PrfCryptoSession
+import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.network.AuthenticationStartPayload
@@ -86,7 +87,7 @@ internal class PrfCryptoDemoController(
         val authResult = when (
             val assertionResult = prfCryptoClient.authenticateWithPrf(
                 options = signInOptions,
-                firstSalt = firstSalt,
+                salts = AuthenticationExtensionsPRFValues(first = firstSalt),
                 context = SAMPLE_PRF_CONTEXT,
             )
         ) {

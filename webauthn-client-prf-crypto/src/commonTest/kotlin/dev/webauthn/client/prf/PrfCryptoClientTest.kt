@@ -156,7 +156,7 @@ class PrfCryptoClientTest {
 
         val result = client.authenticateWithPrf(
             options = validRequestOptions(),
-            firstSalt = bytes(1, 2, 3, 4),
+            salts = AuthenticationExtensionsPRFValues(first = bytes(1, 2, 3, 4)),
         )
 
         val success = assertIs<PasskeyResult.Success<PrfAuthenticationResult>>(result)
@@ -173,7 +173,7 @@ class PrfCryptoClientTest {
 
         val result = client.authenticateWithPrf(
             options = validRequestOptions(),
-            firstSalt = bytes(1, 1, 1, 1),
+            salts = AuthenticationExtensionsPRFValues(first = bytes(1, 1, 1, 1)),
         )
 
         val failure = assertIs<PasskeyResult.Failure>(result)
@@ -193,7 +193,7 @@ class PrfCryptoClientTest {
 
         val result = client.authenticateWithPrf(
             options = validRequestOptions(),
-            firstSalt = bytes(1, 1, 1, 1),
+            salts = AuthenticationExtensionsPRFValues(first = bytes(1, 1, 1, 1)),
             outputSelection = PrfOutputSelection.SECOND,
         )
 
@@ -208,7 +208,7 @@ class PrfCryptoClientTest {
 
         val result = client.authenticateWithPrf(
             options = validRequestOptions(),
-            firstSalt = bytes(1, 2, 3, 4),
+            salts = AuthenticationExtensionsPRFValues(first = bytes(1, 2, 3, 4)),
         )
 
         val failure = assertIs<PasskeyResult.Failure>(result)
@@ -223,7 +223,7 @@ class PrfCryptoClientTest {
         assertFailsWith<CancellationException> {
             client.authenticateWithPrf(
                 options = validRequestOptions(),
-                firstSalt = bytes(1, 2, 3, 4),
+                salts = AuthenticationExtensionsPRFValues(first = bytes(1, 2, 3, 4)),
             )
         }
     }
