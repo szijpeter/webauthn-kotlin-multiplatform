@@ -11,7 +11,7 @@ kotlin {
     android {
         namespace = "dev.webauthn.samples.composepasskey"
         compileSdk = 36
-        minSdk = 26
+        minSdk = 30
     }
     iosX64()
     iosArm64()
@@ -33,6 +33,7 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kermit)
                 implementation(project(":webauthn-client-compose"))
+                implementation(project(":webauthn-client-prf-crypto"))
                 implementation(project(":webauthn-network-ktor-client"))
             }
         }

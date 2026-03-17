@@ -102,6 +102,7 @@ Use:
 - [`webauthn-client-android`](./webauthn-client-android/README.md)
 - [`webauthn-client-ios`](./webauthn-client-ios/README.md)
 - [`webauthn-client-compose`](./webauthn-client-compose/README.md) for Compose helpers
+- [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
 - [`webauthn-network-ktor-client`](./webauthn-network-ktor-client/README.md) for the default backend contract
 
 ### End-to-end reference app
@@ -129,6 +130,7 @@ Start with:
 | [`webauthn-client-compose`](./webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
 | [`webauthn-client-android`](./webauthn-client-android/README.md) | Android apps using Credential Manager |
 | [`webauthn-client-ios`](./webauthn-client-ios/README.md) | iOS apps using AuthenticationServices |
+| [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
 | [`webauthn-network-ktor-client`](./webauthn-network-ktor-client/README.md) | Clients talking to a `/webauthn/*` backend contract over Ktor |
 | [`webauthn-attestation-mds`](./webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |
 

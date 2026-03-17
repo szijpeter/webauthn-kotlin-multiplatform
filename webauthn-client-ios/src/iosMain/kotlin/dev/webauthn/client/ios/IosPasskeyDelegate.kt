@@ -18,6 +18,7 @@ import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import kotlinx.serialization.json.Json
@@ -80,6 +81,7 @@ internal class IosPasskeyPlatformBridge(
                 userHandle = userHandle?.toBase64Url(),
             ),
             authenticatorAttachment = authenticatorAttachment,
+            clientExtensionResults = extensions?.let(WebAuthnDtoMapper::fromModel),
         ),
     )
 

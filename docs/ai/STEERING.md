@@ -46,6 +46,7 @@ Published:
 - `webauthn-client-compose`
 - `webauthn-client-android`
 - `webauthn-client-ios`
+- `webauthn-client-prf-crypto`
 - `webauthn-network-ktor-client`
 - `webauthn-attestation-mds`
 
@@ -84,6 +85,7 @@ Adapter/transport/platform:
 - `webauthn-client-compose`
 - `webauthn-client-android`
 - `webauthn-client-ios`
+- `webauthn-client-prf-crypto`
 
 Optional trust source:
 

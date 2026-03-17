@@ -32,6 +32,7 @@ include(
     ":webauthn-server-core-jvm",
     ":webauthn-server-ktor",
     ":webauthn-client-core",
+    ":webauthn-client-prf-crypto",
     ":webauthn-client-json-core",
     ":webauthn-client-compose",
     ":webauthn-client-android",
