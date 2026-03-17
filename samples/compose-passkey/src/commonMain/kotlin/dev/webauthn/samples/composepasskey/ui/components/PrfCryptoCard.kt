@@ -15,13 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
 
 @Composable
 public fun PrfCryptoCard(
     supportsPrf: Boolean,
     actionsEnabled: Boolean,
-    hasSession: Boolean,
-    hasCiphertext: Boolean,
+    sessionState: PrfCryptoDemoSessionState,
     plaintext: String,
     decryptedText: String?,
     statusMessage: String,
@@ -31,6 +31,9 @@ public fun PrfCryptoCard(
     onDecrypt: () -> Unit,
     onClearSession: () -> Unit,
 ) {
+    val hasSession = sessionState != PrfCryptoDemoSessionState.NoSession
+    val hasCiphertext = sessionState == PrfCryptoDemoSessionState.CiphertextReady
+
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),

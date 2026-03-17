@@ -177,8 +177,7 @@ public fun App() {
                 PrfCryptoCard(
                     supportsPrf = capabilities.value.supportsPrf,
                     actionsEnabled = actionsEnabled,
-                    hasSession = prfCryptoDemo.hasSession,
-                    hasCiphertext = prfCryptoDemo.hasEncryptedPayload,
+                    sessionState = prfCryptoDemo.sessionState,
                     plaintext = prfPlaintext.value,
                     decryptedText = prfDecryptedText.value,
                     statusMessage = prfStatusMessage.value,

@@ -4,6 +4,7 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.prf.PrfCiphertext
 import dev.webauthn.client.prf.PrfCryptoClient
 import dev.webauthn.client.prf.PrfCryptoSession
 import dev.webauthn.model.Base64UrlBytes
@@ -15,6 +16,14 @@ import kotlin.random.Random
 private const val PRF_SALT_LENGTH_BYTES: Int = 32
 private const val SAMPLE_PRF_CONTEXT: String = "samples.compose-passkey.prf.v1"
 private const val SAMPLE_ASSOCIATED_DATA: String = "samples-compose-passkey"
+
+public sealed interface PrfCryptoDemoSessionState {
+    data object NoSession : PrfCryptoDemoSessionState
+
+    data object SessionReady : PrfCryptoDemoSessionState
+
+    data object CiphertextReady : PrfCryptoDemoSessionState
+}
 
 internal sealed interface PrfDemoResult {
     data class Success(
@@ -46,14 +55,10 @@ internal class PrfCryptoDemoController(
     private val saltStore: PrfSaltStore,
 ) {
     private val prfCryptoClient: PrfCryptoClient = PrfCryptoClient(passkeyClient)
-    private var session: PrfCryptoSession? = null
-    private var encryptedPayload: dev.webauthn.client.prf.PrfCiphertext? = null
+    private var internalState: SessionDataState = SessionDataState.NoSession
 
-    val hasSession: Boolean
-        get() = session != null
-
-    val hasEncryptedPayload: Boolean
-        get() = encryptedPayload != null
+    val sessionState: PrfCryptoDemoSessionState
+        get() = internalState.publicState
 
     @Suppress("CyclomaticComplexMethod")
     suspend fun signInWithPrf(config: PasskeyDemoConfig, supportsPrf: Boolean): PrfDemoResult {
@@ -104,9 +109,7 @@ internal class PrfCryptoDemoController(
         }
         return when (finishResult) {
             PasskeyFinishResult.Verified -> {
-                session?.clear()
-                session = authResult.session
-                encryptedPayload = null
+                transitionTo(SessionDataState.SessionReady(authResult.session))
                 PrfDemoResult.Success(
                     message = "PRF session ready (${authResult.session.keyFingerprint}). Caller-owned salt loaded for $saltScope.",
                 )
@@ -121,7 +124,8 @@ internal class PrfCryptoDemoController(
     }
 
     suspend fun encrypt(plaintext: String): PrfDemoResult {
-        val activeSession = session ?: return PrfDemoResult.Failure("No PRF session. Run Sign In + PRF first.")
+        val activeSession = internalState.sessionOrNull()
+            ?: return PrfDemoResult.Failure("No PRF session. Run Sign In + PRF first.")
         if (plaintext.isBlank()) {
             return PrfDemoResult.Failure("Enter plaintext before encryption.")
         }
@@ -130,7 +134,7 @@ internal class PrfCryptoDemoController(
                 plaintext = plaintext,
                 associatedData = SAMPLE_ASSOCIATED_DATA.encodeToByteArray(),
             )
-            encryptedPayload = ciphertext
+            transitionTo(SessionDataState.CiphertextReady(activeSession, ciphertext))
             PrfDemoResult.Success(
                 message = "Encrypted ${plaintext.length} chars to ${ciphertext.ciphertext.bytes().size} bytes.",
             )
@@ -140,28 +144,65 @@ internal class PrfCryptoDemoController(
     }
 
     suspend fun decrypt(): PrfDemoResult {
-        val activeSession = session ?: return PrfDemoResult.Failure("No PRF session. Run Sign In + PRF first.")
-        val payload = encryptedPayload ?: return PrfDemoResult.Failure("No ciphertext. Encrypt text first.")
-        return runCatching {
-            val plaintext = activeSession.decryptToString(payload)
-            PrfDemoResult.Success(
-                message = "Decrypt succeeded.",
-                plaintext = plaintext,
-            )
-        }.getOrElse { throwable ->
-            PrfDemoResult.Failure("Decrypt failed: ${throwable.message ?: "unknown error"}")
+        return when (val state = internalState) {
+            SessionDataState.NoSession -> PrfDemoResult.Failure("No PRF session. Run Sign In + PRF first.")
+            is SessionDataState.SessionReady -> PrfDemoResult.Failure("No ciphertext. Encrypt text first.")
+            is SessionDataState.CiphertextReady -> runCatching {
+                val plaintext = state.session.decryptToString(state.payload)
+                PrfDemoResult.Success(
+                    message = "Decrypt succeeded.",
+                    plaintext = plaintext,
+                )
+            }.getOrElse { throwable ->
+                PrfDemoResult.Failure("Decrypt failed: ${throwable.message ?: "unknown error"}")
+            }
         }
     }
 
     fun clearSession(): PrfDemoResult {
-        val activeSession = session
-        return if (activeSession == null) {
-            PrfDemoResult.Success("No active PRF session.")
-        } else {
-            activeSession.clear()
-            session = null
-            encryptedPayload = null
-            PrfDemoResult.Success("PRF session key cleared from memory.")
+        return when (internalState) {
+            SessionDataState.NoSession -> PrfDemoResult.Success("No active PRF session.")
+            is SessionDataState.SessionReady, is SessionDataState.CiphertextReady -> {
+                transitionTo(SessionDataState.NoSession)
+                PrfDemoResult.Success("PRF session key cleared from memory.")
+            }
         }
+    }
+
+    private fun transitionTo(newState: SessionDataState) {
+        val previousSession = internalState.sessionOrNull()
+        val nextSession = newState.sessionOrNull()
+        if (previousSession !== nextSession) {
+            previousSession?.clear()
+        }
+        internalState = newState
+    }
+
+    private val SessionDataState.publicState: PrfCryptoDemoSessionState
+        get() = when (this) {
+            SessionDataState.NoSession -> PrfCryptoDemoSessionState.NoSession
+            is SessionDataState.SessionReady -> PrfCryptoDemoSessionState.SessionReady
+            is SessionDataState.CiphertextReady -> PrfCryptoDemoSessionState.CiphertextReady
+        }
+
+    private fun SessionDataState.sessionOrNull(): PrfCryptoSession? {
+        return when (this) {
+            SessionDataState.NoSession -> null
+            is SessionDataState.SessionReady -> session
+            is SessionDataState.CiphertextReady -> session
+        }
+    }
+
+    private sealed interface SessionDataState {
+        data object NoSession : SessionDataState
+
+        data class SessionReady(
+            val session: PrfCryptoSession,
+        ) : SessionDataState
+
+        data class CiphertextReady(
+            val session: PrfCryptoSession,
+            val payload: PrfCiphertext,
+        ) : SessionDataState
     }
 }

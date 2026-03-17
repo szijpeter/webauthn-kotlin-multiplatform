@@ -45,7 +45,7 @@ class PrfCryptoDemoControllerTest {
         assertIs<PrfDemoResult.Failure>(result)
         assertTrue(result.message.contains("does not report PRF support"))
         assertEquals(0, server.signInStartCalls)
-        assertFalse(controller.hasSession)
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
     }
 
     @Test
@@ -61,7 +61,7 @@ class PrfCryptoDemoControllerTest {
 
         val signInResult = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
         assertIs<PrfDemoResult.Success>(signInResult)
-        assertTrue(controller.hasSession)
+        assertEquals(PrfCryptoDemoSessionState.SessionReady, controller.sessionState)
         assertNotNull(server.lastAuthenticationStartPayload)
         assertEquals(
             saltStore.salt.encoded(),
@@ -74,15 +74,33 @@ class PrfCryptoDemoControllerTest {
 
         val encryptResult = controller.encrypt("hello prf")
         assertIs<PrfDemoResult.Success>(encryptResult)
-        assertTrue(controller.hasEncryptedPayload)
+        assertEquals(PrfCryptoDemoSessionState.CiphertextReady, controller.sessionState)
 
         val decryptResult = controller.decrypt()
         assertIs<PrfDemoResult.Success>(decryptResult)
         assertEquals("hello prf", decryptResult.plaintext)
 
         controller.clearSession()
-        assertFalse(controller.hasSession)
-        assertFalse(controller.hasEncryptedPayload)
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+    }
+
+    @Test
+    fun decrypt_requiresCiphertext_afterSessionIsReady() = runTest {
+        val server = PrfTestServerClient()
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        val signInResult = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+        assertIs<PrfDemoResult.Success>(signInResult)
+        assertEquals(PrfCryptoDemoSessionState.SessionReady, controller.sessionState)
+
+        val decryptResult = controller.decrypt()
+        val failure = assertIs<PrfDemoResult.Failure>(decryptResult)
+        assertTrue(failure.message.contains("No ciphertext. Encrypt text first."))
     }
 
     @Test
@@ -99,7 +117,7 @@ class PrfCryptoDemoControllerTest {
 
         assertIs<PrfDemoResult.Failure>(result)
         assertTrue(result.message.contains("rejected"))
-        assertFalse(controller.hasSession)
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
     }
 
     @Test
@@ -154,6 +172,57 @@ class PrfCryptoDemoControllerTest {
         val failure = assertIs<PrfDemoResult.Failure>(result)
         assertTrue(failure.message.contains("PRF sign-in finish failed"))
         assertTrue(failure.message.contains("finish exploded"))
+    }
+
+    @Test
+    fun clearSession_isIdempotent_and_resetsFlags() = runTest {
+        val server = PrfTestServerClient()
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        val signInResult = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+        assertIs<PrfDemoResult.Success>(signInResult)
+        controller.encrypt("clear me")
+        assertEquals(PrfCryptoDemoSessionState.CiphertextReady, controller.sessionState)
+
+        val firstClear = controller.clearSession()
+        assertIs<PrfDemoResult.Success>(firstClear)
+        assertTrue(firstClear.message.contains("cleared"))
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+
+        val secondClear = controller.clearSession()
+        assertIs<PrfDemoResult.Success>(secondClear)
+        assertTrue(secondClear.message.contains("No active PRF session."))
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+    }
+
+    @Test
+    fun secondSignIn_replacesSession_and_dropsPriorCiphertext() = runTest {
+        val server = PrfTestServerClient()
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        val firstSignIn = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+        assertIs<PrfDemoResult.Success>(firstSignIn)
+        val encryptResult = controller.encrypt("old payload")
+        assertIs<PrfDemoResult.Success>(encryptResult)
+        assertEquals(PrfCryptoDemoSessionState.CiphertextReady, controller.sessionState)
+
+        val secondSignIn = controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+        assertIs<PrfDemoResult.Success>(secondSignIn)
+        assertEquals(PrfCryptoDemoSessionState.SessionReady, controller.sessionState)
+
+        val decryptAfterSecondSignIn = controller.decrypt()
+        val failure = assertIs<PrfDemoResult.Failure>(decryptAfterSecondSignIn)
+        assertTrue(failure.message.contains("No ciphertext. Encrypt text first."))
     }
 }
 
