@@ -19,6 +19,7 @@ import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
 
 @Composable
 public fun PrfCryptoCard(
+    modifier: Modifier = Modifier,
     supportsPrf: Boolean,
     actionsEnabled: Boolean,
     sessionState: PrfCryptoDemoSessionState,
@@ -35,7 +36,7 @@ public fun PrfCryptoCard(
     val hasCiphertext = sessionState == PrfCryptoDemoSessionState.CiphertextReady
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(

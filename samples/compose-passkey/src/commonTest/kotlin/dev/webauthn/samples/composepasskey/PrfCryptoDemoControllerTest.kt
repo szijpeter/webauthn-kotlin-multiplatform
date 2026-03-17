@@ -21,6 +21,7 @@ import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,6 +29,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
 
 class PrfCryptoDemoControllerTest {
     @Test
@@ -172,6 +174,36 @@ class PrfCryptoDemoControllerTest {
         val failure = assertIs<PrfDemoResult.Failure>(result)
         assertTrue(failure.message.contains("PRF sign-in finish failed"))
         assertTrue(failure.message.contains("finish exploded"))
+    }
+
+    @Test
+    fun signInWithPrf_rethrowsCancellation_fromStartCall() = runTest {
+        val server = PrfTestServerClient(startThrowable = CancellationException("start cancelled"))
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        assertFailsWith<CancellationException> {
+            controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+        }
+    }
+
+    @Test
+    fun signInWithPrf_rethrowsCancellation_fromFinishCall() = runTest {
+        val server = PrfTestServerClient(finishThrowable = CancellationException("finish cancelled"))
+        val passkeyClient = PrfTestPasskeyClient(PasskeyResult.Success(validAuthenticationResponseWithPrf()))
+        val controller = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+            saltStore = FixedSaltStore(),
+        )
+
+        assertFailsWith<CancellationException> {
+            controller.signInWithPrf(prfDemoConfig(), supportsPrf = true)
+        }
     }
 
     @Test
