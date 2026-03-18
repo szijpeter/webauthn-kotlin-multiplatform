@@ -3,6 +3,7 @@ package dev.webauthn.model
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class TypesTest {
@@ -73,5 +74,33 @@ class TypesTest {
         assertEquals("Challenge(16 bytes)", challenge.toString())
         assertEquals("CredentialId(16 bytes)", credentialId.toString())
         assertEquals("UserHandle(32 bytes)", userHandle.toString())
+    }
+
+    @Test
+    fun toNotBlankStringOrThrowAcceptsNonBlankInput() {
+        val value = "Example RP".toNotBlankStringOrThrow("rp.name")
+        assertEquals("Example RP", value.toString())
+    }
+
+    @Test
+    fun toNotBlankStringOrThrowRejectsBlankInput() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            "   ".toNotBlankStringOrThrow("user.displayName")
+        }
+        assertEquals("user.displayName must not be blank", error.message)
+    }
+
+    @Test
+    fun toNotEmptyListOrThrowAcceptsNonEmptyInput() {
+        val value = listOf(1, 2, 3).toNotEmptyListOrThrow("pubKeyCredParams")
+        assertEquals(listOf(1, 2, 3), value.toList())
+    }
+
+    @Test
+    fun toNotEmptyListOrThrowRejectsEmptyInput() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            emptyList<Int>().toNotEmptyListOrThrow("pubKeyCredParams")
+        }
+        assertEquals("pubKeyCredParams must not be empty", error.message)
     }
 }

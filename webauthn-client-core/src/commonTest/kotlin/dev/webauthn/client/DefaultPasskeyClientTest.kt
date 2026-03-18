@@ -24,6 +24,8 @@ import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.UserHandle
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -34,17 +36,14 @@ import kotlin.test.assertTrue
 class DefaultPasskeyClientTest {
 
     @Test
-    fun createCredential_rejects_empty_pub_key_params() = runTest {
-        val client = DefaultPasskeyClient(bridge = TestBridge())
-
-        val result = client.createCredential(
-            PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
-                user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "alice", "Alice"),
-                challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-                pubKeyCredParams = emptyList(),
+    fun createCredential_maps_invalid_options_when_bridge_reports_empty_pub_key_params() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createAction = { throw IllegalArgumentException("pubKeyCredParams must not be empty") },
             ),
         )
+
+        val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
         assertTrue(result.error is PasskeyClientError.InvalidOptions)
@@ -192,15 +191,22 @@ class DefaultPasskeyClientTest {
     private companion object {
         fun validCreationOptions(): PublicKeyCredentialCreationOptions {
             return PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
-                user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1, 2, 3)), "alice", "Alice"),
+                rp = PublicKeyCredentialRpEntity(
+                    RpId.parseOrThrow("example.com"),
+                    "Example".toNotBlankStringOrThrow("rp.name"),
+                ),
+                user = PublicKeyCredentialUserEntity(
+                    UserHandle.fromBytes(byteArrayOf(1, 2, 3)),
+                    "alice".toNotBlankStringOrThrow("user.name"),
+                    "Alice".toNotBlankStringOrThrow("user.displayName"),
+                ),
                 challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
                 pubKeyCredParams = listOf(
                     PublicKeyCredentialParameters(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         alg = -7,
                     ),
-                ),
+                ).toNotEmptyListOrThrow("pubKeyCredParams"),
             )
         }
 

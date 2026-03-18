@@ -93,7 +93,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
                     val request = provider.createCredentialRegistrationRequestWithChallenge(
                         options.challenge.value.bytes().toNSData(),
-                        options.user.name,
+                        options.user.name.toString(),
                         options.user.id.value.bytes().toNSData(),
                     )
                     request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
@@ -107,8 +107,8 @@ internal class AuthenticationServicesAuthorizationBridge(
                     val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rp.id.value)
                     val request = provider.createCredentialRegistrationRequestWithChallenge(
                         challenge = options.challenge.value.bytes().toNSData(),
-                        displayName = options.user.displayName,
-                        name = options.user.name,
+                        displayName = options.user.displayName.toString(),
+                        name = options.user.name.toString(),
                         userID = options.user.id.value.bytes().toNSData(),
                     )
                     request.setUserVerificationPreference(options.userVerification.toPreferenceValue())

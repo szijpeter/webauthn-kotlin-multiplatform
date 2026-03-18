@@ -1,16 +1,21 @@
 package dev.webauthn.model
 
+import kotools.types.collection.NotEmptyList
+import kotools.types.collection.toNotEmptyList
+import kotools.types.text.NotBlankString
+import kotools.types.text.toNotBlankString
+
 /** W3C WebAuthn L3: §5.4.2. PublicKeyCredentialRpEntity Dictionary */
 public data class PublicKeyCredentialRpEntity(
     public val id: RpId,
-    public val name: String,
+    public val name: NotBlankString,
 )
 
 /** W3C WebAuthn L3: §5.4.3. PublicKeyCredentialUserEntity Dictionary */
 public data class PublicKeyCredentialUserEntity(
     public val id: UserHandle,
-    public val name: String,
-    public val displayName: String,
+    public val name: NotBlankString,
+    public val displayName: NotBlankString,
 )
 
 /** W3C WebAuthn L3: §5.4.4. PublicKeyCredentialParameters Dictionary */
@@ -82,7 +87,7 @@ public data class PublicKeyCredentialCreationOptions(
     public val rp: PublicKeyCredentialRpEntity,
     public val user: PublicKeyCredentialUserEntity,
     public val challenge: Challenge,
-    public val pubKeyCredParams: List<PublicKeyCredentialParameters>,
+    public val pubKeyCredParams: NotEmptyList<PublicKeyCredentialParameters>,
     public val timeoutMs: Long? = null,
     public val excludeCredentials: List<PublicKeyCredentialDescriptor> = emptyList(),
     public val authenticatorAttachment: AuthenticatorAttachment? = null,
@@ -91,6 +96,18 @@ public data class PublicKeyCredentialCreationOptions(
     public val attestation: AttestationConveyancePreference? = null,
     public val extensions: AuthenticationExtensionsClientInputs? = null,
 )
+
+public fun String.toNotBlankStringOrThrow(field: String): NotBlankString {
+    return toNotBlankString().getOrElse {
+        throw IllegalArgumentException("$field must not be blank")
+    }
+}
+
+public fun <T> Collection<T>.toNotEmptyListOrThrow(field: String): NotEmptyList<T> {
+    return toNotEmptyList().getOrElse {
+        throw IllegalArgumentException("$field must not be empty")
+    }
+}
 
 /** W3C WebAuthn L3: §5.5. Options for Assertion Generation (PublicKeyCredentialRequestOptions) */
 public data class PublicKeyCredentialRequestOptions(

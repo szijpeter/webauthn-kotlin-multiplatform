@@ -17,6 +17,8 @@ import dev.webauthn.model.RpId
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import java.security.KeyPairGenerator
 import java.security.MessageDigest
 import java.security.Signature
@@ -304,10 +306,10 @@ class AppleAttestationStatementVerifierTest {
         val parsedAttestedCredentialData = attestedCredentialData(authData)
         return RegistrationValidationInput(
             options = PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(id = RpId.parseOrThrow("example.com"), name = "Example"),
-                user = PublicKeyCredentialUserEntity(id = UserHandle.fromBytes(ByteArray(16){0}), name = "alice", displayName = "Alice"),
+                rp = PublicKeyCredentialRpEntity(id = RpId.parseOrThrow("example.com"), name = "Example".toNotBlankStringOrThrow("rp.name")),
+                user = PublicKeyCredentialUserEntity(id = UserHandle.fromBytes(ByteArray(16){0}), name = "alice".toNotBlankStringOrThrow("user.name"), displayName = "Alice".toNotBlankStringOrThrow("user.displayName")),
                 challenge = Challenge.fromBytes(ByteArray(16){1}),
-                pubKeyCredParams = emptyList(),
+                pubKeyCredParams = listOf(dev.webauthn.model.PublicKeyCredentialParameters(dev.webauthn.model.PublicKeyCredentialType.PUBLIC_KEY, -7)).toNotEmptyListOrThrow("pubKeyCredParams"),
             ),
             response = RegistrationResponse(
                 credentialId = parsedAttestedCredentialData.credentialId,

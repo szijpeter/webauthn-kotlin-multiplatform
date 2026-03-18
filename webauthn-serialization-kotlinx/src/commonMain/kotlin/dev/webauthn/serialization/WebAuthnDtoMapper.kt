@@ -26,6 +26,8 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
+import kotools.types.collection.toNotEmptyList
+import kotools.types.text.toNotBlankString
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -40,14 +42,14 @@ import kotlinx.serialization.decodeFromByteArray
 public object WebAuthnDtoMapper {
     public fun fromModel(value: PublicKeyCredentialCreationOptions): PublicKeyCredentialCreationOptionsDto {
         return PublicKeyCredentialCreationOptionsDto(
-            rp = RpEntityDto(id = value.rp.id.value, name = value.rp.name),
+            rp = RpEntityDto(id = value.rp.id.value, name = value.rp.name.toString()),
             user = UserEntityDto(
                 id = value.user.id.value.encoded(),
-                name = value.user.name,
-                displayName = value.user.displayName,
+                name = value.user.name.toString(),
+                displayName = value.user.displayName.toString(),
             ),
             challenge = value.challenge.value.encoded(),
-            pubKeyCredParams = value.pubKeyCredParams.map {
+            pubKeyCredParams = value.pubKeyCredParams.toList().map {
                 PublicKeyCredentialParametersDto(type = "public-key", alg = it.alg)
             },
             timeoutMs = value.timeoutMs,
@@ -102,6 +104,34 @@ public object WebAuthnDtoMapper {
                 PublicKeyCredentialParameters(type = PublicKeyCredentialType.PUBLIC_KEY, alg = param.alg)
             }
         }
+        val nonEmptyParams = params.toNotEmptyList().getOrElse {
+            errors += WebAuthnValidationError.MissingValue(
+                field = "pubKeyCredParams",
+                message = "At least one public-key credential parameter is required",
+            )
+            null
+        }
+        val rpName = value.rp.name.toNotBlankString().getOrElse {
+            errors += WebAuthnValidationError.InvalidValue(
+                field = "rp.name",
+                message = "RP name must not be blank",
+            )
+            null
+        }
+        val userName = value.user.name.toNotBlankString().getOrElse {
+            errors += WebAuthnValidationError.InvalidValue(
+                field = "user.name",
+                message = "User name must not be blank",
+            )
+            null
+        }
+        val userDisplayName = value.user.displayName.toNotBlankString().getOrElse {
+            errors += WebAuthnValidationError.InvalidValue(
+                field = "user.displayName",
+                message = "User displayName must not be blank",
+            )
+            null
+        }
 
         val excludeCredentials = value.excludeCredentials.mapNotNull { descriptor ->
             if (descriptor.type != "public-key") {
@@ -130,9 +160,27 @@ public object WebAuthnDtoMapper {
             }
         }
 
-        if (rpId == null || userId == null || challenge == null || errors.isNotEmpty()) {
+        val hasMissingRequiredValue = listOf(
+            rpId,
+            userId,
+            challenge,
+            nonEmptyParams,
+            rpName,
+            userName,
+            userDisplayName,
+        ).any { it == null }
+
+        if (hasMissingRequiredValue || errors.isNotEmpty()) {
             return ValidationResult.Invalid(errors)
         }
+
+        val resolvedRpId = rpId ?: return ValidationResult.Invalid(errors)
+        val resolvedUserId = userId ?: return ValidationResult.Invalid(errors)
+        val resolvedChallenge = challenge ?: return ValidationResult.Invalid(errors)
+        val resolvedNonEmptyParams = nonEmptyParams ?: return ValidationResult.Invalid(errors)
+        val resolvedRpName = rpName ?: return ValidationResult.Invalid(errors)
+        val resolvedUserName = userName ?: return ValidationResult.Invalid(errors)
+        val resolvedUserDisplayName = userDisplayName ?: return ValidationResult.Invalid(errors)
 
         val residentKey = when (val wireValue = value.authenticatorSelection?.residentKey) {
             null -> if (value.authenticatorSelection?.requireResidentKey == true) {
@@ -198,10 +246,14 @@ public object WebAuthnDtoMapper {
 
         return ValidationResult.Valid(
             PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(id = rpId, name = value.rp.name),
-                user = PublicKeyCredentialUserEntity(id = userId, name = value.user.name, displayName = value.user.displayName),
-                challenge = challenge,
-                pubKeyCredParams = params,
+                rp = PublicKeyCredentialRpEntity(id = resolvedRpId, name = resolvedRpName),
+                user = PublicKeyCredentialUserEntity(
+                    id = resolvedUserId,
+                    name = resolvedUserName,
+                    displayName = resolvedUserDisplayName,
+                ),
+                challenge = resolvedChallenge,
+                pubKeyCredParams = resolvedNonEmptyParams,
                 timeoutMs = value.timeoutMs,
                 excludeCredentials = excludeCredentials,
                 authenticatorAttachment = authenticatorAttachment,

@@ -19,6 +19,8 @@ import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import java.security.MessageDigest
 
 /** Server registration ceremony service (WebAuthn L3 §7.1). */
@@ -62,11 +64,14 @@ public class RegistrationService(
         val existingCredentials = credentialStore.findByUserId(request.userHandle)
 
         return PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(id = request.rpId, name = request.rpName),
+            rp = PublicKeyCredentialRpEntity(
+                id = request.rpId,
+                name = request.rpName.toNotBlankStringOrThrow("rp.name"),
+            ),
             user = PublicKeyCredentialUserEntity(
                 id = request.userHandle,
-                name = request.userName,
-                displayName = request.userDisplayName,
+                name = request.userName.toNotBlankStringOrThrow("user.name"),
+                displayName = request.userDisplayName.toNotBlankStringOrThrow("user.displayName"),
             ),
             challenge = challenge,
             pubKeyCredParams = listOf(
@@ -82,7 +87,7 @@ public class RegistrationService(
                     type = PublicKeyCredentialType.PUBLIC_KEY,
                     alg = CoseAlgorithm.EdDSA.code,
                 ),
-            ),
+            ).toNotEmptyListOrThrow("pubKeyCredParams"),
             timeoutMs = request.timeoutMs,
             excludeCredentials = existingCredentials.map(::defaultCredentialDescriptor),
             residentKey = request.residentKey,
@@ -122,11 +127,14 @@ public class RegistrationService(
         }
 
         val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(id = session.rpId, name = session.rpId.value),
+            rp = PublicKeyCredentialRpEntity(
+                id = session.rpId,
+                name = session.rpId.value.toNotBlankStringOrThrow("rp.name"),
+            ),
             user = PublicKeyCredentialUserEntity(
                 id = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id,
-                name = session.userName,
-                displayName = session.userName,
+                name = session.userName.toNotBlankStringOrThrow("user.name"),
+                displayName = session.userName.toNotBlankStringOrThrow("user.displayName"),
             ),
             challenge = session.challenge,
             pubKeyCredParams = listOf(
@@ -142,7 +150,7 @@ public class RegistrationService(
                     PublicKeyCredentialType.PUBLIC_KEY,
                     CoseAlgorithm.EdDSA.code,
                 ),
-            ),
+            ).toNotEmptyListOrThrow("pubKeyCredParams"),
             extensions = session.extensions,
         )
 

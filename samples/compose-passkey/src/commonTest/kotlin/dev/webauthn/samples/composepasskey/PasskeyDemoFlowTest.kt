@@ -28,6 +28,8 @@ import dev.webauthn.model.RpId
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import dev.webauthn.model.WebAuthnValidationError
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
@@ -246,15 +248,22 @@ private fun validDemoConfig(): PasskeyDemoConfig {
 
 private fun validCreationOptions(): PublicKeyCredentialCreationOptions {
     return PublicKeyCredentialCreationOptions(
-        rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
-        user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1, 2, 3)), "alice", "Alice"),
+        rp = PublicKeyCredentialRpEntity(
+            RpId.parseOrThrow("example.com"),
+            "Example".toNotBlankStringOrThrow("rp.name"),
+        ),
+        user = PublicKeyCredentialUserEntity(
+            UserHandle.fromBytes(byteArrayOf(1, 2, 3)),
+            "alice".toNotBlankStringOrThrow("user.name"),
+            "Alice".toNotBlankStringOrThrow("user.displayName"),
+        ),
         challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
         pubKeyCredParams = listOf(
-            PublicKeyCredentialParameters(
-                type = PublicKeyCredentialType.PUBLIC_KEY,
-                alg = -7,
-            ),
-        ),
+                PublicKeyCredentialParameters(
+                    type = PublicKeyCredentialType.PUBLIC_KEY,
+                    alg = -7,
+                ),
+            ).toNotEmptyListOrThrow("pubKeyCredParams"),
     )
 }
 

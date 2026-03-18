@@ -10,13 +10,17 @@ import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
+import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRpEntity
+import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.MessageDigest
@@ -208,10 +212,22 @@ class FidoU2fAttestationStatementVerifierTest {
     ): RegistrationValidationInput {
         return RegistrationValidationInput(
             options = PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
-                user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(ByteArray(16)), "alice", "Alice"),
+                rp = PublicKeyCredentialRpEntity(
+                    id = RpId.parseOrThrow("example.com"),
+                    name = "Example".toNotBlankStringOrThrow("rp.name"),
+                ),
+                user = PublicKeyCredentialUserEntity(
+                    id = UserHandle.fromBytes(ByteArray(16)),
+                    name = "alice".toNotBlankStringOrThrow("user.name"),
+                    displayName = "Alice".toNotBlankStringOrThrow("user.displayName"),
+                ),
                 challenge = Challenge.fromBytes(ByteArray(16) { 1 }),
-                pubKeyCredParams = emptyList(),
+                pubKeyCredParams = listOf(
+                    PublicKeyCredentialParameters(
+                        type = PublicKeyCredentialType.PUBLIC_KEY,
+                        alg = -7,
+                    ),
+                ).toNotEmptyListOrThrow("pubKeyCredParams"),
             ),
             response = RegistrationResponse(
                 credentialId = credentialId,

@@ -11,6 +11,8 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -93,15 +95,22 @@ class JsonPasskeyClientTest {
     private companion object {
         fun validCreationOptions(): PublicKeyCredentialCreationOptions {
             return PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
-                user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1, 2, 3)), "alice", "Alice"),
+                rp = PublicKeyCredentialRpEntity(
+                    RpId.parseOrThrow("example.com"),
+                    "Example".toNotBlankStringOrThrow("rp.name"),
+                ),
+                user = PublicKeyCredentialUserEntity(
+                    UserHandle.fromBytes(byteArrayOf(1, 2, 3)),
+                    "alice".toNotBlankStringOrThrow("user.name"),
+                    "Alice".toNotBlankStringOrThrow("user.displayName"),
+                ),
                 challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
                 pubKeyCredParams = listOf(
                     PublicKeyCredentialParameters(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         alg = -7,
                     ),
-                ),
+                ).toNotEmptyListOrThrow("pubKeyCredParams"),
             )
         }
 

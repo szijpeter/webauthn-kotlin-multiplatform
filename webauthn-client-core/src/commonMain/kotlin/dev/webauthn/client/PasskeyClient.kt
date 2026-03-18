@@ -84,7 +84,6 @@ public class DefaultPasskeyClient(
     ): PasskeyResult<RegistrationResponse> {
         return runTypedCeremony(
             options = options,
-            validate = ::requireCreationOptions,
             operation = bridge::createCredential,
         )
     }
@@ -105,11 +104,9 @@ public class DefaultPasskeyClient(
 
     private suspend fun <TOptions, TResult> runTypedCeremony(
         options: TOptions,
-        validate: (TOptions) -> Unit = {},
         operation: suspend (TOptions) -> TResult,
     ): PasskeyResult<TResult> {
         return runWithErrorMapping {
-            validate(options)
             operation(options)
         }
     }
@@ -119,7 +116,6 @@ public class DefaultPasskeyClient(
             onSuccess = { PasskeyResult.Success(it) },
             onFailure = { error ->
                 when (error) {
-                    is InvalidOptionsException,
                     is IllegalArgumentException -> {
                         PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
                     }
@@ -128,12 +124,6 @@ public class DefaultPasskeyClient(
                 }
             },
         )
-    }
-
-    private fun requireCreationOptions(options: PublicKeyCredentialCreationOptions) {
-        if (options.pubKeyCredParams.isEmpty()) {
-            throw InvalidOptionsException("pubKeyCredParams must not be empty")
-        }
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -145,11 +135,6 @@ public class DefaultPasskeyClient(
         }
     }
 }
-
-private class InvalidOptionsException(
-    message: String,
-    cause: Throwable? = null,
-) : IllegalArgumentException(message, cause)
 
 /** Request model for evaluating PRF extension support and behavior. */
 @ExperimentalWebAuthnL3Api

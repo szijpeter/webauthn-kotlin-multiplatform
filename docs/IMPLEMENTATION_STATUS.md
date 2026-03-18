@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-17
+Last updated: 2026-03-18
 
 ## Status Legend
 
@@ -46,6 +46,9 @@ Last updated: 2026-03-17
 - Public API hardening follow-up #59 is implemented in code: core validator boundaries now use typed wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), request-options `rpId` is optional in model/DTO ABI, sensitive network payload `toString()` values are redacted, and client finish calls now return structured `PasskeyFinishResult`.
 - Snapshot adopter note: recompile and update call sites for nullable request-options `rpId`, typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), and `PasskeyFinishResult` handling; sensitive payload `toString()` output is now redacted.
 - Review hardening follow-up (PR #53): CBOR byte scanner now rejects negative offsets and applies overflow-safe bounds checks before string/byte reads, request-options DTO mapping now rejects unknown `userVerification` values consistently, and JSON-core top-level mapper extensions are emitted in the legacy JVM owner class (`JsonPasskeyClientKt`) to preserve binary compatibility.
+- Network transport internals in `webauthn-network-ktor-client` now use `sandwich-ktor` `ApiResponse` flow handling while preserving existing finish mapping semantics and redaction behavior.
+- Public model contracts now enforce additional invariants via explicit Kotools types (`NotBlankString` and `NotEmptyList`) for selected fields that were previously validated at runtime, and conversion helpers are centralized in `webauthn-model`.
+- Snapshot adopter note (breaking change): consumers must update construction call sites for `PublicKeyCredentialRpEntity`, `PublicKeyCredentialUserEntity`, and `PublicKeyCredentialCreationOptions.pubKeyCredParams` to provide explicit non-blank/non-empty types.
 
 ## Plan Progress (Estimated)
 
@@ -58,7 +61,7 @@ Last updated: 2026-03-17
 
 | Module | Maturity | Implemented | Gaps / Risks |
 |---|---|---|---|
-| `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, immutable byte/domain wrappers for binary protocol values, redacted byte-wrapper diagnostics, named `ClientDataHash`/`CosePublicKey` values, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins), authenticator transports/attachment and attestation preference models | Continued edge-case coverage for uncommon protocol combinations |
+| `webauthn-model` | Production-leaning | Typed protocol models, strict base64url behavior, value semantics tests, immutable byte/domain wrappers for binary protocol values, redacted byte-wrapper diagnostics, named `ClientDataHash`/`CosePublicKey` values, L3 extension models (PRF eval/evalByCredential, LargeBlob read/write, Related Origins), authenticator transports/attachment and attestation preference models, explicit non-blank/non-empty public field invariants via Kotools `NotBlankString` and `NotEmptyList` | Continued edge-case coverage for uncommon protocol combinations |
 | `webauthn-cbor-internal` | Beta | Shared strict CBOR byte scanner helpers for attestation/authenticator parsing, minimal-encoding rejection, common KMP module consumed via normal project dependencies | Internal helper module only; broader vector depth remains covered through consuming modules |
 | `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests, extension processing hooks, LargeBlob validation, PRF missing-output checks | Additional L3 extension hardening |
 | `webauthn-serialization-kotlinx` | Beta | DTO mapping + typed CBOR authData extraction, shared internal CBOR byte scanner usage, strict minimal CBOR/COSE rejection for registration parsing, round-trip tests, attachment/attestation/transports mapping | Deeper COSE/CBOR vector coverage |
@@ -73,7 +76,7 @@ Last updated: 2026-03-17
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, capability reporting, shared-core delegation | Lifecycle and OEM/provider compatibility hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation, PRF extension input/output bridge wiring | More runtime/device matrix coverage |
 | `webauthn-client-prf-crypto` | Beta | Signum-backed PRF helpers (request/response extraction), HKDF-SHA256 key derivation, AES-GCM helpers, and zeroizable in-memory session facade | Additional interop vectors and long-term key-management guidance |
-| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`), optional extension transport fields on start payloads | Retry/error policy hardening and broader contract fixtures |
+| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`), optional extension transport fields on start payloads, `sandwich-ktor` internal `ApiResponse` mapping for Ktor calls | Retry/error policy hardening and broader contract fixtures |
 | `webauthn-attestation-mds` | Beta | Optional trust source module and tests, normalized AAGUID lookup across hyphenated metadata and raw-byte authenticator values | Full attestation format/trust-chain verification depth |
 | `samples:*` | Beta | Runnable backend/android/ios structure and Compose KMP readiness sample wired to default `/webauthn/*` contract via `samples/backend-ktor` | More real-device matrix coverage and extension-focused end-to-end examples |
 

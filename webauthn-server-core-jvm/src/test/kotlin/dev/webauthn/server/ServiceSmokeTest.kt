@@ -50,7 +50,7 @@ class ServiceSmokeTest {
         )
 
         assertTrue(options.challenge.value.bytes().isNotEmpty())
-        assertEquals(3, options.pubKeyCredParams.size)
+        assertEquals(3, options.pubKeyCredParams.toList().size)
     }
 
     @Test

@@ -21,6 +21,8 @@ import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -385,11 +387,14 @@ class WebAuthnCoreValidatorTest {
 
     private fun sampleCreationOptions(challenge: Challenge): PublicKeyCredentialCreationOptions {
         return PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(id = sampleRpId(), name = "Example"),
+            rp = PublicKeyCredentialRpEntity(
+                id = sampleRpId(),
+                name = "Example".toNotBlankStringOrThrow("rp.name"),
+            ),
             user = PublicKeyCredentialUserEntity(
                 id = UserHandle.fromBytes(ByteArray(16) { 11 }),
-                name = "alice",
-                displayName = "Alice",
+                name = "alice".toNotBlankStringOrThrow("user.name"),
+                displayName = "Alice".toNotBlankStringOrThrow("user.displayName"),
             ),
             challenge = challenge,
             pubKeyCredParams = listOf(
@@ -397,7 +402,7 @@ class WebAuthnCoreValidatorTest {
                     type = PublicKeyCredentialType.PUBLIC_KEY,
                     alg = -7,
                 ),
-            ),
+            ).toNotEmptyListOrThrow("pubKeyCredParams"),
         )
     }
 

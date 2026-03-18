@@ -7,6 +7,8 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -61,15 +63,15 @@ class NoneAttestationStatementVerifierTest {
             options = dev.webauthn.model.PublicKeyCredentialCreationOptions(
                 rp = dev.webauthn.model.PublicKeyCredentialRpEntity(
                     id = dev.webauthn.model.RpId.parseOrThrow("example.com"),
-                    name = "Example",
+                    name = "Example".toNotBlankStringOrThrow("rp.name"),
                 ),
                 user = dev.webauthn.model.PublicKeyCredentialUserEntity(
                     id = dev.webauthn.model.UserHandle.fromBytes(ByteArray(16) { 7 }),
-                    name = "alice",
-                    displayName = "Alice",
+                    name = "alice".toNotBlankStringOrThrow("user.name"),
+                    displayName = "Alice".toNotBlankStringOrThrow("user.displayName"),
                 ),
                 challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(16) { 1 }),
-                pubKeyCredParams = emptyList(),
+                pubKeyCredParams = listOf(dev.webauthn.model.PublicKeyCredentialParameters(dev.webauthn.model.PublicKeyCredentialType.PUBLIC_KEY, -7)).toNotEmptyListOrThrow("pubKeyCredParams"),
             ),
             response = RegistrationResponse(
                 credentialId = credentialId,

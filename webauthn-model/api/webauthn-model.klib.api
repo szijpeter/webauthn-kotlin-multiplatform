@@ -393,7 +393,7 @@ final class dev.webauthn.model/PrfExtensionOutput { // dev.webauthn.model/PrfExt
 }
 
 final class dev.webauthn.model/PublicKeyCredentialCreationOptions { // dev.webauthn.model/PublicKeyCredentialCreationOptions|null[0]
-    constructor <init>(dev.webauthn.model/PublicKeyCredentialRpEntity, dev.webauthn.model/PublicKeyCredentialUserEntity, dev.webauthn.model/Challenge, kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialParameters>, kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/ResidentKeyRequirement = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AttestationConveyancePreference? = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...) // dev.webauthn.model/PublicKeyCredentialCreationOptions.<init>|<init>(dev.webauthn.model.PublicKeyCredentialRpEntity;dev.webauthn.model.PublicKeyCredentialUserEntity;dev.webauthn.model.Challenge;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialParameters>;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.ResidentKeyRequirement;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AttestationConveyancePreference?;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
+    constructor <init>(dev.webauthn.model/PublicKeyCredentialRpEntity, dev.webauthn.model/PublicKeyCredentialUserEntity, dev.webauthn.model/Challenge, kotools.types.collection/NotEmptyList<dev.webauthn.model/PublicKeyCredentialParameters>, kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/ResidentKeyRequirement = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AttestationConveyancePreference? = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...) // dev.webauthn.model/PublicKeyCredentialCreationOptions.<init>|<init>(dev.webauthn.model.PublicKeyCredentialRpEntity;dev.webauthn.model.PublicKeyCredentialUserEntity;dev.webauthn.model.Challenge;kotools.types.collection.NotEmptyList<dev.webauthn.model.PublicKeyCredentialParameters>;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.ResidentKeyRequirement;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AttestationConveyancePreference?;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
 
     final val attestation // dev.webauthn.model/PublicKeyCredentialCreationOptions.attestation|{}attestation[0]
         final fun <get-attestation>(): dev.webauthn.model/AttestationConveyancePreference? // dev.webauthn.model/PublicKeyCredentialCreationOptions.attestation.<get-attestation>|<get-attestation>(){}[0]
@@ -406,7 +406,7 @@ final class dev.webauthn.model/PublicKeyCredentialCreationOptions { // dev.webau
     final val extensions // dev.webauthn.model/PublicKeyCredentialCreationOptions.extensions|{}extensions[0]
         final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.model/PublicKeyCredentialCreationOptions.extensions.<get-extensions>|<get-extensions>(){}[0]
     final val pubKeyCredParams // dev.webauthn.model/PublicKeyCredentialCreationOptions.pubKeyCredParams|{}pubKeyCredParams[0]
-        final fun <get-pubKeyCredParams>(): kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialParameters> // dev.webauthn.model/PublicKeyCredentialCreationOptions.pubKeyCredParams.<get-pubKeyCredParams>|<get-pubKeyCredParams>(){}[0]
+        final fun <get-pubKeyCredParams>(): kotools.types.collection/NotEmptyList<dev.webauthn.model/PublicKeyCredentialParameters> // dev.webauthn.model/PublicKeyCredentialCreationOptions.pubKeyCredParams.<get-pubKeyCredParams>|<get-pubKeyCredParams>(){}[0]
     final val residentKey // dev.webauthn.model/PublicKeyCredentialCreationOptions.residentKey|{}residentKey[0]
         final fun <get-residentKey>(): dev.webauthn.model/ResidentKeyRequirement // dev.webauthn.model/PublicKeyCredentialCreationOptions.residentKey.<get-residentKey>|<get-residentKey>(){}[0]
     final val rp // dev.webauthn.model/PublicKeyCredentialCreationOptions.rp|{}rp[0]
@@ -423,13 +423,13 @@ final class dev.webauthn.model/PublicKeyCredentialCreationOptions { // dev.webau
     final fun component11(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.model/PublicKeyCredentialCreationOptions.component11|component11(){}[0]
     final fun component2(): dev.webauthn.model/PublicKeyCredentialUserEntity // dev.webauthn.model/PublicKeyCredentialCreationOptions.component2|component2(){}[0]
     final fun component3(): dev.webauthn.model/Challenge // dev.webauthn.model/PublicKeyCredentialCreationOptions.component3|component3(){}[0]
-    final fun component4(): kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialParameters> // dev.webauthn.model/PublicKeyCredentialCreationOptions.component4|component4(){}[0]
+    final fun component4(): kotools.types.collection/NotEmptyList<dev.webauthn.model/PublicKeyCredentialParameters> // dev.webauthn.model/PublicKeyCredentialCreationOptions.component4|component4(){}[0]
     final fun component5(): kotlin/Long? // dev.webauthn.model/PublicKeyCredentialCreationOptions.component5|component5(){}[0]
     final fun component6(): kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> // dev.webauthn.model/PublicKeyCredentialCreationOptions.component6|component6(){}[0]
     final fun component7(): dev.webauthn.model/AuthenticatorAttachment? // dev.webauthn.model/PublicKeyCredentialCreationOptions.component7|component7(){}[0]
     final fun component8(): dev.webauthn.model/ResidentKeyRequirement // dev.webauthn.model/PublicKeyCredentialCreationOptions.component8|component8(){}[0]
     final fun component9(): dev.webauthn.model/UserVerificationRequirement // dev.webauthn.model/PublicKeyCredentialCreationOptions.component9|component9(){}[0]
-    final fun copy(dev.webauthn.model/PublicKeyCredentialRpEntity = ..., dev.webauthn.model/PublicKeyCredentialUserEntity = ..., dev.webauthn.model/Challenge = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialParameters> = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/ResidentKeyRequirement = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AttestationConveyancePreference? = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...): dev.webauthn.model/PublicKeyCredentialCreationOptions // dev.webauthn.model/PublicKeyCredentialCreationOptions.copy|copy(dev.webauthn.model.PublicKeyCredentialRpEntity;dev.webauthn.model.PublicKeyCredentialUserEntity;dev.webauthn.model.Challenge;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialParameters>;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.ResidentKeyRequirement;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AttestationConveyancePreference?;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
+    final fun copy(dev.webauthn.model/PublicKeyCredentialRpEntity = ..., dev.webauthn.model/PublicKeyCredentialUserEntity = ..., dev.webauthn.model/Challenge = ..., kotools.types.collection/NotEmptyList<dev.webauthn.model/PublicKeyCredentialParameters> = ..., kotlin/Long? = ..., kotlin.collections/List<dev.webauthn.model/PublicKeyCredentialDescriptor> = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/ResidentKeyRequirement = ..., dev.webauthn.model/UserVerificationRequirement = ..., dev.webauthn.model/AttestationConveyancePreference? = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ...): dev.webauthn.model/PublicKeyCredentialCreationOptions // dev.webauthn.model/PublicKeyCredentialCreationOptions.copy|copy(dev.webauthn.model.PublicKeyCredentialRpEntity;dev.webauthn.model.PublicKeyCredentialUserEntity;dev.webauthn.model.Challenge;kotools.types.collection.NotEmptyList<dev.webauthn.model.PublicKeyCredentialParameters>;kotlin.Long?;kotlin.collections.List<dev.webauthn.model.PublicKeyCredentialDescriptor>;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.ResidentKeyRequirement;dev.webauthn.model.UserVerificationRequirement;dev.webauthn.model.AttestationConveyancePreference?;dev.webauthn.model.AuthenticationExtensionsClientInputs?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/PublicKeyCredentialCreationOptions.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.model/PublicKeyCredentialCreationOptions.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.model/PublicKeyCredentialCreationOptions.toString|toString(){}[0]
@@ -499,35 +499,35 @@ final class dev.webauthn.model/PublicKeyCredentialRequestOptions { // dev.webaut
 }
 
 final class dev.webauthn.model/PublicKeyCredentialRpEntity { // dev.webauthn.model/PublicKeyCredentialRpEntity|null[0]
-    constructor <init>(dev.webauthn.model/RpId, kotlin/String) // dev.webauthn.model/PublicKeyCredentialRpEntity.<init>|<init>(dev.webauthn.model.RpId;kotlin.String){}[0]
+    constructor <init>(dev.webauthn.model/RpId, kotools.types.text/NotBlankString) // dev.webauthn.model/PublicKeyCredentialRpEntity.<init>|<init>(dev.webauthn.model.RpId;kotools.types.text.NotBlankString){}[0]
 
     final val id // dev.webauthn.model/PublicKeyCredentialRpEntity.id|{}id[0]
         final fun <get-id>(): dev.webauthn.model/RpId // dev.webauthn.model/PublicKeyCredentialRpEntity.id.<get-id>|<get-id>(){}[0]
     final val name // dev.webauthn.model/PublicKeyCredentialRpEntity.name|{}name[0]
-        final fun <get-name>(): kotlin/String // dev.webauthn.model/PublicKeyCredentialRpEntity.name.<get-name>|<get-name>(){}[0]
+        final fun <get-name>(): kotools.types.text/NotBlankString // dev.webauthn.model/PublicKeyCredentialRpEntity.name.<get-name>|<get-name>(){}[0]
 
     final fun component1(): dev.webauthn.model/RpId // dev.webauthn.model/PublicKeyCredentialRpEntity.component1|component1(){}[0]
-    final fun component2(): kotlin/String // dev.webauthn.model/PublicKeyCredentialRpEntity.component2|component2(){}[0]
-    final fun copy(dev.webauthn.model/RpId = ..., kotlin/String = ...): dev.webauthn.model/PublicKeyCredentialRpEntity // dev.webauthn.model/PublicKeyCredentialRpEntity.copy|copy(dev.webauthn.model.RpId;kotlin.String){}[0]
+    final fun component2(): kotools.types.text/NotBlankString // dev.webauthn.model/PublicKeyCredentialRpEntity.component2|component2(){}[0]
+    final fun copy(dev.webauthn.model/RpId = ..., kotools.types.text/NotBlankString = ...): dev.webauthn.model/PublicKeyCredentialRpEntity // dev.webauthn.model/PublicKeyCredentialRpEntity.copy|copy(dev.webauthn.model.RpId;kotools.types.text.NotBlankString){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/PublicKeyCredentialRpEntity.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.model/PublicKeyCredentialRpEntity.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.model/PublicKeyCredentialRpEntity.toString|toString(){}[0]
 }
 
 final class dev.webauthn.model/PublicKeyCredentialUserEntity { // dev.webauthn.model/PublicKeyCredentialUserEntity|null[0]
-    constructor <init>(dev.webauthn.model/UserHandle, kotlin/String, kotlin/String) // dev.webauthn.model/PublicKeyCredentialUserEntity.<init>|<init>(dev.webauthn.model.UserHandle;kotlin.String;kotlin.String){}[0]
+    constructor <init>(dev.webauthn.model/UserHandle, kotools.types.text/NotBlankString, kotools.types.text/NotBlankString) // dev.webauthn.model/PublicKeyCredentialUserEntity.<init>|<init>(dev.webauthn.model.UserHandle;kotools.types.text.NotBlankString;kotools.types.text.NotBlankString){}[0]
 
     final val displayName // dev.webauthn.model/PublicKeyCredentialUserEntity.displayName|{}displayName[0]
-        final fun <get-displayName>(): kotlin/String // dev.webauthn.model/PublicKeyCredentialUserEntity.displayName.<get-displayName>|<get-displayName>(){}[0]
+        final fun <get-displayName>(): kotools.types.text/NotBlankString // dev.webauthn.model/PublicKeyCredentialUserEntity.displayName.<get-displayName>|<get-displayName>(){}[0]
     final val id // dev.webauthn.model/PublicKeyCredentialUserEntity.id|{}id[0]
         final fun <get-id>(): dev.webauthn.model/UserHandle // dev.webauthn.model/PublicKeyCredentialUserEntity.id.<get-id>|<get-id>(){}[0]
     final val name // dev.webauthn.model/PublicKeyCredentialUserEntity.name|{}name[0]
-        final fun <get-name>(): kotlin/String // dev.webauthn.model/PublicKeyCredentialUserEntity.name.<get-name>|<get-name>(){}[0]
+        final fun <get-name>(): kotools.types.text/NotBlankString // dev.webauthn.model/PublicKeyCredentialUserEntity.name.<get-name>|<get-name>(){}[0]
 
     final fun component1(): dev.webauthn.model/UserHandle // dev.webauthn.model/PublicKeyCredentialUserEntity.component1|component1(){}[0]
-    final fun component2(): kotlin/String // dev.webauthn.model/PublicKeyCredentialUserEntity.component2|component2(){}[0]
-    final fun component3(): kotlin/String // dev.webauthn.model/PublicKeyCredentialUserEntity.component3|component3(){}[0]
-    final fun copy(dev.webauthn.model/UserHandle = ..., kotlin/String = ..., kotlin/String = ...): dev.webauthn.model/PublicKeyCredentialUserEntity // dev.webauthn.model/PublicKeyCredentialUserEntity.copy|copy(dev.webauthn.model.UserHandle;kotlin.String;kotlin.String){}[0]
+    final fun component2(): kotools.types.text/NotBlankString // dev.webauthn.model/PublicKeyCredentialUserEntity.component2|component2(){}[0]
+    final fun component3(): kotools.types.text/NotBlankString // dev.webauthn.model/PublicKeyCredentialUserEntity.component3|component3(){}[0]
+    final fun copy(dev.webauthn.model/UserHandle = ..., kotools.types.text/NotBlankString = ..., kotools.types.text/NotBlankString = ...): dev.webauthn.model/PublicKeyCredentialUserEntity // dev.webauthn.model/PublicKeyCredentialUserEntity.copy|copy(dev.webauthn.model.UserHandle;kotools.types.text.NotBlankString;kotools.types.text.NotBlankString){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/PublicKeyCredentialUserEntity.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.model/PublicKeyCredentialUserEntity.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.model/PublicKeyCredentialUserEntity.toString|toString(){}[0]
@@ -723,5 +723,7 @@ final value class dev.webauthn.model/UserHandle { // dev.webauthn.model/UserHand
     }
 }
 
+final fun (kotlin/String).dev.webauthn.model/toNotBlankStringOrThrow(kotlin/String): kotools.types.text/NotBlankString // dev.webauthn.model/toNotBlankStringOrThrow|toNotBlankStringOrThrow@kotlin.String(kotlin.String){}[0]
 final fun <#A: kotlin/Any?> (dev.webauthn.model/ValidationResult<#A>).dev.webauthn.model/getOrNull(): #A? // dev.webauthn.model/getOrNull|getOrNull@dev.webauthn.model.ValidationResult<0:0>(){0§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any?> (dev.webauthn.model/ValidationResult<#A>).dev.webauthn.model/getOrThrow(): #A // dev.webauthn.model/getOrThrow|getOrThrow@dev.webauthn.model.ValidationResult<0:0>(){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlin.collections/Collection<#A>).dev.webauthn.model/toNotEmptyListOrThrow(kotlin/String): kotools.types.collection/NotEmptyList<#A> // dev.webauthn.model/toNotEmptyListOrThrow|toNotEmptyListOrThrow@kotlin.collections.Collection<0:0>(kotlin.String){0§<kotlin.Any?>}[0]

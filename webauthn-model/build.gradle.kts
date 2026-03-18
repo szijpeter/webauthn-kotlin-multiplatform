@@ -10,6 +10,9 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
+        commonMain.dependencies {
+            api(libs.kotools.types)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }

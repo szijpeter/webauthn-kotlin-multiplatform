@@ -20,6 +20,8 @@ import dev.webauthn.model.Challenge
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialType
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import androidx.credentials.CreatePublicKeyCredentialResponse
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.PublicKeyCredential
@@ -39,32 +41,13 @@ import org.robolectric.annotation.Config
 class AndroidPasskeyClientTest {
 
     @Test
-    fun createCredential_returns_InvalidOptions_when_pubKeyCredParams_is_empty() = runBlocking {
-        val client = AndroidPasskeyClient(mockk(relaxed = true), mockk(relaxed = true))
-        val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
-            user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
-            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = emptyList()
-        )
-        val result = client.createCredential(options)
-        assertTrue(result is PasskeyResult.Failure)
-        assertTrue((result as PasskeyResult.Failure).error is PasskeyClientError.InvalidOptions)
-    }
-
-    @Test
     fun createCredential_returns_UserCancelled_on_cancellation_exception() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
         
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } throws CreateCredentialCancellationException("Cancelled")
 
-        val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
-            user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
-            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
-        )
+        val options = validCreationOptions()
 
         val result = client.createCredential(options)
         assertTrue("Result should be Failure but was $result", result is PasskeyResult.Failure)
@@ -79,12 +62,7 @@ class AndroidPasskeyClientTest {
         
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } throws CreateCredentialInterruptedException("Interrupted")
 
-        val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
-            user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
-            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
-        )
+        val options = validCreationOptions()
 
         val result = client.createCredential(options)
         assertTrue(result is PasskeyResult.Failure)
@@ -167,12 +145,7 @@ class AndroidPasskeyClientTest {
         
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } returns CreatePublicKeyCredentialResponse(validRegJson)
 
-        val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
-            user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
-            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
-        )
+        val options = validCreationOptions()
 
         val result = client.createCredential(options)
         assertTrue(result is PasskeyResult.Success)
@@ -214,12 +187,7 @@ class AndroidPasskeyClientTest {
         
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } returns CreatePublicKeyCredentialResponse("{}")
 
-        val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
-            user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
-            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
-        )
+        val options = validCreationOptions()
 
         val result = client.createCredential(options)
         assertTrue(result is PasskeyResult.Failure)
@@ -264,5 +232,23 @@ class AndroidPasskeyClientTest {
         val failure = result as PasskeyResult.Failure
         assertTrue(failure.error is PasskeyClientError.Platform)
         assertTrue(failure.error.message.contains("Unexpected credential type"))
+    }
+
+    private fun validCreationOptions(): PublicKeyCredentialCreationOptions {
+        return PublicKeyCredentialCreationOptions(
+            rp = PublicKeyCredentialRpEntity(
+                RpId.parseOrThrow("example.com"),
+                "name".toNotBlankStringOrThrow("rp.name"),
+            ),
+            user = PublicKeyCredentialUserEntity(
+                UserHandle.fromBytes(byteArrayOf(1)),
+                "name".toNotBlankStringOrThrow("user.name"),
+                "display".toNotBlankStringOrThrow("user.displayName"),
+            ),
+            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
+            pubKeyCredParams = listOf(
+                PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7),
+            ).toNotEmptyListOrThrow("pubKeyCredParams"),
+        )
     }
 }

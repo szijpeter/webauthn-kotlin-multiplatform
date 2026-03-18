@@ -16,6 +16,8 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.toNotBlankStringOrThrow
+import dev.webauthn.model.toNotEmptyListOrThrow
 import kotlinx.coroutines.runBlocking
 import platform.AuthenticationServices.ASAuthorizationErrorCanceled
 import platform.AuthenticationServices.ASAuthorizationErrorDomain
@@ -40,10 +42,19 @@ class IosPasskeyDelegateTest {
     }
 
     private fun mockOptions() = PublicKeyCredentialCreationOptions(
-        rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
-        user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
+        rp = PublicKeyCredentialRpEntity(
+            RpId.parseOrThrow("example.com"),
+            "name".toNotBlankStringOrThrow("rp.name"),
+        ),
+        user = PublicKeyCredentialUserEntity(
+            UserHandle.fromBytes(byteArrayOf(1)),
+            "name".toNotBlankStringOrThrow("user.name"),
+            "display".toNotBlankStringOrThrow("user.displayName"),
+        ),
         challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-        pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
+        pubKeyCredParams = listOf(
+            PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7),
+        ).toNotEmptyListOrThrow("pubKeyCredParams"),
     )
 
     private fun mockRequestOptions() = PublicKeyCredentialRequestOptions(

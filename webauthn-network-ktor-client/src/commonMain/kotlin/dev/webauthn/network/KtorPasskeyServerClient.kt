@@ -13,16 +13,16 @@ import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.ktor.bodyString
+import com.skydoves.sandwich.ktor.postApiResponse
+import com.skydoves.sandwich.ktor.statusCode
 
 /** Backend API contract consumed by [KtorPasskeyServerClient]. */
 public interface BackendContract {
@@ -67,14 +67,10 @@ public class DefaultBackendContract(
         endpointFor: (String) -> String,
         params: RegistrationStartPayload,
     ): ValidationResult<PublicKeyCredentialCreationOptions> {
-        val response = httpClient.post(endpointFor(registerOptionsPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(params)
-        }
-        val responseText = response.bodyAsText()
-        throwIfHttpError(
-            response = response,
-            responseText = responseText,
+        val responseText = postJsonAndReadText(
+            httpClient = httpClient,
+            endpoint = endpointFor(registerOptionsPath),
+            payload = params,
             operation = "Registration start",
         )
         val dto = decodeOrThrow<PublicKeyCredentialCreationOptionsDto>(
@@ -99,14 +95,10 @@ public class DefaultBackendContract(
             challenge = challengeAsBase64Url,
             origin = params.origin,
         )
-        val httpResponse = httpClient.post(endpointFor(registerVerifyPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(finishPayload)
-        }
-        val responseText = httpResponse.bodyAsText()
-        throwIfHttpError(
-            response = httpResponse,
-            responseText = responseText,
+        val responseText = postJsonAndReadText(
+            httpClient = httpClient,
+            endpoint = endpointFor(registerVerifyPath),
+            payload = finishPayload,
             operation = "Registration finish",
         )
         val result = decodeOrThrow<FinishPayloadResponse>(
@@ -127,14 +119,10 @@ public class DefaultBackendContract(
         endpointFor: (String) -> String,
         params: AuthenticationStartPayload,
     ): ValidationResult<PublicKeyCredentialRequestOptions> {
-        val response = httpClient.post(endpointFor(authenticateOptionsPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(params)
-        }
-        val responseText = response.bodyAsText()
-        throwIfHttpError(
-            response = response,
-            responseText = responseText,
+        val responseText = postJsonAndReadText(
+            httpClient = httpClient,
+            endpoint = endpointFor(authenticateOptionsPath),
+            payload = params,
             operation = "Authentication start",
         )
         val dto = decodeOrThrow<PublicKeyCredentialRequestOptionsDto>(
@@ -159,14 +147,10 @@ public class DefaultBackendContract(
             challenge = challengeAsBase64Url,
             origin = params.origin,
         )
-        val httpResponse = httpClient.post(endpointFor(authenticateVerifyPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(finishPayload)
-        }
-        val responseText = httpResponse.bodyAsText()
-        throwIfHttpError(
-            response = httpResponse,
-            responseText = responseText,
+        val responseText = postJsonAndReadText(
+            httpClient = httpClient,
+            endpoint = endpointFor(authenticateVerifyPath),
+            payload = finishPayload,
             operation = "Authentication finish",
         )
         val result = decodeOrThrow<FinishPayloadResponse>(
@@ -305,18 +289,31 @@ private val contractJson: Json = Json {
     ignoreUnknownKeys = true
 }
 
-private suspend fun throwIfHttpError(
-    response: HttpResponse,
-    responseText: String,
+private suspend fun postJsonAndReadText(
+    httpClient: HttpClient,
+    endpoint: String,
+    payload: Any,
     operation: String,
-) {
-    if (response.status.isSuccess()) {
-        return
+) : String {
+    val response = httpClient.postApiResponse<String>(endpoint) {
+        header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        setBody(payload)
     }
-    val details = serverErrorMessage(responseText)
-    throw IllegalStateException(
-        "$operation failed with HTTP ${response.status.value}: $details",
-    )
+    return when (response) {
+        is ApiResponse.Success -> response.data
+        is ApiResponse.Failure.Error -> {
+            val responseText = response.bodyString()
+            val details = serverErrorMessage(responseText)
+            throw IllegalStateException("$operation failed with HTTP ${response.statusCode.code}: $details")
+        }
+
+        is ApiResponse.Failure.Exception -> {
+            throw IllegalStateException(
+                "$operation failed due to transport exception: ${response.message ?: "unknown error"}",
+                response.throwable,
+            )
+        }
+    }
 }
 
 private inline fun <reified T> decodeOrThrow(

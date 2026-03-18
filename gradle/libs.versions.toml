@@ -30,6 +30,8 @@ postgresql = "42.7.10"
 junit4 = "4.13.2"
 robolectric = "4.16.1"
 mockk = "1.14.9"
+sandwich = "2.2.1"
+kotools-types = "5.1.1"
 
 [libraries]
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -41,6 +43,9 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kmmresult = { module = "at.asitplus:kmmresult", version.ref = "kmmresult" }
+sandwich = { module = "com.github.skydoves:sandwich", version.ref = "sandwich" }
+sandwich-ktor = { module = "com.github.skydoves:sandwich-ktor", version.ref = "sandwich" }
+kotools-types = { module = "org.kotools:types", version.ref = "kotools-types" }
 
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref = "ktor" }

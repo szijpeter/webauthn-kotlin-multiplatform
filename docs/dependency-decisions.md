@@ -21,6 +21,30 @@ Unpin policy:
 3. Keep captured Android assertion-vector regression tests green (`ServiceSmokeTest.authenticationFinishSupportsCapturedAndroidAssertionVector` and `ServiceSmokeTest.jvmSignatureVerifierSupportsCapturedAndroidAssertionVector`).
 4. Revisit `1.10.x` only after [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved.
 
+## Transport and Explicit-Type Adoption (2026-03-18)
+
+`webauthn-network-ktor-client` now uses:
+
+- `com.github.skydoves:sandwich`
+- `com.github.skydoves:sandwich-ktor`
+
+Decision:
+
+1. Use `ApiResponse` in transport internals to reduce response/error mapping clutter while preserving existing domain behavior.
+2. Keep `sandwich` scoped to transport adapter internals; do not leak `ApiResponse` into public module contracts.
+3. Preserve current redaction, rejection semantics, and `PasskeyFinishResult` mapping so behavior remains stable for callers.
+
+`webauthn-model` now exposes selected explicit types via:
+
+- `org.kotools:types`
+
+Decision:
+
+1. Use `NotBlankString` for public fields where blank content is invalid by contract.
+2. Use `NotEmptyList` for public collection fields where empty values were previously runtime-invalid.
+3. Keep WebAuthn domain wrappers (`RpId`, `Challenge`, `CredentialId`, `Base64UrlBytes`, and related fixed-size wrappers) as project-owned types.
+4. Keep conversion helpers centralized (`toNotBlankStringOrThrow`, `toNotEmptyListOrThrow`) to avoid repeated low-signal validation code at call sites.
+
 ## Remaining JCA Boundary
 
 JCA/JDK APIs are intentionally used only for PKI trust duties:
