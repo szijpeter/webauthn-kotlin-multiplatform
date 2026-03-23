@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,7 +15,7 @@
 /* Begin PBXFileReference section */
 		020E8BEC08EDAB193162C8F0 /* ComposePasskeyShared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposePasskeyShared.framework; path = "$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/ComposePasskeyShared.framework"; sourceTree = "<group>"; };
 		D05536FE2830CD3C83D94EDF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		EC8470A115D06D044F4D7D79 /* ComposePasskeyIos.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ComposePasskeyIos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC8470A115D06D044F4D7D79 /* ComposePasskeyIos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComposePasskeyIos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposePasskeyIosApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,7 +98,6 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					CFB1D48572F3794BE43FFB7F = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -113,7 +112,6 @@
 			);
 			mainGroup = 1F33ADD75A38736490A248CB;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -310,11 +308,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = X23DCM8Q83;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\"",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -332,11 +332,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = X23DCM8Q83;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\"",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
