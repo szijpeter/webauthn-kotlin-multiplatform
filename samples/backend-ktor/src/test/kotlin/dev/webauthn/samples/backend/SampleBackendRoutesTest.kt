@@ -128,6 +128,16 @@ class SampleBackendRoutesTest {
         assertEquals("ABCD1234.com.example.demo", derivedIosAppId.iosAppId)
         assertNull(derivedIosAppId.iosAppIdWarning)
 
+        val canonicalPrecedenceConfig = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "IOS_APP_ID" to "ZZZZ9999.com.example.canonical",
+                "IOS_TEAM_ID" to "ABCD1234",
+                "IOS_BUNDLE_ID" to "com.example.derived",
+            ),
+        )
+        assertEquals("ZZZZ9999.com.example.canonical", canonicalPrecedenceConfig.iosAppId)
+        assertNull(canonicalPrecedenceConfig.iosAppIdWarning)
+
         val partiallyConfiguredIosAppId = SampleBackendConfig.fromEnvironment(
             mapOf(
                 "IOS_TEAM_ID" to "ABCD1234",

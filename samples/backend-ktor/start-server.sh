@@ -148,9 +148,9 @@ echo "Using ANDROID_SHA256: $ANDROID_SHA256"
 if [[ -n "$IOS_APP_ID" ]]; then
     echo "Using IOS_APP_ID: $IOS_APP_ID"
 elif [[ -n "$IOS_TEAM_ID" || -n "$IOS_BUNDLE_ID" ]]; then
-    echo "IOS_APP_ID could not be derived: both IOS_TEAM_ID and IOS_BUNDLE_ID are required when IOS_APP_ID is unset." >&2
+    echo "Warning: IOS_APP_ID could not be derived because both IOS_TEAM_ID and IOS_BUNDLE_ID are required when IOS_APP_ID is unset. Proceeding with placeholder TEAMID.com.example.app." >&2
 else
-    echo "IOS_APP_ID not provided. Backend will use placeholder TEAMID.com.example.app." >&2
+    echo "Warning: IOS_APP_ID not provided. Proceeding with placeholder TEAMID.com.example.app." >&2
 fi
 echo "Using WEBAUTHN_SAMPLE_ATTESTATION: $WEBAUTHN_SAMPLE_ATTESTATION"
 
