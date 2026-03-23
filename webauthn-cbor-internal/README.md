@@ -4,6 +4,7 @@ Audience: maintainers only.
 
 This module contains shared internal CBOR byte-scanning helpers used by serialization and JVM crypto code.
 
-It is not part of the public release surface and should not be consumed directly by external projects.
+This artifact is published to Maven Central to satisfy transitive dependency resolution for published modules.
+It should still be treated as an internal helper module and consumed directly only by maintainers.
 
-Status: internal, unpublished helper module.
+Status: published internal helper module (API stability is not guaranteed).

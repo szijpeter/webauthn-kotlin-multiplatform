@@ -22,7 +22,7 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 ## Release Mode Policy
 
 1. Use one coordinated release-train version for all published artifacts.
-2. Publish only the curated public surface listed in this file; do not publish samples, internal modules, or build logic.
+2. Publish only the curated public surface listed in this file; do not publish samples, platform constraints, or build logic.
 3. If any published module changes, release the full published set plus the BOM under a new coordinated version.
 4. If only docs, samples, internal modules, or build logic change, a Maven Central release is not required.
 5. GitHub release tags follow the coordinated version, for example `v0.1.0`.
@@ -33,6 +33,7 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 Published:
 
 - `platform:bom` as `webauthn-bom`
+- `webauthn-cbor-internal`
 - `webauthn-model`
 - `webauthn-serialization-kotlinx`
 - `webauthn-core`
@@ -52,7 +53,6 @@ Published:
 
 Not published:
 
-- `webauthn-cbor-internal`
 - `platform:constraints`
 - `samples:*`
 - `build-logic`

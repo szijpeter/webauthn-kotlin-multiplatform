@@ -19,6 +19,7 @@ Examples:
 
 Published:
 
+- `webauthn-cbor-internal`
 - `webauthn-model`
 - `webauthn-serialization-kotlinx`
 - `webauthn-core`
@@ -39,7 +40,6 @@ Published:
 
 Not published:
 
-- `webauthn-cbor-internal`
 - `platform:constraints`
 - `samples:*`
 - `build-logic`

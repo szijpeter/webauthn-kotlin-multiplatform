@@ -9,6 +9,7 @@ javaPlatform {
 
 dependencies {
     constraints {
+        api("${project.group}:webauthn-cbor-internal:${project.version}")
         api("${project.group}:webauthn-model:${project.version}")
         api("${project.group}:webauthn-serialization-kotlinx:${project.version}")
         api("${project.group}:webauthn-core:${project.version}")

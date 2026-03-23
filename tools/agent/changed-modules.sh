@@ -150,6 +150,10 @@ for file in "${changed_files[@]}"; do
     fi
 
     case "$file" in
+        webauthn-cbor-internal/*)
+            mark_module "webauthn-cbor-internal"
+            mark_category "core"
+            ;;
         webauthn-model/*)
             mark_module "webauthn-model"
             mark_category "core"
