@@ -30,6 +30,7 @@ replay_pid*
 # Gradle local state and generated outputs
 .gradle/
 .gradle-local/
+.build/
 **/build/
 local.properties
 .idea/

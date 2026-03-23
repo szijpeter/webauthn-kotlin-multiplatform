@@ -168,6 +168,9 @@ else
             samples:compose-passkey)
                 run_list+=("./gradlew :samples:compose-passkey:detekt :samples:compose-passkey:allTests :samples:compose-passkey:compileAndroidMain :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
+            samples:compose-passkey-ios-host)
+                run_list+=("tools/agent/check-compose-passkey-ios-host.sh")
+                ;;
             samples:compose-passkey-android)
                 run_list+=("./gradlew :samples:compose-passkey-android:detekt :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
                 ;;

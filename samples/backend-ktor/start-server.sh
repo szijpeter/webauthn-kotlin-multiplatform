@@ -91,12 +91,20 @@ ANDROID_SHA256="${ANDROID_SHA256:-$(read_prop "$LOCAL_PROPERTIES_FILE" "ANDROID_
 if [[ -z "${ANDROID_SHA256}" ]]; then
     ANDROID_SHA256="$(read_prop "$LOCAL_PROPERTIES_FILE" "android.sha256" || true)"
 fi
-IOS_APP_ID="${IOS_APP_ID:-$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_APP_ID" || true)}"
-IOS_TEAM_ID="${IOS_TEAM_ID:-$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_TEAM_ID" || true)}"
-IOS_BUNDLE_ID="${IOS_BUNDLE_ID:-$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_BUNDLE_ID" || true)}"
+LOCAL_IOS_APP_ID="$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_APP_ID" || true)"
+LOCAL_IOS_TEAM_ID="$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_TEAM_ID" || true)"
+LOCAL_IOS_BUNDLE_ID="$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_BUNDLE_ID" || true)"
 
-if [[ -z "$IOS_APP_ID" && -n "$IOS_TEAM_ID" && -n "$IOS_BUNDLE_ID" ]]; then
+IOS_TEAM_ID="${IOS_TEAM_ID:-$LOCAL_IOS_TEAM_ID}"
+IOS_BUNDLE_ID="${IOS_BUNDLE_ID:-$LOCAL_IOS_BUNDLE_ID}"
+
+ENV_IOS_APP_ID="${IOS_APP_ID:-}"
+if [[ -n "$ENV_IOS_APP_ID" ]]; then
+    IOS_APP_ID="$ENV_IOS_APP_ID"
+elif [[ -n "$IOS_TEAM_ID" && -n "$IOS_BUNDLE_ID" ]]; then
     IOS_APP_ID="${IOS_TEAM_ID}.${IOS_BUNDLE_ID}"
+else
+    IOS_APP_ID="$LOCAL_IOS_APP_ID"
 fi
 
 if [[ -z "$ANDROID_PACKAGE_NAME" ]]; then
@@ -178,6 +186,8 @@ echo "Rebuild app after this script starts to bake updated values."
     ANDROID_PACKAGE_NAME="$ANDROID_PACKAGE_NAME" \
     ANDROID_SHA256="$ANDROID_SHA256" \
     IOS_APP_ID="$IOS_APP_ID" \
+    IOS_TEAM_ID="$IOS_TEAM_ID" \
+    IOS_BUNDLE_ID="$IOS_BUNDLE_ID" \
     WEBAUTHN_SAMPLE_ATTESTATION="$WEBAUTHN_SAMPLE_ATTESTATION" \
     ./gradlew :samples:backend-ktor:run
 ) &

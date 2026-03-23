@@ -229,6 +229,7 @@ for file in "${changed_files[@]}"; do
             ;;
         samples/compose-passkey-ios/*)
             mark_module "samples:compose-passkey"
+            mark_module "samples:compose-passkey-ios-host"
             mark_category "ios"
             ;;
         samples/compose-passkey-android/*)
