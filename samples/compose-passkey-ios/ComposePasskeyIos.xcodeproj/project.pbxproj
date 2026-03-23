@@ -313,10 +313,8 @@
 					"$(inherited)",
 					"\"$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\"",
 				);
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ComposePasskeyIos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -337,10 +335,8 @@
 					"$(inherited)",
 					"\"$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\"",
 				);
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ComposePasskeyIos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

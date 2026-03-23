@@ -28,10 +28,8 @@ targets:
       base:
         PRODUCT_NAME: ComposePasskeyIos
         ASSETCATALOG_COMPILER_APPICON_NAME: ""
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: NO
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: ComposePasskeyIos/Info.plist
     preBuildScripts:
       - name: Build ComposePasskeyShared framework
         script: |
