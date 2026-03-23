@@ -34,3 +34,7 @@ public actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpC
         }
     }
 }
+
+public actual fun platformRuntimeHint(): String? {
+    return "This app runs on a free Apple account, but real passkey register/sign-in may fail without Associated Domains entitlement and a matching apple-app-site-association setup."
+}

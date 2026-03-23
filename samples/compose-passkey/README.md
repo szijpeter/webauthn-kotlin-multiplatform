@@ -57,13 +57,31 @@ WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080 ./gradlew :samples:compose-passkey-a
 ./gradlew :samples:compose-passkey-android:connectedDebugAndroidTest
 ```
 
-## iOS integration note
+## Run (iOS host app)
 
-This module exposes a Compose entrypoint:
+Use the committed iOS host project:
+
+- [`samples/compose-passkey-ios`](../compose-passkey-ios/README.md)
+
+Quick start:
+
+1. Open `samples/compose-passkey-ios/ComposePasskeyIos.xcodeproj` in Xcode.
+2. Set your signing team and a unique bundle id.
+3. Connect your iPhone and run.
+
+This shared module still exports the Compose entrypoint used by the host app:
 
 - `dev.webauthn.samples.composepasskey.MainViewController()`
 
-Use it from an external iOS app host to render the sample UI.
+Free-account expectation:
+
+- App install/launch is supported.
+- Real passkey register/sign-in may fail when Associated Domains entitlement/domain association is unavailable.
+
+Full E2E expectation:
+
+- Use HTTPS domain + Associated Domains + matching `IOS_APP_ID`/bundle identity.
+- `samples/backend-ktor/start-server.sh` (ngrok helper) remains the default physical-device setup path.
 
 ## Debug logging
 

@@ -92,6 +92,12 @@ if [[ -z "${ANDROID_SHA256}" ]]; then
     ANDROID_SHA256="$(read_prop "$LOCAL_PROPERTIES_FILE" "android.sha256" || true)"
 fi
 IOS_APP_ID="${IOS_APP_ID:-$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_APP_ID" || true)}"
+IOS_TEAM_ID="${IOS_TEAM_ID:-$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_TEAM_ID" || true)}"
+IOS_BUNDLE_ID="${IOS_BUNDLE_ID:-$(read_prop "$LOCAL_PROPERTIES_FILE" "IOS_BUNDLE_ID" || true)}"
+
+if [[ -z "$IOS_APP_ID" && -n "$IOS_TEAM_ID" && -n "$IOS_BUNDLE_ID" ]]; then
+    IOS_APP_ID="${IOS_TEAM_ID}.${IOS_BUNDLE_ID}"
+fi
 
 if [[ -z "$ANDROID_PACKAGE_NAME" ]]; then
     ANDROID_PACKAGE_NAME="$DEFAULT_ANDROID_PACKAGE_NAME"
@@ -139,6 +145,13 @@ echo "Using tunnel URL: $NGROK_URL"
 echo "Using RP_ID: $RP_ID"
 echo "Using ANDROID_PACKAGE_NAME: $ANDROID_PACKAGE_NAME"
 echo "Using ANDROID_SHA256: $ANDROID_SHA256"
+if [[ -n "$IOS_APP_ID" ]]; then
+    echo "Using IOS_APP_ID: $IOS_APP_ID"
+elif [[ -n "$IOS_TEAM_ID" || -n "$IOS_BUNDLE_ID" ]]; then
+    echo "IOS_APP_ID could not be derived: both IOS_TEAM_ID and IOS_BUNDLE_ID are required when IOS_APP_ID is unset." >&2
+else
+    echo "IOS_APP_ID not provided. Backend will use placeholder TEAMID.com.example.app." >&2
+fi
 echo "Using WEBAUTHN_SAMPLE_ATTESTATION: $WEBAUTHN_SAMPLE_ATTESTATION"
 
 upsert_prop "$LOCAL_PROPERTIES_FILE" "WEBAUTHN_DEMO_ENDPOINT" "$ORIGIN"
@@ -148,6 +161,12 @@ upsert_prop "$LOCAL_PROPERTIES_FILE" "ANDROID_PACKAGE_NAME" "$ANDROID_PACKAGE_NA
 upsert_prop "$LOCAL_PROPERTIES_FILE" "ANDROID_SHA256" "$ANDROID_SHA256"
 if [[ -n "$IOS_APP_ID" ]]; then
     upsert_prop "$LOCAL_PROPERTIES_FILE" "IOS_APP_ID" "$IOS_APP_ID"
+fi
+if [[ -n "$IOS_TEAM_ID" ]]; then
+    upsert_prop "$LOCAL_PROPERTIES_FILE" "IOS_TEAM_ID" "$IOS_TEAM_ID"
+fi
+if [[ -n "$IOS_BUNDLE_ID" ]]; then
+    upsert_prop "$LOCAL_PROPERTIES_FILE" "IOS_BUNDLE_ID" "$IOS_BUNDLE_ID"
 fi
 
 echo "Updated local.properties with WEBAUTHN_DEMO_* and association values."

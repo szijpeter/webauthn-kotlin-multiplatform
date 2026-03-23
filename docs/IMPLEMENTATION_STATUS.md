@@ -26,7 +26,7 @@ Last updated: 2026-03-17
 - Packed attestation now derives flags and AAGUID from `authData` with explicit truncated-input rejection, and MDS trust lookup normalizes hyphenated AAGUID metadata entries.
 - Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
 - PRF client crypto module (`webauthn-client-prf-crypto`) is now published with Signum-backed HKDF/AES-GCM helpers plus a high-level PRF session facade.
-- Samples include a Compose Multiplatform client-readiness app (Android host + iOS `MainViewController` entrypoint) that runs register/sign-in flows against the default `/webauthn/*` backend contract.
+- Samples include a Compose Multiplatform client-readiness app with committed Android and iOS hosts (`samples/compose-passkey-android`, `samples/compose-passkey-ios`) and shared `MainViewController` entrypoint wiring against the default `/webauthn/*` backend contract.
 - Compose sample now includes a PRF crypto demo (`Sign In + PRF`, caller-owned salt load/generation, encrypt/decrypt, and explicit key clear) with unrecoverable-data warning when passkeys are removed.
 - iOS PRF assertion input mapping now supports both shared `prf.eval` and per-credential `prf.evalByCredential`, with deterministic malformed-key rejection to invalid-options errors.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.

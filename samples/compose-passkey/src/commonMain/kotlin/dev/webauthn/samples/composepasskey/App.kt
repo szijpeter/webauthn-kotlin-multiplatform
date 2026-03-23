@@ -93,6 +93,9 @@ public fun App() {
             source = "app",
             message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} origin=${config.origin} user=${config.userName}",
         )
+        platformRuntimeHint()?.let { hint ->
+            debugLogs.w(source = "platform", message = hint)
+        }
     }
 
     LaunchedEffect(passkeyClient) {
