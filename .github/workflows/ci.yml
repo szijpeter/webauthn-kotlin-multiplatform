@@ -102,6 +102,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
       - name: iOS Compile
         run: ./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 :samples:ios-passkey:compileKotlinIosSimulatorArm64 :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace
+      - name: iOS Host App Compile
+        run: xcodebuild -project samples/compose-passkey-ios/ComposePasskeyIos.xcodeproj -scheme ComposePasskeyIos -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
   release-preflight:
     runs-on: macos-latest

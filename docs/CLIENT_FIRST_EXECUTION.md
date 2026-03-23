@@ -70,10 +70,12 @@ Defaults:
 - `ANDROID_PACKAGE_NAME=dev.webauthn.samples.composepasskey.android`
 - `ANDROID_SHA256=PUT_SHA256_FINGERPRINT_HERE` (replace for real-device app-link verification)
 - `IOS_APP_ID=TEAMID.com.example.app`
+- Optional convenience inputs: `IOS_TEAM_ID`, `IOS_BUNDLE_ID` (used to derive `IOS_APP_ID` when unset)
 
 The helper script writes `WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, and `WEBAUTHN_DEMO_ORIGIN` to root `local.properties`.
 
-The shared Compose module also exposes `MainViewController()` for iOS host integration.
+Use the committed iOS host app sample (`samples/compose-passkey-ios`) for device/simulator runs.
+The shared Compose module still exposes `MainViewController()` for custom host integration.
 
 ## Client Dependencies Required
 

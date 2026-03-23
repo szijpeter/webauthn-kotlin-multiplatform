@@ -30,6 +30,7 @@ replay_pid*
 # Gradle local state and generated outputs
 .gradle/
 .gradle-local/
+.build/
 **/build/
 local.properties
 .idea/
@@ -160,3 +161,9 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/intellij
 bin/
 */bin/
+
+# Xcode user-specific workspace/project state
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserdatad/
+*.xcuserstate

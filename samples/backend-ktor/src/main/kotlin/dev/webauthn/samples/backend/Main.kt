@@ -35,6 +35,9 @@ private const val DEFAULT_IOS_APP_ID: String = "TEAMID.com.example.app"
 
 public fun main(): Unit {
     val config = SampleBackendConfig.fromEnvironment()
+    config.iosAppIdWarning?.let { warning ->
+        println("WARNING: $warning")
+    }
     val challengeStore = InMemoryChallengeStore()
     val credentialStore = InMemoryCredentialStore()
     val userStore = InMemoryUserAccountStore()
@@ -125,7 +128,11 @@ public fun Application.installSampleBackend(
                     appendLine("WebAuthn Kotlin MPP sample backend server")
                     appendLine("PORT=${config.port}")
                     appendLine("ANDROID_PACKAGE_NAME=${config.androidPackageName}")
+                    appendLine("IOS_APP_ID=${config.iosAppId}")
                     appendLine("AttestationPolicy=${config.attestationPolicy}")
+                    config.iosAppIdWarning?.let { warning ->
+                        appendLine("WARNING=$warning")
+                    }
                     appendLine()
                     appendLine("Routes:")
                     appendLine("POST /webauthn/registration/start")
@@ -148,6 +155,7 @@ public data class SampleBackendConfig(
     val androidPackageName: String = DEFAULT_ANDROID_PACKAGE_NAME,
     val androidSha256: String = DEFAULT_ANDROID_SHA256,
     val iosAppId: String = DEFAULT_IOS_APP_ID,
+    val iosAppIdWarning: String? = null,
     val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
 ) {
     public companion object {
@@ -155,7 +163,7 @@ public data class SampleBackendConfig(
             val configuredPort = environment["PORT"]?.toIntOrNull() ?: DEFAULT_PORT
             val configuredAndroidPackageName = environment["ANDROID_PACKAGE_NAME"].orIfBlank(DEFAULT_ANDROID_PACKAGE_NAME)
             val configuredAndroidSha256 = environment["ANDROID_SHA256"].orIfBlank(DEFAULT_ANDROID_SHA256)
-            val configuredIosAppId = environment["IOS_APP_ID"].orIfBlank(DEFAULT_IOS_APP_ID)
+            val configuredIosAppId = resolveIosAppIdConfig(environment)
             val attestationMode = environment["WEBAUTHN_SAMPLE_ATTESTATION"].orIfBlank("STRICT")
             val attestationPolicy = when (attestationMode.uppercase()) {
                 "NONE" -> AttestationPolicy.None
@@ -165,12 +173,48 @@ public data class SampleBackendConfig(
                 port = configuredPort,
                 androidPackageName = configuredAndroidPackageName,
                 androidSha256 = configuredAndroidSha256,
-                iosAppId = configuredIosAppId,
+                iosAppId = configuredIosAppId.appId,
+                iosAppIdWarning = configuredIosAppId.warning,
                 attestationPolicy = attestationPolicy,
+            )
+        }
+
+        private fun resolveIosAppIdConfig(environment: Map<String, String>): IosAppIdConfig {
+            val explicitAppId = environment["IOS_APP_ID"]?.trim().orEmpty()
+            if (explicitAppId.isNotEmpty()) {
+                return IosAppIdConfig(
+                    appId = explicitAppId,
+                    warning = null,
+                )
+            }
+
+            val teamId = environment["IOS_TEAM_ID"]?.trim().orEmpty()
+            val bundleId = environment["IOS_BUNDLE_ID"]?.trim().orEmpty()
+            if (teamId.isNotEmpty() && bundleId.isNotEmpty()) {
+                return IosAppIdConfig(
+                    appId = "$teamId.$bundleId",
+                    warning = null,
+                )
+            }
+
+            val warning = when {
+                teamId.isNotEmpty() || bundleId.isNotEmpty() ->
+                    "IOS_APP_ID is not set. Provide both IOS_TEAM_ID and IOS_BUNDLE_ID (or set IOS_APP_ID directly) to generate a valid apple-app-site-association app id."
+                else ->
+                    "IOS_APP_ID is using placeholder TEAMID.com.example.app. Real iOS passkey E2E requires IOS_APP_ID (or IOS_TEAM_ID + IOS_BUNDLE_ID) to match your signed app."
+            }
+            return IosAppIdConfig(
+                appId = DEFAULT_IOS_APP_ID,
+                warning = warning,
             )
         }
     }
 }
+
+private data class IosAppIdConfig(
+    val appId: String,
+    val warning: String?,
+)
 
 @Serializable
 private data class HttpStatusPayload(

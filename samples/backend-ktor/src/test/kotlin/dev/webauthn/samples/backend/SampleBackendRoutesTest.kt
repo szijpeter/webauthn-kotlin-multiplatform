@@ -18,6 +18,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SampleBackendRoutesTest {
@@ -86,6 +87,8 @@ class SampleBackendRoutesTest {
         )
         assertEquals(9090, defaultConfig.port)
         assertEquals(AttestationPolicy.Strict, defaultConfig.attestationPolicy)
+        assertEquals("TEAMID.com.example.app", defaultConfig.iosAppId)
+        assertTrue(defaultConfig.iosAppIdWarning?.contains("placeholder") == true)
 
         val strictConfig = SampleBackendConfig.fromEnvironment(
             mapOf(
@@ -107,6 +110,41 @@ class SampleBackendRoutesTest {
             ),
         )
         assertEquals(AttestationPolicy.Strict, unknownConfig.attestationPolicy)
+
+        val explicitIosAppId = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "IOS_APP_ID" to "ABCD1234.com.example.demo",
+            ),
+        )
+        assertEquals("ABCD1234.com.example.demo", explicitIosAppId.iosAppId)
+        assertNull(explicitIosAppId.iosAppIdWarning)
+
+        val derivedIosAppId = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "IOS_TEAM_ID" to "ABCD1234",
+                "IOS_BUNDLE_ID" to "com.example.demo",
+            ),
+        )
+        assertEquals("ABCD1234.com.example.demo", derivedIosAppId.iosAppId)
+        assertNull(derivedIosAppId.iosAppIdWarning)
+
+        val canonicalPrecedenceConfig = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "IOS_APP_ID" to "ZZZZ9999.com.example.canonical",
+                "IOS_TEAM_ID" to "ABCD1234",
+                "IOS_BUNDLE_ID" to "com.example.derived",
+            ),
+        )
+        assertEquals("ZZZZ9999.com.example.canonical", canonicalPrecedenceConfig.iosAppId)
+        assertNull(canonicalPrecedenceConfig.iosAppIdWarning)
+
+        val partiallyConfiguredIosAppId = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "IOS_TEAM_ID" to "ABCD1234",
+            ),
+        )
+        assertEquals("TEAMID.com.example.app", partiallyConfiguredIosAppId.iosAppId)
+        assertTrue(partiallyConfiguredIosAppId.iosAppIdWarning?.contains("both IOS_TEAM_ID and IOS_BUNDLE_ID") == true)
     }
 }
 

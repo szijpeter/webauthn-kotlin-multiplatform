@@ -5,3 +5,5 @@ import io.ktor.client.HttpClient
 
 @Composable
 public expect fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient
+
+public expect fun platformRuntimeHint(): String?

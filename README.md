@@ -111,6 +111,7 @@ Start with:
 
 - [`samples/backend-ktor`](./samples/backend-ktor/README.md)
 - [`samples/compose-passkey`](./samples/compose-passkey/README.md)
+- [`samples/compose-passkey-ios`](./samples/compose-passkey-ios/README.md)
 
 ## Public Modules
 
