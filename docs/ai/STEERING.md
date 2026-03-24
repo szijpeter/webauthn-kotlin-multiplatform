@@ -18,6 +18,7 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 8. Public repo hygiene is mandatory: no credentials/secrets in tracked files or committed history.
 9. Workflow security defaults are mandatory: least-privilege permissions and explicit action version references (major tags or pinned SHAs).
 10. Security-facing workflow/policy changes require synchronized docs updates (`SECURITY.md`, public launch checklist, and affected workflow docs).
+11. Documentation trace is mandatory: public module implementation/build changes must keep corresponding module READMEs current, and module relationship/integration changes must update root and architecture docs in the same change.
 
 ## Release Mode Policy
 
@@ -129,6 +130,13 @@ Reference/samples:
 4. Prefer summary references to large file dumps.
 5. Reuse existing docs instead of re-deriving intent.
 
+## Documentation Trace Policy
+
+1. If a published public module's implementation or build contract changes, update that module's `README.md` in the same change.
+2. If module relationships or integration paths change (for example module includes/dependencies or core adoption paths), update both `README.md` (root) and `docs/architecture.md` in the same change.
+3. New or updated architecture/flow diagrams in docs must use Mermaid for GitHub-native rendering and reviewable diffs.
+4. Keep module READMEs implementation-oriented: what it provides, when to use, correct usage patterns, system fit, pitfalls/limits, and status.
+
 ## Done Criteria
 
 A change is done only when all apply:
@@ -139,7 +147,7 @@ A change is done only when all apply:
 4. If core/security-critical modules changed, `docs/IMPLEMENTATION_STATUS.md`, `docs/ROADMAP.md`, or `docs/IMPLEMENTATION_TRACKER.md` is updated.
 5. If a BCV-covered published API changed, matching `.api` baselines are intentionally updated via `apiDump` and validated via `apiCheck`.
 6. If publishing, coordinates, or metadata changed, `publishToMavenLocal` has been run locally or the gap is called out explicitly.
-7. Documentation is updated when workflow/contracts/change adoption guidance changed.
+7. Documentation trace policy is satisfied for impacted public modules and integration docs (`README.md`, affected module READMEs, and `docs/architecture.md` when relationship/integration paths change).
 8. If CI/security posture changed, `SECURITY.md` and `docs/PUBLIC_LAUNCH_CHECKLIST.md` are updated in the same change.
 9. If a temporary release execution-map doc is active for the current effort, keep it updated in the same change when scope/sequence decisions change.
 

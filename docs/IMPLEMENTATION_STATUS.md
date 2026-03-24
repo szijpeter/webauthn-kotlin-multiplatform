@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-17
+Last updated: 2026-03-25
 
 ## Status Legend
 
@@ -13,6 +13,7 @@ Last updated: 2026-03-17
 ## Overall Snapshot
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
+- Core validator API KDoc coverage now documents registration/authentication/allow-list validation entry points plus extension-hook contracts; this is a documentation-only clarification with no runtime semantic change.
 - JVM server flow is implemented with ceremony orchestration and store contract coverage.
 - Attestation verification includes hardened TPM and Android Key policy checks with expanded tests.
 - Strict UV policy coverage: `ChallengeSession` persists `userVerification`; `Services.kt` maps to `UserVerificationPolicy` for core validator enforcement.

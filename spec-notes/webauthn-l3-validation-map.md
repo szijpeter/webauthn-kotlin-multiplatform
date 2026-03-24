@@ -4,6 +4,7 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Trace updates
 
+- 2026-03-25: `webauthn-core` validator/model KDoc coverage was expanded for public API clarity only; no validation runtime semantics changed.
 - 2026-03-12: Runtime semantics tightened in parser/validation paths: RP ID parsing now rejects empty/overlong/edge-hyphen labels, DER parser rejects non-canonical long-form lengths, and attestation-object parsing now requires `fmt` + `attStmt` + `authData` with no trailing bytes; tests updated in `TypesTest`, `DerParserTest`, and `AttestationCborParserTest`.
 - 2026-03-11: Detekt tightening phase 2 updated documentation/static-analysis constraints (including spec-facing KDoc) only; no validator/model runtime semantics changed.
 - 2026-03-12: API boundary hardening for `validateClientData` and `requireAllowedCredential` moved these core contracts from stringly-typed inputs to domain wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`) without changing the underlying validation semantics mapped below.

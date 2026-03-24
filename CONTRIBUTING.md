@@ -41,10 +41,14 @@ tools/agent/quality-gate.sh --mode strict --scope full --block true
 Update the relevant docs in the same change when you touch:
 
 - public APIs
+- published module implementation/build contracts (update that module `README.md`)
+- module relationships or integration paths (update root `README.md` and `docs/architecture.md`)
 - publishing or release workflow
 - security posture
 - client/server integration guidance
 - release sequencing during the first public release effort
+
+Use Mermaid for new or updated architecture/flow diagrams.
 
 While the first public release effort is active, keep `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` current. Remove it in the final cleanup PR after the full effort is complete.
 
@@ -55,6 +59,7 @@ A good PR should include:
 - a focused scope
 - tests or a clear reason tests were not needed
 - doc updates when behavior or workflow changed
+- docs trace updates when module contracts/relationships changed
 - notes about API baseline updates if `apiDump` changed
 - notes about publish preflight if publishing metadata changed
 

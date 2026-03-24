@@ -72,6 +72,12 @@ public object WebAuthnCoreValidator {
         }
     }
 
+    /**
+     * Runs registration-side core validation using expected challenge/origin inputs.
+     *
+     * The returned output carries the credential id/sign counter extracted from authenticator data
+     * for downstream persistence and crypto verification steps.
+     */
     public fun validateRegistration(
         input: RegistrationValidationInput,
     ): ValidationResult<RegistrationValidationOutput> {
@@ -104,6 +110,13 @@ public object WebAuthnCoreValidator {
         )
     }
 
+    /**
+     * Runs authentication-side core validation using expected challenge/origin inputs and
+     * server-trusted previous signature counter state.
+     *
+     * The returned output carries the credential id/sign counter extracted from authenticator data
+     * for replay protection persistence logic.
+     */
     public fun validateAuthentication(
         input: AuthenticationValidationInput,
     ): ValidationResult<AuthenticationValidationOutput> {
@@ -197,6 +210,11 @@ public object WebAuthnCoreValidator {
         }
     }
 
+    /**
+     * Verifies that the assertion credential id is part of the allow list when one is configured.
+     *
+     * Per WebAuthn semantics, an empty allow list means any credential is accepted.
+     */
     public fun requireAllowedCredential(
         response: AuthenticationResponse,
         allowedCredentialIds: Set<CredentialId>,
@@ -218,8 +236,15 @@ public object WebAuthnCoreValidator {
         }
     }
 
+    /** User Presence (UP) flag bit in authenticator data. */
     public const val USER_PRESENCE_FLAG: Int = 0x01
+
+    /** User Verification (UV) flag bit in authenticator data. */
     public const val USER_VERIFICATION_FLAG: Int = 0x04
+
+    /** Backup Eligibility (BE) flag bit in authenticator data. */
     public const val BACKUP_ELIGIBLE_FLAG: Int = 0x08
+
+    /** Backup State (BS) flag bit in authenticator data. */
     public const val BACKUP_STATE_FLAG: Int = 0x10
 }

@@ -25,7 +25,10 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 4. Let PR CI remain the blocking authority.
 5. If core/model validation behavior changed, update `spec-notes/webauthn-l3-validation-map.md`.
 6. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
-7. If public API changed in a BCV-covered published module, run:
+7. If a published module implementation/build contract changed, update the matching module `README.md` in the same change.
+8. If module relationships or integration paths changed, update both root `README.md` and `docs/architecture.md` in the same change.
+9. Use Mermaid for new/updated architecture or flow diagrams in docs.
+10. If public API changed in a BCV-covered published module, run:
 
 ```bash
 ./gradlew apiCheck --stacktrace
@@ -37,7 +40,7 @@ Only when the API change is intentional, regenerate baselines and re-check:
 ./gradlew apiDump apiCheck --stacktrace
 ```
 
-8. If publishing/build metadata changed, run:
+11. If publishing/build metadata changed, run:
 
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
@@ -45,7 +48,7 @@ Only when the API change is intentional, regenerate baselines and re-check:
 
 ## Docs-Only Workflow
 
-For docs-only changes, `tools/agent/quality-gate.sh` intentionally skips heavy compile/test tasks. Update the temporary release execution-map doc as well when release scope or sequencing changes.
+For docs-only changes, `tools/agent/quality-gate.sh` intentionally skips heavy compile/test tasks. Update the temporary release execution-map doc as well when release scope or sequencing changes, and keep documentation trace expectations satisfied for any touched public module docs.
 
 ## Public Security Hygiene Workflow
 
