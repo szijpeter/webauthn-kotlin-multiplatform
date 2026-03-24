@@ -38,3 +38,4 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - Renovate manages dependency and GitHub Actions updates.
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
 - Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.
+- The publish workflow uses `contents:write` only for `publish-and-release` to create the matching GitHub release tag.

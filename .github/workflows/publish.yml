@@ -17,7 +17,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   publish:
@@ -48,6 +48,7 @@ jobs:
           test -n "$SIGNING_KEY_PASSWORD" || (echo "Missing secret: SIGNING_KEY_PASSWORD" && exit 1)
 
       - name: Guard release mode against snapshot versions
+        id: resolve_version
         env:
           VERSION_NAME_INPUT: ${{ inputs.version_name }}
           RELEASE_MODE_INPUT: ${{ inputs.release_mode }}
@@ -59,6 +60,7 @@ jobs:
 
           test -n "$RESOLVED_VERSION" || (echo "Unable to resolve VERSION_NAME" && exit 1)
           echo "Resolved VERSION_NAME=$RESOLVED_VERSION"
+          echo "resolved_version=$RESOLVED_VERSION" >> "$GITHUB_OUTPUT"
 
           if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ] && [[ "$RESOLVED_VERSION" == *SNAPSHOT* ]]; then
             echo "Refusing publish-and-release for SNAPSHOT version: $RESOLVED_VERSION"
@@ -85,3 +87,19 @@ jobs:
           else
             ./gradlew publishToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
           fi
+
+      - name: Create GitHub release
+        if: ${{ inputs.release_mode == 'publish-and-release' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: v${{ steps.resolve_version.outputs.resolved_version }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists; skipping."
+            exit 0
+          fi
+
+          gh release create "$RELEASE_TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$RELEASE_TAG" \
+            --generate-notes

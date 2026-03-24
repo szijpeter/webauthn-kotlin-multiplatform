@@ -81,6 +81,7 @@ Inputs:
 Guardrails:
 
 - `publish-and-release` is blocked for snapshot versions.
+- `publish-and-release` creates the matching GitHub release tag (`vX.Y.Z`) after successful Central publication.
 - Publishing remains manual; merges to `main` do not auto-publish.
 
 ## Release Runbook
@@ -89,7 +90,7 @@ Guardrails:
 2. Set `VERSION_NAME=x.y.z` or pass `version_name` to the workflow.
 3. Trigger the `Publish` workflow with `release_mode=publish-and-release`.
 4. Verify Central Portal status and artifact resolution.
-5. Create Git tag `vX.Y.Z` and the matching GitHub release.
+5. Verify GitHub release/tag `vX.Y.Z` exists (auto-created by `publish-and-release`).
 6. Move `main` back to the next snapshot version.
 
 ## Current State
