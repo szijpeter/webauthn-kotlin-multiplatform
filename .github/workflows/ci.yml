@@ -33,7 +33,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: Detekt
         run: ./gradlew detekt :build-logic:detekt --stacktrace --continue
       - name: Upload Detekt Reports
@@ -56,7 +56,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: JVM Checks
         run: ./gradlew check --stacktrace
 
@@ -70,7 +70,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: API Check
         run: ./gradlew apiCheck --stacktrace
 
@@ -85,7 +85,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: android-actions/setup-android@v3
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: Android Build
         run: ./gradlew :webauthn-client-android:assemble :samples:android-passkey:assemble :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace
 
@@ -99,7 +99,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: iOS Compile
         run: ./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 :samples:ios-passkey:compileKotlinIosSimulatorArm64 :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace
       - name: iOS Host App Compile
@@ -115,6 +115,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: Publish Preflight
         run: ./gradlew publishToMavenLocal --stacktrace
