@@ -49,14 +49,16 @@ sequenceDiagram
     participant RP as Relying Party Server
 
     note over RP,App: Registration ceremony
-    RP->>App: registration/start (challenge + options)
+    App->>RP: registration/start request
+    RP-->>App: registration/start response (challenge + options)
     App->>Auth: navigator.credentials.create / platform create
     Auth-->>App: RegistrationResponse
     App->>RP: registration/finish (response + echoed challenge)
     RP-->>App: verified registration
 
     note over RP,App: Authentication ceremony
-    RP->>App: authentication/start (challenge + options)
+    App->>RP: authentication/start request
+    RP-->>App: authentication/start response (challenge + options)
     App->>Auth: navigator.credentials.get / platform get
     Auth-->>App: AuthenticationResponse
     App->>RP: authentication/finish (response + echoed challenge)
