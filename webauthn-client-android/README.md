@@ -36,6 +36,10 @@ flowchart LR
 
 - This module is only the Android platform adapter; network and orchestration are separate concerns.
 - Keep backend contract alignment with your chosen server client implementation.
+- If the platform reports `RP ID cannot be validated`, verify:
+  - RP ID and HTTPS origin/domain alignment.
+  - `/.well-known/assetlinks.json` availability.
+  - Android package name and signing SHA-256 fingerprint entries in that file.
 
 ## Status
 

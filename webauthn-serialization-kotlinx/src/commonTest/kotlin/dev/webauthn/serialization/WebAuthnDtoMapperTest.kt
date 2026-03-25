@@ -162,6 +162,29 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
+    fun authenticationResponseRejectsUnknownTypeWhenPresent() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
+        val authenticatorData = authenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x22 },
+            flags = 0x01,
+            signCount = 7,
+        )
+        val dto = AuthenticationResponseDto(
+            id = credentialId.value.encoded(),
+            rawId = credentialId.value.encoded(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                authenticatorData = Base64UrlBytes.fromBytes(authenticatorData).encoded(),
+                signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+            ),
+            type = "webauthn-get",
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
     fun registrationResponseExtractsAuthDataFromAttestationObject() {
         val credentialBytes = ByteArray(16) { 0x33 }
         val credentialId = CredentialId.fromBytes(credentialBytes)
@@ -241,6 +264,9 @@ class WebAuthnDtoMapperTest {
         val dto = WebAuthnDtoMapper.fromModel(model)
         assertEquals(attestedCredentialId.value.encoded(), dto.id)
         assertEquals(attestedCredentialId.value.encoded(), dto.rawId)
+        assertEquals("public-key", dto.type)
+        assertNotNull(dto.clientExtensionResults)
+        assertEquals(AuthenticationExtensionsClientOutputsDto(), dto.clientExtensionResults)
     }
 
     @Test
@@ -367,6 +393,50 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
+    fun creationOptionsRejectNonPublicKeyExcludeCredentialType() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto("example.com", "Example"),
+            user = UserEntityDto("YWFhYWFhYWFhYWFhYWFhYQ", "alice", "Alice"),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto("public-key", -7)),
+            excludeCredentials = listOf(
+                PublicKeyCredentialDescriptorDto("webauthn-passkey", "YWFhYWFhYWFhYWFhYWFhYQ"),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            result.errors.any {
+                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                    it.field == "excludeCredentials[0].type"
+            },
+        )
+    }
+
+    @Test
+    fun requestOptionsRejectNonPublicKeyAllowCredentialType() {
+        val dto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = "example.com",
+            allowCredentials = listOf(
+                PublicKeyCredentialDescriptorDto("webauthn-passkey", "YWFhYWFhYWFhYWFhYWFhYQ"),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            result.errors.any {
+                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                    it.field == "allowCredentials[0].type"
+            },
+        )
+    }
+
+    @Test
     fun requestOptionsAllowMissingRpId() {
         val dto = PublicKeyCredentialRequestOptionsDto(
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
@@ -429,6 +499,36 @@ class WebAuthnDtoMapperTest {
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Valid)
         assertEquals(AuthenticatorAttachment.CROSS_PLATFORM, result.value.authenticatorAttachment)
+    }
+
+    @Test
+    fun authenticationResponseFromModelIncludesTypeAndClientExtensionResults() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x5A })
+        val authenticatorDataBytes = authenticatorDataBytes(
+            rpIdHash = ByteArray(32) { 0x44 },
+            flags = 0x01,
+            signCount = 5,
+        )
+        val model = dev.webauthn.model.AuthenticationResponse(
+            credentialId = credentialId,
+            clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
+            rawAuthenticatorData = Base64UrlBytes.fromBytes(authenticatorDataBytes),
+            authenticatorData = AuthenticatorData(
+                rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 0x44 }),
+                flags = 0x01,
+                signCount = 5,
+            ),
+            signature = Base64UrlBytes.fromBytes(byteArrayOf(7, 8, 9)),
+            userHandle = null,
+            authenticatorAttachment = null,
+            extensions = null,
+        )
+
+        val dto = WebAuthnDtoMapper.fromModel(model)
+
+        assertEquals("public-key", dto.type)
+        assertNotNull(dto.clientExtensionResults)
+        assertEquals(AuthenticationExtensionsClientOutputsDto(), dto.clientExtensionResults)
     }
 
     @Test

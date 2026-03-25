@@ -6,7 +6,16 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ## Unreleased
 
-- No changes yet.
+### Added
+
+- Published-consumer smoke preflight script (`tools/agent/check-published-consumer-smoke.sh`) and CI wiring after `publishToMavenLocal`.
+
+### Changed
+
+- iOS registration request policy now defaults `authenticatorAttachment = null` to platform registration only; security-key registration is now explicit `cross-platform` on supported runtimes.
+- JSON response mapping now emits standards-shaped `type = "public-key"` and always includes `clientExtensionResults` (empty object when no outputs are present).
+- Authentication options decoding now tolerates `allowCredentials: null` and normalizes to an empty list as an interop shim.
+- Android platform error mapping now appends targeted RP ID troubleshooting hints for known `RP ID cannot be validated` failures.
 
 ## 0.1.0 - 2026-03-12
 

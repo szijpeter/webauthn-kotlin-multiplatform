@@ -7,6 +7,7 @@ Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server cont
 - `KtorPasskeyServerClient`
 - Start/finish HTTP call wiring for registration and authentication
 - A drop-in transport module for client orchestration layers
+- Public `HttpClient`-based constructor with transitive `ktor-client-core` export for consumer compile safety
 
 ## When to use
 
@@ -37,6 +38,7 @@ flowchart LR
 ## Pitfalls and limits
 
 - Contract/path assumptions are explicit; custom backend contracts need custom `PasskeyServerClient` implementations.
+- You still need to choose/install an engine dependency (`ktor-client-cio`, Darwin, etc.) in your app runtime.
 - Retry, timeout, auth headers, and observability remain caller-owned through the provided `HttpClient`.
 
 ## Status

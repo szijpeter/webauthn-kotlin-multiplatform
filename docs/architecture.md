@@ -76,6 +76,8 @@ V1 backend target is Kotlin/JVM. Core ceremony services are in `webauthn-server-
 
 Ktor adapter modules are intentionally thin wrappers around core services.
 
+`webauthn-network-ktor-client` keeps `io.ktor.client.HttpClient` in its public contract, so the module publishes `ktor-client-core` as an API dependency for consumer compile compatibility while leaving engine selection to host apps.
+
 ## Experimental Level 3 API surface
 
 Extension APIs that may evolve are marked with `@ExperimentalWebAuthnL3Api`.

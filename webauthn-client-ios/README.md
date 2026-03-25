@@ -35,8 +35,11 @@ flowchart LR
 ## Limits and notes
 
 - Platform passkey flows are supported.
-- External security-key readiness is still being hardened and should be treated as an active limitation.
+- Registration request selection is explicit:
+  - `authenticatorAttachment = null` or `platform` requests platform registration.
+  - `authenticatorAttachment = cross-platform` requests security-key registration on iOS 15+.
 - On iOS 18+ runtime APIs, assertion PRF input supports shared `prf.eval` and per-credential `prf.evalByCredential`; malformed keys are rejected as invalid options.
+- `attestation` is forwarded as requested by callers; this module does not silently coerce `direct` to `none`. Apple platform behavior still determines the concrete attestation object returned at runtime.
 
 ## Status
 
