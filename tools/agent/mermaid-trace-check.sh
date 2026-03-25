@@ -81,13 +81,13 @@ if command -v mmdc >/dev/null 2>&1; then
     mmdc_cmd=(mmdc)
 elif command -v npx >/dev/null 2>&1; then
     # Strict gate must be deterministic/offline-safe: never auto-install from npm.
-    if npx --no-install @mermaid-js/mermaid-cli -h >/dev/null 2>&1; then
-        mmdc_cmd=(npx --no-install @mermaid-js/mermaid-cli)
+    if npx --no-install mmdc -h >/dev/null 2>&1; then
+        mmdc_cmd=(npx --no-install mmdc)
     fi
 fi
 
 if [[ ${#mmdc_cmd[@]} -eq 0 ]]; then
-    msg="Mermaid trace check requires 'mmdc' or a locally installed '@mermaid-js/mermaid-cli' (npx --no-install)."
+    msg="Mermaid trace check requires 'mmdc' (global) or local 'mmdc' via 'npx --no-install mmdc'."
     if [[ "$strict" == "true" ]]; then
         echo "$msg" >&2
         exit 1
