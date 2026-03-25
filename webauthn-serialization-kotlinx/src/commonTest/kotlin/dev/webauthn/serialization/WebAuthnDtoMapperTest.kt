@@ -393,6 +393,50 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
+    fun creationOptionsRejectNonPublicKeyExcludeCredentialType() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto("example.com", "Example"),
+            user = UserEntityDto("YWFhYWFhYWFhYWFhYWFhYQ", "alice", "Alice"),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto("public-key", -7)),
+            excludeCredentials = listOf(
+                PublicKeyCredentialDescriptorDto("webauthn-passkey", "YWFhYWFhYWFhYWFhYWFhYQ"),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            result.errors.any {
+                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                    it.field == "excludeCredentials[0].type"
+            },
+        )
+    }
+
+    @Test
+    fun requestOptionsRejectNonPublicKeyAllowCredentialType() {
+        val dto = PublicKeyCredentialRequestOptionsDto(
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            rpId = "example.com",
+            allowCredentials = listOf(
+                PublicKeyCredentialDescriptorDto("webauthn-passkey", "YWFhYWFhYWFhYWFhYWFhYQ"),
+            ),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertTrue(
+            result.errors.any {
+                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                    it.field == "allowCredentials[0].type"
+            },
+        )
+    }
+
+    @Test
     fun requestOptionsAllowMissingRpId() {
         val dto = PublicKeyCredentialRequestOptionsDto(
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",

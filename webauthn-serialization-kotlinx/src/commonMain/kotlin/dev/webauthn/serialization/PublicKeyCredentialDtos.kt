@@ -1,14 +1,18 @@
 @file:Suppress("UndocumentedPublicClass")
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 
 package dev.webauthn.serialization
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonTransformingSerializer
+
+private const val PUBLIC_KEY_CREDENTIAL_DTO_TYPE = "public-key"
 
 /**
  * DTO for the /.well-known/webauthn file used by the Related Origins extension.
@@ -107,7 +111,8 @@ public data class RegistrationResponseDto(
     @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("clientExtensionResults")
     public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
-    @SerialName("type") public val type: String? = null,
+    @EncodeDefault(mode = EncodeDefault.Mode.ALWAYS)
+    @SerialName("type") public val type: String = PUBLIC_KEY_CREDENTIAL_DTO_TYPE,
 )
 
 @Serializable
@@ -124,7 +129,8 @@ public data class AuthenticationResponseDto(
     @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("clientExtensionResults")
     public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
-    @SerialName("type") public val type: String? = null,
+    @EncodeDefault(mode = EncodeDefault.Mode.ALWAYS)
+    @SerialName("type") public val type: String = PUBLIC_KEY_CREDENTIAL_DTO_TYPE,
 )
 
 @Serializable

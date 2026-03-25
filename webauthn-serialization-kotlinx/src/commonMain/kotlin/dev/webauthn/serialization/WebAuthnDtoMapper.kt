@@ -105,9 +105,13 @@ public object WebAuthnDtoMapper {
             }
         }
 
-        val excludeCredentials = value.excludeCredentials.mapNotNull { descriptor ->
+        val excludeCredentials = value.excludeCredentials.mapIndexedNotNull { descriptorIndex, descriptor ->
             if (descriptor.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
-                return@mapNotNull null
+                errors += WebAuthnValidationError.InvalidValue(
+                    field = "excludeCredentials[$descriptorIndex].type",
+                    message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
+                )
+                return@mapIndexedNotNull null
             }
             val id = CredentialId.parse(descriptor.id).fold(
                 onValid = { it },
@@ -116,8 +120,11 @@ public object WebAuthnDtoMapper {
                     null
                 },
             )
-            val transports = descriptor.transports.orEmpty().mapIndexedNotNull { index, encodedTransport ->
-                when (val parsed = parseAuthenticatorTransport(encodedTransport, "excludeCredentials[$index].transports")) {
+            val transports = descriptor.transports.orEmpty().mapIndexedNotNull { transportIndex, encodedTransport ->
+                when (val parsed = parseAuthenticatorTransport(
+                    encodedTransport,
+                    "excludeCredentials[$descriptorIndex].transports[$transportIndex]",
+                )) {
                     is ValidationResult.Valid -> parsed.value
                     is ValidationResult.Invalid -> {
                         errors += parsed.errors
@@ -247,9 +254,13 @@ public object WebAuthnDtoMapper {
             )
         }
 
-        val allowCredentials = value.allowCredentials.mapNotNull { descriptor ->
+        val allowCredentials = value.allowCredentials.mapIndexedNotNull { descriptorIndex, descriptor ->
             if (descriptor.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
-                return@mapNotNull null
+                errors += WebAuthnValidationError.InvalidValue(
+                    field = "allowCredentials[$descriptorIndex].type",
+                    message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
+                )
+                return@mapIndexedNotNull null
             }
             val id = CredentialId.parse(descriptor.id).fold(
                 onValid = { it },
@@ -258,8 +269,11 @@ public object WebAuthnDtoMapper {
                     null
                 },
             )
-            val transports = descriptor.transports.orEmpty().mapIndexedNotNull { index, encodedTransport ->
-                when (val parsed = parseAuthenticatorTransport(encodedTransport, "allowCredentials[$index].transports")) {
+            val transports = descriptor.transports.orEmpty().mapIndexedNotNull { transportIndex, encodedTransport ->
+                when (val parsed = parseAuthenticatorTransport(
+                    encodedTransport,
+                    "allowCredentials[$descriptorIndex].transports[$transportIndex]",
+                )) {
                     is ValidationResult.Valid -> parsed.value
                     is ValidationResult.Invalid -> {
                         errors += parsed.errors
@@ -368,17 +382,15 @@ public object WebAuthnDtoMapper {
                         is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
                     }
                 }
-                value.type?.let { encodedType ->
-                    if (encodedType != PUBLIC_KEY_CREDENTIAL_TYPE) {
-                        return ValidationResult.Invalid(
-                            listOf(
-                                WebAuthnValidationError.InvalidValue(
-                                    field = "type",
-                                    message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
-                                ),
+                if (value.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
+                    return ValidationResult.Invalid(
+                        listOf(
+                            WebAuthnValidationError.InvalidValue(
+                                field = "type",
+                                message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
                 val authenticatorAttachment = value.authenticatorAttachment?.let { encodedAttachment ->
                     when (val parsed = parseAuthenticatorAttachment(encodedAttachment, "authenticatorAttachment")) {
@@ -464,17 +476,15 @@ public object WebAuthnDtoMapper {
                         is ValidationResult.Invalid -> return ValidationResult.Invalid(parsed.errors)
                     }
                 }
-                value.type?.let { encodedType ->
-                    if (encodedType != PUBLIC_KEY_CREDENTIAL_TYPE) {
-                        return ValidationResult.Invalid(
-                            listOf(
-                                WebAuthnValidationError.InvalidValue(
-                                    field = "type",
-                                    message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
-                                ),
+                if (value.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
+                    return ValidationResult.Invalid(
+                        listOf(
+                            WebAuthnValidationError.InvalidValue(
+                                field = "type",
+                                message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
                 val authenticatorAttachment = value.authenticatorAttachment?.let { encodedAttachment ->
                     when (val parsed = parseAuthenticatorAttachment(encodedAttachment, "authenticatorAttachment")) {
