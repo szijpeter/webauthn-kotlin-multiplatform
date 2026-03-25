@@ -24,6 +24,11 @@ public enum class WebAuthnClientDataType(public val wireValue: String) {
 /** Core validator implementing the WebAuthn L3 ceremony checks shared by server adapters. */
 public object WebAuthnCoreValidator {
     /**
+     * Validates `CollectedClientData` for either registration or authentication finish flows.
+     *
+     * Use this when you already have parsed `CollectedClientData` and want standards-aligned
+     * checks for type/challenge/origin before evaluating authenticator data or signatures.
+     *
      * W3C WebAuthn L3:
      * - §7.1. Registering a New Credential (Steps 7, 8, 9, 10, 11)
      * - §7.2. Verifying an Authentication Assertion (Steps 10, 11, 12, 13, 14, 15)
@@ -72,6 +77,12 @@ public object WebAuthnCoreValidator {
         }
     }
 
+    /**
+     * Runs registration-side core validation using expected challenge/origin inputs.
+     *
+     * The returned output carries the credential id/sign counter extracted from authenticator data
+     * for downstream persistence and crypto verification steps.
+     */
     public fun validateRegistration(
         input: RegistrationValidationInput,
     ): ValidationResult<RegistrationValidationOutput> {
@@ -104,6 +115,13 @@ public object WebAuthnCoreValidator {
         )
     }
 
+    /**
+     * Runs authentication-side core validation using expected challenge/origin inputs and
+     * server-trusted previous signature counter state.
+     *
+     * The returned output carries the credential id/sign counter extracted from authenticator data
+     * for replay protection persistence logic.
+     */
     public fun validateAuthentication(
         input: AuthenticationValidationInput,
     ): ValidationResult<AuthenticationValidationOutput> {
@@ -137,6 +155,11 @@ public object WebAuthnCoreValidator {
     }
 
     /**
+     * Validates `AuthenticatorData` flags and signature counter behavior.
+     *
+     * This function is intentionally crypto-agnostic: it checks ceremony flag/counter semantics,
+     * while cryptographic signature/attestation verification remains a separate downstream step.
+     *
      * W3C WebAuthn L3:
      * - §7.1. Registering a New Credential (Steps 14, 15, 16)
      * - §7.2. Verifying an Authentication Assertion (Steps 18, 19, 20, 21, 22, 23, 24)
@@ -197,6 +220,11 @@ public object WebAuthnCoreValidator {
         }
     }
 
+    /**
+     * Enforces `allowCredentials` credential-id membership for authentication responses.
+     *
+     * Per WebAuthn semantics, an empty allow list means any credential is accepted.
+     */
     public fun requireAllowedCredential(
         response: AuthenticationResponse,
         allowedCredentialIds: Set<CredentialId>,
@@ -218,8 +246,15 @@ public object WebAuthnCoreValidator {
         }
     }
 
+    /** User Presence (UP) flag bit in authenticator data. */
     public const val USER_PRESENCE_FLAG: Int = 0x01
+
+    /** User Verification (UV) flag bit in authenticator data. */
     public const val USER_VERIFICATION_FLAG: Int = 0x04
+
+    /** Backup Eligibility (BE) flag bit in authenticator data. */
     public const val BACKUP_ELIGIBLE_FLAG: Int = 0x08
+
+    /** Backup State (BS) flag bit in authenticator data. */
     public const val BACKUP_STATE_FLAG: Int = 0x10
 }

@@ -1,7 +1,6 @@
 package dev.webauthn.core
 
 import dev.webauthn.model.Origin
-import dev.webauthn.model.RpId
 
 /**
  * Provides metadata for an origin, such as related origins.
@@ -18,5 +17,6 @@ public interface OriginMetadataProvider {
  * Default implementation that returns no additional origins.
  */
 public object NoOpOriginMetadataProvider : OriginMetadataProvider {
+    /** Returns no related origins, limiting acceptance to the explicitly configured origin set. */
     override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> = emptySet()
 }

@@ -65,11 +65,11 @@ if [[ "$block" != "true" && "$block" != "false" ]]; then
     exit 2
 fi
 
-eval "$(tools/agent/changed-modules.sh --scope "$scope" --format shell)"
+eval "$(bash tools/agent/changed-modules.sh --scope "$scope" --format shell)"
 
 tmp_changed_files="$(mktemp)"
 trap 'rm -f "$tmp_changed_files"' EXIT
-tools/agent/changed-modules.sh --scope "$scope" --print-files > "$tmp_changed_files"
+bash tools/agent/changed-modules.sh --scope "$scope" --print-files > "$tmp_changed_files"
 
 if [[ "$CHANGED_COUNT" -eq 0 ]]; then
     if [[ "$format" == "json" ]]; then
@@ -82,7 +82,9 @@ fi
 
 if [[ "$scope" == "changed" && "$DOCS_ONLY" == "true" ]]; then
     if [[ "$mode" == "strict" ]]; then
-        tools/agent/spec-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
+        bash tools/agent/spec-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
+        bash tools/agent/docs-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
+        bash tools/agent/mermaid-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
     fi
     if [[ "$format" == "json" ]]; then
         echo '{"status":"ok","message":"Docs-only change; skipping compile/test gates."}'
@@ -169,7 +171,7 @@ else
                 run_list+=("./gradlew :samples:compose-passkey:detekt :samples:compose-passkey:allTests :samples:compose-passkey:compileAndroidMain :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
             samples:compose-passkey-ios-host)
-                run_list+=("tools/agent/check-compose-passkey-ios-host.sh")
+                run_list+=("bash tools/agent/check-compose-passkey-ios-host.sh")
                 ;;
             samples:compose-passkey-android)
                 run_list+=("./gradlew :samples:compose-passkey-android:detekt :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
@@ -178,7 +180,7 @@ else
     done
 
     if [[ "$has_harness" == "true" || "$has_ci" == "true" ]]; then
-        run_list+=("tools/agent/verify-harness-sync.sh")
+        run_list+=("bash tools/agent/verify-harness-sync.sh")
     fi
 
     if [[ "$has_build" == "true" ]]; then
@@ -194,10 +196,12 @@ else
     fi
 
     if [[ "$mode" == "strict" ]]; then
-        run_list+=("tools/agent/status-trace-check.sh --changed-files $tmp_changed_files --strict")
+        run_list+=("bash tools/agent/status-trace-check.sh --changed-files $tmp_changed_files --strict")
+        run_list+=("bash tools/agent/docs-trace-check.sh --changed-files $tmp_changed_files --strict")
+        run_list+=("bash tools/agent/mermaid-trace-check.sh --changed-files $tmp_changed_files --strict")
 
         if [[ "$SPEC_SENSITIVE" == "true" ]]; then
-            run_list+=("tools/agent/spec-trace-check.sh --changed-files $tmp_changed_files --strict")
+            run_list+=("bash tools/agent/spec-trace-check.sh --changed-files $tmp_changed_files --strict")
         fi
 
         if [[ "$has_core" == "true" ]]; then

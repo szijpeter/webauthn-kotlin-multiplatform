@@ -12,6 +12,9 @@
 ## Docs
 
 - [ ] Docs updated if public behavior, release workflow, or security posture changed
+- [ ] Corresponding module `README.md` updated when published module implementation/build contract changed
+- [ ] Root `README.md` and `docs/architecture.md` updated when module relationships or integration paths changed
+- [ ] New/updated architecture or flow diagrams use Mermaid
 - [ ] Temporary release execution-map doc updated if one is active for this effort
 - [ ] `CHANGELOG.md` updated if the change affects published consumers
 

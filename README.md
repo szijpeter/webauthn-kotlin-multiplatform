@@ -31,27 +31,124 @@ This repo focuses on those needs:
 - A client/server setup that shares model and validation semantics instead of duplicating protocol assumptions.
 - A modular stack where server, client, transport, storage, and attestation trust can be adopted separately.
 
-## WebAuthn in One Minute
+## WebAuthn Core Concepts
 
-A typical WebAuthn flow has two ceremony pairs:
+WebAuthn has two ceremony pairs:
 
-1. Registration
-2. Authentication
+1. Registration (`create`)
+2. Authentication (`get`)
 
-Each pair has a server start step and a client finish step.
+Each pair has a server start step and a server finish step, with the platform authenticator in the middle.
 
-- The server creates challenge-bearing options.
-- The platform authenticator creates or uses a credential.
-- The client returns a typed response.
-- The server validates origin, challenge, authenticator data, signatures, counters, and policy before accepting the result.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant App as Client App
+    participant Auth as Platform Authenticator
+    participant RP as Relying Party Server
 
-This repo maps cleanly onto that split:
+    note over RP,App: Registration ceremony
+    App->>RP: registration/start request
+    RP-->>App: registration/start response (challenge + options)
+    App->>Auth: navigator.credentials.create / platform create
+    Auth-->>App: RegistrationResponse
+    App->>RP: registration/finish (response + echoed challenge)
+    RP-->>App: verified registration
 
-- `webauthn-model`, `webauthn-serialization-kotlinx`, `webauthn-core`, `webauthn-crypto-api`: shared protocol and validation building blocks.
-- `webauthn-server-*`: JVM backend services, crypto, Ktor routing, and storage adapters.
-- `webauthn-client-*`: shared client orchestration plus Android/iOS platform bridges.
-- `webauthn-network-ktor-client`: default client transport for `/webauthn/*` style backend contracts.
-- `platform:bom`: aligned dependency coordinates for the published public surface.
+    note over RP,App: Authentication ceremony
+    App->>RP: authentication/start request
+    RP-->>App: authentication/start response (challenge + options)
+    App->>Auth: navigator.credentials.get / platform get
+    Auth-->>App: AuthenticationResponse
+    App->>RP: authentication/finish (response + echoed challenge)
+    RP-->>App: verified sign-in
+```
+
+Validation and trust decisions are server responsibilities: challenge/origin/type checks, authenticator data rules, signature/attestation verification, counter handling, and policy decisions.
+
+## Repository Structure
+
+The repository follows a layered model that keeps protocol and validation concerns separate from transport and platform adapters.
+
+```mermaid
+flowchart TB
+    subgraph Layer1[Layer 1: Protocol Model]
+        M[webauthn-model]
+    end
+
+    subgraph Layer2[Layer 2: Validation and Serialization]
+        C[webauthn-core]
+        S[webauthn-serialization-kotlinx]
+    end
+
+    subgraph Layer3[Layer 3: Crypto Abstractions and Backends]
+        API[webauthn-crypto-api]
+        JCRYPTO[webauthn-server-jvm-crypto]
+    end
+
+    subgraph Layer4[Layer 4: Server Services and Adapters]
+        SVC[webauthn-server-core-jvm]
+        KTOR[webauthn-server-ktor]
+        STORE[webauthn-server-store-exposed]
+        MDS[webauthn-attestation-mds]
+    end
+
+    subgraph Layer5[Layer 5: Client Orchestration and Platform]
+        CCORE[webauthn-client-core]
+        CJSON[webauthn-client-json-core]
+        CANDROID[webauthn-client-android]
+        CIOS[webauthn-client-ios]
+        CCOMPOSE[webauthn-client-compose]
+        CPRF[webauthn-client-prf-crypto]
+        NET[webauthn-network-ktor-client]
+    end
+
+    M --> C
+    M --> S
+    C --> API
+    S --> SVC
+    JCRYPTO --> API
+    C --> SVC
+    SVC --> KTOR
+    SVC --> STORE
+    MDS --> API
+
+    M --> CCORE
+    CCORE --> CJSON
+    CCORE --> CANDROID
+    CCORE --> CIOS
+    CCORE --> CCOMPOSE
+    CCORE --> CPRF
+    C --> NET
+    S --> NET
+    CCORE --> NET
+```
+
+Focus modules for this documentation round:
+
+- [`webauthn-model`](./webauthn-model/README.md): typed protocol/value contracts.
+- [`webauthn-core`](./webauthn-core/README.md): standards-first ceremony validation.
+- [`webauthn-client-core`](./webauthn-client-core/README.md): shared passkey orchestration and controller flows.
+- [`webauthn-client-compose`](./webauthn-client-compose/README.md): Compose integration helpers over client core.
+- [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md): PRF-enabled key derivation/session crypto helpers.
+
+## How To Read Module Docs
+
+Most module READMEs follow this baseline structure (adapted per module when needed):
+
+- `What it provides`: the module's owned responsibilities.
+- `When to use`: where it belongs in an integration.
+- `How to use`: practical API snippets plus required caller responsibilities.
+- `How it fits in the system`: dependency and data-flow context.
+- `Pitfalls/limits`: common misuse patterns and intentional boundaries.
+- `Status`: maturity and readiness signal.
+
+Recommended adoption paths:
+
+- Start server-side with `model -> core -> crypto-api -> server-core-jvm` (+ `server-ktor` if you want HTTP adapters).
+- Start client-side with `client-core -> platform bridge` (+ `client-compose` for Compose UI).
+- Add `client-prf-crypto` only when you need PRF-derived application crypto.
 
 ## Install
 

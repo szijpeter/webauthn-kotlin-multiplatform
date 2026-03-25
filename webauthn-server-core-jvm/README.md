@@ -1,8 +1,19 @@
 # webauthn-server-core-jvm
 
-Audience: JVM backends that need typed registration/authentication ceremony services plus store contracts.
+Typed JVM ceremony services and store contracts for WebAuthn registration and authentication.
 
-Use this module when you want WebAuthn ceremony orchestration without being tied to a specific web framework.
+## What it provides
+
+- `RegistrationService` and `AuthenticationService`
+- Challenge, credential, and user-account store interfaces
+- In-memory store implementations for development/testing
+- Ceremony orchestration decoupled from web framework concerns
+
+## When to use
+
+Use this when you want to implement WebAuthn server flows in JVM/Kotlin, with or without Ktor adapters.
+
+## How to use
 
 ```kotlin
 import dev.webauthn.server.AuthenticationService
@@ -35,6 +46,23 @@ val authenticationService = AuthenticationService(
 )
 ```
 
-Choose this when you want services and store contracts but prefer to keep HTTP adapters optional.
+Real-world scenario: run start/finish ceremonies in your backend service layer, then expose them via Ktor routes or your own HTTP transport.
 
-Status: beta, production-leaning ceremony orchestration.
+## How it fits
+
+```mermaid
+flowchart LR
+    CORE["webauthn-core"] --> SVC["webauthn-server-core-jvm"]
+    CRYPTO["webauthn-server-jvm-crypto or custom crypto-api impl"] --> SVC
+    STORE["In-memory or Exposed stores"] --> SVC
+    KTOR["webauthn-server-ktor (optional)"] --> SVC
+```
+
+## Pitfalls and limits
+
+- Services depend on correctly implemented store semantics (challenge expiry, credential lookup, counter updates).
+- This module does not define your HTTP contract by itself.
+
+## Status
+
+Beta, production-leaning ceremony orchestration.

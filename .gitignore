@@ -43,6 +43,7 @@ local.properties
 !.env.template
 
 # Local Node artifacts (temporary backend)
+node_modules/
 temp.server/node_modules/
 
 ### Intellij ###

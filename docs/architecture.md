@@ -12,11 +12,59 @@
 
 ## Layering
 
-1. `webauthn-model`
-2. `webauthn-serialization-kotlinx`
-3. `webauthn-core`
-4. `webauthn-crypto-api`
-5. backend/client/platform modules
+```mermaid
+flowchart TB
+    subgraph L1[Layer 1: Protocol Model]
+        MODEL[webauthn-model]
+    end
+
+    subgraph L2[Layer 2: Validation and Serialization]
+        CORE[webauthn-core]
+        SER[webauthn-serialization-kotlinx]
+    end
+
+    subgraph L3[Layer 3: Crypto]
+        API[webauthn-crypto-api]
+        JVMCRYPTO[webauthn-server-jvm-crypto]
+    end
+
+    subgraph L4[Layer 4: Server]
+        SVC[webauthn-server-core-jvm]
+        KTOR[webauthn-server-ktor]
+        STORE[webauthn-server-store-exposed]
+        MDS[webauthn-attestation-mds]
+    end
+
+    subgraph L5[Layer 5: Client]
+        CCORE[webauthn-client-core]
+        CJSON[webauthn-client-json-core]
+        CANDROID[webauthn-client-android]
+        CIOS[webauthn-client-ios]
+        CCOMPOSE[webauthn-client-compose]
+        CPRF[webauthn-client-prf-crypto]
+        NET[webauthn-network-ktor-client]
+    end
+
+    MODEL --> CORE
+    MODEL --> SER
+    CORE --> API
+    JVMCRYPTO --> API
+    CORE --> SVC
+    SER --> SVC
+    SVC --> KTOR
+    SVC --> STORE
+    MDS --> API
+
+    MODEL --> CCORE
+    CCORE --> CJSON
+    CCORE --> CANDROID
+    CCORE --> CIOS
+    CCORE --> CCOMPOSE
+    CCORE --> CPRF
+    CORE --> NET
+    SER --> NET
+    CCORE --> NET
+```
 
 `webauthn-model` has no dependencies on the rest of the codebase.
 
