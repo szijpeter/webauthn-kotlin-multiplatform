@@ -84,6 +84,7 @@ if [[ "$scope" == "changed" && "$DOCS_ONLY" == "true" ]]; then
     if [[ "$mode" == "strict" ]]; then
         bash tools/agent/spec-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
         bash tools/agent/docs-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
+        bash tools/agent/mermaid-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
     fi
     if [[ "$format" == "json" ]]; then
         echo '{"status":"ok","message":"Docs-only change; skipping compile/test gates."}'
@@ -197,6 +198,7 @@ else
     if [[ "$mode" == "strict" ]]; then
         run_list+=("bash tools/agent/status-trace-check.sh --changed-files $tmp_changed_files --strict")
         run_list+=("bash tools/agent/docs-trace-check.sh --changed-files $tmp_changed_files --strict")
+        run_list+=("bash tools/agent/mermaid-trace-check.sh --changed-files $tmp_changed_files --strict")
 
         if [[ "$SPEC_SENSITIVE" == "true" ]]; then
             run_list+=("bash tools/agent/spec-trace-check.sh --changed-files $tmp_changed_files --strict")

@@ -109,7 +109,7 @@ mark_category() {
 is_docs_file() {
     local file="$1"
     case "$file" in
-        docs/*|spec-notes/*|README.md|*/README.md|CONTRIBUTING.md|CHANGELOG.md|SECURITY.md|LICENSE|AGENTS.md|CLAUDE.md|.cursor/*|.gemini/*|.github/*.md|tools/agent/*|.githooks/*)
+        docs/*|spec-notes/*|README.md|*/README.md|CONTRIBUTING.md|CHANGELOG.md|SECURITY.md|LICENSE|AGENTS.md|CLAUDE.md|.cursor/*|.gemini/*|.github/*.md)
             return 0
             ;;
         *)

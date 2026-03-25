@@ -16,6 +16,13 @@ import dev.webauthn.model.WebAuthnValidationError
 @ExperimentalWebAuthnL3Api
 public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
 
+    /**
+     * Validates registration extension IO coherence for currently supported extensions.
+     *
+     * Enforced checks:
+     * - `largeBlob.support == REQUIRED` must be reflected as supported in outputs.
+     * - `prf` request must yield corresponding PRF output metadata.
+     */
     override fun validateRegistrationExtensions(
         inputs: AuthenticationExtensionsClientInputs?,
         outputs: AuthenticationExtensionsClientOutputs?
@@ -59,6 +66,13 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
         }
     }
 
+    /**
+     * Validates authentication extension IO coherence for currently supported extensions.
+     *
+     * Enforced checks:
+     * - requested PRF evaluation must return PRF results.
+     * - a requested second PRF output must be present in results.
+     */
     override fun validateAuthenticationExtensions(
         inputs: AuthenticationExtensionsClientInputs?,
         outputs: AuthenticationExtensionsClientOutputs?

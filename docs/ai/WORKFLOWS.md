@@ -25,9 +25,9 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 4. Let PR CI remain the blocking authority.
 5. If core/model validation behavior changed, update `spec-notes/webauthn-l3-validation-map.md`.
 6. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
-7. If a published module implementation/build contract changed, update the matching module `README.md` in the same change.
-8. If module relationships or integration paths changed, update both root `README.md` and `docs/architecture.md` in the same change.
-9. Use Mermaid for new/updated architecture or flow diagrams in docs.
+7. When a published module implementation/build contract changes, update the matching module `README.md` in the same change.
+8. When module relationships or integration paths change, update both root `README.md` and `docs/architecture.md` in the same change.
+9. Add Mermaid diagrams for any new or updated architecture or flow diagrams in docs.
 10. If public API changed in a BCV-covered published module, run:
 
 ```bash

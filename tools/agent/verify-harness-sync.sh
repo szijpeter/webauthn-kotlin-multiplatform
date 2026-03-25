@@ -41,6 +41,7 @@ required_files=(
   "tools/agent/progress-report.sh"
   "tools/agent/status-trace-check.sh"
   "tools/agent/docs-trace-check.sh"
+  "tools/agent/mermaid-trace-check.sh"
 )
 
 for file in "${required_files[@]}"; do

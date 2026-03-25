@@ -48,23 +48,19 @@ sequenceDiagram
     participant Auth as Platform Authenticator
     participant RP as Relying Party Server
 
-    rect rgb(240, 248, 255)
     note over RP,App: Registration ceremony
     RP->>App: registration/start (challenge + options)
     App->>Auth: navigator.credentials.create / platform create
     Auth-->>App: RegistrationResponse
     App->>RP: registration/finish (response + echoed challenge)
     RP-->>App: verified registration
-    end
 
-    rect rgb(245, 255, 245)
     note over RP,App: Authentication ceremony
     RP->>App: authentication/start (challenge + options)
     App->>Auth: navigator.credentials.get / platform get
     Auth-->>App: AuthenticationResponse
     App->>RP: authentication/finish (response + echoed challenge)
     RP-->>App: verified sign-in
-    end
 ```
 
 Validation and trust decisions are server responsibilities: challenge/origin/type checks, authenticator data rules, signature/attestation verification, counter handling, and policy decisions.
@@ -110,11 +106,11 @@ flowchart TB
     M --> S
     C --> API
     S --> SVC
-    API --> JCRYPTO
+    JCRYPTO --> API
     C --> SVC
     SVC --> KTOR
     SVC --> STORE
-    API --> MDS
+    MDS --> API
 
     M --> CCORE
     CCORE --> CJSON
@@ -131,6 +127,7 @@ Focus modules for this documentation round:
 
 - [`webauthn-model`](./webauthn-model/README.md): typed protocol/value contracts.
 - [`webauthn-core`](./webauthn-core/README.md): standards-first ceremony validation.
+- [`webauthn-client-core`](./webauthn-client-core/README.md): shared passkey orchestration and controller flows.
 - [`webauthn-client-compose`](./webauthn-client-compose/README.md): Compose integration helpers over client core.
 - [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md): PRF-enabled key derivation/session crypto helpers.
 

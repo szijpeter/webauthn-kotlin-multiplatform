@@ -24,6 +24,11 @@ public enum class WebAuthnClientDataType(public val wireValue: String) {
 /** Core validator implementing the WebAuthn L3 ceremony checks shared by server adapters. */
 public object WebAuthnCoreValidator {
     /**
+     * Validates `CollectedClientData` for either registration or authentication finish flows.
+     *
+     * Use this when you already have parsed `CollectedClientData` and want standards-aligned
+     * checks for type/challenge/origin before evaluating authenticator data or signatures.
+     *
      * W3C WebAuthn L3:
      * - §7.1. Registering a New Credential (Steps 7, 8, 9, 10, 11)
      * - §7.2. Verifying an Authentication Assertion (Steps 10, 11, 12, 13, 14, 15)
@@ -150,6 +155,11 @@ public object WebAuthnCoreValidator {
     }
 
     /**
+     * Validates `AuthenticatorData` flags and signature counter behavior.
+     *
+     * This function is intentionally crypto-agnostic: it checks ceremony flag/counter semantics,
+     * while cryptographic signature/attestation verification remains a separate downstream step.
+     *
      * W3C WebAuthn L3:
      * - §7.1. Registering a New Credential (Steps 14, 15, 16)
      * - §7.2. Verifying an Authentication Assertion (Steps 18, 19, 20, 21, 22, 23, 24)
@@ -211,7 +221,7 @@ public object WebAuthnCoreValidator {
     }
 
     /**
-     * Verifies that the assertion credential id is part of the allow list when one is configured.
+     * Enforces `allowCredentials` credential-id membership for authentication responses.
      *
      * Per WebAuthn semantics, an empty allow list means any credential is accepted.
      */

@@ -48,12 +48,12 @@ flowchart TB
     MODEL --> CORE
     MODEL --> SER
     CORE --> API
-    API --> JVMCRYPTO
+    JVMCRYPTO --> API
     CORE --> SVC
     SER --> SVC
     SVC --> KTOR
     SVC --> STORE
-    API --> MDS
+    MDS --> API
 
     MODEL --> CCORE
     CCORE --> CJSON

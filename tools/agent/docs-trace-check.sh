@@ -16,6 +16,11 @@ USAGE
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --changed-files)
+            if [[ -z "${2:-}" || "${2:-}" == -* ]]; then
+                echo "Missing value for --changed-files" >&2
+                usage >&2
+                exit 2
+            fi
             changed_files_path="$2"
             shift 2
             ;;
@@ -47,33 +52,24 @@ fi
 
 mapfile -t changed_files < "$changed_files_path"
 
-published_modules=(
-    "platform/bom"
-    "webauthn-cbor-internal"
-    "webauthn-model"
-    "webauthn-serialization-kotlinx"
-    "webauthn-core"
-    "webauthn-crypto-api"
-    "webauthn-server-jvm-crypto"
-    "webauthn-server-core-jvm"
-    "webauthn-server-ktor"
-    "webauthn-server-store-exposed"
-    "webauthn-client-core"
-    "webauthn-client-json-core"
-    "webauthn-client-compose"
-    "webauthn-client-android"
-    "webauthn-client-ios"
-    "webauthn-client-prf-crypto"
-    "webauthn-network-ktor-client"
-    "webauthn-attestation-mds"
-)
+discover_published_modules() {
+    local -A seen=()
+    local build_file
 
-declare -A module_readme_required=()
-declare -A module_readme_updated=()
+    while IFS= read -r build_file; do
+        local module
+        module="${build_file#./}"
+        module="${module%/build.gradle.kts}"
 
-requires_integration_docs="false"
-root_readme_updated="false"
-architecture_doc_updated="false"
+        case "$module" in
+            platform/bom|webauthn-*)
+                seen["$module"]=1
+                ;;
+        esac
+    done < <(find . -mindepth 2 -maxdepth 3 -name build.gradle.kts | sort)
+
+    printf '%s\n' "${!seen[@]}" | sort
+}
 
 is_integration_change_file() {
     local file="$1"
@@ -89,6 +85,44 @@ is_integration_change_file() {
             ;;
     esac
 }
+
+is_module_contract_change_file() {
+    local module="$1"
+    local file="$2"
+
+    case "$file" in
+        "$module/README.md")
+            return 1
+            ;;
+        "$module/build.gradle.kts"|"$module/api/"*)
+            return 0
+            ;;
+        "$module/src/"*Test/*|"$module/src/"*test/*)
+            return 1
+            ;;
+        "$module/src/"*Main/*|"$module/src/"*main/*)
+            return 0
+            ;;
+        "$module/src/"*)
+            return 1
+            ;;
+        "$module/"*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+mapfile -t published_modules < <(discover_published_modules)
+
+declare -A module_readme_required=()
+declare -A module_readme_updated=()
+
+requires_integration_docs="false"
+root_readme_updated="false"
+architecture_doc_updated="false"
 
 for file in "${changed_files[@]}"; do
     [[ -z "$file" ]] && continue
@@ -111,7 +145,7 @@ for file in "${changed_files[@]}"; do
             continue
         fi
 
-        if [[ "$file" == "$module/"* ]]; then
+        if is_module_contract_change_file "$module" "$file"; then
             module_readme_required["$module"]="true"
         fi
     done
@@ -141,7 +175,7 @@ fi
 
 msg="Docs trace required:"
 if [[ ${#missing_module_readmes[@]} -gt 0 ]]; then
-    msg+=" update module README(s) for changed published modules -> ${missing_module_readmes[*]};"
+    msg+=" update module README(s) for changed module implementation/build contract -> ${missing_module_readmes[*]};"
 fi
 if [[ ${#integration_missing[@]} -gt 0 ]]; then
     msg+=" update integration docs for module relationship/integration changes -> ${integration_missing[*]};"

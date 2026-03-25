@@ -1,76 +1,80 @@
 # webauthn-core
 
-Audience: teams validating WebAuthn ceremonies without committing to a specific server framework.
+Audience: teams validating WebAuthn ceremonies before crypto verification and persistence updates.
 
-## What it validates
+## What it provides
 
-- Client data checks (`type`, `challenge`, `origin`, related origins).
-- Authenticator data checks (UP/UV flags, backup flags, signature counter progression).
-- Allowed-credential checks for authentication `allowCredentials` handling.
-- Extension hook integration points for optional Level 3 extension verification.
+- Validation for `clientData` expectations (`type`, `challenge`, `origin`, optional related origins).
+- Validation for `authenticatorData` flags and signature counter progression.
+- Allow-list enforcement for authentication (`allowCredentials`) via credential ID checks.
+- Extension hook contracts for optional L3 extension checks.
 
 ```mermaid
 flowchart TD
-    Start[Typed ceremony input<br/>RegistrationValidationInput / AuthenticationValidationInput] --> ClientData[validateClientData]
-    ClientData --> AuthData[validateAuthenticatorData]
-    AuthData --> AllowCred[requireAllowedCredential]
-    AllowCred --> Hook[WebAuthnExtensionHook (optional)]
-    Hook --> Result[ValidationResult output]
-    Result --> Crypto[Crypto verification layer
-signature + attestation]
+    Start["Typed finish input<br/>RegistrationValidationInput / AuthenticationValidationInput"] --> ClientData["validateClientData"]
+    ClientData --> AuthData["validateAuthenticatorData"]
+    AuthData --> AllowCred["requireAllowedCredential"]
+    AllowCred --> Hook["WebAuthnExtensionHook (optional)"]
+    Hook --> CoreOut["ValidationResult output"]
+    CoreOut --> Crypto["Server crypto verification<br/>signature + attestation"]
+    Crypto --> Persist["Store signCount / credential state"]
 ```
 
-## Real-world flow placement
+## Where it fits in a real ceremony
 
-Use `webauthn-core` after parsing transport payloads into model types and before cryptographic verification and persistence updates.
+Use `webauthn-core` in server finish endpoints after parsing transport payloads into model types and before signature/attestation verification. It gives you standards-aligned preconditions and typed output values (`credentialId`, `signCount`, extension outputs) for downstream steps.
 
 ## How to use
 
-A typical authentication finish path combines core checks with credential allow-list and server-owned counters.
+A practical authentication finish path usually chains core validation, allow-list checks, extension checks, then crypto verification and persistence.
 
 ```kotlin
 import dev.webauthn.core.AuthenticationValidationInput
 import dev.webauthn.core.WebAuthnCoreValidator
+import dev.webauthn.core.WebAuthnExtensionHook
+import dev.webauthn.core.WebAuthnExtensionValidator
+import dev.webauthn.model.CredentialId
 import dev.webauthn.model.ValidationResult
 
-fun validateAssertion(
+suspend fun validateAssertionForFinish(
     input: AuthenticationValidationInput,
-    allowedCredentialIds: Set<dev.webauthn.model.CredentialId>,
+    allowedCredentialIds: Set<CredentialId>,
+    extensionHook: WebAuthnExtensionHook = WebAuthnExtensionValidator,
 ): ValidationResult<Long> {
-    val validation = WebAuthnCoreValidator.validateAuthentication(input)
-    if (validation is ValidationResult.Invalid) {
-        return ValidationResult.Invalid(validation.errors)
-    }
-    val output = (validation as ValidationResult.Valid).value
+    val core = WebAuthnCoreValidator.validateAuthentication(input)
+    if (core is ValidationResult.Invalid) return core
 
-    val allowResult = WebAuthnCoreValidator.requireAllowedCredential(
+    val output = (core as ValidationResult.Valid).value
+
+    val allow = WebAuthnCoreValidator.requireAllowedCredential(
         response = input.response,
         allowedCredentialIds = allowedCredentialIds,
     )
-    return when (allowResult) {
-        is ValidationResult.Valid -> ValidationResult.Valid(output.signCount)
-        is ValidationResult.Invalid -> ValidationResult.Invalid(allowResult.errors)
-    }
+    if (allow is ValidationResult.Invalid) return allow
+
+    val ext = extensionHook.validateAuthenticationExtensions(
+        inputs = input.options.extensions,
+        outputs = output.extensions,
+    )
+    if (ext is ValidationResult.Invalid) return ext
+
+    // Continue with crypto signature verification and then persist output.signCount.
+    return ValidationResult.Valid(output.signCount)
 }
 ```
 
-Important API details:
+Important API behavior:
 
-- `validateRegistration(...)` and `validateAuthentication(...)` return typed outputs with credential id, sign count, and extension outputs.
-- `allowedOrigins` supports related-origin acceptance only when explicitly requested.
+- `validateRegistration(...)` / `validateAuthentication(...)` return typed outputs for downstream persistence.
+- `allowedOrigins` only broadens origin acceptance when explicitly provided.
 - `previousSignCount` must come from server-trusted credential state.
-- This module intentionally does not verify signatures/attestation; run crypto checks after core validation.
+- This module does not verify signatures or attestation statements.
 
-## Extension and origin handling
+## Pitfalls and limits
 
-- Use `WebAuthnExtensionValidator` for default PRF/LargeBlob validation behavior.
-- Use `OriginMetadataProvider` in higher layers when related origins must be fetched dynamically.
-
-## Limits
-
-- No persistence: challenge lifecycle and credential storage are caller-owned.
-- No transport mapping: parsing/JSON/CBOR belongs to other modules.
-- No crypto backend behavior: handled by `webauthn-crypto-api` implementations.
+- No storage/challenge lifecycle management.
+- No JSON/CBOR parsing or transport DTO mapping.
+- No crypto backend execution (delegated to `webauthn-crypto-api` implementations).
 
 ## Status
 
