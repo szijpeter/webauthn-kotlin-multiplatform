@@ -102,12 +102,14 @@ fi
 
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
+artifacts_dir="$tmp_dir/artifacts"
+mkdir -p "$artifacts_dir"
 
 failures=()
 for file in "${mermaid_files[@]}"; do
     output_file="$tmp_dir/$(echo "$file" | tr '/.' '__').md"
     log_file="$tmp_dir/$(echo "$file" | tr '/.' '__').log"
-    if ! "${mmdc_cmd[@]}" -q -i "$file" -o "$output_file" -a "$tmp_dir/artifacts" >"$log_file" 2>&1; then
+    if ! "${mmdc_cmd[@]}" -q -i "$file" -o "$output_file" -a "$artifacts_dir" >"$log_file" 2>&1; then
         failures+=("$file")
         echo "Mermaid parse failed in $file" >&2
         sed -n '1,30p' "$log_file" >&2
