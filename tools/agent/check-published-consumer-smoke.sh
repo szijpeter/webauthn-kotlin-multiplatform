@@ -34,7 +34,14 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        mavenLocal()
+        exclusiveContent {
+            forRepository {
+                mavenLocal()
+            }
+            filter {
+                includeGroup("io.github.szijpeter")
+            }
+        }
         mavenCentral()
         google()
     }
@@ -49,7 +56,14 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+    exclusiveContent {
+        forRepository {
+            mavenLocal()
+        }
+        filter {
+            includeGroup("io.github.szijpeter")
+        }
+    }
     mavenCentral()
     google()
 }
@@ -60,9 +74,6 @@ dependencies {
     implementation("io.github.szijpeter:webauthn-network-ktor-client")
 }
 
-kotlin {
-    jvmToolchain(11)
-}
 EOF
 
 mkdir -p "$tmp_dir/src/main/kotlin/smoke"
