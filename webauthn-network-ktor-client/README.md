@@ -1,8 +1,18 @@
 # webauthn-network-ktor-client
 
-Audience: client apps that want a default Ktor transport for a `/webauthn/*` backend contract.
+Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server contracts.
 
-Use this module when your app already has a `PasskeyClient` and needs a `PasskeyServerClient` implementation for start/finish backend calls.
+## What it provides
+
+- `KtorPasskeyServerClient`
+- Start/finish HTTP call wiring for registration and authentication
+- A drop-in transport module for client orchestration layers
+
+## When to use
+
+Use this when your backend follows the default `/webauthn/*` contract and your app already uses Ktor client.
+
+## How to use
 
 ```kotlin
 import dev.webauthn.network.KtorPasskeyServerClient
@@ -13,6 +23,22 @@ val serverClient = KtorPasskeyServerClient(
 )
 ```
 
-Choose this over writing custom transport when the default backend contract paths and payloads fit your server.
+Real-world scenario: a mobile app uses `PasskeyController` for platform ceremonies, then delegates start/finish HTTP calls to this client.
 
-Status: production-leaning transport helper with explicit backend contract support.
+## How it fits
+
+```mermaid
+flowchart LR
+    UI["App UI"] --> CORE["webauthn-client-core controller"]
+    CORE --> NET["KtorPasskeyServerClient"]
+    NET --> API["Backend /webauthn/* endpoints"]
+```
+
+## Pitfalls and limits
+
+- Contract/path assumptions are explicit; custom backend contracts need custom `PasskeyServerClient` implementations.
+- Retry, timeout, auth headers, and observability remain caller-owned through the provided `HttpClient`.
+
+## Status
+
+Production-leaning transport helper with explicit backend contract support.

@@ -1,8 +1,19 @@
 # webauthn-server-store-exposed
 
-Audience: JVM backends using Exposed for WebAuthn challenge, credential, and user-account persistence.
+Exposed-backed persistence adapters for server-core store contracts.
 
-Use this module when you want an Exposed-backed implementation of the `webauthn-server-core-jvm` store contracts.
+## What it provides
+
+- `ExposedChallengeStore`
+- `ExposedCredentialStore`
+- `ExposedUserAccountStore`
+- `initializeWebAuthnSchema(database)` bootstrap helper
+
+## When to use
+
+Use this when your JVM backend already uses Exposed/JDBC and you want persistent WebAuthn state.
+
+## How to use
 
 ```kotlin
 import dev.webauthn.server.store.exposed.ExposedChallengeStore
@@ -17,6 +28,22 @@ val credentialStore = ExposedCredentialStore(database)
 val userStore = ExposedUserAccountStore(database)
 ```
 
-Choose this over the in-memory stores when you need persisted state and already use Exposed or JDBC databases in your JVM backend.
+Real-world scenario: replace in-memory stores in production so ceremonies survive process restarts and can scale horizontally.
 
-Status: beta, contract-tested Exposed storage adapter.
+## How it fits
+
+```mermaid
+flowchart LR
+    SVC["webauthn-server-core-jvm"] --> CONTRACTS["Store contracts"]
+    EXPOSED["webauthn-server-store-exposed"] --> CONTRACTS
+    EXPOSED --> DB["SQL database"]
+```
+
+## Pitfalls and limits
+
+- You still own migrations, backup, and operational DB concerns.
+- Schema/bootstrap is not a substitute for full lifecycle migration tooling in mature deployments.
+
+## Status
+
+Beta, contract-tested Exposed storage adapter.

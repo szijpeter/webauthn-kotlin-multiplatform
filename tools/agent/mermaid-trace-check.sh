@@ -64,6 +64,11 @@ mermaid_files=()
 
 for file in "${changed_files[@]}"; do
     [[ -z "$file" ]] && continue
+    case "$file" in
+        node_modules/*|.gradle/*|build/*|*/build/*)
+            continue
+            ;;
+    esac
     [[ "$file" == *.md ]] || continue
     [[ -f "$file" ]] || continue
     if contains_mermaid_block "$file"; then
@@ -79,11 +84,10 @@ fi
 mmdc_cmd=()
 if command -v mmdc >/dev/null 2>&1; then
     mmdc_cmd=(mmdc)
-elif command -v npx >/dev/null 2>&1; then
+elif [[ -x "$ROOT_DIR/node_modules/.bin/mmdc" ]] && command -v npx >/dev/null 2>&1; then
     # Strict gate must be deterministic/offline-safe: never auto-install from npm.
-    if npx --no-install mmdc -h >/dev/null 2>&1; then
-        mmdc_cmd=(npx --no-install mmdc)
-    fi
+    # Avoid probing npx directly because it can block in environments without local mmdc.
+    mmdc_cmd=(npx --no-install mmdc)
 fi
 
 if [[ ${#mmdc_cmd[@]} -eq 0 ]]; then

@@ -1,16 +1,42 @@
 # webauthn-serialization-kotlinx
 
-Audience: teams mapping wire DTOs to typed WebAuthn models with kotlinx.serialization.
+Serialization and mapping helpers between wire DTOs and typed WebAuthn domain models.
 
-Use this module when you receive or emit JSON/CBOR payloads and want strict conversion into `webauthn-model` types.
+## What it provides
+
+- `WebAuthnDtoMapper` mapping between DTO and `webauthn-model`
+- `kotlinx.serialization`-based DTO support
+- Authenticator data and CBOR/COSE-related conversion helpers used by higher layers
+
+## When to use
+
+Use this when your boundary is JSON/CBOR but your application code should stay typed.
+
+## How to use
 
 ```kotlin
 import dev.webauthn.serialization.WebAuthnDtoMapper
 
-val result = WebAuthnDtoMapper.toModel(dto)
+val model = WebAuthnDtoMapper.toModel(dto)
 val dto = WebAuthnDtoMapper.fromModel(model)
 ```
 
-Choose this over `webauthn-model` alone when you need DTOs, mappers, or authenticated data parsing helpers.
+Real-world scenario: parse backend JSON into typed model objects, run validation/business logic, then map back to DTOs for responses.
 
-Status: beta, with strict mapper validation and CBOR/COSE handling.
+## How it fits
+
+```mermaid
+flowchart LR
+    WIRE["Wire DTOs (JSON or CBOR)"] --> MAPPER["WebAuthnDtoMapper"]
+    MAPPER --> MODEL["webauthn-model"]
+    CORE["webauthn-core"] --> MODEL
+```
+
+## Pitfalls and limits
+
+- Mapper validation is strict by design; malformed wire data should be handled as untrusted input.
+- Keep model and mapper versions aligned (BOM recommended).
+
+## Status
+
+Beta, strict mapper validation with CBOR/COSE handling.

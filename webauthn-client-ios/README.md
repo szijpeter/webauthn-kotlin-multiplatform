@@ -1,8 +1,18 @@
 # webauthn-client-ios
 
-Audience: iOS apps using AuthenticationServices for passkey registration and sign-in.
+iOS platform bridge for passkey operations using AuthenticationServices.
 
-Use this module when you want an iOS `PasskeyClient` backed by AuthenticationServices while keeping the higher-level flow in shared Kotlin.
+## What it provides
+
+- `IosPasskeyClient`
+- iOS `PasskeyClient` implementation for registration and authentication
+- Platform integration layer intended to be used with `webauthn-client-core`
+
+## When to use
+
+Use this in iOS apps that need native passkey flows through AuthenticationServices.
+
+## How to use
 
 ```kotlin
 import dev.webauthn.client.ios.IosPasskeyClient
@@ -10,10 +20,24 @@ import dev.webauthn.client.ios.IosPasskeyClient
 val client = IosPasskeyClient()
 ```
 
-Choose this over `webauthn-client-core` alone when you need the iOS platform bridge.
+Real-world scenario: shared business logic drives start/finish and state management, while this module owns platform credential prompts.
 
-Current note: platform passkey flows are supported, while external security-key readiness is still being hardened and should be treated as an active limitation for the first public release.
+## How it fits
 
-PRF note: on iOS 18+ runtime APIs, assertion PRF inputs support both shared `prf.eval` and per-credential `prf.evalByCredential` mappings. Malformed `evalByCredential` keys are rejected deterministically as invalid options.
+```mermaid
+flowchart LR
+    UI["iOS UI"] --> CORE["webauthn-client-core controller"]
+    CORE --> IOS["IosPasskeyClient"]
+    IOS --> AS["AuthenticationServices"]
+    CORE --> NET["PasskeyServerClient"]
+```
 
-Status: beta, thin iOS bridge on top of shared client orchestration.
+## Limits and notes
+
+- Platform passkey flows are supported.
+- External security-key readiness is still being hardened and should be treated as an active limitation.
+- On iOS 18+ runtime APIs, assertion PRF input supports shared `prf.eval` and per-credential `prf.evalByCredential`; malformed keys are rejected as invalid options.
+
+## Status
+
+Beta, thin iOS bridge on top of shared client orchestration.
