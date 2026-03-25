@@ -70,7 +70,7 @@ final class dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto 
 }
 
 final class dev.webauthn.serialization/AuthenticationResponseDto { // dev.webauthn.serialization/AuthenticationResponseDto|null[0]
-    constructor <init>(kotlin/String, kotlin/String, dev.webauthn.serialization/AuthenticationResponsePayloadDto, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...) // dev.webauthn.serialization/AuthenticationResponseDto.<init>|<init>(kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+    constructor <init>(kotlin/String, kotlin/String, dev.webauthn.serialization/AuthenticationResponsePayloadDto, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ..., kotlin/String? = ...) // dev.webauthn.serialization/AuthenticationResponseDto.<init>|<init>(kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?;kotlin.String?){}[0]
 
     final val authenticatorAttachment // dev.webauthn.serialization/AuthenticationResponseDto.authenticatorAttachment|{}authenticatorAttachment[0]
         final fun <get-authenticatorAttachment>(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponseDto.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
@@ -82,13 +82,16 @@ final class dev.webauthn.serialization/AuthenticationResponseDto { // dev.webaut
         final fun <get-rawId>(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.rawId.<get-rawId>|<get-rawId>(){}[0]
     final val response // dev.webauthn.serialization/AuthenticationResponseDto.response|{}response[0]
         final fun <get-response>(): dev.webauthn.serialization/AuthenticationResponsePayloadDto // dev.webauthn.serialization/AuthenticationResponseDto.response.<get-response>|<get-response>(){}[0]
+    final val type // dev.webauthn.serialization/AuthenticationResponseDto.type|{}type[0]
+        final fun <get-type>(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponseDto.type.<get-type>|<get-type>(){}[0]
 
     final fun component1(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.component1|component1(){}[0]
     final fun component2(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.component2|component2(){}[0]
     final fun component3(): dev.webauthn.serialization/AuthenticationResponsePayloadDto // dev.webauthn.serialization/AuthenticationResponseDto.component3|component3(){}[0]
     final fun component4(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponseDto.component4|component4(){}[0]
     final fun component5(): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? // dev.webauthn.serialization/AuthenticationResponseDto.component5|component5(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/AuthenticationResponsePayloadDto = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/AuthenticationResponseDto.copy|copy(kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+    final fun component6(): kotlin/String? // dev.webauthn.serialization/AuthenticationResponseDto.component6|component6(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/AuthenticationResponsePayloadDto = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ..., kotlin/String? = ...): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/AuthenticationResponseDto.copy|copy(kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?;kotlin.String?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticationResponseDto.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticationResponseDto.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticationResponseDto.toString|toString(){}[0]
@@ -482,14 +485,12 @@ final class dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto { //
     }
 
     final object Companion { // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.Companion|null[0]
-        final val $childSerializers // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.Companion.$childSerializers|{}$childSerializers[0]
-
         final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto> // dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto.Companion.serializer|serializer(){}[0]
     }
 }
 
 final class dev.webauthn.serialization/RegistrationResponseDto { // dev.webauthn.serialization/RegistrationResponseDto|null[0]
-    constructor <init>(kotlin/String, kotlin/String, dev.webauthn.serialization/RegistrationResponsePayloadDto, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...) // dev.webauthn.serialization/RegistrationResponseDto.<init>|<init>(kotlin.String;kotlin.String;dev.webauthn.serialization.RegistrationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+    constructor <init>(kotlin/String, kotlin/String, dev.webauthn.serialization/RegistrationResponsePayloadDto, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ..., kotlin/String? = ...) // dev.webauthn.serialization/RegistrationResponseDto.<init>|<init>(kotlin.String;kotlin.String;dev.webauthn.serialization.RegistrationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?;kotlin.String?){}[0]
 
     final val authenticatorAttachment // dev.webauthn.serialization/RegistrationResponseDto.authenticatorAttachment|{}authenticatorAttachment[0]
         final fun <get-authenticatorAttachment>(): kotlin/String? // dev.webauthn.serialization/RegistrationResponseDto.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
@@ -501,13 +502,16 @@ final class dev.webauthn.serialization/RegistrationResponseDto { // dev.webauthn
         final fun <get-rawId>(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.rawId.<get-rawId>|<get-rawId>(){}[0]
     final val response // dev.webauthn.serialization/RegistrationResponseDto.response|{}response[0]
         final fun <get-response>(): dev.webauthn.serialization/RegistrationResponsePayloadDto // dev.webauthn.serialization/RegistrationResponseDto.response.<get-response>|<get-response>(){}[0]
+    final val type // dev.webauthn.serialization/RegistrationResponseDto.type|{}type[0]
+        final fun <get-type>(): kotlin/String? // dev.webauthn.serialization/RegistrationResponseDto.type.<get-type>|<get-type>(){}[0]
 
     final fun component1(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.component1|component1(){}[0]
     final fun component2(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.component2|component2(){}[0]
     final fun component3(): dev.webauthn.serialization/RegistrationResponsePayloadDto // dev.webauthn.serialization/RegistrationResponseDto.component3|component3(){}[0]
     final fun component4(): kotlin/String? // dev.webauthn.serialization/RegistrationResponseDto.component4|component4(){}[0]
     final fun component5(): dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? // dev.webauthn.serialization/RegistrationResponseDto.component5|component5(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/RegistrationResponsePayloadDto = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ...): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/RegistrationResponseDto.copy|copy(kotlin.String;kotlin.String;dev.webauthn.serialization.RegistrationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?){}[0]
+    final fun component6(): kotlin/String? // dev.webauthn.serialization/RegistrationResponseDto.component6|component6(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/RegistrationResponsePayloadDto = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto? = ..., kotlin/String? = ...): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/RegistrationResponseDto.copy|copy(kotlin.String;kotlin.String;dev.webauthn.serialization.RegistrationResponsePayloadDto;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto?;kotlin.String?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/RegistrationResponseDto.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.serialization/RegistrationResponseDto.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.serialization/RegistrationResponseDto.toString|toString(){}[0]

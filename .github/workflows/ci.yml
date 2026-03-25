@@ -118,3 +118,5 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Publish Preflight
         run: ./gradlew publishToMavenLocal --stacktrace
+      - name: Published Consumer Smoke Check
+        run: bash tools/agent/check-published-consumer-smoke.sh

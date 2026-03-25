@@ -88,6 +88,7 @@ tools/agent/quality-gate.sh --mode strict --scope full --block true
 
 ```bash
 ./gradlew apiCheck publishToMavenLocal --stacktrace
+bash tools/agent/check-published-consumer-smoke.sh
 ```
 
 3. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`.

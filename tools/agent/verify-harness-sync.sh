@@ -25,6 +25,7 @@ required_files=(
   ".gemini/rules/01-core-rule.md"
   ".gemini/workflows/fast-pr-check.md"
   "tools/agent/quality-gate.sh"
+  "tools/agent/check-published-consumer-smoke.sh"
   "tools/agent/changed-modules.sh"
   "tools/agent/spec-trace-check.sh"
   "tools/agent/context-pack.sh"

@@ -35,6 +35,8 @@ flowchart LR
 ## Pitfalls and limits
 
 - Mapper validation is strict by design; malformed wire data should be handled as untrusted input.
+- Canonical response DTO mapping emits standards-shaped WebAuthn response JSON fields (`type = "public-key"` and `clientExtensionResults`, including empty extension objects when no outputs are present).
+- `allowCredentials: null` is accepted only as a compatibility decode shim and normalized to an empty list; canonical JSON should still treat `allowCredentials` as an optional sequence (not `null`).
 - Keep model and mapper versions aligned (BOM recommended).
 
 ## Status

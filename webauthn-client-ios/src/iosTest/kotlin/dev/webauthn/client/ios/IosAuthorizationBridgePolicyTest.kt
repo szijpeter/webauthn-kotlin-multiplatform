@@ -1,6 +1,7 @@
 package dev.webauthn.client.ios
 
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
+import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.PrfExtensionInput
 import kotlin.test.Test
@@ -12,6 +13,45 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class IosAuthorizationBridgePolicyTest {
+    @Test
+    fun includesPlatformRegistration_whenAttachmentIsNull() {
+        assertTrue(
+            shouldIncludePlatformRegistrationRequest(
+                authenticatorAttachment = null,
+            ),
+        )
+    }
+
+    @Test
+    fun excludesSecurityKeyRegistration_whenAttachmentIsNull() {
+        assertFalse(
+            shouldIncludeSecurityKeyRegistrationRequest(
+                authenticatorAttachment = null,
+                iosMajorVersion = 18,
+            ),
+        )
+    }
+
+    @Test
+    fun includesSecurityKeyRegistration_whenAttachmentIsCrossPlatform_andRuntimeSupportsIt() {
+        assertTrue(
+            shouldIncludeSecurityKeyRegistrationRequest(
+                authenticatorAttachment = AuthenticatorAttachment.CROSS_PLATFORM,
+                iosMajorVersion = 18,
+            ),
+        )
+    }
+
+    @Test
+    fun excludesSecurityKeyRegistration_whenAttachmentIsCrossPlatform_andRuntimeIsTooOld() {
+        assertFalse(
+            shouldIncludeSecurityKeyRegistrationRequest(
+                authenticatorAttachment = AuthenticatorAttachment.CROSS_PLATFORM,
+                iosMajorVersion = 14,
+            ),
+        )
+    }
+
     @Test
     fun includesSecurityKeyRequest_whenPrfNotRequested_andRuntimeSupportsSecurityKey() {
         assertTrue(

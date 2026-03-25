@@ -265,4 +265,20 @@ class AndroidPasskeyClientTest {
         assertTrue(failure.error is PasskeyClientError.Platform)
         assertTrue(failure.error.message.contains("Unexpected credential type"))
     }
+
+    @Test
+    fun mapPlatformError_appends_rp_id_troubleshooting_hint_for_known_validation_failure() {
+        val bridge = AndroidPasskeyPlatformBridge(
+            context = mockk(relaxed = true),
+            credentialManager = mockk(relaxed = true),
+        )
+
+        val error = bridge.mapPlatformError(
+            IllegalStateException("RP ID cannot be validated"),
+        )
+
+        assertTrue(error is PasskeyClientError.Platform)
+        assertTrue(error.message.contains("assetlinks.json"))
+        assertTrue(error.message.contains("SHA-256"))
+    }
 }

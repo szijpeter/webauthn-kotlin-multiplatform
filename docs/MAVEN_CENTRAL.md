@@ -66,6 +66,7 @@ Before a release or any publishing change:
 tools/agent/quality-gate.sh --mode strict --scope full --block true
 ./gradlew apiCheck --stacktrace
 ./gradlew publishToMavenLocal --stacktrace
+bash tools/agent/check-published-consumer-smoke.sh
 ```
 
 ## Workflow
@@ -86,7 +87,7 @@ Guardrails:
 
 ## Release Runbook
 
-1. Ensure PR CI is green, including `apiCheck` and `publishToMavenLocal` preflight.
+1. Ensure PR CI is green, including `apiCheck`, `publishToMavenLocal` preflight, and `check-published-consumer-smoke`.
 2. Set `VERSION_NAME=x.y.z` or pass `version_name` to the workflow.
 3. Trigger the `Publish` workflow with `release_mode=publish-and-release`.
 4. Verify Central Portal status and artifact resolution.

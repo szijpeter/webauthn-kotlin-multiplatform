@@ -56,6 +56,8 @@ class JsonPasskeyClientTest {
         val result = jsonClient.createCredentialJson(requestJson)
 
         assertTrue(result is PasskeyResult.Success)
+        assertTrue(result.value.contains("\"type\":\"public-key\""))
+        assertTrue(result.value.contains("\"clientExtensionResults\":{}"))
         val decoded = mapper.decodeRegistrationResponseOrThrowPlatform(result.value)
         assertEquals(registrationResponse.credentialId.value.encoded(), decoded.credentialId.value.encoded())
     }
@@ -73,6 +75,52 @@ class JsonPasskeyClientTest {
 
         assertTrue(result is PasskeyResult.Failure)
         assertTrue(result.error is PasskeyClientError.UserCancelled)
+    }
+
+    @Test
+    fun getAssertionJson_returns_normalized_response_json() = runTest {
+        val authenticationResponse = mapper.decodeAuthenticationResponseOrThrowPlatform(
+            """
+            {
+              "id": "MzMzMzMzMzMzMzMzMzMzMw",
+              "rawId": "MzMzMzMzMzMzMzMzMzMzMw",
+              "response": {
+                "clientDataJSON": "AQID",
+                "authenticatorData": "REREREREREREREREREREREREREREREREREREREREREQFAAAAKg",
+                "signature": "CQkJ"
+              }
+            }
+            """.trimIndent(),
+        )
+        val jsonClient = DefaultJsonPasskeyClient(
+            passkeyClient = FakePasskeyClient(assertionResult = PasskeyResult.Success(authenticationResponse)),
+            jsonMapper = mapper,
+        )
+        val requestJson = mapper.encodeAssertionOptionsOrThrowInvalid(validRequestOptions())
+
+        val result = jsonClient.getAssertionJson(requestJson)
+
+        assertTrue(result is PasskeyResult.Success)
+        assertTrue(result.value.contains("\"type\":\"public-key\""))
+        assertTrue(result.value.contains("\"clientExtensionResults\":{}"))
+        val decoded = mapper.decodeAuthenticationResponseOrThrowPlatform(result.value)
+        assertEquals(authenticationResponse.credentialId.value.encoded(), decoded.credentialId.value.encoded())
+    }
+
+    @Test
+    fun decodeAssertionOptionsOrThrowInvalid_acceptsNullAllowCredentials() {
+        val payload = """
+            {
+              "challenge": "${validRequestOptions().challenge.value.encoded()}",
+              "rpId": "example.com",
+              "allowCredentials": null,
+              "userVerification": "preferred"
+            }
+        """.trimIndent()
+
+        val options = mapper.decodeAssertionOptionsOrThrowInvalid(payload)
+
+        assertTrue(options.allowCredentials.isEmpty())
     }
 
     private class FakePasskeyClient(

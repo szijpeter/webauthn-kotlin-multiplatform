@@ -29,6 +29,10 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 
+private const val RP_ID_VALIDATION_HINT =
+    "Troubleshooting: verify RP ID/domain alignment, serve /.well-known/assetlinks.json over HTTPS, " +
+        "and confirm your Android package name plus signing SHA-256 fingerprint match that file."
+
 /**
  * Android `CredentialManager` backed [PasskeyClient] implementation.
  *
@@ -92,8 +96,13 @@ internal class AndroidPasskeyPlatformBridge(
         is CreateCredentialCancellationException,
         is GetCredentialCancellationException -> PasskeyClientError.UserCancelled()
         is NoCredentialException -> PasskeyClientError.Platform("No credentials found")
-        is IllegalArgumentException -> PasskeyClientError.InvalidOptions(throwable.message ?: "Invalid options")
-        else -> PasskeyClientError.Platform(throwable.message ?: "Unknown platform error", throwable)
+        is IllegalArgumentException -> PasskeyClientError.InvalidOptions(
+            enrichRpIdValidationMessage(throwable.message ?: "Invalid options"),
+        )
+        else -> PasskeyClientError.Platform(
+            enrichRpIdValidationMessage(throwable.message ?: "Unknown platform error"),
+            throwable,
+        )
     }
 
     override suspend fun capabilities(): PasskeyCapabilities {
@@ -132,4 +141,20 @@ internal class AndroidPasskeyPlatformBridge(
         val responseJson = extractPayload(platformResponse)
         return decodePayload(responseJson)
     }
+}
+
+private fun enrichRpIdValidationMessage(message: String): String {
+    if (!looksLikeRpIdValidationFailure(message)) {
+        return message
+    }
+    return "$message. $RP_ID_VALIDATION_HINT"
+}
+
+private fun looksLikeRpIdValidationFailure(message: String): Boolean {
+    val normalized = message.lowercase()
+    val mentionsRpId = normalized.contains("rp id") || normalized.contains("rpid")
+    val mentionsValidationFailure = normalized.contains("cannot be validated") ||
+        normalized.contains("can't be validated") ||
+        normalized.contains("cannot be verified")
+    return mentionsRpId && mentionsValidationFailure
 }

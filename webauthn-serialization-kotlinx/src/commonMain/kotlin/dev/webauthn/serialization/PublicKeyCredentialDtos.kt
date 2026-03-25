@@ -4,6 +4,11 @@ package dev.webauthn.serialization
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonTransformingSerializer
 
 /**
  * DTO for the /.well-known/webauthn file used by the Related Origins extension.
@@ -40,7 +45,9 @@ public data class PublicKeyCredentialRequestOptionsDto(
     @SerialName("challenge") public val challenge: String,
     @SerialName("rpId") public val rpId: String? = null,
     @SerialName("timeout") public val timeoutMs: Long? = null,
-    @SerialName("allowCredentials") public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
+    @SerialName("allowCredentials")
+    @Serializable(with = NullAsEmptyCredentialDescriptorListSerializer::class)
+    public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
     @SerialName("userVerification") public val userVerification: String = "preferred",
     @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
@@ -100,6 +107,7 @@ public data class RegistrationResponseDto(
     @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("clientExtensionResults")
     public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
+    @SerialName("type") public val type: String? = null,
 )
 
 @Serializable
@@ -116,6 +124,7 @@ public data class AuthenticationResponseDto(
     @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
     @SerialName("clientExtensionResults")
     public val clientExtensionResults: AuthenticationExtensionsClientOutputsDto? = null,
+    @SerialName("type") public val type: String? = null,
 )
 
 @Serializable
@@ -150,3 +159,12 @@ public data class LargeBlobExtensionOutputDto(
     @SerialName("blob") public val blob: String? = null,
     @SerialName("written") public val written: Boolean? = null,
 )
+
+internal object NullAsEmptyCredentialDescriptorListSerializer :
+    JsonTransformingSerializer<List<PublicKeyCredentialDescriptorDto>>(
+        ListSerializer(PublicKeyCredentialDescriptorDto.serializer()),
+    ) {
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        return if (element is JsonNull) JsonArray(emptyList()) else element
+    }
+}

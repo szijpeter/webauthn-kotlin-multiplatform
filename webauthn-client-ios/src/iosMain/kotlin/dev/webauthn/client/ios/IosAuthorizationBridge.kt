@@ -1,4 +1,4 @@
-@file:Suppress("MaxLineLength")
+@file:Suppress("MaxLineLength", "TooManyFunctions")
 
 package dev.webauthn.client.ios
 
@@ -86,8 +86,12 @@ internal class AuthenticationServicesAuthorizationBridge(
                 val requests = mutableListOf<Any>()
 
                 val attachment = options.authenticatorAttachment
-                val usePlatform = attachment == null || attachment == AuthenticatorAttachment.PLATFORM
-                val useSecurityKey = attachment == null || attachment == AuthenticatorAttachment.CROSS_PLATFORM
+                val iosMajorVersion = currentIosMajorVersion()
+                val usePlatform = shouldIncludePlatformRegistrationRequest(attachment)
+                val useSecurityKey = shouldIncludeSecurityKeyRegistrationRequest(
+                    authenticatorAttachment = attachment,
+                    iosMajorVersion = iosMajorVersion,
+                )
 
                 if (usePlatform) {
                     val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
@@ -101,9 +105,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     requests.add(request)
                 }
 
-                if (useSecurityKey &&
-                    NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion.toInt() } >= MIN_SECURITY_KEY_IOS_VERSION
-                ) {
+                if (useSecurityKey) {
                     val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rp.id.value)
                     val request = provider.createCredentialRegistrationRequestWithChallenge(
                         challenge = options.challenge.value.bytes().toNSData(),
@@ -315,6 +317,20 @@ internal fun shouldIncludeSecurityKeyAssertionRequest(
     iosMajorVersion: Int,
 ): Boolean {
     return !prfRequested && iosMajorVersion >= MIN_SECURITY_KEY_IOS_VERSION
+}
+
+internal fun shouldIncludePlatformRegistrationRequest(
+    authenticatorAttachment: AuthenticatorAttachment?,
+): Boolean {
+    return authenticatorAttachment == null || authenticatorAttachment == AuthenticatorAttachment.PLATFORM
+}
+
+internal fun shouldIncludeSecurityKeyRegistrationRequest(
+    authenticatorAttachment: AuthenticatorAttachment?,
+    iosMajorVersion: Int,
+): Boolean {
+    return authenticatorAttachment == AuthenticatorAttachment.CROSS_PLATFORM &&
+        iosMajorVersion >= MIN_SECURITY_KEY_IOS_VERSION
 }
 
 internal fun isPrfRequested(prfInput: PrfAssertionInputShape?): Boolean {

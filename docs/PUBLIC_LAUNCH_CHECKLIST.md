@@ -16,6 +16,7 @@ Use this checklist when moving from private to public operation.
    - `tools/agent/quality-gate.sh --mode strict --scope full --block true`
    - `./gradlew apiCheck --stacktrace`
    - `./gradlew publishToMavenLocal --stacktrace`
+   - `bash tools/agent/check-published-consumer-smoke.sh`
 6. Demo/sample runtime security defaults are explicit (sample backend attestation mode defaults to `STRICT`; relaxed `NONE` mode is opt-in only).
 7. If a temporary release execution-map doc is active, keep it current with scope/sequence changes.
 
