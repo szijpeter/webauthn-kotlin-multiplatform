@@ -12,7 +12,7 @@ on:
           - publish-only
           - publish-and-release
       version_name:
-        description: "Optional VERSION_NAME override (for example 0.1.0)"
+        description: "Optional VERSION_NAME override (for example x.y.z)"
         required: false
         type: string
 

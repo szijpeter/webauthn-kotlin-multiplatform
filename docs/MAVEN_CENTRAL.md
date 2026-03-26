@@ -97,4 +97,4 @@ Guardrails:
 
 ## Current State
 
-First public release is complete: `0.1.0` was published on 2026-03-12.
+Public releases are live on Maven Central; use the root README badge or GitHub Releases for the latest coordinated release version.

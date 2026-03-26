@@ -181,7 +181,7 @@ dependencies {
 }
 ```
 
-Published to Maven Central (first public release: `0.1.0`). Maintainers can still validate publication locally with:
+Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
