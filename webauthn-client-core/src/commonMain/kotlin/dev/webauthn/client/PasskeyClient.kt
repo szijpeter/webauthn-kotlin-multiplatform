@@ -2,8 +2,7 @@
 
 package dev.webauthn.client
 
-import at.asitplus.KmmResult
-import at.asitplus.nonFatalOrThrow
+import dev.webauthn.runtime.suspendCatchingNonCancellation
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -99,8 +98,12 @@ public class DefaultPasskeyClient(
     }
 
     override suspend fun capabilities(): PasskeyCapabilities {
-        return suspendCatching { bridge.capabilities() }
-            .getOrElse { PasskeyCapabilities() }
+        return suspendCatchingNonCancellation { bridge.capabilities() }.fold(
+            onSuccess = { it },
+            onFailure = { _ ->
+                PasskeyCapabilities()
+            },
+        )
     }
 
     private suspend fun <TOptions, TResult> runTypedCeremony(
@@ -115,7 +118,7 @@ public class DefaultPasskeyClient(
     }
 
     private suspend fun <T> runWithErrorMapping(block: suspend () -> T): PasskeyResult<T> {
-        return suspendCatching(block).fold(
+        return suspendCatchingNonCancellation(block).fold(
             onSuccess = { PasskeyResult.Success(it) },
             onFailure = { error ->
                 when (error) {
@@ -136,14 +139,6 @@ public class DefaultPasskeyClient(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
-    private suspend fun <T> suspendCatching(block: suspend () -> T): KmmResult<T> {
-        return try {
-            KmmResult(block())
-        } catch (error: Throwable) {
-            KmmResult(error.nonFatalOrThrow())
-        }
-    }
 }
 
 private class InvalidOptionsException(

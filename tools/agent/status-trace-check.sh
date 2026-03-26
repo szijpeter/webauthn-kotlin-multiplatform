@@ -56,6 +56,7 @@ for file in "${changed_files[@]}"; do
     [[ -z "$file" ]] && continue
 
     case "$file" in
+        webauthn-cbor-core/*|\
         webauthn-model/*|\
         webauthn-core/*|\
         webauthn-serialization-kotlinx/*|\

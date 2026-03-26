@@ -34,8 +34,9 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 Published:
 
 - `platform:bom` as `webauthn-bom`
-- `webauthn-cbor-internal`
+- `webauthn-cbor-core`
 - `webauthn-model`
+- `webauthn-runtime-core`
 - `webauthn-serialization-kotlinx`
 - `webauthn-core`
 - `webauthn-crypto-api`
@@ -69,6 +70,7 @@ Not published:
 
 Core-critical:
 
+- `webauthn-cbor-core`
 - `webauthn-model`
 - `webauthn-core`
 - `webauthn-serialization-kotlinx`
@@ -82,6 +84,7 @@ Adapter/transport/platform:
 - `webauthn-server-store-exposed`
 - `webauthn-network-ktor-client`
 - `webauthn-client-core`
+- `webauthn-runtime-core`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
 - `webauthn-client-android`
@@ -104,6 +107,7 @@ Reference/samples:
 2. Keep `ValidationResult` in validation-heavy paths that intentionally aggregate multiple field-level errors.
 3. Public API boundaries must use project domain result models (`PasskeyResult`, `ValidationResult`).
 4. `KmmResult` usage must not leak into cross-module public contracts.
+5. Treat `CancellationException` as coroutine control flow: rethrow it immediately at suspend boundaries before mapping any domain error/result.
 
 ## Standards Source Policy
 

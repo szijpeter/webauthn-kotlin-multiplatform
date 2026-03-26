@@ -80,6 +80,7 @@ flowchart TB
     subgraph Layer2[Layer 2: Validation and Serialization]
         C[webauthn-core]
         S[webauthn-serialization-kotlinx]
+        RUNTIME[webauthn-runtime-core]
     end
 
     subgraph Layer3[Layer 3: Crypto Abstractions and Backends]
@@ -115,6 +116,9 @@ flowchart TB
     MDS --> API
 
     M --> CCORE
+    RUNTIME --> CCORE
+    RUNTIME --> CPRF
+    RUNTIME --> NET
     CCORE --> CJSON
     CCORE --> CANDROID
     CCORE --> CIOS
@@ -127,6 +131,7 @@ flowchart TB
 
 Focus modules for this documentation round:
 
+- [`webauthn-runtime-core`](./webauthn-runtime-core/README.md): shared coroutine/failure boundary helpers for adapters.
 - [`webauthn-model`](./webauthn-model/README.md): typed protocol/value contracts.
 - [`webauthn-core`](./webauthn-core/README.md): standards-first ceremony validation.
 - [`webauthn-client-core`](./webauthn-client-core/README.md): shared passkey orchestration and controller flows.
@@ -215,7 +220,9 @@ Start with:
 | Module | Who it is for |
 |---|---|
 | [`platform:bom`](./platform/bom/README.md) | Consumers who want aligned versions across published artifacts |
+| [`webauthn-cbor-core`](./webauthn-cbor-core/README.md) | Parser/crypto modules needing strict low-level CBOR byte scanning primitives |
 | [`webauthn-model`](./webauthn-model/README.md) | Teams that want typed WebAuthn models and value wrappers |
+| [`webauthn-runtime-core`](./webauthn-runtime-core/README.md) | Shared coroutine-safe error/cancellation boundary helpers for adapter modules |
 | [`webauthn-serialization-kotlinx`](./webauthn-serialization-kotlinx/README.md) | Teams mapping JSON/CBOR DTOs to typed models |
 | [`webauthn-core`](./webauthn-core/README.md) | Teams validating ceremonies and authenticator data |
 | [`webauthn-crypto-api`](./webauthn-crypto-api/README.md) | Teams plugging crypto/attestation implementations into validation and server flows |

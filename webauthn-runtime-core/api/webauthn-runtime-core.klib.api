@@ -1,0 +1,11 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-runtime-core>
+final fun (kotlin/Throwable).dev.webauthn.runtime/rethrowCancellation() // dev.webauthn.runtime/rethrowCancellation|rethrowCancellation@kotlin.Throwable(){}[0]
+final fun (kotlin/Throwable).dev.webauthn.runtime/rethrowCancellationOrFatal(): kotlin/Throwable // dev.webauthn.runtime/rethrowCancellationOrFatal|rethrowCancellationOrFatal@kotlin.Throwable(){}[0]
+final suspend fun <#A: kotlin/Any?> dev.webauthn.runtime/suspendCatchingNonCancellation(kotlin.coroutines/SuspendFunction0<#A>): kotlin/Result<#A> // dev.webauthn.runtime/suspendCatchingNonCancellation|suspendCatchingNonCancellation(kotlin.coroutines.SuspendFunction0<0:0>){0§<kotlin.Any?>}[0]

@@ -7,6 +7,9 @@ This BOM aligns versions across published WebAuthn Kotlin Multiplatform artifact
 - A single platform dependency: `io.github.szijpeter:webauthn-bom:<version>`
 - Version alignment for server, client, crypto, transport, and adapter modules
 - Safer upgrades when you consume multiple WebAuthn artifacts together
+- Alignment for shared runtime/foundation artifacts used across modules, including:
+  - `io.github.szijpeter:webauthn-cbor-core`
+  - `io.github.szijpeter:webauthn-runtime-core`
 
 ## When to use
 

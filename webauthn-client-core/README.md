@@ -82,9 +82,12 @@ Usage notes:
 - `challengeAsBase64Url` is echoed client data; server must verify it against trusted challenge state.
 - Reuse a single controller per screen/session scope to avoid overlapping ceremonies.
 - Prefer mapping backend rejection into actionable UX rather than generic transport failures.
+- `DefaultPasskeyClient` preserves coroutine cancellation (it is rethrown and never mapped to `PasskeyResult.Failure`), while deterministic invalid-options and platform failures are returned as `PasskeyResult.Failure`.
+- Platform-level "user canceled prompt" remains a domain error (`PasskeyClientError.UserCancelled`) when provided by platform bridge mapping.
 
 ## How it fits in the system
 
+- Uses `webauthn-runtime-core` for shared coroutine-boundary cancellation/failure handling helpers.
 - Foundation for `webauthn-client-compose`, `webauthn-client-json-core`, and platform client modules.
 - Pairs naturally with `webauthn-network-ktor-client` for default backend contract integration.
 

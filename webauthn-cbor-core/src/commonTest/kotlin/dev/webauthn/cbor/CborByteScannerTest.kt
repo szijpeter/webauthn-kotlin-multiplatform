@@ -1,4 +1,4 @@
-package dev.webauthn.internal.cbor
+package dev.webauthn.cbor
 
 import kotlin.test.Test
 import kotlin.test.assertFailsWith

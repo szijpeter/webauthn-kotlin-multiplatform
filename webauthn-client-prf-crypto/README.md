@@ -85,10 +85,12 @@ Important usage notes:
 - Persist salts in caller-owned durable storage; this module does not manage storage.
 - Use a stable context string per encryption domain.
 - Clear sessions on logout/app background teardown/flow completion.
+- Coroutine cancellation is propagated unchanged; only non-cancellation failures are mapped to `PasskeyResult.Failure`.
 
 ## How it fits in the system
 
 - Built on top of `webauthn-client-core` (`PasskeyClient` contract).
+- Uses `webauthn-runtime-core` coroutine-boundary helpers so cancellation propagation is consistent with other client adapters.
 - Complements `webauthn-client-compose` and platform modules when app-level encryption is required.
 - Independent from server-side crypto verification; this is client-side data protection utility.
 

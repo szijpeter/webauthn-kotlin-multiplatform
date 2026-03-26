@@ -13,7 +13,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":webauthn-cbor-internal"))
+                implementation(project(":webauthn-cbor-core"))
                 api(project(":webauthn-model"))
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)

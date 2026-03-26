@@ -23,8 +23,9 @@ includeBuild("build-logic")
 include(
     ":platform:bom",
     ":platform:constraints",
-    ":webauthn-cbor-internal",
+    ":webauthn-cbor-core",
     ":webauthn-model",
+    ":webauthn-runtime-core",
     ":webauthn-serialization-kotlinx",
     ":webauthn-core",
     ":webauthn-crypto-api",

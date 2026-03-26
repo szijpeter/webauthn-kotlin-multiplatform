@@ -1,0 +1,6 @@
+public final class dev/webauthn/runtime/CoroutineCancellationKt {
+	public static final fun rethrowCancellation (Ljava/lang/Throwable;)V
+	public static final fun rethrowCancellationOrFatal (Ljava/lang/Throwable;)Ljava/lang/Throwable;
+	public static final fun suspendCatchingNonCancellation (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

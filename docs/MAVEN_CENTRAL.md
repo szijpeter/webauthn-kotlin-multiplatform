@@ -19,8 +19,9 @@ Examples:
 
 Published:
 
-- `webauthn-cbor-internal`
+- `webauthn-cbor-core`
 - `webauthn-model`
+- `webauthn-runtime-core`
 - `webauthn-serialization-kotlinx`
 - `webauthn-core`
 - `webauthn-crypto-api`

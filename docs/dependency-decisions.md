@@ -50,6 +50,9 @@ This keeps core/server contracts stable and independent from any single crypto v
 `at.asitplus:kmmresult` is approved for targeted internal pipeline ergonomics.
 - **Role:** Helps internal sequential success/failure mapping (`catching`, `.transform`) where a single failure cause is expected.
 - **Rule:** `KmmResult` remains an internal implementation detail and must never be exposed in public API contracts. External callers depend on domain-specific result wrappers (for example `PasskeyResult`, `ValidationResult`).
+- **Coroutine cancellation rule:** `CancellationException` is control flow, not a domain failure. Rethrow it at suspend boundaries before mapping to `PasskeyResult`/`ValidationResult`.
+- **Standard helper pattern:** use `rethrowCancellationOrFatal(...)` (which applies `nonFatalOrThrow` + cancellation rethrow) for throwable paths, and `suspendCatchingNonCancellation(...)` when wrapping suspend workflows.
+- **Shared module:** `webauthn-runtime-core` owns these coroutine-boundary helpers for client/network adapter reuse.
 
 ## Client Runtime Dependencies
 
