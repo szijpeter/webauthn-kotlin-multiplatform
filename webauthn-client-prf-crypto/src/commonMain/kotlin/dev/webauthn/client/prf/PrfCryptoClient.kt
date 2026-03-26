@@ -5,12 +5,13 @@ package dev.webauthn.client.prf
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyResult
+import dev.webauthn.runtime.rethrowCancellationOrFatal
+import dev.webauthn.runtime.suspendCatchingNonCancellation
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import kotlinx.coroutines.CancellationException
 
 @ExperimentalWebAuthnL3Api
 /** Result bundle for a PRF-enabled assertion and its derived crypto session. */
@@ -33,12 +34,12 @@ public class PrfCryptoClient(
         outputSelection: PrfOutputSelection = PrfOutputSelection.FIRST,
     ): PasskeyResult<PrfAuthenticationResult> {
         val optionsWithPrf = PrfCrypto.withPrfEvaluation(options, salts)
-        val assertion = runCatching { passkeyClient.getAssertion(optionsWithPrf) }
+        val assertion = suspendCatchingNonCancellation { passkeyClient.getAssertion(optionsWithPrf) }
             .getOrElse { error -> return error.toFailure() }
         return when (assertion) {
             is PasskeyResult.Failure -> assertion
             is PasskeyResult.Success -> {
-                runCatching {
+                suspendCatchingNonCancellation {
                     val results = PrfCrypto.requirePrfResults(assertion.value)
                     val session = PrfCrypto.createSession(
                         prfResults = results,
@@ -61,21 +62,21 @@ public class PrfCryptoClient(
 }
 
 private fun Throwable.toFailure(): PasskeyResult.Failure {
-    if (this is CancellationException) throw this
-    return when (this) {
+    val nonFatal = rethrowCancellationOrFatal()
+    return when (nonFatal) {
         is MissingPrfOutputException -> {
-            PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message ?: "Missing PRF output"))
+            PasskeyResult.Failure(PasskeyClientError.InvalidOptions(nonFatal.message ?: "Missing PRF output"))
         }
 
         is IllegalArgumentException -> {
-            PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message ?: "Invalid PRF options"))
+            PasskeyResult.Failure(PasskeyClientError.InvalidOptions(nonFatal.message ?: "Invalid PRF options"))
         }
 
         else -> {
             PasskeyResult.Failure(
                 PasskeyClientError.Platform(
-                    message = message ?: "PRF crypto operation failed",
-                    cause = this,
+                    message = nonFatal.message ?: "PRF crypto operation failed",
+                    cause = nonFatal,
                 ),
             )
         }

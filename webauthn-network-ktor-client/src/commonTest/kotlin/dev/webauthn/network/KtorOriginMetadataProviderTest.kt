@@ -10,9 +10,11 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class KtorOriginMetadataProviderTest {
@@ -59,5 +61,41 @@ class KtorOriginMetadataProviderTest {
         val origins = provider.getRelatedOrigins(Origin.parseOrThrow("https://example.com"))
 
         assertTrue(origins.isEmpty())
+    }
+
+    @Test
+    fun handlesParseFailureAsUnavailable() = runTest {
+        val mockEngine = MockEngine { _ ->
+            respond(
+                content = """{"origins":"invalid-shape"}""",
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+            )
+        }
+
+        val client = HttpClient(mockEngine) {
+            install(ContentNegotiation) { json() }
+        }
+
+        val provider = KtorOriginMetadataProvider(client)
+        val origins = provider.getRelatedOrigins(Origin.parseOrThrow("https://example.com"))
+
+        assertTrue(origins.isEmpty())
+    }
+
+    @Test
+    fun rethrowsCoroutineCancellation() = runTest {
+        val mockEngine = MockEngine { _ ->
+            throw CancellationException("cancelled")
+        }
+
+        val client = HttpClient(mockEngine) {
+            install(ContentNegotiation) { json() }
+        }
+
+        val provider = KtorOriginMetadataProvider(client)
+        assertFailsWith<CancellationException> {
+            provider.getRelatedOrigins(Origin.parseOrThrow("https://example.com"))
+        }
     }
 }

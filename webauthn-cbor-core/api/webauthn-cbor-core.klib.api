@@ -1,0 +1,51 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-cbor-core>
+final class dev.webauthn.cbor/CborHeader { // dev.webauthn.cbor/CborHeader|null[0]
+    constructor <init>(kotlin/Int, kotlin/Int, kotlin/Long?, kotlin/Int) // dev.webauthn.cbor/CborHeader.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Long?;kotlin.Int){}[0]
+
+    final val additionalInfo // dev.webauthn.cbor/CborHeader.additionalInfo|{}additionalInfo[0]
+        final fun <get-additionalInfo>(): kotlin/Int // dev.webauthn.cbor/CborHeader.additionalInfo.<get-additionalInfo>|<get-additionalInfo>(){}[0]
+    final val length // dev.webauthn.cbor/CborHeader.length|{}length[0]
+        final fun <get-length>(): kotlin/Long? // dev.webauthn.cbor/CborHeader.length.<get-length>|<get-length>(){}[0]
+    final val majorType // dev.webauthn.cbor/CborHeader.majorType|{}majorType[0]
+        final fun <get-majorType>(): kotlin/Int // dev.webauthn.cbor/CborHeader.majorType.<get-majorType>|<get-majorType>(){}[0]
+    final val nextOffset // dev.webauthn.cbor/CborHeader.nextOffset|{}nextOffset[0]
+        final fun <get-nextOffset>(): kotlin/Int // dev.webauthn.cbor/CborHeader.nextOffset.<get-nextOffset>|<get-nextOffset>(){}[0]
+
+    final fun component1(): kotlin/Int // dev.webauthn.cbor/CborHeader.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // dev.webauthn.cbor/CborHeader.component2|component2(){}[0]
+    final fun component3(): kotlin/Long? // dev.webauthn.cbor/CborHeader.component3|component3(){}[0]
+    final fun component4(): kotlin/Int // dev.webauthn.cbor/CborHeader.component4|component4(){}[0]
+    final fun copy(kotlin/Int = ..., kotlin/Int = ..., kotlin/Long? = ..., kotlin/Int = ...): dev.webauthn.cbor/CborHeader // dev.webauthn.cbor/CborHeader.copy|copy(kotlin.Int;kotlin.Int;kotlin.Long?;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.cbor/CborHeader.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.cbor/CborHeader.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.cbor/CborHeader.toString|toString(){}[0]
+}
+
+final const val dev.webauthn.cbor/MAJOR_ARRAY // dev.webauthn.cbor/MAJOR_ARRAY|{}MAJOR_ARRAY[0]
+    final fun <get-MAJOR_ARRAY>(): kotlin/Int // dev.webauthn.cbor/MAJOR_ARRAY.<get-MAJOR_ARRAY>|<get-MAJOR_ARRAY>(){}[0]
+final const val dev.webauthn.cbor/MAJOR_MAP // dev.webauthn.cbor/MAJOR_MAP|{}MAJOR_MAP[0]
+    final fun <get-MAJOR_MAP>(): kotlin/Int // dev.webauthn.cbor/MAJOR_MAP.<get-MAJOR_MAP>|<get-MAJOR_MAP>(){}[0]
+final const val dev.webauthn.cbor/MAJOR_NEGATIVE_INT // dev.webauthn.cbor/MAJOR_NEGATIVE_INT|{}MAJOR_NEGATIVE_INT[0]
+    final fun <get-MAJOR_NEGATIVE_INT>(): kotlin/Int // dev.webauthn.cbor/MAJOR_NEGATIVE_INT.<get-MAJOR_NEGATIVE_INT>|<get-MAJOR_NEGATIVE_INT>(){}[0]
+final const val dev.webauthn.cbor/MAJOR_SIMPLE_FLOAT // dev.webauthn.cbor/MAJOR_SIMPLE_FLOAT|{}MAJOR_SIMPLE_FLOAT[0]
+    final fun <get-MAJOR_SIMPLE_FLOAT>(): kotlin/Int // dev.webauthn.cbor/MAJOR_SIMPLE_FLOAT.<get-MAJOR_SIMPLE_FLOAT>|<get-MAJOR_SIMPLE_FLOAT>(){}[0]
+final const val dev.webauthn.cbor/MAJOR_TAG // dev.webauthn.cbor/MAJOR_TAG|{}MAJOR_TAG[0]
+    final fun <get-MAJOR_TAG>(): kotlin/Int // dev.webauthn.cbor/MAJOR_TAG.<get-MAJOR_TAG>|<get-MAJOR_TAG>(){}[0]
+final const val dev.webauthn.cbor/MAJOR_UNSIGNED_INT // dev.webauthn.cbor/MAJOR_UNSIGNED_INT|{}MAJOR_UNSIGNED_INT[0]
+    final fun <get-MAJOR_UNSIGNED_INT>(): kotlin/Int // dev.webauthn.cbor/MAJOR_UNSIGNED_INT.<get-MAJOR_UNSIGNED_INT>|<get-MAJOR_UNSIGNED_INT>(){}[0]
+
+final fun (kotlin/ByteArray).dev.webauthn.cbor/readUint16(kotlin/Int): kotlin/Int // dev.webauthn.cbor/readUint16|readUint16@kotlin.ByteArray(kotlin.Int){}[0]
+final fun (kotlin/ByteArray).dev.webauthn.cbor/readUint32(kotlin/Int): kotlin/Long // dev.webauthn.cbor/readUint32|readUint32@kotlin.ByteArray(kotlin.Int){}[0]
+final fun dev.webauthn.cbor/readCborBytes(kotlin/ByteArray, kotlin/Int): kotlin/Pair<kotlin/ByteArray, kotlin/Int>? // dev.webauthn.cbor/readCborBytes|readCborBytes(kotlin.ByteArray;kotlin.Int){}[0]
+final fun dev.webauthn.cbor/readCborHeader(kotlin/ByteArray, kotlin/Int): dev.webauthn.cbor/CborHeader? // dev.webauthn.cbor/readCborHeader|readCborHeader(kotlin.ByteArray;kotlin.Int){}[0]
+final fun dev.webauthn.cbor/readCborInt(kotlin/ByteArray, kotlin/Int): kotlin/Pair<kotlin/Long, kotlin/Int>? // dev.webauthn.cbor/readCborInt|readCborInt(kotlin.ByteArray;kotlin.Int){}[0]
+final fun dev.webauthn.cbor/readCborLength(kotlin/ByteArray, kotlin/Int, kotlin/Int, kotlin/Int): kotlin/Pair<kotlin/Long?, kotlin/Int>? // dev.webauthn.cbor/readCborLength|readCborLength(kotlin.ByteArray;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun dev.webauthn.cbor/readCborText(kotlin/ByteArray, kotlin/Int): kotlin/Pair<kotlin/String, kotlin/Int>? // dev.webauthn.cbor/readCborText|readCborText(kotlin.ByteArray;kotlin.Int){}[0]
+final fun dev.webauthn.cbor/skipCborItem(kotlin/ByteArray, kotlin/Int, kotlin/Int = ...): kotlin/Int? // dev.webauthn.cbor/skipCborItem|skipCborItem(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]

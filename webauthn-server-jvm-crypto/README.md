@@ -39,6 +39,7 @@ flowchart LR
 ## Pitfalls and limits
 
 - This module is JVM-specific and not a multiplatform crypto abstraction.
+- Attestation CBOR parsing depends on shared strict scanner primitives from `webauthn-cbor-core`.
 - If you need non-default trust policy, compose with custom `TrustAnchorSource` or verifier implementations.
 
 ## Status

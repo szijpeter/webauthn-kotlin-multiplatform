@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(project(":webauthn-crypto-api"))
-    implementation(project(":webauthn-cbor-internal"))
+    implementation(project(":webauthn-cbor-core"))
     implementation(project(":webauthn-model"))
     implementation(libs.signum.supreme.jvm)
     implementation(libs.signum.indispensable.cosef.jvm)

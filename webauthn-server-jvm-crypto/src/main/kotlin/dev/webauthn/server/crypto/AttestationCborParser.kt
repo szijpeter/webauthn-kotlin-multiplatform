@@ -1,12 +1,12 @@
 package dev.webauthn.server.crypto
 
-import dev.webauthn.internal.cbor.MAJOR_ARRAY
-import dev.webauthn.internal.cbor.MAJOR_MAP
-import dev.webauthn.internal.cbor.readCborBytes
-import dev.webauthn.internal.cbor.readCborHeader
-import dev.webauthn.internal.cbor.readCborInt
-import dev.webauthn.internal.cbor.readCborText
-import dev.webauthn.internal.cbor.skipCborItem
+import dev.webauthn.cbor.MAJOR_ARRAY
+import dev.webauthn.cbor.MAJOR_MAP
+import dev.webauthn.cbor.readCborBytes
+import dev.webauthn.cbor.readCborHeader
+import dev.webauthn.cbor.readCborInt
+import dev.webauthn.cbor.readCborText
+import dev.webauthn.cbor.skipCborItem
 
 /**
  * Shared CBOR parser for WebAuthn attestation objects.

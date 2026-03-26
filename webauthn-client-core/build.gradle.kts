@@ -12,7 +12,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":webauthn-model"))
-            implementation(libs.kmmresult)
+            implementation(project(":webauthn-runtime-core"))
             implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {

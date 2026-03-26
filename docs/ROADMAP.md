@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-03-18
+Last updated: 2026-03-26
 
 ## North-Star Exit Criteria
 
@@ -77,5 +77,5 @@ Definition of done:
 ## Active Priorities (Next 3)
 
 1. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
-2. Continue platform runtime edge hardening for lifecycle and error propagation (`P3-001`).
-3. Keep `kotlinx-serialization` pinned to `1.9.0` until Signum compatibility blocker [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved, then rerun captured vector checks during unpin.
+2. Keep `kotlinx-serialization` pinned to `1.9.0` until Signum compatibility blocker [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved, then rerun captured vector checks during unpin.
+3. TODO (deferred, non-blocking): add sample-app walkthrough recordings (backend + Android + iOS Compose hosts) for registration, sign-in, and PRF demo flow before broader outreach.

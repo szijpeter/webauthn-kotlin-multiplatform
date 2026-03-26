@@ -24,10 +24,13 @@ import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.UserHandle
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -78,7 +81,34 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
-    fun createCredential_maps_illegal_argument_to_invalid_options() = runTest {
+    fun getAssertion_maps_platform_user_cancel_without_treating_it_as_coroutine_cancellation() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                assertionAction = { throw IllegalStateException("platform canceled prompt") },
+                errorMapper = { PasskeyClientError.UserCancelled("cancelled by user prompt") },
+            ),
+        )
+
+        val result = client.getAssertion(
+            PublicKeyCredentialRequestOptions(
+                challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
+                rpId = RpId.parseOrThrow("example.com"),
+                allowCredentials = listOf(
+                    PublicKeyCredentialDescriptor(
+                        type = PublicKeyCredentialType.PUBLIC_KEY,
+                        id = CredentialId.fromBytes(byteArrayOf(1)),
+                    ),
+                ),
+            ),
+        )
+
+        val failure = assertIs<PasskeyResult.Failure>(result)
+        assertIs<PasskeyClientError.UserCancelled>(failure.error)
+        assertTrue(failure.error.message.contains("cancelled"))
+    }
+
+    @Test
+    fun createCredential_preserves_bridge_mapping_for_illegal_argument() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { throw IllegalArgumentException("bad options") },
@@ -89,18 +119,36 @@ class DefaultPasskeyClientTest {
         val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
+        assertTrue(result.error is PasskeyClientError.Platform)
+        assertTrue(result.error.message.contains("unexpected"))
+    }
+
+    @Test
+    fun createCredential_uses_bridge_invalid_options_message_for_illegal_argument() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createAction = { throw IllegalArgumentException("RP ID cannot be validated") },
+                errorMapper = { PasskeyClientError.InvalidOptions("RP ID cannot be validated. hint") },
+            ),
+        )
+
+        val result = client.createCredential(validCreationOptions())
+
+        assertTrue(result is PasskeyResult.Failure)
         assertTrue(result.error is PasskeyClientError.InvalidOptions)
-        assertTrue(result.error.message.contains("bad options"))
+        assertTrue(result.error.message.contains("hint"))
     }
 
     @Test
     fun capabilities_default_to_bridge_values() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
-                capabilities = PasskeyCapabilities(
-                    supportsPrf = true,
-                    platformVersionHints = listOf("test"),
-                ),
+                capabilitiesAction = {
+                    PasskeyCapabilities(
+                        supportsPrf = true,
+                        platformVersionHints = listOf("test"),
+                    )
+                },
             ),
         )
 
@@ -174,11 +222,72 @@ class DefaultPasskeyClientTest {
         assertContentEquals(byteArrayOf(4, 5, 6), extensions.largeBlob?.blob?.bytes())
     }
 
+    @Test
+    fun createCredential_propagates_cancellation_exception() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createAction = { throw CancellationException("cancelled") },
+            ),
+        )
+
+        assertFailsWith<CancellationException> {
+            client.createCredential(validCreationOptions())
+        }
+    }
+
+    @Test
+    fun getAssertion_propagates_cancellation_exception() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                assertionAction = { throw CancellationException("cancelled") },
+            ),
+        )
+
+        assertFailsWith<CancellationException> {
+            client.getAssertion(
+                PublicKeyCredentialRequestOptions(
+                    challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
+                    rpId = RpId.parseOrThrow("example.com"),
+                    allowCredentials = listOf(
+                        PublicKeyCredentialDescriptor(
+                            type = PublicKeyCredentialType.PUBLIC_KEY,
+                            id = CredentialId.fromBytes(byteArrayOf(1)),
+                        ),
+                    ),
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun capabilities_propagates_cancellation_exception() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                capabilitiesAction = { throw CancellationException("cancelled") },
+            ),
+        )
+
+        assertFailsWith<CancellationException> {
+            client.capabilities()
+        }
+    }
+
+    @Test
+    fun capabilities_returns_default_on_non_cancellation_failure() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                capabilitiesAction = { throw IllegalStateException("boom") },
+            ),
+        )
+
+        assertEquals(PasskeyCapabilities(), client.capabilities())
+    }
+
     private class TestBridge(
         private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RegistrationResponse = { validRegistrationResponse() },
         private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> AuthenticationResponse = { validAuthenticationResponse() },
         private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform", it) },
-        private val capabilities: PasskeyCapabilities = PasskeyCapabilities(),
+        private val capabilitiesAction: suspend () -> PasskeyCapabilities = { PasskeyCapabilities() },
     ) : PasskeyPlatformBridge {
         override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse = createAction(options)
 
@@ -186,7 +295,7 @@ class DefaultPasskeyClientTest {
 
         override fun mapPlatformError(throwable: Throwable): PasskeyClientError = errorMapper(throwable)
 
-        override suspend fun capabilities(): PasskeyCapabilities = capabilities
+        override suspend fun capabilities(): PasskeyCapabilities = capabilitiesAction()
     }
 
     private companion object {

@@ -2,9 +2,9 @@
 
 package dev.webauthn.serialization
 
-import dev.webauthn.internal.cbor.skipCborItem
-import dev.webauthn.internal.cbor.readUint16
-import dev.webauthn.internal.cbor.readUint32
+import dev.webauthn.cbor.skipCborItem
+import dev.webauthn.cbor.readUint16
+import dev.webauthn.cbor.readUint32
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AttestationConveyancePreference
 import dev.webauthn.model.AuthenticationResponse

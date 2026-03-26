@@ -1,10 +1,6 @@
-package dev.webauthn.internal.cbor
+package dev.webauthn.cbor
 
-/**
- * Internal CBOR byte scanner helpers shared across parser modules.
- *
- * This package is not part of the supported public API surface.
- */
+/** Shared strict CBOR byte scanner helpers reused across parser modules. */
 public data class CborHeader(
     val majorType: Int,
     val additionalInfo: Int,

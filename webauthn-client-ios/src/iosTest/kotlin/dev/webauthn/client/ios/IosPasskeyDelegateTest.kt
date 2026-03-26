@@ -16,12 +16,14 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import platform.AuthenticationServices.ASAuthorizationErrorCanceled
 import platform.AuthenticationServices.ASAuthorizationErrorDomain
 import platform.Foundation.NSError
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class IosPasskeyDelegateTest {
@@ -207,5 +209,53 @@ class IosPasskeyDelegateTest {
         val result = delegate.createCredential(mockOptions())
         assertTrue(result is PasskeyResult.Failure)
         assertTrue(result.error is PasskeyClientError.UserCancelled)
+    }
+
+    @Test
+    fun getAssertion_returns_InvalidOptions_when_rp_id_is_missing() = runBlocking {
+        val bridge = object : IosAuthorizationBridge {
+            override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+                throw IllegalStateException("unused")
+            }
+
+            override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload {
+                requireNotNull(options.rpId) {
+                    "PublicKeyCredentialRequestOptions.rpId is required by the iOS AuthenticationServices bridge."
+                }
+                throw IllegalStateException("unused")
+            }
+        }
+        val delegate = IosPasskeyDelegate(bridge)
+
+        val result = delegate.getAssertion(mockRequestOptions().copy(rpId = null))
+
+        assertTrue(result is PasskeyResult.Failure, "Expected failure but was $result")
+        assertTrue(result.error is PasskeyClientError.InvalidOptions, "Expected InvalidOptions but was ${result.error}")
+    }
+
+    @Test
+    fun getAssertion_propagates_coroutine_cancellation() = runBlocking {
+        val bridge = FakeAuthorizationBridge(
+            getResult = Result.failure(CancellationException("cancelled")),
+        )
+        val delegate = IosPasskeyDelegate(bridge)
+
+        val error = assertFailsWith<CancellationException> {
+            delegate.getAssertion(mockRequestOptions())
+        }
+        assertTrue(error.message?.contains("cancelled") == true)
+    }
+
+    @Test
+    fun createCredential_propagates_coroutine_cancellation() = runBlocking {
+        val bridge = FakeAuthorizationBridge(
+            createResult = Result.failure(CancellationException("cancelled")),
+        )
+        val delegate = IosPasskeyDelegate(bridge)
+
+        val error = assertFailsWith<CancellationException> {
+            delegate.createCredential(mockOptions())
+        }
+        assertTrue(error.message?.contains("cancelled") == true)
     }
 }

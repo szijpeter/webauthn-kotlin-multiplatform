@@ -29,6 +29,7 @@ import io.mockk.mockk
 import io.mockk.coEvery
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -280,5 +281,44 @@ class AndroidPasskeyClientTest {
         assertTrue(error is PasskeyClientError.Platform)
         assertTrue(error.message.contains("assetlinks.json"))
         assertTrue(error.message.contains("SHA-256"))
+    }
+
+    @Test
+    fun createCredential_returns_InvalidOptions_with_hint_for_known_validation_failure() = runBlocking {
+        val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
+        val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
+
+        coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } throws
+            IllegalArgumentException("RP ID cannot be validated")
+
+        val options = PublicKeyCredentialCreationOptions(
+            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
+            user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
+            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
+            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)),
+        )
+
+        val result = client.createCredential(options)
+        assertTrue(result is PasskeyResult.Failure)
+        val failure = result as PasskeyResult.Failure
+        assertTrue(failure.error is PasskeyClientError.InvalidOptions)
+        assertTrue(failure.error.message.contains("assetlinks.json"))
+        assertTrue(failure.error.message.contains("SHA-256"))
+    }
+
+    @Test
+    fun mapPlatformError_keeps_message_unchanged_when_not_rp_id_validation_failure() {
+        val bridge = AndroidPasskeyPlatformBridge(
+            context = mockk(relaxed = true),
+            credentialManager = mockk(relaxed = true),
+        )
+
+        val error = bridge.mapPlatformError(
+            IllegalStateException("Service temporarily unavailable"),
+        )
+
+        assertTrue(error is PasskeyClientError.Platform)
+        assertTrue(error.message.contains("Service temporarily unavailable"))
+        assertFalse(error.message.contains("assetlinks.json"))
     }
 }

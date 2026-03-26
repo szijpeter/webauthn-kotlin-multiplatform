@@ -21,6 +21,11 @@ flowchart TB
     subgraph L2[Layer 2: Validation and Serialization]
         CORE[webauthn-core]
         SER[webauthn-serialization-kotlinx]
+        CBOR[webauthn-cbor-core]
+    end
+
+    subgraph L2R[Layer 2.5: Runtime Utilities]
+        RUNTIME[webauthn-runtime-core]
     end
 
     subgraph L3[Layer 3: Crypto]
@@ -47,7 +52,9 @@ flowchart TB
 
     MODEL --> CORE
     MODEL --> SER
+    CBOR --> SER
     CORE --> API
+    CBOR --> JVMCRYPTO
     JVMCRYPTO --> API
     CORE --> SVC
     SER --> SVC
@@ -56,6 +63,9 @@ flowchart TB
     MDS --> API
 
     MODEL --> CCORE
+    RUNTIME --> CCORE
+    RUNTIME --> CPRF
+    RUNTIME --> NET
     CCORE --> CJSON
     CCORE --> CANDROID
     CCORE --> CIOS
