@@ -1,3 +1,0 @@
-updated_utc=20260306T230925Z
-tr_url=https://www.w3.org/TR/webauthn-3/
-ed_url=https://w3c.github.io/webauthn/
