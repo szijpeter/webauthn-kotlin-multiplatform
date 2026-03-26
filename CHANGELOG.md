@@ -8,6 +8,16 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ### Added
 
+- None yet.
+
+### Changed
+
+- None yet.
+
+## 0.2.0 - 2026-03-26
+
+### Added
+
 - Published-consumer smoke preflight script (`tools/agent/check-published-consumer-smoke.sh`) and CI wiring after `publishToMavenLocal`.
 
 ### Changed
