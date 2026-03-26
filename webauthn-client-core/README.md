@@ -83,6 +83,7 @@ Usage notes:
 - Reuse a single controller per screen/session scope to avoid overlapping ceremonies.
 - Prefer mapping backend rejection into actionable UX rather than generic transport failures.
 - `DefaultPasskeyClient` preserves coroutine cancellation (it is rethrown and never mapped to `PasskeyResult.Failure`), while deterministic invalid-options and platform failures are returned as `PasskeyResult.Failure`.
+- `IllegalArgumentException` stays classified as `PasskeyClientError.InvalidOptions`; bridge-provided `InvalidOptions` messages are preserved so platform hints remain visible to callers.
 - Platform-level "user canceled prompt" remains a domain error (`PasskeyClientError.UserCancelled`) when provided by platform bridge mapping.
 
 ## How it fits in the system

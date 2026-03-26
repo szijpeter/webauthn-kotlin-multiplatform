@@ -22,6 +22,9 @@ flowchart TB
         CORE[webauthn-core]
         SER[webauthn-serialization-kotlinx]
         CBOR[webauthn-cbor-core]
+    end
+
+    subgraph L2R[Layer 2.5: Runtime Utilities]
         RUNTIME[webauthn-runtime-core]
     end
 

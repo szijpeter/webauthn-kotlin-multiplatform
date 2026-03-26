@@ -35,4 +35,6 @@ This tracker is the canonical machine-readable queue for next-step agent executi
 
 ## Deferred TODO Backlog (Non-Blocking)
 
-- TODO: Add short sample-app recordings (backend + Android + iOS Compose hosts) showing registration, sign-in, and PRF demo flow before broader outreach.
+| ID | Phase | Priority | Status | Modules | Goal | Acceptance | AgentPrompt |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| P6-001 | Phase 6 | P3 | DEFERRED | samples:backend-ktor,samples:compose-passkey,docs | Add short sample-app recordings (backend + Android + iOS Compose hosts) before broader outreach. | Short recordings covering registration, sign-in, and PRF demo flow are captured and linked from outreach-facing docs. | Record concise sample-app videos for backend plus Android/iOS Compose hosts that demonstrate registration, sign-in, and PRF flows, then link them from docs used during outreach. |
