@@ -170,16 +170,49 @@ repositories {
     google()
     mavenCentral()
 }
+```
 
-dependencies {
-    implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))
+Use only the modules your app actually wires in. In Kotlin Multiplatform projects, shared modules belong in `commonMain`, while concrete platform bridges belong in the matching platform source set.
 
-    implementation("io.github.szijpeter:webauthn-server-core-jvm")
-    implementation("io.github.szijpeter:webauthn-server-jvm-crypto")
-    implementation("io.github.szijpeter:webauthn-client-core")
-    implementation("io.github.szijpeter:webauthn-client-android")
+Client-side KMP example:
+
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))
+            implementation("io.github.szijpeter:webauthn-client-core")
+            implementation("io.github.szijpeter:webauthn-network-ktor-client") // optional default backend transport
+        }
+
+        androidMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-android") // only if you use AndroidPasskeyClient
+        }
+
+        iosMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-ios") // only if you use IosPasskeyClient
+        }
+    }
 }
 ```
+
+JVM/Ktor server example:
+
+```kotlin
+dependencies {
+    implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))
+    implementation("io.github.szijpeter:webauthn-server-core-jvm")
+    implementation("io.github.szijpeter:webauthn-server-jvm-crypto")
+    implementation("io.github.szijpeter:webauthn-server-ktor") // optional route adapter
+}
+```
+
+Notes:
+
+- Client apps do not need `webauthn-server-*` dependencies.
+- You only add `webauthn-client-android` / `webauthn-client-ios` when that target instantiates the concrete platform client.
+- If you only use the shared client abstractions, `commonMain` only needs the common modules.
+- For a complete source set example, see [`samples/compose-passkey`](./samples/compose-passkey/README.md), [`samples/compose-passkey-android`](./samples/compose-passkey-android/README.md), and [`samples/compose-passkey-ios`](./samples/compose-passkey-ios/README.md).
 
 Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
