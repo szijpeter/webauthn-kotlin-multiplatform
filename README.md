@@ -31,6 +31,12 @@ This repo focuses on those needs:
 - A client/server setup that shares model and validation semantics instead of duplicating protocol assumptions.
 - A modular stack where server, client, transport, storage, and attestation trust can be adopted separately.
 
+## Sample Recordings
+
+| Android | iOS |
+| --- | --- |
+| <video src="https://github.com/user-attachments/assets/54826cb3-8dba-4d28-a50c-d934b47741b1" height="300" controls></video> | <video src="https://github.com/user-attachments/assets/a8912a65-78be-4bc5-9a65-604c6d390f78" height="300" controls></video> |
+
 ## WebAuthn Core Concepts
 
 WebAuthn has two ceremony pairs:
