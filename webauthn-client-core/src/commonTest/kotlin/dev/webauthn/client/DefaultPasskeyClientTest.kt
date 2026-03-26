@@ -108,7 +108,7 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
-    fun createCredential_maps_illegal_argument_to_invalid_options() = runTest {
+    fun createCredential_preserves_bridge_mapping_for_illegal_argument() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { throw IllegalArgumentException("bad options") },
@@ -119,8 +119,8 @@ class DefaultPasskeyClientTest {
         val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.InvalidOptions)
-        assertTrue(result.error.message.contains("bad options"))
+        assertTrue(result.error is PasskeyClientError.Platform)
+        assertTrue(result.error.message.contains("unexpected"))
     }
 
     @Test

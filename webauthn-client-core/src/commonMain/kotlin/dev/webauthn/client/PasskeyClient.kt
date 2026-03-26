@@ -125,7 +125,7 @@ public class DefaultPasskeyClient(
                     is InvalidOptionsException ->
                         PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
                     is IllegalArgumentException ->
-                        mapIllegalArgumentToInvalidOptions(error)
+                        mapIllegalArgumentWithBridge(error)
 
                     else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
                 }
@@ -133,12 +133,8 @@ public class DefaultPasskeyClient(
         )
     }
 
-    private fun mapIllegalArgumentToInvalidOptions(error: IllegalArgumentException): PasskeyResult.Failure {
-        val mapped = bridge.mapPlatformError(error)
-        return when (mapped) {
-            is PasskeyClientError.InvalidOptions -> PasskeyResult.Failure(mapped)
-            else -> PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
-        }
+    private fun mapIllegalArgumentWithBridge(error: IllegalArgumentException): PasskeyResult.Failure {
+        return PasskeyResult.Failure(bridge.mapPlatformError(error))
     }
 
     private fun requireCreationOptions(options: PublicKeyCredentialCreationOptions) {
