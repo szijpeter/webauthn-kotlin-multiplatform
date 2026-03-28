@@ -4,8 +4,16 @@ import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.Challenge
+import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.Origin
+import dev.webauthn.model.PublicKeyCredentialCreationOptions
+import dev.webauthn.model.PublicKeyCredentialRpEntity
+import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpId
+import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -58,17 +66,17 @@ class NoneAttestationStatementVerifierTest {
     private fun sampleInput(attestationObject: ByteArray): RegistrationValidationInput {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         return RegistrationValidationInput(
-            options = dev.webauthn.model.PublicKeyCredentialCreationOptions(
-                rp = dev.webauthn.model.PublicKeyCredentialRpEntity(
-                    id = dev.webauthn.model.RpId.parseOrThrow("example.com"),
+            options = PublicKeyCredentialCreationOptions(
+                rp = PublicKeyCredentialRpEntity(
+                    id = RpId.parseOrThrow("example.com"),
                     name = "Example",
                 ),
-                user = dev.webauthn.model.PublicKeyCredentialUserEntity(
-                    id = dev.webauthn.model.UserHandle.fromBytes(ByteArray(16) { 7 }),
+                user = PublicKeyCredentialUserEntity(
+                    id = UserHandle.fromBytes(ByteArray(16) { 7 }),
                     name = "alice",
                     displayName = "Alice",
                 ),
-                challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(16) { 1 }),
+                challenge = Challenge.fromBytes(ByteArray(16) { 1 }),
                 pubKeyCredParams = emptyList(),
             ),
             response = RegistrationResponse(
@@ -86,12 +94,12 @@ class NoneAttestationStatementVerifierTest {
                     cosePublicKey = cosePublicKey(0xA1, 0x01, 0x02),
                 ),
             ),
-            clientData = dev.webauthn.model.CollectedClientData(
+            clientData = CollectedClientData(
                 type = "webauthn.create",
-                challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(16) { 1 }),
-                origin = dev.webauthn.model.Origin.parseOrThrow("https://example.com"),
+                challenge = Challenge.fromBytes(ByteArray(16) { 1 }),
+                origin = Origin.parseOrThrow("https://example.com"),
             ),
-            expectedOrigin = dev.webauthn.model.Origin.parseOrThrow("https://example.com"),
+            expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
     }
 

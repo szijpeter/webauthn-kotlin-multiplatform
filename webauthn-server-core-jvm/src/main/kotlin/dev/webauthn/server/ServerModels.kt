@@ -1,17 +1,18 @@
 package dev.webauthn.server
 
-import dev.webauthn.core.ChallengeSession
 import dev.webauthn.core.CeremonyType
+import dev.webauthn.core.ChallengeSession
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.model.AttestedCredentialData
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
-import dev.webauthn.model.PublicKeyCredentialCreationOptions
-import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
@@ -20,6 +21,8 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
+import dev.webauthn.serialization.AuthenticationResponseDto
+import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import java.security.SecureRandom
 
@@ -77,13 +80,13 @@ public data class RegistrationStartRequest(
     public val timeoutMs: Long = 60_000,
     public val residentKey: ResidentKeyRequirement = ResidentKeyRequirement.PREFERRED,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
-    public val extensions: dev.webauthn.model.AuthenticationExtensionsClientInputs? = null,
+    public val extensions: AuthenticationExtensionsClientInputs? = null,
 )
 
 /** Input for finishing registration (WebAuthn L3 §7.1 response verification). */
 public data class RegistrationFinishRequest(
-    public val responseDto: dev.webauthn.serialization.RegistrationResponseDto,
-    public val clientData: dev.webauthn.model.CollectedClientData,
+    public val responseDto: RegistrationResponseDto,
+    public val clientData: CollectedClientData,
 )
 
 /** Input for starting authentication (WebAuthn L3 §7.2 ceremony options assembly). */
@@ -93,13 +96,13 @@ public data class AuthenticationStartRequest(
     public val userName: String,
     public val timeoutMs: Long = 60_000,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
-    public val extensions: dev.webauthn.model.AuthenticationExtensionsClientInputs? = null,
+    public val extensions: AuthenticationExtensionsClientInputs? = null,
 )
 
 /** Input for finishing authentication (WebAuthn L3 §7.2 assertion verification). */
 public data class AuthenticationFinishRequest(
-    public val responseDto: dev.webauthn.serialization.AuthenticationResponseDto,
-    public val clientData: dev.webauthn.model.CollectedClientData,
+    public val responseDto: AuthenticationResponseDto,
+    public val clientData: CollectedClientData,
 )
 
 /** Attestation handling strategy applied during registration completion. */
@@ -160,8 +163,8 @@ internal fun parseAuthenticationResponse(
 
 internal fun defaultCredentialDescriptor(
     credential: StoredCredential,
-): dev.webauthn.model.PublicKeyCredentialDescriptor {
-    return dev.webauthn.model.PublicKeyCredentialDescriptor(
+): PublicKeyCredentialDescriptor {
+    return PublicKeyCredentialDescriptor(
         type = PublicKeyCredentialType.PUBLIC_KEY,
         id = credential.credentialId,
     )

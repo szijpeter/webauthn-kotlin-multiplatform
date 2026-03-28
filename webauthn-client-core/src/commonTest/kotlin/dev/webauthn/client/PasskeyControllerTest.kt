@@ -19,6 +19,7 @@ import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.WebAuthnValidationError
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -75,7 +76,7 @@ class PasskeyControllerTest {
         val fakeClient = FakePasskeyClient()
         val serverClient = FakePasskeyServerClient()
         serverClient.registerOptionsDeferred.complete(
-            ValidationResult.Invalid(listOf(dev.webauthn.model.WebAuthnValidationError.InvalidValue("field", "bad options")))
+            ValidationResult.Invalid(listOf(WebAuthnValidationError.InvalidValue("field", "bad options")))
         )
         val controller = PasskeyController(fakeClient, serverClient)
 
@@ -142,7 +143,7 @@ class PasskeyControllerTest {
         val fakeClient = FakePasskeyClient()
         val serverClient = FakePasskeyServerClient()
         val controller = PasskeyController(fakeClient, serverClient)
-        
+
         val firstJob = launch {
             controller.signIn(Unit)
         }
@@ -152,7 +153,7 @@ class PasskeyControllerTest {
 
         // Try to register concurrently
         controller.register(Unit)
-        
+
         // State should remain SIGN_IN STARTING without throwing exception out of runCeremony, but the register loop silently aborted.
         assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
 

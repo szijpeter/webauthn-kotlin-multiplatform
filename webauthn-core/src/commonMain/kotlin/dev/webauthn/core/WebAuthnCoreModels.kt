@@ -12,6 +12,7 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 
 /** WebAuthn ceremony discriminator used for challenge lifecycle management. */
@@ -33,7 +34,7 @@ public data class ChallengeSession(
     public val expiresAtEpochMs: Long,
     public val type: CeremonyType,
     public val extensions: AuthenticationExtensionsClientInputs? = null,
-    public val userVerification: dev.webauthn.model.UserVerificationRequirement? = null,
+    public val userVerification: UserVerificationRequirement? = null,
 )
 
 /** Input contract for W3C WebAuthn L3 §7.1 registration validation steps. */

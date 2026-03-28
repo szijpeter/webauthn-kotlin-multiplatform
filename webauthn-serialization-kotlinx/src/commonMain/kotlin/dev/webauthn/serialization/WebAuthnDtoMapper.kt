@@ -12,6 +12,18 @@ import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.AuthenticatorTransport
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.Aaguid
+import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
+import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.AuthenticationExtensionsPRFValues
+import dev.webauthn.model.CosePublicKey
+import dev.webauthn.model.LargeBlobExtensionInput
+import dev.webauthn.model.LargeBlobExtensionOutput
+import dev.webauthn.model.PrfExtensionInput
+import dev.webauthn.model.PrfExtensionOutput
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -333,8 +345,8 @@ public object WebAuthnDtoMapper {
         return when (credentialId) {
             is ValidationResult.Invalid -> credentialId
             is ValidationResult.Valid -> {
-                val clientData = dev.webauthn.model.Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
-                val attestation = dev.webauthn.model.Base64UrlBytes.parse(value.response.attestationObject, "attestationObject")
+                val clientData = Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
+                val attestation = Base64UrlBytes.parse(value.response.attestationObject, "attestationObject")
                 if (clientData is ValidationResult.Invalid) {
                     return clientData
                 }
@@ -434,9 +446,9 @@ public object WebAuthnDtoMapper {
         return when (credentialId) {
             is ValidationResult.Invalid -> credentialId
             is ValidationResult.Valid -> {
-                val clientData = dev.webauthn.model.Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
-                val signature = dev.webauthn.model.Base64UrlBytes.parse(value.response.signature, "signature")
-                val authenticatorData = dev.webauthn.model.Base64UrlBytes.parse(
+                val clientData = Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
+                val signature = Base64UrlBytes.parse(value.response.signature, "signature")
+                val authenticatorData = Base64UrlBytes.parse(
                     value.response.authenticatorData,
                     "response.authenticatorData",
                 )
@@ -527,7 +539,7 @@ public object WebAuthnDtoMapper {
 
     // --- Extension Mapping Helpers ---
 
-    public fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientInputs): AuthenticationExtensionsClientInputsDto {
+    public fun fromModel(value: AuthenticationExtensionsClientInputs): AuthenticationExtensionsClientInputsDto {
         return AuthenticationExtensionsClientInputsDto(
             prf = value.prf?.let { prf ->
                 PrfExtensionInputDto(
@@ -550,7 +562,7 @@ public object WebAuthnDtoMapper {
         message = "Use toModelValidated(AuthenticationExtensionsClientInputsDto) for error-safe parsing.",
         replaceWith = ReplaceWith("toModelValidated(value).getOrThrow()"),
     )
-    public fun toModel(value: AuthenticationExtensionsClientInputsDto): dev.webauthn.model.AuthenticationExtensionsClientInputs {
+    public fun toModel(value: AuthenticationExtensionsClientInputsDto): AuthenticationExtensionsClientInputs {
         return toModelValidated(value).fold(
             onValid = { it },
             onInvalid = { errors ->
@@ -559,7 +571,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    public fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsClientOutputs): AuthenticationExtensionsClientOutputsDto {
+    public fun fromModel(value: AuthenticationExtensionsClientOutputs): AuthenticationExtensionsClientOutputsDto {
         return AuthenticationExtensionsClientOutputsDto(
             prf = value.prf?.let { prf ->
                 PrfExtensionOutputDto(
@@ -581,7 +593,7 @@ public object WebAuthnDtoMapper {
         message = "Use toModelValidated(AuthenticationExtensionsClientOutputsDto) for error-safe parsing.",
         replaceWith = ReplaceWith("toModelValidated(value).getOrThrow()"),
     )
-    public fun toModel(value: AuthenticationExtensionsClientOutputsDto): dev.webauthn.model.AuthenticationExtensionsClientOutputs {
+    public fun toModel(value: AuthenticationExtensionsClientOutputsDto): AuthenticationExtensionsClientOutputs {
         return toModelValidated(value).fold(
             onValid = { it },
             onInvalid = { errors ->
@@ -590,7 +602,7 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    private fun fromModel(value: dev.webauthn.model.AuthenticationExtensionsPRFValues): PrfValuesDto {
+    private fun fromModel(value: AuthenticationExtensionsPRFValues): PrfValuesDto {
         return PrfValuesDto(
             first = value.first.toBase64Url(),
             second = value.second?.toBase64Url()
@@ -601,7 +613,7 @@ public object WebAuthnDtoMapper {
     public fun toModelValidated(
         value: AuthenticationExtensionsClientInputsDto,
         fieldPrefix: String = "extensions",
-    ): ValidationResult<dev.webauthn.model.AuthenticationExtensionsClientInputs> {
+    ): ValidationResult<AuthenticationExtensionsClientInputs> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
         val prf = value.prf?.let { prf ->
@@ -615,7 +627,7 @@ public object WebAuthnDtoMapper {
                 }
             }
             val evalByCredential = prf.evalByCredential?.let { evalMap ->
-                val parsed = mutableMapOf<String, dev.webauthn.model.AuthenticationExtensionsPRFValues>()
+                val parsed = mutableMapOf<String, AuthenticationExtensionsPRFValues>()
                 for ((credentialId, prfValues) in evalMap) {
                     when (val parsedValue = toModelValidated(prfValues, "$fieldPrefix.prf.evalByCredential.$credentialId")) {
                         is ValidationResult.Valid -> parsed[credentialId] = parsedValue.value
@@ -624,12 +636,12 @@ public object WebAuthnDtoMapper {
                 }
                 parsed
             }
-            dev.webauthn.model.PrfExtensionInput(eval = eval, evalByCredential = evalByCredential)
+            PrfExtensionInput(eval = eval, evalByCredential = evalByCredential)
         }
 
         val largeBlob = value.largeBlob?.let { lb ->
             val support = lb.support?.let {
-                val parsedSupport = dev.webauthn.model.LargeBlobExtensionInput.LargeBlobSupport.entries
+                val parsedSupport = LargeBlobExtensionInput.LargeBlobSupport.entries
                     .find { entry -> entry.name.equals(it, ignoreCase = true) }
                 if (parsedSupport == null) {
                     errors += WebAuthnValidationError.InvalidValue(
@@ -648,7 +660,7 @@ public object WebAuthnDtoMapper {
                     }
                 }
             }
-            dev.webauthn.model.LargeBlobExtensionInput(
+            LargeBlobExtensionInput(
                 support = support,
                 read = lb.read,
                 write = write,
@@ -657,7 +669,7 @@ public object WebAuthnDtoMapper {
 
         return if (errors.isEmpty()) {
             ValidationResult.Valid(
-                dev.webauthn.model.AuthenticationExtensionsClientInputs(
+                AuthenticationExtensionsClientInputs(
                     prf = prf,
                     largeBlob = largeBlob,
                     relatedOrigins = value.relatedOrigins,
@@ -671,7 +683,7 @@ public object WebAuthnDtoMapper {
     public fun toModelValidated(
         value: AuthenticationExtensionsClientOutputsDto,
         fieldPrefix: String = "clientExtensionResults",
-    ): ValidationResult<dev.webauthn.model.AuthenticationExtensionsClientOutputs> {
+    ): ValidationResult<AuthenticationExtensionsClientOutputs> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
         val prf = value.prf?.let { prf ->
@@ -684,7 +696,7 @@ public object WebAuthnDtoMapper {
                     }
                 }
             }
-            dev.webauthn.model.PrfExtensionOutput(enabled = prf.enabled, results = results)
+            PrfExtensionOutput(enabled = prf.enabled, results = results)
         }
 
         val largeBlob = value.largeBlob?.let { lb ->
@@ -697,7 +709,7 @@ public object WebAuthnDtoMapper {
                     }
                 }
             }
-            dev.webauthn.model.LargeBlobExtensionOutput(
+            LargeBlobExtensionOutput(
                 supported = lb.supported,
                 blob = blob,
                 written = lb.written,
@@ -706,7 +718,7 @@ public object WebAuthnDtoMapper {
 
         return if (errors.isEmpty()) {
             ValidationResult.Valid(
-                dev.webauthn.model.AuthenticationExtensionsClientOutputs(
+                AuthenticationExtensionsClientOutputs(
                     prf = prf,
                     largeBlob = largeBlob,
                 ),
@@ -719,7 +731,7 @@ public object WebAuthnDtoMapper {
     private fun toModelValidated(
         value: PrfValuesDto,
         fieldPrefix: String,
-    ): ValidationResult<dev.webauthn.model.AuthenticationExtensionsPRFValues> {
+    ): ValidationResult<AuthenticationExtensionsPRFValues> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
         val first = when (val parsed = parseBase64Url(value.first, "$fieldPrefix.first")) {
@@ -742,7 +754,7 @@ public object WebAuthnDtoMapper {
 
         return if (first != null && errors.isEmpty()) {
             ValidationResult.Valid(
-                dev.webauthn.model.AuthenticationExtensionsPRFValues(
+                AuthenticationExtensionsPRFValues(
                     first = first,
                     second = second,
                 ),
@@ -755,8 +767,8 @@ public object WebAuthnDtoMapper {
     private fun parseBase64Url(
         value: String,
         field: String,
-    ): ValidationResult<dev.webauthn.model.Base64UrlBytes> {
-        return dev.webauthn.model.Base64UrlBytes.parse(value, field)
+    ): ValidationResult<Base64UrlBytes> {
+        return Base64UrlBytes.parse(value, field)
     }
 
     private fun AuthenticatorAttachment.toDtoValue(): String {
@@ -847,7 +859,7 @@ public object WebAuthnDtoMapper {
         }
     }
 
-    private fun toModel(value: PrfValuesDto): dev.webauthn.model.AuthenticationExtensionsPRFValues {
+    private fun toModel(value: PrfValuesDto): AuthenticationExtensionsPRFValues {
         return toModelValidated(value, "extensions.prf").fold(
             onValid = { it },
             onInvalid = { errors ->
@@ -856,11 +868,11 @@ public object WebAuthnDtoMapper {
         )
     }
 
-    private fun dev.webauthn.model.Base64UrlBytes.toBase64Url(): String = encoded()
+    private fun Base64UrlBytes.toBase64Url(): String = encoded()
 }
 
 private data class ParsedAuthenticatorData(
-    val authenticatorData: dev.webauthn.model.AuthenticatorData,
+    val authenticatorData: AuthenticatorData,
     val attestedCredentialData: AttestedCredentialData?,
 )
 
@@ -917,7 +929,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
         )
     }
 
-    val rpIdHash = dev.webauthn.model.RpIdHash.fromBytes(bytes.copyOfRange(0, 32))
+    val rpIdHash = RpIdHash.fromBytes(bytes.copyOfRange(0, 32))
     val flags = bytes[32].toInt() and 0xFF
     val signCount = bytes.readUint32(33)
     var offset = 37
@@ -933,7 +945,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
                 ),
             )
         }
-        val aaguid = dev.webauthn.model.Aaguid.fromBytes(bytes.copyOfRange(offset, offset + 16))
+        val aaguid = Aaguid.fromBytes(bytes.copyOfRange(offset, offset + 16))
         offset += 16
         val credentialIdLength = bytes.readUint16(offset)
         offset += 2
@@ -961,7 +973,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
         AttestedCredentialData(
             aaguid = aaguid,
             credentialId = CredentialId.fromBytes(credentialId),
-            cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(bytes.copyOfRange(offset, coseEnd)),
+            cosePublicKey = CosePublicKey.fromBytes(bytes.copyOfRange(offset, coseEnd)),
         )
     } else {
         null
@@ -969,7 +981,7 @@ private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationR
 
     return ValidationResult.Valid(
         ParsedAuthenticatorData(
-            authenticatorData = dev.webauthn.model.AuthenticatorData(
+            authenticatorData = AuthenticatorData(
                 rpIdHash = rpIdHash,
                 flags = flags,
                 signCount = signCount,

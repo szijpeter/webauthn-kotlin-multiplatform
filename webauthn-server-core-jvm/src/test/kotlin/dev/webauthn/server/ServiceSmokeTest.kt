@@ -2,15 +2,21 @@ package dev.webauthn.server
 
 import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
+import dev.webauthn.core.OriginMetadataProvider
+import dev.webauthn.core.WebAuthnExtensionHook
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.SignatureVerifier
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
+import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
+import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.AuthenticationResponseDto
@@ -18,9 +24,11 @@ import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
+import dev.webauthn.server.crypto.JvmRpIdHasher
+import dev.webauthn.server.crypto.JvmSignatureVerifier
+import kotlinx.coroutines.runBlocking
 import java.security.MessageDigest
 import java.util.Base64
-import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -28,12 +36,12 @@ import kotlin.test.assertTrue
 class ServiceSmokeTest {
     @Test
     fun registrationStartIssuesChallengeAndParams() = runBlocking {
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = InMemoryChallengeStore(),
             credentialStore = InMemoryCredentialStore(),
             userAccountStore = InMemoryUserAccountStore(),
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
@@ -58,7 +66,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
             credentialStore = credentialStore,
@@ -115,23 +123,23 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         var hookCalled = false
-        val hook = object : dev.webauthn.core.WebAuthnExtensionHook {
-            @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+        val hook = object : WebAuthnExtensionHook {
+            @OptIn(ExperimentalWebAuthnL3Api::class)
             override fun validateRegistrationExtensions(
-                inputs: dev.webauthn.model.AuthenticationExtensionsClientInputs?,
-                outputs: dev.webauthn.model.AuthenticationExtensionsClientOutputs?,
+                inputs: AuthenticationExtensionsClientInputs?,
+                outputs: AuthenticationExtensionsClientOutputs?,
             ): ValidationResult<Unit> {
                 hookCalled = true
                 return ValidationResult.Valid(Unit)
             }
 
-            @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+            @OptIn(ExperimentalWebAuthnL3Api::class)
             override fun validateAuthenticationExtensions(
-                inputs: dev.webauthn.model.AuthenticationExtensionsClientInputs?,
-                outputs: dev.webauthn.model.AuthenticationExtensionsClientOutputs?,
+                inputs: AuthenticationExtensionsClientInputs?,
+                outputs: AuthenticationExtensionsClientOutputs?,
             ): ValidationResult<Unit> = ValidationResult.Valid(Unit)
         }
 
@@ -191,7 +199,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
             credentialStore = credentialStore,
@@ -291,7 +299,7 @@ class ServiceSmokeTest {
             credentialStore = InMemoryCredentialStore(),
             userAccountStore = InMemoryUserAccountStore(),
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
-            rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher(),
+            rpIdHasher = JvmRpIdHasher(),
         )
 
         val result = authenticationService.start(
@@ -310,7 +318,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
             credentialStore = credentialStore,
@@ -332,7 +340,7 @@ class ServiceSmokeTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
         val attestationObject = attestationObjectWithAuthData(
             registrationAuthenticatorDataBytes(
-                rpIdHash = dev.webauthn.model.RpIdHash.fromBytes(ByteArray(32) { 0xFF.toByte() }),
+                rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 0xFF.toByte() }),
                 flags = 0x41,
                 signCount = 1,
                 credentialId = credentialId.value.bytes(),
@@ -366,7 +374,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
         var currentTime = 1000L
 
         val registrationService = RegistrationService(
@@ -430,7 +438,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -487,7 +495,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -547,7 +555,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
         var currentTime = 1000L
 
         val registrationService = RegistrationService(
@@ -654,7 +662,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -742,7 +750,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -832,7 +840,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -918,7 +926,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -1061,8 +1069,8 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            signatureVerifier = dev.webauthn.server.crypto.JvmSignatureVerifier(),
-            rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher(),
+            signatureVerifier = JvmSignatureVerifier(),
+            rpIdHasher = JvmRpIdHasher(),
         )
 
         val authenticationVector = AuthenticationResponseDto(
@@ -1116,11 +1124,11 @@ class ServiceSmokeTest {
             padToBase64("MEYCIQDK_YzkGEhtIf4K6XM8LAjU4f3qASY3J5cgggiQOW7Y6wIhAKqCT7k80zLi_GADyhg41TK6S32uaSJiZ_aGzM_gfiCk"),
         )
         val signedData = rawAuthenticatorData + MessageDigest.getInstance("SHA-256").digest(clientDataJson)
-        val verifier = dev.webauthn.server.crypto.JvmSignatureVerifier()
+        val verifier = JvmSignatureVerifier()
 
         val result = verifier.verify(
             algorithm = CoseAlgorithm.ES256,
-            publicKeyCose = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
+            publicKeyCose = CosePublicKey.fromBytes(cosePublicKey),
             data = signedData,
             signature = signature,
         )
@@ -1133,7 +1141,7 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val registrationService = RegistrationService(
             challengeStore = challengeStore,
@@ -1222,12 +1230,12 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val primaryOrigin = Origin.parseOrThrow("https://example.com")
         val relatedOrigin = Origin.parseOrThrow("https://app.example.com")
 
-        val metadataProvider = object : dev.webauthn.core.OriginMetadataProvider {
+        val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
                 return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
             }
@@ -1249,7 +1257,7 @@ class ServiceSmokeTest {
             userName = "alice",
             userDisplayName = "Alice",
             userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
-            extensions = dev.webauthn.model.AuthenticationExtensionsClientInputs(
+            extensions = AuthenticationExtensionsClientInputs(
                 relatedOrigins = listOf(relatedOrigin.value),
             ),
         )
@@ -1292,12 +1300,12 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val primaryOrigin = Origin.parseOrThrow("https://example.com")
         val relatedOrigin = Origin.parseOrThrow("https://app.example.com")
 
-        val metadataProvider = object : dev.webauthn.core.OriginMetadataProvider {
+        val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
                 return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
             }
@@ -1359,12 +1367,12 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val primaryOrigin = Origin.parseOrThrow("https://example.com")
         val relatedOrigin = Origin.parseOrThrow("https://app.example.com")
 
-        val metadataProvider = object : dev.webauthn.core.OriginMetadataProvider {
+        val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
                 return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
             }
@@ -1426,7 +1434,7 @@ class ServiceSmokeTest {
                 rpId = startRequest.rpId,
                 origin = primaryOrigin,
                 userName = "alice",
-                extensions = dev.webauthn.model.AuthenticationExtensionsClientInputs(
+                extensions = AuthenticationExtensionsClientInputs(
                     relatedOrigins = listOf(relatedOrigin.value),
                 ),
             ),
@@ -1464,12 +1472,12 @@ class ServiceSmokeTest {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
-        val rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher()
+        val rpIdHasher = JvmRpIdHasher()
 
         val primaryOrigin = Origin.parseOrThrow("https://example.com")
         val relatedOrigin = Origin.parseOrThrow("https://app.example.com")
 
-        val metadataProvider = object : dev.webauthn.core.OriginMetadataProvider {
+        val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
                 return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
             }
@@ -1567,7 +1575,7 @@ class ServiceSmokeTest {
     }
 
     private fun authenticationAuthenticatorDataBytes(
-        rpIdHash: dev.webauthn.model.RpIdHash,
+        rpIdHash: RpIdHash,
         flags: Int,
         signCount: Long,
     ): ByteArray {
@@ -1579,7 +1587,7 @@ class ServiceSmokeTest {
     }
 
     private fun registrationAuthenticatorDataBytes(
-        rpIdHash: dev.webauthn.model.RpIdHash = dev.webauthn.model.RpIdHash.fromBytes(ByteArray(32) { 0x10 }),
+        rpIdHash: RpIdHash = RpIdHash.fromBytes(ByteArray(32) { 0x10 }),
         flags: Int,
         signCount: Long,
         credentialId: ByteArray,

@@ -10,6 +10,7 @@ import dev.webauthn.client.prf.PrfCryptoSession
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
+import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
 import kotlinx.coroutines.CancellationException
@@ -79,12 +80,12 @@ internal class PrfCryptoDemoController(
             )
         }
         val signInOptions = when (startResult) {
-            is dev.webauthn.model.ValidationResult.Invalid -> {
+            is ValidationResult.Invalid -> {
                 val details = startResult.errors.joinToString("; ") { "${it.field}: ${it.message}" }
                 return PrfDemoResult.Failure("PRF sign-in start failed: $details")
             }
 
-            is dev.webauthn.model.ValidationResult.Valid -> startResult.value
+            is ValidationResult.Valid -> startResult.value
         }
         val authResult = when (
             val assertionResult = prfCryptoClient.authenticateWithPrf(

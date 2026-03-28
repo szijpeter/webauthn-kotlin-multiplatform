@@ -1,13 +1,13 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
-import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -77,7 +77,7 @@ class CompositeAttestationVerifierTest {
         val error = (result as ValidationResult.Invalid).errors.first()
         assertTrue(error.message.contains("Packed attestation not supported"))
     }
-    
+
     @Test
     fun verifyDispatchesToPackedWhenVerifierPresent() {
          val attestationObject = cborMap(
@@ -91,7 +91,7 @@ class CompositeAttestationVerifierTest {
         val verifier = CompositeAttestationVerifier(signatureVerifier = sigVerifier)
         val input = sampleInput(attestationObject, minimalCoseKey)
         val result = verifier.verify(input)
-        
+
         // PackedVerifier checks sig. If returns true, result is valid.
         assertTrue(result is ValidationResult.Valid, "Expected Valid for packed fmt with mock verifier")
     }
@@ -125,7 +125,7 @@ class CompositeAttestationVerifierTest {
                 clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
                 attestationObject = Base64UrlBytes.fromBytes(attestationObject),
                 rawAuthenticatorData = AuthenticatorData(rpIdHash(), 0, 0),
-                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey))
+                attestedCredentialData = AttestedCredentialData(aaguid(), credentialId, CosePublicKey.fromBytes(cosePublicKey))
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
             expectedOrigin = Origin.parseOrThrow("https://example.com"),

@@ -14,9 +14,11 @@ import dev.webauthn.model.CredentialId
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PrfExtensionOutput
+import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
+import dev.webauthn.model.RpIdHash
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -231,7 +233,7 @@ class PrfCryptoClientTest {
     private class FakePasskeyClient(
         private val assertionResult: PasskeyResult<AuthenticationResponse>,
     ) : PasskeyClient {
-        override suspend fun createCredential(options: dev.webauthn.model.PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
             error("unused in test")
         }
 
@@ -243,7 +245,7 @@ class PrfCryptoClientTest {
     private class ThrowingPasskeyClient(
         private val throwable: Throwable,
     ) : PasskeyClient {
-        override suspend fun createCredential(options: dev.webauthn.model.PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
             error("unused in test")
         }
 
@@ -268,7 +270,7 @@ class PrfCryptoClientTest {
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)),
                 rawAuthenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 3 }),
                 authenticatorData = AuthenticatorData(
-                    rpIdHash = dev.webauthn.model.RpIdHash.fromBytes(ByteArray(32) { 4 }),
+                    rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 4 }),
                     flags = 0x01,
                     signCount = 2,
                 ),

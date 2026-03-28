@@ -1,12 +1,14 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -85,7 +87,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val authData = sampleAuthDataBytes()
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val clientDataHash = sha256(clientDataJson)
-        
+
         // Construct valid AuthorizationList (swEnforced)
         val validTags = derSequence(
             derTag(0xA1, derSet(derInteger(byteArrayOf(2)))), // Purpose: SIGN
@@ -102,10 +104,10 @@ class AndroidKeyAttestationStatementVerifierTest {
         )
         val extensionValue = derOctetString(extensionValueSeq)
         val attCert = generateAttestationCert(kp, extensionValue)
-        
+
         // Use the cert itself as the trust anchor
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(attCert) }
-        
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(attCert) }
+
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
@@ -129,10 +131,10 @@ class AndroidKeyAttestationStatementVerifierTest {
         val kp = generateES256KeyPair()
         val authData = sampleAuthDataBytes()
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
-        
+
         // Use WRONG challenge in certificate
         val wrongHash = ByteArray(32) { 0xFF.toByte() }
-        
+
         val extensionValueSeq = derSequence(
             derInteger(byteArrayOf(0)),
             derInteger(byteArrayOf(0)),
@@ -205,15 +207,15 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, extensionValue)
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
-        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase) 
+        val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
         val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        val error = (result as ValidationResult.Invalid).errors.first()
+        val error = result.errors.first()
         assertTrue(error.message.contains("allApplications"))
     }
 
@@ -257,7 +259,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
-        val error = (result as ValidationResult.Invalid).errors.first()
+        val error = result.errors.first()
         assertTrue(error.message.contains("Key origin is not GENERATED"))
     }
 
@@ -267,7 +269,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val authData = sampleAuthDataBytes()
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
-        
+
         // Use "packed" format but with android-key structure
         val attestationObject = cborMap(
             "fmt" to cborText("packed"),
@@ -282,9 +284,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        val error = (result as ValidationResult.Invalid).errors.first()
+        val error = result.errors.first()
         assertTrue(error.message.contains("Format must be android-key"))
     }
 
@@ -297,7 +299,7 @@ class AndroidKeyAttestationStatementVerifierTest {
 
         // Generate cert WITHOUT extension (pass null)
         val attCert = generateAttestationCert(kp, null)
-        
+
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
@@ -308,7 +310,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
-        val error = (result as ValidationResult.Invalid).errors.first()
+        val error = result.errors.first()
         assertTrue(error.message.contains("Android Key Attestation extension missing"))
     }
 
@@ -317,7 +319,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val kp = generateES256KeyPair()
         val authData = sampleAuthDataBytes()
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
-        
+
         // Generate valid cert
         val extensionValueSeq = derSequence(
             derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)), derInteger(byteArrayOf(0)),
@@ -331,11 +333,11 @@ class AndroidKeyAttestationStatementVerifierTest {
             ), derSequence()
         )
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
-        
+
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         // Use garbage signature
         val sig = ByteArray(64) { 0xFF.toByte() }
-        
+
         val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
 
         val verifier = AndroidKeyAttestationStatementVerifier()
@@ -343,7 +345,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("Invalid signature") || it.message.contains("Signature verification error") })
+        assertTrue(result.errors.any { it.message.contains("Invalid signature") || it.message.contains("Signature verification error") })
     }
 
     @Test
@@ -361,9 +363,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), ByteArray(0), attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("alg, sig, and x5c are required"))
+        assertTrue(result.errors.first().message.contains("alg, sig, and x5c are required"))
     }
 
      @Test
@@ -381,9 +383,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), ByteArray(0), attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("alg, sig, and x5c are required"))
+        assertTrue(result.errors.first().message.contains("alg, sig, and x5c are required"))
     }
 
 
@@ -416,9 +418,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key purpose does not contain SIGN"))
+        assertTrue(result.errors.first().message.contains("Key purpose does not contain SIGN"))
     }
 
     @Test
@@ -450,9 +452,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Attestation alg 1 does not match EC key"))
+        assertTrue(result.errors.first().message.contains("Attestation alg 1 does not match EC key"))
     }
 
     @Test
@@ -484,9 +486,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Attestation key size 384 != 256"))
+        assertTrue(result.errors.first().message.contains("Attestation key size 384 != 256"))
     }
 
     @Test
@@ -518,9 +520,9 @@ class AndroidKeyAttestationStatementVerifierTest {
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key digest does not contain SHA-256"))
+        assertTrue(result.errors.first().message.contains("Key digest does not contain SHA-256"))
     }
 
     @Test
@@ -552,7 +554,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key digest missing"))
+        assertTrue(result.errors.first().message.contains("Key digest missing"))
     }
 
     @Test
@@ -584,7 +586,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val result = verifier.verify(input)
 
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.first().message.contains("Key origin missing"))
+        assertTrue(result.errors.first().message.contains("Key origin missing"))
     }
 
     @Test
@@ -621,7 +623,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val invalidInput = sampleInput(credentialId, clientDataJson, badSigAttestation, authData)
         val invalidResult = verifier.verify(invalidInput)
         assertTrue(invalidResult is ValidationResult.Invalid)
-        assertTrue((invalidResult as ValidationResult.Invalid).errors.any { it.message.contains("Invalid signature") })
+        assertTrue(invalidResult.errors.any { it.message.contains("Invalid signature") })
     }
 
     // ---- Helpers ----
@@ -652,7 +654,7 @@ class AndroidKeyAttestationStatementVerifierTest {
     private fun generateAttestationCert(keyPair: java.security.KeyPair, extensionValueEncoded: ByteArray?, extensionOid: ByteArray = byteArrayOf(0x2B, 0x06, 0x01, 0x04, 0x01, 0xD6.toByte(), 0x79, 0x02, 0x01, 0x11)): ByteArray {
         val subjectPublicKeyInfo = keyPair.public.encoded
         val rdn = derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String("Test Authenticator"))))
-        
+
         val extensions = if (extensionValueEncoded != null) {
              derTag(0xA3, derSequence(
                 derSequence(
@@ -711,7 +713,7 @@ class AndroidKeyAttestationStatementVerifierTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguidFromAuthData(authData),
                     credentialId = credentialId,
-                    cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
+                    cosePublicKey = CosePublicKey.fromBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData("webauthn.create", Challenge.fromBytes(ByteArray(16){1}), Origin.parseOrThrow("https://example.com")),
@@ -749,7 +751,7 @@ class AndroidKeyAttestationStatementVerifierTest {
 
     private fun cborMapInt(vararg entries: Pair<Long, Any>): ByteArray {
         var res = cborHeader(5, entries.size)
-        entries.forEach { (k,v) -> 
+        entries.forEach { (k,v) ->
             res = concat(res, cborInt(k))
             res = when(v) {
                 is Long -> concat(res, cborInt(v))
@@ -789,7 +791,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         else if (tag == 0xBF853E) byteArrayOf(0xBF.toByte(), 0x85.toByte(), 0x3E.toByte())
         else if (tag > 255) throw IllegalArgumentException("Unsupported tag: $tag")
         else byteArrayOf(tag.toByte())
-        
+
         val len = if (content.size < 128) {
             byteArrayOf(content.size.toByte())
         } else if (content.size < 256) {

@@ -134,6 +134,13 @@ Reference/samples:
 4. Prefer summary references to large file dumps.
 5. Reuse existing docs instead of re-deriving intent.
 
+## Kotlin Style Policy
+
+1. Do not use fully qualified type references in Kotlin code bodies.
+2. Prefer imports for all type references.
+3. Resolve naming conflicts with import aliases first; use local `typealias` only when import aliasing is not sufficiently clear.
+4. Keep aliases explicit and domain-prefixed for readability (for example `ModelXxx`, `DtoXxx`).
+
 ## Documentation Trace Policy
 
 1. If a published public module's implementation or build contract changes, update that module's `README.md` in the same change.

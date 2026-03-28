@@ -3,14 +3,19 @@ package dev.webauthn.server
 import dev.webauthn.core.AuthenticationValidationInput
 import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
+import dev.webauthn.core.NoOpOriginMetadataProvider
+import dev.webauthn.core.OriginMetadataProvider
 import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.core.UserVerificationPolicy
 import dev.webauthn.core.WebAuthnCoreValidator
+import dev.webauthn.core.WebAuthnExtensionHook
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.Challenge
+import dev.webauthn.model.ExperimentalWebAuthnL3Api
+import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -18,6 +23,7 @@ import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import java.security.MessageDigest
 
@@ -29,10 +35,10 @@ public class RegistrationService(
     private val attestationVerifier: AttestationVerifier,
     private val rpIdHasher: RpIdHasher,
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
-    @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
-    private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
-    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider =
-        dev.webauthn.core.NoOpOriginMetadataProvider,
+    @OptIn(ExperimentalWebAuthnL3Api::class)
+    private val extensionHooks: List<WebAuthnExtensionHook> = emptyList(),
+    private val originMetadataProvider: OriginMetadataProvider =
+        NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: RegistrationStartRequest): PublicKeyCredentialCreationOptions {
@@ -110,7 +116,7 @@ public class RegistrationService(
         }
 
         val relatedOriginsRequested = session.extensions?.relatedOrigins != null
-        var allowedOrigins = emptySet<dev.webauthn.model.Origin>()
+        var allowedOrigins = emptySet<Origin>()
         if (request.clientData.origin != session.origin) {
             if (!relatedOriginsRequested) {
                 return failure("origin", "Origin mismatch")
@@ -183,7 +189,7 @@ public class RegistrationService(
             return attestationResult
         }
 
-        @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+        @OptIn(ExperimentalWebAuthnL3Api::class)
         for (hook in extensionHooks) {
             val hookResult = hook.validateRegistrationExtensions(options.extensions, response.extensions)
             if (hookResult is ValidationResult.Invalid) {
@@ -216,10 +222,10 @@ public class AuthenticationService(
     private val userAccountStore: UserAccountStore,
     private val signatureVerifier: SignatureVerifier,
     private val rpIdHasher: RpIdHasher,
-    @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
-    private val extensionHooks: List<dev.webauthn.core.WebAuthnExtensionHook> = emptyList(),
-    private val originMetadataProvider: dev.webauthn.core.OriginMetadataProvider =
-        dev.webauthn.core.NoOpOriginMetadataProvider,
+    @OptIn(ExperimentalWebAuthnL3Api::class)
+    private val extensionHooks: List<WebAuthnExtensionHook> = emptyList(),
+    private val originMetadataProvider: OriginMetadataProvider =
+        NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: AuthenticationStartRequest): ValidationResult<PublicKeyCredentialRequestOptions> {
@@ -275,7 +281,7 @@ public class AuthenticationService(
         }
 
         val relatedOriginsRequested = session.extensions?.relatedOrigins != null
-        var allowedOrigins = emptySet<dev.webauthn.model.Origin>()
+        var allowedOrigins = emptySet<Origin>()
         if (request.clientData.origin != session.origin) {
             if (!relatedOriginsRequested) {
                 return failure("origin", "Origin mismatch")
@@ -337,7 +343,7 @@ public class AuthenticationService(
 
         credentialStore.updateSignCount(response.credentialId, response.authenticatorData.signCount)
 
-        @OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+        @OptIn(ExperimentalWebAuthnL3Api::class)
         for (hook in extensionHooks) {
             val hookResult = hook.validateAuthenticationExtensions(requestOptions.extensions, response.extensions)
             if (hookResult is ValidationResult.Invalid) {
@@ -361,17 +367,17 @@ private object UserAccountStoreLookup {
     }
 }
 
-private fun dev.webauthn.model.UserVerificationRequirement?.toPolicy(): dev.webauthn.core.UserVerificationPolicy {
+private fun UserVerificationRequirement?.toPolicy(): UserVerificationPolicy {
     return when (this) {
-        dev.webauthn.model.UserVerificationRequirement.REQUIRED ->
-            dev.webauthn.core.UserVerificationPolicy.REQUIRED
+        UserVerificationRequirement.REQUIRED ->
+            UserVerificationPolicy.REQUIRED
 
-        dev.webauthn.model.UserVerificationRequirement.PREFERRED ->
-            dev.webauthn.core.UserVerificationPolicy.PREFERRED
+        UserVerificationRequirement.PREFERRED ->
+            UserVerificationPolicy.PREFERRED
 
-        dev.webauthn.model.UserVerificationRequirement.DISCOURAGED ->
-            dev.webauthn.core.UserVerificationPolicy.DISCOURAGED
+        UserVerificationRequirement.DISCOURAGED ->
+            UserVerificationPolicy.DISCOURAGED
 
-        null -> dev.webauthn.core.UserVerificationPolicy.PREFERRED
+        null -> UserVerificationPolicy.PREFERRED
     }
 }
