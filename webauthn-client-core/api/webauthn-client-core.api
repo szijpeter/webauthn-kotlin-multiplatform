@@ -15,23 +15,46 @@ public final class dev/webauthn/client/PasskeyAction : java/lang/Enum {
 
 public final class dev/webauthn/client/PasskeyCapabilities {
 	public fun <init> ()V
-	public fun <init> (ZZZZLjava/util/List;)V
-	public synthetic fun <init> (ZZZZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Z
-	public final fun component2 ()Z
-	public final fun component3 ()Z
-	public final fun component4 ()Z
-	public final fun component5 ()Ljava/util/List;
-	public final fun copy (ZZZZLjava/util/List;)Ldev/webauthn/client/PasskeyCapabilities;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapabilities;ZZZZLjava/util/List;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapabilities;
+	public fun <init> (Ljava/util/Map;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/Map;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/Map;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/util/Map;Ljava/util/List;)Ldev/webauthn/client/PasskeyCapabilities;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapabilities;Ljava/util/Map;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapabilities;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCapabilities ()Ljava/util/Map;
 	public final fun getPlatformVersionHints ()Ljava/util/List;
-	public final fun getSupportsLargeBlobRead ()Z
-	public final fun getSupportsLargeBlobWrite ()Z
-	public final fun getSupportsPrf ()Z
-	public final fun getSupportsSecurityKey ()Z
 	public fun hashCode ()I
+	public final fun supports (Ldev/webauthn/client/PasskeyCapability;)Z
+	public final fun supports (Ljava/lang/String;)Z
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class dev/webauthn/client/PasskeyCapability {
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getKey ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyCapability$Custom : dev/webauthn/client/PasskeyCapability {
+	public fun <init> (Ljava/lang/String;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+}
+
+public final class dev/webauthn/client/PasskeyCapability$LargeBlobRead : dev/webauthn/client/PasskeyCapability {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlobRead;
+}
+
+public final class dev/webauthn/client/PasskeyCapability$LargeBlobWrite : dev/webauthn/client/PasskeyCapability {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlobWrite;
+}
+
+public final class dev/webauthn/client/PasskeyCapability$Prf : dev/webauthn/client/PasskeyCapability {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$Prf;
+}
+
+public final class dev/webauthn/client/PasskeyCapability$SecurityKey : dev/webauthn/client/PasskeyCapability {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$SecurityKey;
 }
 
 public abstract interface class dev/webauthn/client/PasskeyClient {
@@ -228,16 +251,5 @@ public abstract interface class dev/webauthn/client/PasskeyServerClient {
 	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getSignInOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class dev/webauthn/client/PrfEvaluationRequest {
-	public fun <init> (Z)V
-	public final fun component1 ()Z
-	public final fun copy (Z)Ldev/webauthn/client/PrfEvaluationRequest;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PrfEvaluationRequest;ZILjava/lang/Object;)Ldev/webauthn/client/PrfEvaluationRequest;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getEnabled ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 

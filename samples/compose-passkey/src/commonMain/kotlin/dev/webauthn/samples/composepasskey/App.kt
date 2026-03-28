@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.compose.rememberPasskeyClient
@@ -106,7 +107,7 @@ public fun App() {
                 capabilities.value = loaded
                 debugLogs.i(
                     source = "capabilities",
-                    message = "Loaded PRF=${loaded.supportsPrf} largeBlobRead=${loaded.supportsLargeBlobRead} largeBlobWrite=${loaded.supportsLargeBlobWrite} securityKey=${loaded.supportsSecurityKey}",
+                    message = "Loaded PRF=${loaded.supports(PasskeyCapability.Prf)} largeBlobRead=${loaded.supports(PasskeyCapability.LargeBlobRead)} largeBlobWrite=${loaded.supports(PasskeyCapability.LargeBlobWrite)} securityKey=${loaded.supports(PasskeyCapability.SecurityKey)}",
                 )
             }
             .onFailure { throwable ->
@@ -179,7 +180,7 @@ public fun App() {
                 )
 
                 PrfCryptoCard(
-                    supportsPrf = capabilities.value.supportsPrf,
+                    supportsPrf = capabilities.value.supports(PasskeyCapability.Prf),
                     actionsEnabled = actionsEnabled,
                     sessionState = prfCryptoDemo.sessionState,
                     plaintext = prfPlaintext.value,
@@ -193,7 +194,7 @@ public fun App() {
                                 debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
                                 val result = prfCryptoDemo.signInWithPrf(
                                     config = config,
-                                    supportsPrf = capabilities.value.supportsPrf,
+                                    supportsPrf = capabilities.value.supports(PasskeyCapability.Prf),
                                 )
                                 when (result) {
                                     is PrfDemoResult.Success -> {

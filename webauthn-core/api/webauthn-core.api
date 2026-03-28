@@ -74,6 +74,18 @@ public final class dev/webauthn/core/ChallengeSession {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/webauthn/core/CompositeExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
+	public fun <init> (Ljava/util/List;)V
+	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+}
+
+public final class dev/webauthn/core/LargeBlobExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
+	public static final field INSTANCE Ldev/webauthn/core/LargeBlobExtensionHook;
+	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+}
+
 public final class dev/webauthn/core/NoOpOriginMetadataProvider : dev/webauthn/core/OriginMetadataProvider {
 	public static final field INSTANCE Ldev/webauthn/core/NoOpOriginMetadataProvider;
 	public fun getRelatedOrigins-w6KIa9k (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -81,6 +93,12 @@ public final class dev/webauthn/core/NoOpOriginMetadataProvider : dev/webauthn/c
 
 public abstract interface class dev/webauthn/core/OriginMetadataProvider {
 	public abstract fun getRelatedOrigins-w6KIa9k (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/core/PrfExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
+	public static final field INSTANCE Ldev/webauthn/core/PrfExtensionHook;
+	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
+	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 }
 
 public final class dev/webauthn/core/RegistrationValidationInput {

@@ -145,7 +145,9 @@ class DefaultPasskeyClientTest {
             bridge = TestBridge(
                 capabilitiesAction = {
                     PasskeyCapabilities(
-                        supportsPrf = true,
+                        capabilities = mapOf(
+                            PasskeyCapability.Prf.key to true,
+                        ),
                         platformVersionHints = listOf("test"),
                     )
                 },
@@ -153,7 +155,7 @@ class DefaultPasskeyClientTest {
         )
 
         val capabilities = client.capabilities()
-        assertTrue(capabilities.supportsPrf)
+        assertTrue(capabilities.supports(PasskeyCapability.Prf))
         assertEquals(listOf("test"), capabilities.platformVersionHints)
     }
 

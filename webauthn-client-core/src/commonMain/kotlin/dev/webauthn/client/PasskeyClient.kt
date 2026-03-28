@@ -4,7 +4,6 @@ package dev.webauthn.client
 
 import dev.webauthn.runtime.suspendCatchingNonCancellation
 import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
@@ -30,14 +29,54 @@ public interface PasskeyClient {
     }
 }
 
-/** Capability hints surfaced by platform implementations. */
+/**
+ * Represents a capability or extension that a passkey client, platform bridge,
+ * or authenticator might support.
+ *
+ * Known standard capabilities are defined as objects, while new or proprietary
+ * capabilities can be defined using [Custom].
+ */
+public sealed class PasskeyCapability(public val key: String) {
+    /** W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf) */
+    public object Prf : PasskeyCapability("prf")
+
+    /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — read support. */
+    public object LargeBlobRead : PasskeyCapability("largeBlobRead")
+
+    /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — write support. */
+    public object LargeBlobWrite : PasskeyCapability("largeBlobWrite")
+
+    /** Platform transport capability: security key (cross-platform authenticator) support. */
+    public object SecurityKey : PasskeyCapability("securityKey")
+
+    /** Fallback for proprietary or draft extensions not yet modeled in the core. */
+    public class Custom(key: String) : PasskeyCapability(key) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is PasskeyCapability) return false
+            return key == other.key
+        }
+        override fun hashCode(): Int = key.hashCode()
+    }
+}
+
+/**
+ * Capability hints surfaced by platform implementations.
+ *
+ * Use [supports] with a [PasskeyCapability] object to query a specific capability.
+ * Extensions and platform bridges can advertise capabilities dynamically without modifying
+ * this class.
+ */
 public data class PasskeyCapabilities(
-    public val supportsPrf: Boolean = false,
-    public val supportsLargeBlobRead: Boolean = false,
-    public val supportsLargeBlobWrite: Boolean = false,
-    public val supportsSecurityKey: Boolean = false,
+    public val capabilities: Map<String, Boolean> = emptyMap(),
     public val platformVersionHints: List<String> = emptyList(),
-)
+) {
+    /** Returns `true` if the given [capability] is supported. */
+    public fun supports(capability: PasskeyCapability): Boolean = capabilities[capability.key] == true
+
+    /** Returns `true` if the given capability [key] is supported. */
+    public fun supports(key: String): Boolean = capabilities[key] == true
+}
 
 /** Result wrapper for passkey operations. */
 public sealed interface PasskeyResult<out T> {
@@ -150,8 +189,3 @@ private class InvalidOptionsException(
     cause: Throwable? = null,
 ) : IllegalArgumentException(message, cause)
 
-/** Request model for evaluating PRF extension support and behavior. */
-@ExperimentalWebAuthnL3Api
-public data class PrfEvaluationRequest(
-    public val enabled: Boolean,
-)

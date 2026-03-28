@@ -19,6 +19,7 @@ import dev.webauthn.client.encodeAssertionOptionsOrThrowInvalid
 import dev.webauthn.client.encodeCreationOptionsOrThrowInvalid
 import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyJsonMapper
@@ -108,10 +109,12 @@ internal class AndroidPasskeyPlatformBridge(
     override suspend fun capabilities(): PasskeyCapabilities {
         val supportsExtensions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         return PasskeyCapabilities(
-            supportsPrf = supportsExtensions,
-            supportsLargeBlobRead = supportsExtensions,
-            supportsLargeBlobWrite = supportsExtensions,
-            supportsSecurityKey = true,
+            capabilities = mapOf(
+                PasskeyCapability.Prf.key to supportsExtensions,
+                PasskeyCapability.LargeBlobRead.key to supportsExtensions,
+                PasskeyCapability.LargeBlobWrite.key to supportsExtensions,
+                PasskeyCapability.SecurityKey.key to true,
+            ),
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )
     }

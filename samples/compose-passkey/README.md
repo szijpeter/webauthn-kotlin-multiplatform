@@ -4,7 +4,7 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `samples
 
 ## What this demonstrates
 
-1. Runtime capability probing (`supportsPrf`, Large Blob read/write, security key support).
+1. Runtime capability probing via `PasskeyCapabilities.supports(key)` (`prf`, Large Blob read/write, security key support).
 2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.

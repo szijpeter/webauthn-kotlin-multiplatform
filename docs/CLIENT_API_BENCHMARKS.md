@@ -31,7 +31,7 @@ This note records the client API benchmark inputs used for our client-first desi
 2. Keep shared business logic in `webauthn-client-core` (`DefaultPasskeyClient`) so Android/iOS modules stay bridge-thin.
 3. Keep JSON mapper strategy replaceable via `PasskeyJsonMapper` in optional JSON module.
 4. Carry extension-related payloads through existing model/serialization layers so PRF/Large Blob can be surfaced consistently.
-5. Expose `capabilities()` so callers can branch on runtime support (`supportsPrf`, `supportsLargeBlob*`, `supportsSecurityKey`).
+5. Expose `capabilities()` with `PasskeyCapabilities.supports(key)` so callers can branch on runtime support (PRF, Large Blob, security key).
 6. Preserve deterministic domain error mapping (`InvalidOptions`, `UserCancelled`, `Platform`, `Transport`).
 
 ## Current Gaps to Close
