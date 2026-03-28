@@ -288,7 +288,7 @@ Current state:
 - Publish/release infrastructure is now wired for Maven Central and compatibility baselines.
 - Client flows are usable on Android and iOS with shared orchestration.
 - iOS external security-key support is still being hardened before it can be documented as fully ready.
-- `kotlinx-serialization` remains pinned to `1.9.0` while the current Signum compatibility issue is unresolved.
+- `kotlinx-serialization` is now on `1.10.0` together with Signum `0.12.0` and indispensable `3.20.0`; captured Android assertion-vector regressions are green on this combined dependency set.
 
 ## Security and Release Hygiene
 
