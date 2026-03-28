@@ -1,6 +1,7 @@
 package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.crypto.TrustAnchorSource
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
@@ -36,27 +37,27 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val certBytes = generateSelfSignedCert(kp)
         val certB64 = Base64.getEncoder().encodeToString(certBytes)
-        
+
         val headerJson = """{"alg":"RS256","x5c":["$certB64"]}"""
         val payloadJson = """{"nonce":"${Base64.getEncoder().encodeToString(nonce)}","ctsProfileMatch":true,"timestampMs":1234567890}"""
-        
+
         val headerB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.toByteArray())
         val payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.toByteArray())
-        
+
         val signedData = "$headerB64.$payloadB64".toByteArray()
         val sig = signRS256(kp.private as RSAPrivateKey, signedData)
         val sigB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(sig)
-        
+
         val jws = "$headerB64.$payloadB64.$sigB64"
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(certBytes) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(certBytes) }
         val chainVerifier = TrustChainVerifier(trustSource)
         val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Valid, "Expected Valid, got $result")
     }
 
@@ -70,21 +71,21 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
 
         val certBytes = generateSelfSignedCert(kp)
         val certB64 = Base64.getEncoder().encodeToString(certBytes)
-        
+
         // Use the cert itself as the trust anchor
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(certBytes) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(certBytes) }
         val chainVerifier = TrustChainVerifier(trustSource)
 
         val headerJson = """{"alg":"RS256","x5c":["$certB64"]}"""
         val payloadJson = """{"nonce":"${Base64.getEncoder().encodeToString(nonce)}","ctsProfileMatch":true,"timestampMs":1234567890}"""
-        
+
         val headerB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.toByteArray())
         val payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.toByteArray())
-        
+
         val signedData = "$headerB64.$payloadB64".toByteArray()
         val sig = signRS256(kp.private as RSAPrivateKey, signedData)
         val sigB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(sig)
-        
+
         val jws = "$headerB64.$payloadB64.$sigB64"
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
@@ -92,7 +93,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Valid, "Expected Valid with trust anchor, got $result")
     }
 
@@ -132,7 +133,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         val invalidInput = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, invalidAttestation, authData)
         val invalidResult = verifier.verify(invalidInput)
         assertTrue(invalidResult is ValidationResult.Invalid)
-        assertTrue((invalidResult as ValidationResult.Invalid).errors.any { it.message.contains("Nonce mismatch") })
+        assertTrue(invalidResult.errors.any { it.message.contains("Nonce mismatch") })
     }
 
     @Test
@@ -140,34 +141,34 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         val kp = generateRSA2048KeyPair()
         val authData = sampleAuthDataBytes()
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
-        
+
         val certBytes = generateSelfSignedCert(kp)
         val certB64 = Base64.getEncoder().encodeToString(certBytes)
-        
+
         val headerJson = """{"alg":"RS256","x5c":["$certB64"]}"""
         // Invalid nonce (Base64 of random bytes)
         val invalidNonce = Base64.getEncoder().encodeToString(ByteArray(32))
         val payloadJson = """{"nonce":"$invalidNonce","ctsProfileMatch":true}"""
-        
+
         val headerB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.toByteArray())
         val payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.toByteArray())
-        
+
         val signedData = "$headerB64.$payloadB64".toByteArray()
         val sig = signRS256(kp.private as RSAPrivateKey, signedData)
         val sigB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(sig)
-        
+
         val jws = "$headerB64.$payloadB64.$sigB64"
 
         val attestationObject = buildSafetyNetAttestationObject(jws, authData)
 
-        val trustSource = dev.webauthn.crypto.TrustAnchorSource { _ -> base64UrlList(certBytes) }
+        val trustSource = TrustAnchorSource { _ -> base64UrlList(certBytes) }
         val chainVerifier = TrustChainVerifier(trustSource)
         val verifier = AndroidSafetyNetAttestationStatementVerifier(trustChainVerifier = chainVerifier)
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         val result = verifier.verify(input)
-        
+
         assertTrue(result is ValidationResult.Invalid)
-        assertTrue((result as ValidationResult.Invalid).errors.any { it.message.contains("Nonce mismatch") })
+        assertTrue(result.errors.any { it.message.contains("Nonce mismatch") })
     }
 
     private fun buildSafetyNetAttestationObject(jws: String, authData: ByteArray): ByteArray {
@@ -189,20 +190,20 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         return rpIdHash + flags + signCount + ByteArray(16) { 0x22 }
     }
     private fun sha256(data: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(data)
-    
+
     private fun generateRSA2048KeyPair(): java.security.KeyPair {
         val gen = KeyPairGenerator.getInstance("RSA")
         gen.initialize(2048)
         return gen.generateKeyPair()
     }
-    
+
     private fun signRS256(privateKey: RSAPrivateKey, data: ByteArray): ByteArray {
         val sig = Signature.getInstance("SHA256withRSA")
         sig.initSign(privateKey)
         sig.update(data)
         return sig.sign()
     }
-    
+
     private fun generateSelfSignedCert(
         keyPair: java.security.KeyPair,
         subjectCn: String = "attest.android.com",
@@ -211,7 +212,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
         val subjectPublicKeyInfo = keyPair.public.encoded
         val tbsCert = derSequence(
             derExplicit(0, derInteger(byteArrayOf(2))), // v3
-            derInteger(byteArrayOf(1)), 
+            derInteger(byteArrayOf(1)),
             derSequence(derOid(byteArrayOf(0x2A, 0x86.toByte(), 0x48, 0x86.toByte(), 0xF7.toByte(), 0x0D, 0x01, 0x01, 0x0B))), // sha256WithRSAEncryption
             derSequence(derSet(derSequence(derOid(byteArrayOf(0x55, 0x04, 0x03)), derUtf8String(subjectCn)))),
             derSequence(derUtcTime("260101000000Z"), derUtcTime("270101000000Z")),
@@ -254,7 +255,7 @@ class AndroidSafetyNetAttestationStatementVerifierTest {
             expectedOrigin = Origin.parseOrThrow("https://example.com"),
         )
     }
-    
+
     // ASN.1 helpers
     private fun derSequence(vararg items: ByteArray) = derTag(0x30, concat(*items))
     private fun derSet(vararg items: ByteArray) = derTag(0x31, concat(*items))

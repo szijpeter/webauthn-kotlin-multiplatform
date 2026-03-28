@@ -2,6 +2,7 @@ package dev.webauthn.server.crypto
 
 import dev.webauthn.core.RegistrationValidationInput
 import dev.webauthn.crypto.AttestationVerifier
+import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.crypto.SignatureVerifier
 import dev.webauthn.crypto.TrustAnchorSource
@@ -18,7 +19,7 @@ public class JvmRpIdHasher : RpIdHasher {
 /** JVM signature verifier backed by Signum COSE verification primitives. */
 public class JvmSignatureVerifier : SignatureVerifier {
     override fun verify(
-        algorithm: dev.webauthn.crypto.CoseAlgorithm,
+        algorithm: CoseAlgorithm,
         publicKeyCose: CosePublicKey,
         data: ByteArray,
         signature: ByteArray,

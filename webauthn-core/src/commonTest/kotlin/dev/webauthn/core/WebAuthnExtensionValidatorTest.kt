@@ -2,10 +2,13 @@ package dev.webauthn.core
 
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.LargeBlobExtensionInput
 import dev.webauthn.model.LargeBlobExtensionOutput
+import dev.webauthn.model.PrfExtensionInput
+import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -55,12 +58,12 @@ class WebAuthnExtensionValidatorTest {
     @Test
     fun registrationFailsIfPrfReportedDisabledButInputsProvided() {
         val inputs = AuthenticationExtensionsClientInputs(
-            prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1)),
+            prf = PrfExtensionInput(
+                eval = AuthenticationExtensionsPRFValues(bytes(1)),
             ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
-            prf = dev.webauthn.model.PrfExtensionOutput(enabled = false)
+            prf = PrfExtensionOutput(enabled = false)
         )
 
         val result = WebAuthnExtensionValidator.validateRegistrationExtensions(inputs, outputs)
@@ -70,8 +73,8 @@ class WebAuthnExtensionValidatorTest {
     @Test
     fun registrationFailsIfPrfRequestedButOutputMissing() {
         val inputs = AuthenticationExtensionsClientInputs(
-            prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1)),
+            prf = PrfExtensionInput(
+                eval = AuthenticationExtensionsPRFValues(bytes(1)),
             ),
         )
 
@@ -82,12 +85,12 @@ class WebAuthnExtensionValidatorTest {
     @Test
     fun authenticationFailsIfPrfRequestedButResultsMissing() {
         val inputs = AuthenticationExtensionsClientInputs(
-            prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1)),
+            prf = PrfExtensionInput(
+                eval = AuthenticationExtensionsPRFValues(bytes(1)),
             ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
-            prf = dev.webauthn.model.PrfExtensionOutput(
+            prf = PrfExtensionOutput(
                 enabled = true,
                 results = null,
             ),
@@ -100,13 +103,13 @@ class WebAuthnExtensionValidatorTest {
     @Test
     fun authenticationFailsIfPrfResultsMissingSecondOutput() {
         val inputs = AuthenticationExtensionsClientInputs(
-            prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
+            prf = PrfExtensionInput(
+                eval = AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
             ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
-            prf = dev.webauthn.model.PrfExtensionOutput(
-                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(3)), // missing second
+            prf = PrfExtensionOutput(
+                results = AuthenticationExtensionsPRFValues(bytes(3)), // missing second
             ),
         )
 
@@ -117,13 +120,13 @@ class WebAuthnExtensionValidatorTest {
     @Test
     fun authenticationPassesIfPrfResultsMatchRequestedOutputCount() {
         val inputs = AuthenticationExtensionsClientInputs(
-            prf = dev.webauthn.model.PrfExtensionInput(
-                eval = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
+            prf = PrfExtensionInput(
+                eval = AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
             ),
         )
         val outputs = AuthenticationExtensionsClientOutputs(
-            prf = dev.webauthn.model.PrfExtensionOutput(
-                results = dev.webauthn.model.AuthenticationExtensionsPRFValues(bytes(3), bytes(4)),
+            prf = PrfExtensionOutput(
+                results = AuthenticationExtensionsPRFValues(bytes(3), bytes(4)),
             ),
         )
 

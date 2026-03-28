@@ -4,6 +4,7 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Aaguid
+import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.RegistrationResponse
@@ -12,6 +13,9 @@ import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.AuthenticatorTransport
+import dev.webauthn.model.Challenge
+import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.WebAuthnValidationError
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -409,7 +413,7 @@ class WebAuthnDtoMapperTest {
         assertTrue(result is ValidationResult.Invalid)
         assertTrue(
             result.errors.any {
-                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                it is WebAuthnValidationError.InvalidValue &&
                     it.field == "excludeCredentials[0].type"
             },
         )
@@ -430,7 +434,7 @@ class WebAuthnDtoMapperTest {
         assertTrue(result is ValidationResult.Invalid)
         assertTrue(
             result.errors.any {
-                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                it is WebAuthnValidationError.InvalidValue &&
                     it.field == "allowCredentials[0].type"
             },
         )
@@ -460,7 +464,7 @@ class WebAuthnDtoMapperTest {
         assertTrue(result is ValidationResult.Invalid)
         assertTrue(
             result.errors.any {
-                it is dev.webauthn.model.WebAuthnValidationError.InvalidValue &&
+                it is WebAuthnValidationError.InvalidValue &&
                     it.field == "userVerification"
             }
         )
@@ -468,8 +472,8 @@ class WebAuthnDtoMapperTest {
 
     @Test
     fun requestOptionsFromModelOmitsRpIdWhenNotProvided() {
-        val model = dev.webauthn.model.PublicKeyCredentialRequestOptions(
-            challenge = dev.webauthn.model.Challenge.fromBytes(ByteArray(32) { 9 }),
+        val model = PublicKeyCredentialRequestOptions(
+            challenge = Challenge.fromBytes(ByteArray(32) { 9 }),
             rpId = null,
         )
 
@@ -509,7 +513,7 @@ class WebAuthnDtoMapperTest {
             flags = 0x01,
             signCount = 5,
         )
-        val model = dev.webauthn.model.AuthenticationResponse(
+        val model = AuthenticationResponse(
             credentialId = credentialId,
             clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
             rawAuthenticatorData = Base64UrlBytes.fromBytes(authenticatorDataBytes),

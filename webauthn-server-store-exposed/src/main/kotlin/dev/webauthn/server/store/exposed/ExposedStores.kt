@@ -5,21 +5,23 @@ package dev.webauthn.server.store.exposed
 import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
+import dev.webauthn.model.UserVerificationRequirement
+import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.getOrThrow
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.ChallengeStore
 import dev.webauthn.server.CredentialStore
 import dev.webauthn.server.StoredCredential
 import dev.webauthn.server.UserAccount
 import dev.webauthn.server.UserAccountStore
-import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.core.Column
 import org.jetbrains.exposed.v1.core.Table
@@ -31,9 +33,9 @@ import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.exists
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.update
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 
 /** Exposed table storing one-time challenge sessions. */
@@ -165,7 +167,7 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
             val row = ChallengeSessions.selectAll().where { ChallengeSessions.challengeKey eq key }
                 .forUpdate()
                 .singleOrNull() ?: return@ioTransaction null
-            
+
             val session = ChallengeSession(
                 challenge = Challenge.parseOrThrow(row[ChallengeSessions.challengeValue]),
                 rpId = RpId.parseOrThrow(row[ChallengeSessions.rpId]),
@@ -174,18 +176,18 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                 createdAtEpochMs = row[ChallengeSessions.createdAtEpochMs],
                 expiresAtEpochMs = row[ChallengeSessions.expiresAtEpochMs],
                 type = CeremonyType.valueOf(row[ChallengeSessions.ceremonyType]),
-                userVerification = row[ChallengeSessions.userVerification]?.let { dev.webauthn.model.UserVerificationRequirement.valueOf(it) },
+                userVerification = row[ChallengeSessions.userVerification]?.let { UserVerificationRequirement.valueOf(it) },
                 extensions = row[ChallengeSessions.extensions]?.let { json ->
                     val dto = Json.decodeFromString<AuthenticationExtensionsClientInputsDto>(json)
                     when (val res = WebAuthnDtoMapper.toModelValidated(dto)) {
-                        is dev.webauthn.model.ValidationResult.Valid -> res.value
-                        is dev.webauthn.model.ValidationResult.Invalid -> null
+                        is ValidationResult.Valid -> res.value
+                        is ValidationResult.Invalid -> null
                     }
                 },
             )
-            
+
             ChallengeSessions.deleteWhere { challengeKey eq key }
-            
+
             session
         }
     }
@@ -227,7 +229,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
                         userId = UserHandle.parse(row[Credentials.userId]).getOrThrow(),
                         rpId = RpId.parseOrThrow(row[Credentials.rpId]),
-                        publicKeyCose = dev.webauthn.model.CosePublicKey.fromBytes(row[Credentials.publicKey]),
+                        publicKeyCose = CosePublicKey.fromBytes(row[Credentials.publicKey]),
                         signCount = row[Credentials.signCount],
                     )
                 }
@@ -242,7 +244,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
                         userId = UserHandle.parse(row[Credentials.userId]).getOrThrow(),
                         rpId = RpId.parseOrThrow(row[Credentials.rpId]),
-                        publicKeyCose = dev.webauthn.model.CosePublicKey.fromBytes(row[Credentials.publicKey]),
+                        publicKeyCose = CosePublicKey.fromBytes(row[Credentials.publicKey]),
                         signCount = row[Credentials.signCount],
                     )
                 }

@@ -8,6 +8,7 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -313,7 +314,7 @@ class PackedAttestationStatementVerifierTest {
 
     private fun derOctetString(value: ByteArray): ByteArray =
         derTag(0x04, value)
-    
+
     private fun derBitString(value: ByteArray): ByteArray =
         derTag(0x03, concat(byteArrayOf(0x00), value)) // 0 unused bits
 
@@ -398,7 +399,7 @@ class PackedAttestationStatementVerifierTest {
                 attestedCredentialData = AttestedCredentialData(
                     aaguid = aaguid(),
                     credentialId = credentialId,
-                    cosePublicKey = dev.webauthn.model.CosePublicKey.fromBytes(cosePublicKey),
+                    cosePublicKey = CosePublicKey.fromBytes(cosePublicKey),
                 ),
             ),
             clientData = CollectedClientData(
@@ -528,11 +529,11 @@ class PackedAttestationStatementVerifierTest {
         val attCert = generateAttestationCertWithAaguid(kp, aaguidInCert)
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val clientDataJson = """{"type":"webauthn.create","challenge":"AAAA","origin":"https://example.com"}""".toByteArray()
-        
+
         // AuthData has different AAGUID
         val authDataAaguid = ByteArray(16) { 0xBB.toByte() }
         val authData = sampleAuthDataBytesWithAaguid(authDataAaguid)
-        
+
         val clientDataHash = sha256(clientDataJson)
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
@@ -565,7 +566,7 @@ class PackedAttestationStatementVerifierTest {
 
     private fun generateAttestationCertWithAaguid(keyPair: java.security.KeyPair, aaguid: ByteArray): ByteArray {
         val subjectPublicKeyInfo = keyPair.public.encoded
-        
+
         // Extensions
         // 1.3.6.1.4.1.45724.1.1.4
         val aaguidOid = byteArrayOf(0x2B, 0x06, 0x01, 0x04, 0x01, 0x82.toByte(), 0xE5.toByte(), 0x1C, 0x01, 0x01, 0x04)
@@ -573,16 +574,16 @@ class PackedAttestationStatementVerifierTest {
         val extValue = derOctetString(aaguid)
         // Extension sequence: OID, OCTET STRING(extValue)
         val extension = derSequence(derOid(aaguidOid), derOctetString(extValue))
-        
+
         val extensions = derSequence(extension)
         val tbsExtensions = derExplicit(3, extensions)
 
         // DN
         val rdnSequence = derSequence(derSet(derSequence(derOid(OID_ORG_UNIT), derUtf8String("Authenticator Attestation"))))
-        
+
         val tbsCert = derSequence(
             derExplicit(0, derInteger(byteArrayOf(0x02))), // v3
-            derInteger(byteArrayOf(0x02)), 
+            derInteger(byteArrayOf(0x02)),
             derSequence(derOid(OID_SHA256_WITH_ECDSA)),
             rdnSequence,
             derSequence(derUtcTime("260101000000Z"), derUtcTime("270101000000Z")),
@@ -590,7 +591,7 @@ class PackedAttestationStatementVerifierTest {
             derRaw(subjectPublicKeyInfo),
             tbsExtensions
         )
-        
+
         val sig = Signature.getInstance("SHA256withECDSA")
         sig.initSign(keyPair.private)
         sig.update(tbsCert)

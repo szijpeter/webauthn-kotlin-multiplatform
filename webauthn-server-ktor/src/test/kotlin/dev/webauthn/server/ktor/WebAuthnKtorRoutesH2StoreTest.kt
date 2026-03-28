@@ -4,6 +4,7 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.server.AttestationPolicy
 import dev.webauthn.server.AuthenticationService
+import dev.webauthn.server.H2StoreTestAdapter
 import dev.webauthn.server.RegistrationService
 import dev.webauthn.server.byteArraySignatureVerifier
 import dev.webauthn.server.crypto.JvmRpIdHasher
@@ -24,7 +25,7 @@ class WebAuthnKtorRoutesH2StoreTest {
     @OptIn(ExperimentalWebAuthnL3Api::class)
     @Test
     fun registrationAndAuthenticationStartRoutesWorkWithH2BackedStores() = testApplication {
-        val adapter = dev.webauthn.server.H2StoreTestAdapter.createTemporary()
+        val adapter = H2StoreTestAdapter.createTemporary()
         val challengeStore = adapter.challengeStore
         val credentialStore = adapter.credentialStore
         val userStore = adapter.userStore

@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-26
+Last updated: 2026-03-28
 
 ## Status Legend
 
@@ -13,6 +13,7 @@ Last updated: 2026-03-26
 ## Overall Snapshot
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
+- Kotlin import hygiene update (2026-03-28): code-body fully qualified type references were removed across touched modules in favor of imports and explicit aliases where needed; this is a readability/maintainability refactor with no runtime or API semantic change.
 - Core validator API KDoc coverage now documents registration/authentication/allow-list validation entry points plus extension-hook contracts; this is a documentation-only clarification with no runtime semantic change.
 - Documentation hardening update (2026-03-25): module READMEs for model/core/client-core/client-compose/client-prf-crypto were upgraded with Mermaid diagrams and scenario-driven usage notes, core extension/origin validator KDocs were expanded, and strict changed-scope quality gates now include Mermaid diagram parse validation.
 - Documentation breadth update (2026-03-25): the remaining module READMEs (BOM, crypto contracts, JVM server modules, transport adapters, platform client adapters, serialization, MDS trust source, and CBOR core helper) were upgraded with Mermaid diagrams plus practical integration guidance; this is a docs-only clarification with no runtime/API semantics change.
