@@ -4,6 +4,7 @@ import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.model.WebAuthnValidationError
 
 /**
@@ -15,9 +16,9 @@ import dev.webauthn.model.WebAuthnValidationError
  * or rely on [WebAuthnExtensionValidator] which includes it by default.
  */
 @ExperimentalWebAuthnL3Api
-public object PrfExtensionHook : WebAuthnExtensionHook {
+public object PrfExtensionHook : TargetedExtensionHook {
 
-    override val extensionId: String = "prf"
+    override val extension: WebAuthnExtension = WebAuthnExtension.Prf
 
     /**
      * Registration: verifies that a requested PRF extension yields output metadata

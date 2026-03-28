@@ -5,6 +5,7 @@ import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.LargeBlobExtensionInput
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.model.WebAuthnValidationError
 
 /**
@@ -16,9 +17,9 @@ import dev.webauthn.model.WebAuthnValidationError
  * or rely on [WebAuthnExtensionValidator] which includes it by default.
  */
 @ExperimentalWebAuthnL3Api
-public object LargeBlobExtensionHook : WebAuthnExtensionHook {
+public object LargeBlobExtensionHook : TargetedExtensionHook {
 
-    override val extensionId: String = "largeBlob"
+    override val extension: WebAuthnExtension = WebAuthnExtension.LargeBlob
 
     /**
      * Registration: verifies that `largeBlob.support == REQUIRED` is reflected

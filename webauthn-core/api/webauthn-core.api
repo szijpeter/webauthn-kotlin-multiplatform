@@ -76,14 +76,13 @@ public final class dev/webauthn/core/ChallengeSession {
 
 public final class dev/webauthn/core/CompositeExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
 	public fun <init> (Ljava/util/List;)V
-	public fun getExtensionId ()Ljava/lang/String;
 	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 }
 
-public final class dev/webauthn/core/LargeBlobExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
+public final class dev/webauthn/core/LargeBlobExtensionHook : dev/webauthn/core/TargetedExtensionHook {
 	public static final field INSTANCE Ldev/webauthn/core/LargeBlobExtensionHook;
-	public fun getExtensionId ()Ljava/lang/String;
+	public fun getExtension ()Ldev/webauthn/model/WebAuthnExtension;
 	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 }
@@ -97,9 +96,9 @@ public abstract interface class dev/webauthn/core/OriginMetadataProvider {
 	public abstract fun getRelatedOrigins-w6KIa9k (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class dev/webauthn/core/PrfExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
+public final class dev/webauthn/core/PrfExtensionHook : dev/webauthn/core/TargetedExtensionHook {
 	public static final field INSTANCE Ldev/webauthn/core/PrfExtensionHook;
-	public fun getExtensionId ()Ljava/lang/String;
+	public fun getExtension ()Ldev/webauthn/model/WebAuthnExtension;
 	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 }
@@ -142,6 +141,10 @@ public final class dev/webauthn/core/RegistrationValidationOutput {
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class dev/webauthn/core/TargetedExtensionHook : dev/webauthn/core/WebAuthnExtensionHook {
+	public abstract fun getExtension ()Ldev/webauthn/model/WebAuthnExtension;
+}
+
 public final class dev/webauthn/core/UserVerificationPolicy : java/lang/Enum {
 	public static final field DISCOURAGED Ldev/webauthn/core/UserVerificationPolicy;
 	public static final field PREFERRED Ldev/webauthn/core/UserVerificationPolicy;
@@ -176,14 +179,12 @@ public final class dev/webauthn/core/WebAuthnCoreValidator {
 }
 
 public abstract interface class dev/webauthn/core/WebAuthnExtensionHook {
-	public abstract fun getExtensionId ()Ljava/lang/String;
 	public abstract fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 	public abstract fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 }
 
 public final class dev/webauthn/core/WebAuthnExtensionValidator : dev/webauthn/core/WebAuthnExtensionHook {
 	public static final field INSTANCE Ldev/webauthn/core/WebAuthnExtensionValidator;
-	public fun getExtensionId ()Ljava/lang/String;
 	public fun validateAuthenticationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 	public fun validateRegistrationExtensions (Ldev/webauthn/model/AuthenticationExtensionsClientInputs;Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;)Ldev/webauthn/model/ValidationResult;
 }

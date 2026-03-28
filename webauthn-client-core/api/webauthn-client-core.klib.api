@@ -268,25 +268,32 @@ sealed class dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/Pass
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Custom.toString|toString(){}[0]
     }
 
-    final object LargeBlobRead : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.LargeBlobRead|null[0]
+    sealed class ExtensionBacked : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.ExtensionBacked|null[0]
+        final val extension // dev.webauthn.client/PasskeyCapability.ExtensionBacked.extension|{}extension[0]
+            final fun <get-extension>(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.client/PasskeyCapability.ExtensionBacked.extension.<get-extension>|<get-extension>(){}[0]
+    }
+
+    sealed class PlatformFeature : dev.webauthn.client/PasskeyCapability // dev.webauthn.client/PasskeyCapability.PlatformFeature|null[0]
+
+    final object LargeBlobRead : dev.webauthn.client/PasskeyCapability.ExtensionBacked { // dev.webauthn.client/PasskeyCapability.LargeBlobRead|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.LargeBlobRead.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.LargeBlobRead.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.LargeBlobRead.toString|toString(){}[0]
     }
 
-    final object LargeBlobWrite : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.LargeBlobWrite|null[0]
+    final object LargeBlobWrite : dev.webauthn.client/PasskeyCapability.ExtensionBacked { // dev.webauthn.client/PasskeyCapability.LargeBlobWrite|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.LargeBlobWrite.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.LargeBlobWrite.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.LargeBlobWrite.toString|toString(){}[0]
     }
 
-    final object Prf : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.Prf|null[0]
+    final object Prf : dev.webauthn.client/PasskeyCapability.ExtensionBacked { // dev.webauthn.client/PasskeyCapability.Prf|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.Prf.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.Prf.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Prf.toString|toString(){}[0]
     }
 
-    final object SecurityKey : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.SecurityKey|null[0]
+    final object SecurityKey : dev.webauthn.client/PasskeyCapability.PlatformFeature { // dev.webauthn.client/PasskeyCapability.SecurityKey|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.SecurityKey.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.SecurityKey.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.SecurityKey.toString|toString(){}[0]

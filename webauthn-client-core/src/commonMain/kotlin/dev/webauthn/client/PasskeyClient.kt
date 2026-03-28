@@ -7,6 +7,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.WebAuthnExtension
 
 /** Public cross-platform API for WebAuthn registration and authentication ceremonies. */
 public interface PasskeyClient {
@@ -33,23 +34,33 @@ public interface PasskeyClient {
  * Represents a capability or extension that a passkey client, platform bridge,
  * or authenticator might support.
  *
- * Known standard capabilities are defined as objects, while new or proprietary
- * capabilities can be defined using [Custom].
+ * Capabilities map either to W3C WebAuthn [ExtensionBacked] features, or pure 
+ * [PlatformFeature] behaviors. New or proprietary capabilities use [Custom].
  */
 public sealed class PasskeyCapability(public val key: String) {
+
+    /** A capability that resolves directly to a specific W3C protocol extension identifier. */
+    public sealed class ExtensionBacked(
+        public val extension: WebAuthnExtension,
+        overrideKey: String = extension.identifier,
+    ) : PasskeyCapability(overrideKey)
+
+    /** A capability that represents a literal platform transport or OS feature without a protocol payload. */
+    public sealed class PlatformFeature(key: String) : PasskeyCapability(key)
+
     /** W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf) */
-    public data object Prf : PasskeyCapability("prf")
+    public data object Prf : ExtensionBacked(WebAuthnExtension.Prf)
 
     /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — read support. */
-    public data object LargeBlobRead : PasskeyCapability("largeBlobRead")
+    public data object LargeBlobRead : ExtensionBacked(WebAuthnExtension.LargeBlob, overrideKey = "largeBlobRead")
 
     /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — write support. */
-    public data object LargeBlobWrite : PasskeyCapability("largeBlobWrite")
+    public data object LargeBlobWrite : ExtensionBacked(WebAuthnExtension.LargeBlob, overrideKey = "largeBlobWrite")
 
     /** Platform transport capability: security key (cross-platform authenticator) support. */
-    public data object SecurityKey : PasskeyCapability("securityKey")
+    public data object SecurityKey : PlatformFeature("securityKey")
 
-    /** Fallback for proprietary or draft extensions not yet modeled in the core. */
+    /** Fallback for proprietary, draft, or unrecognized capabilities not yet modeled in the core. */
     public data class Custom(val identifier: String) : PasskeyCapability(identifier)
 }
 

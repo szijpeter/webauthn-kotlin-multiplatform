@@ -75,9 +75,6 @@ public data class AuthenticationValidationOutput(
 /** Extension validation hook for optional WebAuthn Level 3 client extension processing. */
 @ExperimentalWebAuthnL3Api
 public interface WebAuthnExtensionHook {
-    /** The WebAuthn protocol identifier for the extension this hook validates. */
-    public val extensionId: String
-
     /** Validates extension input/output consistency for registration ceremonies. */
     public fun validateRegistrationExtensions(
         inputs: AuthenticationExtensionsClientInputs?,
@@ -89,4 +86,17 @@ public interface WebAuthnExtensionHook {
         inputs: AuthenticationExtensionsClientInputs?,
         outputs: AuthenticationExtensionsClientOutputs?,
     ): ValidationResult<Unit>
+}
+
+/** 
+ * Extension validation hook that maps explicitly to a single W3C WebAuthn protocol extension. 
+ *
+ * Use this interface when implementing logic targeting exactly one extension 
+ * (e.g. `PrfExtensionHook`, `LargeBlobExtensionHook`). 
+ * For structural/composite hooks, implement [WebAuthnExtensionHook] directly.
+ */
+@ExperimentalWebAuthnL3Api
+public interface TargetedExtensionHook : WebAuthnExtensionHook {
+    /** The specific W3C protocol extension this hook targets. */
+    public val extension: dev.webauthn.model.WebAuthnExtension
 }
