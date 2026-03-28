@@ -34,7 +34,7 @@ public suspend fun <T> suspendCatchingNonCancellation(block: suspend () -> T): R
  * See [kotlinx.coroutines#1814](https://github.com/Kotlin/kotlinx.coroutines/issues/1814).
  */
 @Suppress("TooGenericExceptionCaught")
-public suspend inline fun <T> runSuspendCatching(block: () -> T): Result<T> {
+public suspend inline fun <T> runSuspendCatching(block: suspend () -> T): Result<T> {
     return try {
         Result.success(block())
     } catch (e: CancellationException) {
@@ -56,7 +56,7 @@ public suspend inline fun <T> runSuspendCatching(block: () -> T): Result<T> {
  * See [kotlinx.coroutines#1814](https://github.com/Kotlin/kotlinx.coroutines/issues/1814).
  */
 public suspend inline fun <T, R> Result<T>.mapSuspendCatching(
-    transform: (T) -> R,
+    transform: suspend (T) -> R,
 ): Result<R> {
     val value = getOrElse { return Result.failure(it) }
     return runSuspendCatching { transform(value) }
