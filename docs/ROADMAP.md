@@ -77,5 +77,5 @@ Definition of done:
 ## Active Priorities (Next 3)
 
 1. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
-2. Keep `kotlinx-serialization` pinned to `1.9.0` until Signum compatibility blocker [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved, then rerun captured vector checks during unpin.
+2. Keep captured assertion-vector checks as a standing guardrail while running the coordinated dependency set (`kotlinx-serialization 1.10.0`, Signum `0.12.0`, indispensable `3.20.0`).
 3. Keep outreach-facing docs current as sample flows evolve (sample recordings were added to the root README on 2026-03-26).

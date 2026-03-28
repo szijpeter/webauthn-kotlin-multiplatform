@@ -4,22 +4,22 @@
 
 `webauthn-server-jvm-crypto` is Signum-first:
 
-- `at.asitplus.signum:supreme-jvm:0.11.3`
-- `at.asitplus.signum:indispensable-cosef-jvm:3.19.3`
-- `at.asitplus.signum:indispensable-josef-jvm:3.19.3`
+- `at.asitplus.signum:supreme-jvm:0.12.0`
+- `at.asitplus.signum:indispensable-cosef-jvm:3.20.0`
+- `at.asitplus.signum:indispensable-josef-jvm:3.20.0`
 
 These power runtime hashing, COSE decoding, signature parsing/verification, and SafetyNet JWS decoding.
 
-`kotlinx-serialization` remains pinned to `1.9.x` for now.
-We attempted an unpin to `1.10.0` with captured Android assertion vectors and observed signature verification regressions in Signum-backed authentication verification.
-Tracking issue: [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415).
+`kotlinx-serialization` is unpinned and currently set to `1.10.0`.
+The failing combination (`1.10.0` with older Signum runtime artifacts) is now avoided by upgrading the Signum set together.
+Upstream tracking context: [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) and fix PR [a-sit-plus/signum#416](https://github.com/a-sit-plus/signum/pull/416) included in Signum `3.20.0` / Supreme `0.12.0`.
 
-Unpin policy:
+Compatibility policy:
 
 1. Keep runtime Signum-only (no JCA fallback in production paths).
-2. Keep `serialization = "1.9.0"` pinned in `gradle/libs.versions.toml` until compatibility is resolved.
+2. Keep `serialization` + `signum` + `signum-indispensable` updated as a coordinated dependency set.
 3. Keep captured Android assertion-vector regression tests green (`ServiceSmokeTest.authenticationFinishSupportsCapturedAndroidAssertionVector` and `ServiceSmokeTest.jvmSignatureVerifierSupportsCapturedAndroidAssertionVector`).
-4. Revisit `1.10.x` only after [a-sit-plus/signum#415](https://github.com/a-sit-plus/signum/issues/415) is resolved.
+4. Treat single-dependency bumps that split this set as unsafe until the vector checks pass on that exact mix.
 
 ## Remaining JCA Boundary
 
