@@ -21,5 +21,11 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook by CompositeExt
     listOf(
         LargeBlobExtensionHook,
         PrfExtensionHook,
+        // NOTE: Implement and add hooks for remaining standard extensions:
+        //  - CredPropsExtensionHook
+        //  - DevicePubKeyExtensionHook
+        //  - UvmExtensionHook
+        //  - AppIdExcludeExtensionHook
+        //  - AppIdExtensionHook
     ),
 )
