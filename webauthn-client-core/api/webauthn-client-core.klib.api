@@ -234,16 +234,16 @@ final class dev.webauthn.client/DefaultPasskeyClient : dev.webauthn.client/Passk
 }
 
 final class dev.webauthn.client/PasskeyCapabilities { // dev.webauthn.client/PasskeyCapabilities|null[0]
-    constructor <init>(kotlin.collections/Map<kotlin/String, kotlin/Boolean> = ..., kotlin.collections/List<kotlin/String> = ...) // dev.webauthn.client/PasskeyCapabilities.<init>|<init>(kotlin.collections.Map<kotlin.String,kotlin.Boolean>;kotlin.collections.List<kotlin.String>){}[0]
+    constructor <init>(kotlin.collections/Map<dev.webauthn.client/PasskeyCapability, kotlin/Boolean> = ..., kotlin.collections/List<kotlin/String> = ...) // dev.webauthn.client/PasskeyCapabilities.<init>|<init>(kotlin.collections.Map<dev.webauthn.client.PasskeyCapability,kotlin.Boolean>;kotlin.collections.List<kotlin.String>){}[0]
 
     final val capabilities // dev.webauthn.client/PasskeyCapabilities.capabilities|{}capabilities[0]
-        final fun <get-capabilities>(): kotlin.collections/Map<kotlin/String, kotlin/Boolean> // dev.webauthn.client/PasskeyCapabilities.capabilities.<get-capabilities>|<get-capabilities>(){}[0]
+        final fun <get-capabilities>(): kotlin.collections/Map<dev.webauthn.client/PasskeyCapability, kotlin/Boolean> // dev.webauthn.client/PasskeyCapabilities.capabilities.<get-capabilities>|<get-capabilities>(){}[0]
     final val platformVersionHints // dev.webauthn.client/PasskeyCapabilities.platformVersionHints|{}platformVersionHints[0]
         final fun <get-platformVersionHints>(): kotlin.collections/List<kotlin/String> // dev.webauthn.client/PasskeyCapabilities.platformVersionHints.<get-platformVersionHints>|<get-platformVersionHints>(){}[0]
 
-    final fun component1(): kotlin.collections/Map<kotlin/String, kotlin/Boolean> // dev.webauthn.client/PasskeyCapabilities.component1|component1(){}[0]
+    final fun component1(): kotlin.collections/Map<dev.webauthn.client/PasskeyCapability, kotlin/Boolean> // dev.webauthn.client/PasskeyCapabilities.component1|component1(){}[0]
     final fun component2(): kotlin.collections/List<kotlin/String> // dev.webauthn.client/PasskeyCapabilities.component2|component2(){}[0]
-    final fun copy(kotlin.collections/Map<kotlin/String, kotlin/Boolean> = ..., kotlin.collections/List<kotlin/String> = ...): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyCapabilities.copy|copy(kotlin.collections.Map<kotlin.String,kotlin.Boolean>;kotlin.collections.List<kotlin.String>){}[0]
+    final fun copy(kotlin.collections/Map<dev.webauthn.client/PasskeyCapability, kotlin/Boolean> = ..., kotlin.collections/List<kotlin/String> = ...): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyCapabilities.copy|copy(kotlin.collections.Map<dev.webauthn.client.PasskeyCapability,kotlin.Boolean>;kotlin.collections.List<kotlin.String>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapabilities.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapabilities.hashCode|hashCode(){}[0]
     final fun supports(dev.webauthn.client/PasskeyCapability): kotlin/Boolean // dev.webauthn.client/PasskeyCapabilities.supports|supports(dev.webauthn.client.PasskeyCapability){}[0]
@@ -258,15 +258,37 @@ sealed class dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/Pass
     final class Custom : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.Custom|null[0]
         constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyCapability.Custom.<init>|<init>(kotlin.String){}[0]
 
+        final val identifier // dev.webauthn.client/PasskeyCapability.Custom.identifier|{}identifier[0]
+            final fun <get-identifier>(): kotlin/String // dev.webauthn.client/PasskeyCapability.Custom.identifier.<get-identifier>|<get-identifier>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.client/PasskeyCapability.Custom.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyCapability.Custom // dev.webauthn.client/PasskeyCapability.Custom.copy|copy(kotlin.String){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.Custom.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.Custom.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Custom.toString|toString(){}[0]
     }
 
-    final object LargeBlobRead : dev.webauthn.client/PasskeyCapability // dev.webauthn.client/PasskeyCapability.LargeBlobRead|null[0]
+    final object LargeBlobRead : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.LargeBlobRead|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.LargeBlobRead.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.LargeBlobRead.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.LargeBlobRead.toString|toString(){}[0]
+    }
 
-    final object LargeBlobWrite : dev.webauthn.client/PasskeyCapability // dev.webauthn.client/PasskeyCapability.LargeBlobWrite|null[0]
+    final object LargeBlobWrite : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.LargeBlobWrite|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.LargeBlobWrite.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.LargeBlobWrite.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.LargeBlobWrite.toString|toString(){}[0]
+    }
 
-    final object Prf : dev.webauthn.client/PasskeyCapability // dev.webauthn.client/PasskeyCapability.Prf|null[0]
+    final object Prf : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.Prf|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.Prf.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.Prf.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Prf.toString|toString(){}[0]
+    }
 
-    final object SecurityKey : dev.webauthn.client/PasskeyCapability // dev.webauthn.client/PasskeyCapability.SecurityKey|null[0]
+    final object SecurityKey : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.SecurityKey|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.SecurityKey.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.SecurityKey.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.SecurityKey.toString|toString(){}[0]
+    }
 }

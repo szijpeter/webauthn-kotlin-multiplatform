@@ -103,10 +103,10 @@ internal class IosPasskeyPlatformBridge(
         val major = version.useContents { majorVersion.toInt() }
         return PasskeyCapabilities(
             capabilities = mapOf(
-                PasskeyCapability.Prf.key to (major >= 18),
-                PasskeyCapability.LargeBlobRead.key to (major >= 17),
-                PasskeyCapability.LargeBlobWrite.key to (major >= 17),
-                PasskeyCapability.SecurityKey.key to (major >= 15),
+                PasskeyCapability.Prf to (major >= 18),
+                PasskeyCapability.LargeBlobRead to (major >= 17),
+                PasskeyCapability.LargeBlobWrite to (major >= 17),
+                PasskeyCapability.SecurityKey to (major >= 15),
             ),
             platformVersionHints = listOf("iosMajor=$major"),
         )

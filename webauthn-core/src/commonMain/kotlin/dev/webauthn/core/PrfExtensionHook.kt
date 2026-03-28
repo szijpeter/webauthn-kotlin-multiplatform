@@ -17,6 +17,8 @@ import dev.webauthn.model.WebAuthnValidationError
 @ExperimentalWebAuthnL3Api
 public object PrfExtensionHook : WebAuthnExtensionHook {
 
+    override val extensionId: String = "prf"
+
     /**
      * Registration: verifies that a requested PRF extension yields output metadata
      * and that the authenticator does not report PRF as disabled when eval was provided.

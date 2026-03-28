@@ -37,24 +37,41 @@ public abstract class dev/webauthn/client/PasskeyCapability {
 
 public final class dev/webauthn/client/PasskeyCapability$Custom : dev/webauthn/client/PasskeyCapability {
 	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyCapability$Custom;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapability$Custom;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapability$Custom;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIdentifier ()Ljava/lang/String;
 	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/client/PasskeyCapability$LargeBlobRead : dev/webauthn/client/PasskeyCapability {
 	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlobRead;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/client/PasskeyCapability$LargeBlobWrite : dev/webauthn/client/PasskeyCapability {
 	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlobWrite;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/client/PasskeyCapability$Prf : dev/webauthn/client/PasskeyCapability {
 	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$Prf;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/client/PasskeyCapability$SecurityKey : dev/webauthn/client/PasskeyCapability {
 	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$SecurityKey;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class dev/webauthn/client/PasskeyClient {

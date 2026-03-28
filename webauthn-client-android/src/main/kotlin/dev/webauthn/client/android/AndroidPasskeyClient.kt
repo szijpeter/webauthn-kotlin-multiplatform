@@ -110,10 +110,10 @@ internal class AndroidPasskeyPlatformBridge(
         val supportsExtensions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         return PasskeyCapabilities(
             capabilities = mapOf(
-                PasskeyCapability.Prf.key to supportsExtensions,
-                PasskeyCapability.LargeBlobRead.key to supportsExtensions,
-                PasskeyCapability.LargeBlobWrite.key to supportsExtensions,
-                PasskeyCapability.SecurityKey.key to true,
+                PasskeyCapability.Prf to supportsExtensions,
+                PasskeyCapability.LargeBlobRead to supportsExtensions,
+                PasskeyCapability.LargeBlobWrite to supportsExtensions,
+                PasskeyCapability.SecurityKey to true,
             ),
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )

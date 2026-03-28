@@ -23,6 +23,8 @@ public class CompositeExtensionHook(
     private val hooks: List<WebAuthnExtensionHook>,
 ) : WebAuthnExtensionHook {
 
+    override val extensionId: String = hooks.joinToString(separator = ",") { it.extensionId }
+
     override fun validateRegistrationExtensions(
         inputs: AuthenticationExtensionsClientInputs?,
         outputs: AuthenticationExtensionsClientOutputs?,

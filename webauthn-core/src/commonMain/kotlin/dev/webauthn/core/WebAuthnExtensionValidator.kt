@@ -17,22 +17,9 @@ import dev.webauthn.model.ValidationResult
  * own hook pipeline using [CompositeExtensionHook] or individual hooks directly.
  */
 @ExperimentalWebAuthnL3Api
-public object WebAuthnExtensionValidator : WebAuthnExtensionHook {
-
-    private val delegate: WebAuthnExtensionHook = CompositeExtensionHook(
-        listOf(
-            LargeBlobExtensionHook,
-            PrfExtensionHook,
-        ),
-    )
-
-    override fun validateRegistrationExtensions(
-        inputs: AuthenticationExtensionsClientInputs?,
-        outputs: AuthenticationExtensionsClientOutputs?,
-    ): ValidationResult<Unit> = delegate.validateRegistrationExtensions(inputs, outputs)
-
-    override fun validateAuthenticationExtensions(
-        inputs: AuthenticationExtensionsClientInputs?,
-        outputs: AuthenticationExtensionsClientOutputs?,
-    ): ValidationResult<Unit> = delegate.validateAuthenticationExtensions(inputs, outputs)
-}
+public object WebAuthnExtensionValidator : WebAuthnExtensionHook by CompositeExtensionHook(
+    listOf(
+        LargeBlobExtensionHook,
+        PrfExtensionHook,
+    ),
+)

@@ -18,6 +18,8 @@ import dev.webauthn.model.WebAuthnValidationError
 @ExperimentalWebAuthnL3Api
 public object LargeBlobExtensionHook : WebAuthnExtensionHook {
 
+    override val extensionId: String = "largeBlob"
+
     /**
      * Registration: verifies that `largeBlob.support == REQUIRED` is reflected
      * as supported in outputs.

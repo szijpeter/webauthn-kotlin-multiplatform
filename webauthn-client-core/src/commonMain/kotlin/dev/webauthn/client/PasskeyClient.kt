@@ -38,26 +38,19 @@ public interface PasskeyClient {
  */
 public sealed class PasskeyCapability(public val key: String) {
     /** W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf) */
-    public object Prf : PasskeyCapability("prf")
+    public data object Prf : PasskeyCapability("prf")
 
     /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — read support. */
-    public object LargeBlobRead : PasskeyCapability("largeBlobRead")
+    public data object LargeBlobRead : PasskeyCapability("largeBlobRead")
 
     /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — write support. */
-    public object LargeBlobWrite : PasskeyCapability("largeBlobWrite")
+    public data object LargeBlobWrite : PasskeyCapability("largeBlobWrite")
 
     /** Platform transport capability: security key (cross-platform authenticator) support. */
-    public object SecurityKey : PasskeyCapability("securityKey")
+    public data object SecurityKey : PasskeyCapability("securityKey")
 
     /** Fallback for proprietary or draft extensions not yet modeled in the core. */
-    public class Custom(key: String) : PasskeyCapability(key) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other !is PasskeyCapability) return false
-            return key == other.key
-        }
-        override fun hashCode(): Int = key.hashCode()
-    }
+    public data class Custom(val identifier: String) : PasskeyCapability(identifier)
 }
 
 /**
@@ -68,14 +61,22 @@ public sealed class PasskeyCapability(public val key: String) {
  * this class.
  */
 public data class PasskeyCapabilities(
-    public val capabilities: Map<String, Boolean> = emptyMap(),
+    public val capabilities: Map<PasskeyCapability, Boolean> = emptyMap(),
     public val platformVersionHints: List<String> = emptyList(),
 ) {
     /** Returns `true` if the given [capability] is supported. */
-    public fun supports(capability: PasskeyCapability): Boolean = capabilities[capability.key] == true
+    public fun supports(capability: PasskeyCapability): Boolean = capabilities[capability] == true
 
     /** Returns `true` if the given capability [key] is supported. */
-    public fun supports(key: String): Boolean = capabilities[key] == true
+    public fun supports(key: String): Boolean {
+        // Find existing standard capability or wrapper
+        val standard = capabilities.keys.find { it.key == key }
+        return if (standard != null) {
+            capabilities[standard] == true
+        } else {
+            capabilities[PasskeyCapability.Custom(key)] == true
+        }
+    }
 }
 
 /** Result wrapper for passkey operations. */

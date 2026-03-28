@@ -146,7 +146,7 @@ class DefaultPasskeyClientTest {
                 capabilitiesAction = {
                     PasskeyCapabilities(
                         capabilities = mapOf(
-                            PasskeyCapability.Prf.key to true,
+                            PasskeyCapability.Prf to true,
                         ),
                         platformVersionHints = listOf("test"),
                     )
