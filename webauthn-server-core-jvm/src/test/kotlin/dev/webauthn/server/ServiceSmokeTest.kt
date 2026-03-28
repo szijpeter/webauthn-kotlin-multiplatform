@@ -4,7 +4,6 @@ import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
 import dev.webauthn.core.OriginMetadataProvider
 import dev.webauthn.core.WebAuthnExtensionHook
-import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
@@ -71,7 +70,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
@@ -147,7 +146,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
             extensionHooks = listOf(hook),
@@ -204,7 +203,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
@@ -323,7 +322,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
         )
@@ -381,7 +380,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
             nowEpochMs = { currentTime },
@@ -444,7 +443,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
 
@@ -501,7 +500,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
 
@@ -562,7 +561,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             nowEpochMs = { currentTime },
         )
@@ -668,7 +667,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
@@ -756,7 +755,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
@@ -846,7 +845,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
@@ -932,7 +931,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
@@ -1147,7 +1146,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
@@ -1245,7 +1244,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             originMetadataProvider = metadataProvider
         )
@@ -1315,7 +1314,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             originMetadataProvider = metadataProvider,
         )
@@ -1382,7 +1381,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
@@ -1487,7 +1486,7 @@ class ServiceSmokeTest {
             challengeStore = challengeStore,
             credentialStore = credentialStore,
             userAccountStore = userStore,
-            attestationVerifier = AttestationVerifier { ValidationResult.Valid(Unit) },
+            attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
         )
         val authenticationService = AuthenticationService(
