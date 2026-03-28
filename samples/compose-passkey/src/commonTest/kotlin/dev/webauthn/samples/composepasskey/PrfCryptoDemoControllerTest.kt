@@ -1,4 +1,4 @@
-@file:OptIn(dev.webauthn.model.ExperimentalWebAuthnL3Api::class)
+@file:OptIn(ExperimentalWebAuthnL3Api::class)
 
 package dev.webauthn.samples.composepasskey
 
@@ -13,6 +13,8 @@ import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ExperimentalWebAuthnL3Api
+import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -294,7 +296,7 @@ private class PrfTestServerClient(
 
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
-        response: dev.webauthn.model.RegistrationResponse,
+        response: RegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         error("not used")
@@ -326,7 +328,7 @@ private class PrfTestPasskeyClient(
 ) : PasskeyClient {
     var lastAssertionOptions: PublicKeyCredentialRequestOptions? = null
 
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<dev.webauthn.model.RegistrationResponse> {
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
         error("not used")
     }
 

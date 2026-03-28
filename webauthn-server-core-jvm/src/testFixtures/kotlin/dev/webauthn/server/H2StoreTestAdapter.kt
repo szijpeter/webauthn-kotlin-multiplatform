@@ -3,19 +3,21 @@ package dev.webauthn.server
 import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
 import dev.webauthn.model.Challenge
+import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
+import dev.webauthn.model.UserVerificationRequirement
+import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.getOrThrow
+import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
+import kotlinx.serialization.json.Json
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
 import java.sql.DriverManager
-import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class H2StoreTestAdapter private constructor(
     private val jdbcUrl: String,
@@ -147,12 +149,12 @@ private class H2ChallengeStore(
                                 createdAtEpochMs = resultSet.getLong("created_at_epoch_ms"),
                                 expiresAtEpochMs = resultSet.getLong("expires_at_epoch_ms"),
                                 type = CeremonyType.valueOf(resultSet.getString("ceremony_type")),
-                                userVerification = resultSet.getString("user_verification")?.let { dev.webauthn.model.UserVerificationRequirement.valueOf(it) },
+                                userVerification = resultSet.getString("user_verification")?.let { UserVerificationRequirement.valueOf(it) },
                                 extensions = resultSet.getString("extensions")?.let { json ->
                                     val dto = Json.decodeFromString<AuthenticationExtensionsClientInputsDto>(json)
                                     when (val res = WebAuthnDtoMapper.toModelValidated(dto)) {
-                                        is dev.webauthn.model.ValidationResult.Valid -> res.value
-                                        is dev.webauthn.model.ValidationResult.Invalid -> null
+                                        is ValidationResult.Valid -> res.value
+                                        is ValidationResult.Invalid -> null
                                     }
                                 },
                             )
@@ -299,7 +301,7 @@ private fun java.sql.ResultSet.toStoredCredential(): StoredCredential {
         credentialId = CredentialId.parseOrThrow(getString("credential_id")),
         userId = UserHandle.parse(getString("user_id")).getOrThrow(),
         rpId = RpId.parseOrThrow(getString("rp_id")),
-        publicKeyCose = dev.webauthn.model.CosePublicKey.fromBytes(getBytes("public_key")),
+        publicKeyCose = CosePublicKey.fromBytes(getBytes("public_key")),
         signCount = getLong("sign_count"),
     )
 }

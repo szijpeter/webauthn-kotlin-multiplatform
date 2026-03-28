@@ -1,15 +1,17 @@
 package dev.webauthn.network
 
-import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.client.PasskeyFinishResult
+import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.PublicKeyCredentialCreationOptionsDto
 import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
+import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
@@ -21,7 +23,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 /** Backend API contract consumed by [KtorPasskeyServerClient]. */
@@ -277,7 +278,7 @@ public data class AuthenticationStartPayload(
 
 @Serializable
 private data class RegistrationFinishPayload(
-    val response: dev.webauthn.serialization.RegistrationResponseDto,
+    val response: RegistrationResponseDto,
     val clientDataType: String,
     val challenge: String,
     val origin: String,
@@ -285,7 +286,7 @@ private data class RegistrationFinishPayload(
 
 @Serializable
 private data class AuthenticationFinishPayload(
-    val response: dev.webauthn.serialization.AuthenticationResponseDto,
+    val response: AuthenticationResponseDto,
     val clientDataType: String,
     val challenge: String,
     val origin: String,
@@ -305,7 +306,7 @@ private val contractJson: Json = Json {
     ignoreUnknownKeys = true
 }
 
-private suspend fun throwIfHttpError(
+private fun throwIfHttpError(
     response: HttpResponse,
     responseText: String,
     operation: String,
@@ -314,9 +315,7 @@ private suspend fun throwIfHttpError(
         return
     }
     val details = serverErrorMessage(responseText)
-    throw IllegalStateException(
-        "$operation failed with HTTP ${response.status.value}: $details",
-    )
+    error("$operation failed with HTTP ${response.status.value}: $details")
 }
 
 private inline fun <reified T> decodeOrThrow(

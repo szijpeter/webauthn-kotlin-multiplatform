@@ -1,5 +1,6 @@
 package dev.webauthn.server.ktor
 
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.Origin
@@ -8,8 +9,8 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import dev.webauthn.model.getOrThrow
-import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
+import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.AuthenticationFinishRequest
@@ -19,9 +20,8 @@ import dev.webauthn.server.RegistrationFinishRequest
 import dev.webauthn.server.RegistrationService
 import dev.webauthn.server.RegistrationStartRequest
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.Application
-import io.ktor.server.application.call
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -39,7 +39,7 @@ public data class RegistrationStartPayload(
     public val userName: String,
     public val userDisplayName: String,
     public val userHandle: String,
-    public val extensions: dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto? = null,
+    public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
 
 @Serializable
@@ -49,7 +49,7 @@ public data class AuthenticationStartPayload(
     public val origin: String,
     public val userName: String,
     public val userHandle: String? = null,
-    public val extensions: dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto? = null,
+    public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
 
 @Serializable
@@ -73,7 +73,7 @@ public data class AuthenticationFinishPayload(
 public fun Application.installWebAuthnRoutes(
     registrationService: RegistrationService,
     authenticationService: AuthenticationService,
-): Unit {
+) {
     routing {
         webAuthnRoutes(registrationService, authenticationService)
     }
@@ -83,7 +83,7 @@ public fun Application.installWebAuthnRoutes(
 public fun Route.webAuthnRoutes(
     registrationService: RegistrationService,
     authenticationService: AuthenticationService,
-): Unit {
+) {
     route("/webauthn") {
         post("/registration/start") {
             val payload = call.receive<RegistrationStartPayload>()
@@ -183,7 +183,7 @@ public fun Route.webAuthnRoutes(
 
 private sealed interface ParsedExtensionsResult {
     data class Accepted(
-        val value: dev.webauthn.model.AuthenticationExtensionsClientInputs?,
+        val value: AuthenticationExtensionsClientInputs?,
     ) : ParsedExtensionsResult
 
     data object Rejected : ParsedExtensionsResult

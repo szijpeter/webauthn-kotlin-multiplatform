@@ -4,6 +4,7 @@ import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import kotlinx.coroutines.runBlocking
@@ -42,7 +43,7 @@ class InMemoryStoresTest {
             ChallengeSession(
                 challenge = challenge,
                 rpId = RpId.parseOrThrow("example.com"),
-                origin = dev.webauthn.model.Origin.parseOrThrow("https://example.com"),
+                origin = Origin.parseOrThrow("https://example.com"),
                 userName = "alice",
                 createdAtEpochMs = 1000L,
                 expiresAtEpochMs = 61_000L,

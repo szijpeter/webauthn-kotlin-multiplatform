@@ -24,6 +24,8 @@ import androidx.credentials.CreatePublicKeyCredentialResponse
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.CustomCredential
+import dev.webauthn.model.CredentialId
+import dev.webauthn.model.PublicKeyCredentialDescriptor
 import kotlinx.coroutines.runBlocking
 import io.mockk.mockk
 import io.mockk.coEvery
@@ -57,7 +59,7 @@ class AndroidPasskeyClientTest {
     fun createCredential_returns_UserCancelled_on_cancellation_exception() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } throws CreateCredentialCancellationException("Cancelled")
 
         val options = PublicKeyCredentialCreationOptions(
@@ -77,7 +79,7 @@ class AndroidPasskeyClientTest {
     fun createCredential_returns_Platform_error_on_other_exception() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } throws CreateCredentialInterruptedException("Interrupted")
 
         val options = PublicKeyCredentialCreationOptions(
@@ -114,14 +116,14 @@ class AndroidPasskeyClientTest {
     fun getAssertion_returns_UserCancelled_on_cancellation_exception() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.getCredential(any<Context>(), any<GetCredentialRequest>()) } throws GetCredentialCancellationException("Cancelled")
 
         val options = PublicKeyCredentialRequestOptions(
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
             rpId = RpId.parseOrThrow("example.com"),
             allowCredentials = listOf(
-                dev.webauthn.model.PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, dev.webauthn.model.CredentialId.fromBytes(byteArrayOf(1)))
+                PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, CredentialId.fromBytes(byteArrayOf(1)))
             )
         )
 
@@ -130,19 +132,19 @@ class AndroidPasskeyClientTest {
         val failure = result as PasskeyResult.Failure
         assertTrue(failure.error is PasskeyClientError.UserCancelled)
     }
-    
+
     @Test
     fun getAssertion_returns_Platform_error_on_NoCredentialException() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.getCredential(any<Context>(), any<GetCredentialRequest>()) } throws NoCredentialException("No creds")
 
         val options = PublicKeyCredentialRequestOptions(
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
             rpId = RpId.parseOrThrow("example.com"),
             allowCredentials = listOf(
-                dev.webauthn.model.PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, dev.webauthn.model.CredentialId.fromBytes(byteArrayOf(1)))
+                PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, CredentialId.fromBytes(byteArrayOf(1)))
             )
         )
 
@@ -165,7 +167,7 @@ class AndroidPasskeyClientTest {
         }"""
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } returns CreatePublicKeyCredentialResponse(validRegJson)
 
         val options = PublicKeyCredentialCreationOptions(
@@ -194,7 +196,7 @@ class AndroidPasskeyClientTest {
         }"""
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.getCredential(any<Context>(), any<GetCredentialRequest>()) } returns GetCredentialResponse(PublicKeyCredential(validAuthJson))
 
         val options = PublicKeyCredentialRequestOptions(
@@ -212,7 +214,7 @@ class AndroidPasskeyClientTest {
     fun createCredential_returns_Platform_error_on_malformed_json() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } returns CreatePublicKeyCredentialResponse("{}")
 
         val options = PublicKeyCredentialCreationOptions(
@@ -233,7 +235,7 @@ class AndroidPasskeyClientTest {
     fun getAssertion_returns_Platform_error_on_malformed_json() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.getCredential(any<Context>(), any<GetCredentialRequest>()) } returns GetCredentialResponse(PublicKeyCredential("{}"))
 
         val options = PublicKeyCredentialRequestOptions(
@@ -247,12 +249,12 @@ class AndroidPasskeyClientTest {
         assertTrue(failure.error is PasskeyClientError.Platform)
         assertTrue(failure.error.message.contains("Failed to parse authentication response JSON"))
     }
-    
+
     @Test
     fun getAssertion_returns_Platform_error_on_wrong_credential_type() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = AndroidPasskeyClient(mockk(relaxed = true), mockCredentialManager)
-        
+
         coEvery { mockCredentialManager.getCredential(any<Context>(), any<GetCredentialRequest>()) } returns GetCredentialResponse(CustomCredential("type", Bundle()))
 
         val options = PublicKeyCredentialRequestOptions(
