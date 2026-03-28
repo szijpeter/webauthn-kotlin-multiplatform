@@ -61,3 +61,19 @@ public suspend inline fun <T, R> Result<T>.mapSuspendCatching(
     val value = getOrElse { return Result.failure(it) }
     return runSuspendCatching { transform(value) }
 }
+
+/**
+ * Coroutine-safe alternative to [Result.recoverCatching].
+ *
+ * Like [Result.recoverCatching], executes [transform] on the encapsulated [Throwable]
+ * exception if this instance represents failure. Returns the encapsulated result
+ * of the transformation, but explicitly rethrows [CancellationException].
+ *
+ * See [kotlinx.coroutines#1814](https://github.com/Kotlin/kotlinx.coroutines/issues/1814).
+ */
+public suspend inline fun <R, T : R> Result<T>.recoverSuspendCatching(
+    transform: suspend (exception: Throwable) -> R,
+): Result<R> {
+    val exception = exceptionOrNull() ?: return this
+    return runSuspendCatching { transform(exception) }
+}

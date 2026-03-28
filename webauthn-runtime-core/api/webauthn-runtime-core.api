@@ -1,5 +1,6 @@
 public final class dev/webauthn/runtime/CoroutineCancellationKt {
 	public static final fun mapSuspendCatching (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static final fun recoverSuspendCatching (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun rethrowCancellation (Ljava/lang/Throwable;)V
 	public static final fun rethrowCancellationOrFatal (Ljava/lang/Throwable;)Ljava/lang/Throwable;
 	public static final fun runSuspendCatching (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
