@@ -28,4 +28,65 @@ class CoroutineCancellationTest {
 
         assertIs<IllegalStateException>(result.exceptionOrNull())
     }
+
+    // --- runSuspendCatching ---
+
+    @Test
+    fun runSuspendCatching_returnsSuccess_onNormalCompletion() = runTest {
+        val result = runSuspendCatching { "hello" }
+
+        assertEquals("hello", result.getOrNull())
+    }
+
+    @Test
+    fun runSuspendCatching_rethrowsCancellationException() = runTest {
+        assertFailsWith<CancellationException> {
+            runSuspendCatching<String> { throw CancellationException("cancelled") }
+        }
+    }
+
+    @Test
+    fun runSuspendCatching_wrapsNonCancellationException() = runTest {
+        val result = runSuspendCatching<String> { throw IllegalArgumentException("bad") }
+
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        assertEquals("bad", result.exceptionOrNull()?.message)
+    }
+
+    // --- mapSuspendCatching ---
+
+    @Test
+    fun mapSuspendCatching_transformsSuccessfulResult() = runTest {
+        val result = runSuspendCatching { 42 }
+            .mapSuspendCatching { it.toString() }
+
+        assertEquals("42", result.getOrNull())
+    }
+
+    @Test
+    fun mapSuspendCatching_rethrowsCancellationFromTransform() = runTest {
+        assertFailsWith<CancellationException> {
+            runSuspendCatching { "value" }
+                .mapSuspendCatching<String, Int> { throw CancellationException("cancelled in transform") }
+        }
+    }
+
+    @Test
+    fun mapSuspendCatching_passesThrough_existingFailure() = runTest {
+        val original = IllegalStateException("original")
+        val result = Result.failure<String>(original)
+            .mapSuspendCatching { it.length }
+
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("original", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun mapSuspendCatching_wrapsNonCancellationTransformException() = runTest {
+        val result = runSuspendCatching { "value" }
+            .mapSuspendCatching<String, Int> { throw ArithmeticException("overflow") }
+
+        assertIs<ArithmeticException>(result.exceptionOrNull())
+        assertEquals("overflow", result.exceptionOrNull()?.message)
+    }
 }

@@ -13,7 +13,7 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
-import kotlinx.coroutines.CancellationException
+import dev.webauthn.runtime.runSuspendCatching
 import kotlin.random.Random
 
 private const val PRF_SALT_LENGTH_BYTES: Int = 32
@@ -71,10 +71,9 @@ internal class PrfCryptoDemoController(
         val saltScope = "${config.rpId}:${config.userHandle}"
         val firstSalt = saltStore.loadOrCreate(saltScope)
         val startPayload = config.toAuthenticationStartPayload(prfSalt = firstSalt)
-        val startResult = try {
+        val startResult = runSuspendCatching {
             serverClient.getSignInOptions(startPayload)
-        } catch (throwable: Throwable) {
-            if (throwable is CancellationException) throw throwable
+        }.getOrElse { throwable ->
             return PrfDemoResult.Failure(
                 "PRF sign-in start failed: ${throwable.message ?: "unknown error"}",
             )
@@ -102,14 +101,13 @@ internal class PrfCryptoDemoController(
         }
         var sessionTransferred = false
         try {
-            val finishResult = try {
+            val finishResult = runSuspendCatching {
                 serverClient.finishSignIn(
                     params = startPayload,
                     response = authResult.response,
                     challengeAsBase64Url = signInOptions.challenge.value.encoded(),
                 )
-            } catch (throwable: Throwable) {
-                if (throwable is CancellationException) throw throwable
+            }.getOrElse { throwable ->
                 return PrfDemoResult.Failure(
                     "PRF sign-in finish failed: ${throwable.message ?: "unknown error"}",
                 )
@@ -142,7 +140,7 @@ internal class PrfCryptoDemoController(
         if (plaintext.isBlank()) {
             return PrfDemoResult.Failure("Enter plaintext before encryption.")
         }
-        return try {
+        return runSuspendCatching {
             val ciphertext = activeSession.encryptString(
                 plaintext = plaintext,
                 associatedData = SAMPLE_ASSOCIATED_DATA.encodeToByteArray(),
@@ -151,8 +149,7 @@ internal class PrfCryptoDemoController(
             PrfDemoResult.Success(
                 message = "Encrypted ${plaintext.length} chars to ${ciphertext.ciphertext.bytes().size} bytes.",
             )
-        } catch (throwable: Throwable) {
-            if (throwable is CancellationException) throw throwable
+        }.getOrElse { throwable ->
             PrfDemoResult.Failure("Encrypt failed: ${throwable.message ?: "unknown error"}")
         }
     }
@@ -161,14 +158,13 @@ internal class PrfCryptoDemoController(
         return when (val state = internalState) {
             SessionDataState.NoSession -> PrfDemoResult.Failure("No PRF session. Run Sign In + PRF first.")
             is SessionDataState.SessionReady -> PrfDemoResult.Failure("No ciphertext. Encrypt text first.")
-            is SessionDataState.CiphertextReady -> try {
+            is SessionDataState.CiphertextReady -> runSuspendCatching {
                 val plaintext = state.session.decryptToString(state.payload)
                 PrfDemoResult.Success(
                     message = "Decrypt succeeded.",
                     plaintext = plaintext,
                 )
-            } catch (throwable: Throwable) {
-                if (throwable is CancellationException) throw throwable
+            }.getOrElse { throwable ->
                 PrfDemoResult.Failure("Decrypt failed: ${throwable.message ?: "unknown error"}")
             }
         }
