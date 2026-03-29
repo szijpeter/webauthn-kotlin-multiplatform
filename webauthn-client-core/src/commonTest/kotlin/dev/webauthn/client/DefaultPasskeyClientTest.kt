@@ -122,7 +122,23 @@ class DefaultPasskeyClientTest {
 
         assertTrue(result is PasskeyResult.Failure)
         assertTrue(result.error is PasskeyClientError.InvalidOptions)
-        assertEquals("bad options", result.error.message)
+        assertEquals("unexpected", result.error.message)
+    }
+
+    @Test
+    fun createCredential_keeps_bridge_invalid_options_message_for_illegal_argument() = runTest {
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createAction = { throw IllegalArgumentException("RP ID cannot be validated") },
+                errorMapper = { PasskeyClientError.InvalidOptions("RP ID cannot be validated. hint") },
+            ),
+        )
+
+        val result = client.createCredential(validCreationOptions())
+
+        assertTrue(result is PasskeyResult.Failure)
+        assertTrue(result.error is PasskeyClientError.InvalidOptions)
+        assertTrue(result.error.message.contains("hint"))
     }
 
     @Test

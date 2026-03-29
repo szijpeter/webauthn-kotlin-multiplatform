@@ -108,7 +108,7 @@ Usage notes:
 - Reuse a single controller per screen/session scope to avoid overlapping ceremonies.
 - Prefer mapping backend rejection into actionable UX rather than generic transport failures.
 - `DefaultPasskeyClient` preserves coroutine cancellation (it is rethrown and never mapped to `PasskeyResult.Failure`), while deterministic invalid-options and platform failures are returned as `PasskeyResult.Failure`.
-- `IllegalArgumentException` is classified centrally as `PasskeyClientError.InvalidOptions`; other platform failures still flow through the platform bridge for domain-specific mapping.
+- `IllegalArgumentException` is classified centrally as `PasskeyClientError.InvalidOptions`, while the platform bridge can still enrich the final message (for example Android RP-ID troubleshooting hints); other platform failures still flow through the platform bridge for domain-specific mapping.
 - Platform-level "user canceled prompt" remains a domain error (`PasskeyClientError.UserCancelled`) when provided by platform bridge mapping.
 - `PasskeyCapabilities` is a snapshot of platform hints at lookup time; construct a new instance if the underlying platform capability set changes.
 - `PasskeyCapabilities` also enforces unique capability keys up front so `supports(key)` and `supports(capability)` cannot become ambiguous.
