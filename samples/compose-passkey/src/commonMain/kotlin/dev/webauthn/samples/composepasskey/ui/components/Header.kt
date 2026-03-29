@@ -1,5 +1,6 @@
 package dev.webauthn.samples.composepasskey.ui.components
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,11 +11,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 
 @Composable
-fun Header(status: PasskeyDemoStatus) {
+fun Header(
+    status: PasskeyDemoStatus,
+    onTitleDoubleTap: (() -> Unit)? = null,
+) {
+    val titleModifier =
+        if (onTitleDoubleTap == null) {
+            Modifier
+        } else {
+            Modifier.pointerInput(onTitleDoubleTap) {
+                detectTapGestures(onDoubleTap = { onTitleDoubleTap() })
+            }
+        }
+
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -26,6 +40,7 @@ fun Header(status: PasskeyDemoStatus) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = "WebAuthn Kotlin Demo",
+                    modifier = titleModifier,
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary,
                 )
