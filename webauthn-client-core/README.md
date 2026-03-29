@@ -100,7 +100,7 @@ Available capabilities:
 - `PasskeyCapability.PlatformFeature("securityKey")` - Cross-platform authenticator support
 - `PasskeyCapability.Extension(WebAuthnExtension.Custom("example"))` - proprietary/draft extension identifier
 
-`PasskeyCapabilities` lookups are key-based (`supports(capability)` and `supports(key)`) and duplicate keys are rejected at construction time.
+`PasskeyCapabilities.supports(key)` is key-based; `supports(capability)` requires an exact capability match for that key (same variant/value). Duplicate keys are rejected at construction time.
 
 Usage notes:
 

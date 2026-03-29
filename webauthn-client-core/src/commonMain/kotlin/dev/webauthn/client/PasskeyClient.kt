@@ -78,7 +78,8 @@ public data class PasskeyCapabilities(
     }
 
     /** Returns `true` if the given [capability] is supported. */
-    public fun supports(capability: PasskeyCapability): Boolean = supports(capability.key)
+    public fun supports(capability: PasskeyCapability): Boolean =
+        buildSupportedByKey()[capability.key] == capability
 
     /** Returns `true` if the given capability [key] is supported. */
     public fun supports(key: String): Boolean = buildSupportedByKey().containsKey(key)

@@ -160,12 +160,13 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
-    fun capabilities_supports_lookup_is_key_based() {
+    fun capabilities_supports_lookup_is_key_based_for_string_and_exact_for_capability() {
         val capabilities = PasskeyCapabilities(
             supported = setOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
         )
 
-        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("prf")))
+        assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
+        assertFalse(capabilities.supports(PasskeyCapability.PlatformFeature("prf")))
         assertTrue(capabilities.supports("prf"))
         assertFalse(capabilities.supports("unknown"))
     }
@@ -195,6 +196,17 @@ class DefaultPasskeyClientTest {
         mutable.add(PasskeyCapability.PlatformFeature("securityKey"))
 
         assertFalse(capabilities.supports("prf"))
+        assertTrue(capabilities.supports("securityKey"))
+    }
+
+    @Test
+    fun capabilities_supports_capability_requires_variant_match() {
+        val capabilities = PasskeyCapabilities(
+            supported = setOf(PasskeyCapability.PlatformFeature("securityKey")),
+        )
+
+        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("securityKey")))
+        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Custom("securityKey"))))
         assertTrue(capabilities.supports("securityKey"))
     }
 
