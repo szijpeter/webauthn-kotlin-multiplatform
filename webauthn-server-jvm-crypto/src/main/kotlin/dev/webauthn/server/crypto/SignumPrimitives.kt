@@ -33,13 +33,15 @@ internal object SignumPrimitives {
     fun sha256(input: ByteArray): ByteArray = Digest.SHA256.digest(input)
 
     fun decodeCoseMaterial(coseKey: CosePublicKey): CosePublicKeyMaterial? =
-        decodeCoseMaterialResult(coseKey.bytes()).getOrNull()
+        decodeCoseMaterialResult(coseKey.bytes())
+            .getOrNull()
 
     fun decodeCoseMaterial(coseKey: ByteArray): CosePublicKeyMaterial? =
         decodeCoseMaterialResult(coseKey).getOrNull()
 
     fun decodeCosePublicKey(coseKey: CosePublicKey): CryptoPublicKey? =
-        decodeCosePublicKeyResult(coseKey.bytes()).getOrNull()
+        decodeCosePublicKeyResult(coseKey.bytes())
+            .getOrNull()
 
     fun decodeCosePublicKey(coseKey: ByteArray): CryptoPublicKey? =
         decodeCosePublicKeyResult(coseKey).getOrNull()
@@ -83,7 +85,9 @@ internal object SignumPrimitives {
 
     private fun decodeCertificatePublicKey(certificateDer: ByteArray): CryptoPublicKey? {
         val cert = parseCertificate(certificateDer) ?: return null
-        return cert.publicKey.toCryptoPublicKey().getOrNull()
+        return cert.publicKey
+            .toCryptoPublicKey()
+            .getOrNull()
     }
 
     private fun verifyWithPublicKey(

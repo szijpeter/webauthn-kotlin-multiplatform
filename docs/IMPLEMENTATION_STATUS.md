@@ -13,6 +13,7 @@ Last updated: 2026-03-29
 ## Overall Snapshot
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
+- Vertical chaining + callable-reference style consistency pass (2026-03-29): applied readability-only formatting and `::` adoption across client/network/serialization/server/store modules and related tests, with minimal crypto-internal touch-ups; no runtime/API behavior changes intended.
 - Kotlin import hygiene update (2026-03-28): code-body fully qualified type references were removed across touched modules in favor of imports and explicit aliases where needed; this is a readability/maintainability refactor with no runtime or API semantic change.
 - Core validator API KDoc coverage now documents registration/authentication/allow-list validation entry points plus extension-hook contracts; this is a documentation-only clarification with no runtime semantic change.
 - Documentation hardening update (2026-03-25): module READMEs for model/core/client-core/client-compose/client-prf-crypto were upgraded with Mermaid diagrams and scenario-driven usage notes, core extension/origin validator KDocs were expanded, and strict changed-scope quality gates now include Mermaid diagram parse validation.

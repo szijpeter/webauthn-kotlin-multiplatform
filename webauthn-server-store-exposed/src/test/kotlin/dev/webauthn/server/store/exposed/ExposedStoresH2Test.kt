@@ -25,7 +25,8 @@ class ExposedStoresH2Test : StoreContractTestBase() {
                     Credentials.deleteAll()
                     UserAccounts.deleteAll()
                 }
-                tempDir.toFile().deleteRecursively()
+                tempDir.toFile()
+                    .deleteRecursively()
             },
         )
     }
