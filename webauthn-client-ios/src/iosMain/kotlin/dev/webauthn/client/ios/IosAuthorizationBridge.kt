@@ -339,15 +339,19 @@ internal fun isPrfRequested(prfInput: PrfAssertionInputShape?): Boolean {
 
 internal fun shapePrfAssertionInput(prfInput: PrfExtensionInput?): PrfAssertionInputShape? {
     if (prfInput == null) return null
-    val evalByCredential = prfInput.evalByCredential?.mapKeys { (credentialId, _) ->
-        parsePrfCredentialIdKeyOrThrow(credentialId)
-    }?.takeUnless { it.isEmpty() }
+    val evalByCredential = prfInput.evalByCredential
+        ?.mapKeys(::parsePrfCredentialIdEntryOrThrow)
+        ?.takeUnless(Map<Base64UrlBytes, AuthenticationExtensionsPRFValues>::isEmpty)
     if (prfInput.eval == null && evalByCredential == null) return null
     return PrfAssertionInputShape(
         eval = prfInput.eval,
         evalByCredential = evalByCredential,
     )
 }
+
+private fun parsePrfCredentialIdEntryOrThrow(
+    entry: Map.Entry<String, AuthenticationExtensionsPRFValues>,
+): Base64UrlBytes = parsePrfCredentialIdKeyOrThrow(entry.key)
 
 private fun parsePrfCredentialIdKeyOrThrow(encodedCredentialId: String): Base64UrlBytes {
     if (encodedCredentialId.isEmpty()) {
@@ -371,10 +375,14 @@ private fun ASAuthorizationPlatformPublicKeyCredentialAssertionRequest.setPrfInp
 ) {
     val inputValues = values.eval?.toPlatformPrfInputValues()
     val perCredentialInputValues: Map<Any?, *>? = values.evalByCredential
-        ?.mapKeys { (credentialId, _) -> credentialId.bytes().toNSData() }
+        ?.mapKeys(::credentialIdEntryToNSData)
         ?.mapValues { (_, prfValues) -> prfValues.toPlatformPrfInputValues() }
     prf = ASAuthorizationPublicKeyCredentialPRFAssertionInput(inputValues, perCredentialInputValues)
 }
+
+private fun credentialIdEntryToNSData(
+    entry: Map.Entry<Base64UrlBytes, AuthenticationExtensionsPRFValues>,
+): Any = entry.key.bytes().toNSData()
 
 private fun AuthenticationExtensionsPRFValues.toPlatformPrfInputValues():
     ASAuthorizationPublicKeyCredentialPRFAssertionInputValues {

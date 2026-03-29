@@ -50,3 +50,4 @@ flowchart LR
 ## Status
 
 Beta, thin iOS bridge on top of shared client orchestration.
+March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.

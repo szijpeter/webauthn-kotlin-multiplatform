@@ -105,3 +105,4 @@ Important usage notes:
 ## Status
 
 Beta, Signum-backed PRF crypto utility layer.
+March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.

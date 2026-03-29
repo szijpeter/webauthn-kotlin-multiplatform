@@ -36,7 +36,7 @@ public fun PasskeyJsonMapper.decodeCreationOptionsOrThrowInvalid(payload: String
         val dto = decode(payload, PublicKeyCredentialCreationOptionsDto.serializer())
         WebAuthnDtoMapper.toModel(dto)
     }
-    return validation.toValueOrThrow { message -> IllegalArgumentException(message) }
+    return validation.toValueOrThrow(::IllegalArgumentException)
 }
 
 @Throws(IllegalArgumentException::class)
@@ -45,7 +45,7 @@ public fun PasskeyJsonMapper.decodeAssertionOptionsOrThrowInvalid(payload: Strin
         val dto = decode(payload, PublicKeyCredentialRequestOptionsDto.serializer())
         WebAuthnDtoMapper.toModel(dto)
     }
-    return validation.toValueOrThrow { message -> IllegalArgumentException(message) }
+    return validation.toValueOrThrow(::IllegalArgumentException)
 }
 
 @Throws(IllegalStateException::class)
@@ -62,7 +62,7 @@ public fun PasskeyJsonMapper.decodeRegistrationResponseOrThrowPlatform(payload: 
         val dto = decode(payload, RegistrationResponseDto.serializer())
         WebAuthnDtoMapper.toModel(dto)
     }
-    return validation.toValueOrThrow { message -> IllegalStateException(message) }
+    return validation.toValueOrThrow(::IllegalStateException)
 }
 
 @Throws(IllegalStateException::class)
@@ -79,5 +79,5 @@ public fun PasskeyJsonMapper.decodeAuthenticationResponseOrThrowPlatform(payload
         val dto = decode(payload, AuthenticationResponseDto.serializer())
         WebAuthnDtoMapper.toModel(dto)
     }
-    return validation.toValueOrThrow { message -> IllegalStateException(message) }
+    return validation.toValueOrThrow(::IllegalStateException)
 }

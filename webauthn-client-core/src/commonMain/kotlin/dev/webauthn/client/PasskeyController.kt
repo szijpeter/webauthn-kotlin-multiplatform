@@ -121,7 +121,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
             action = PasskeyAction.REGISTER,
             getOptions = { serverClient.getRegisterOptions(params) },
             extractChallenge = { options -> options.challenge.value.encoded() },
-            interactWithPlatform = { options -> passkeyClient.createCredential(options) },
+            interactWithPlatform = passkeyClient::createCredential,
             finish = { response, challenge -> serverClient.finishRegister(params, response, challenge) },
         )
     }
@@ -136,7 +136,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
             action = PasskeyAction.SIGN_IN,
             getOptions = { serverClient.getSignInOptions(params) },
             extractChallenge = { options -> options.challenge.value.encoded() },
-            interactWithPlatform = { options -> passkeyClient.getAssertion(options) },
+            interactWithPlatform = passkeyClient::getAssertion,
             finish = { response, challenge -> serverClient.finishSignIn(params, response, challenge) },
         )
     }

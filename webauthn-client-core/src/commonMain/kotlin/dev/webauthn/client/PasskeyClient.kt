@@ -147,7 +147,7 @@ public class DefaultPasskeyClient(
             validate(options)
             operation(options)
         }.fold(
-            onSuccess = { PasskeyResult.Success(it) },
+            onSuccess = ::passkeySuccess,
             onFailure = { error ->
                 when (error) {
                     is IllegalArgumentException -> {
@@ -166,6 +166,8 @@ public class DefaultPasskeyClient(
             throw InvalidOptionsException("pubKeyCredParams must not be empty")
         }
     }
+
+    private fun <T> passkeySuccess(value: T): PasskeyResult<T> = PasskeyResult.Success(value)
 }
 
 private class InvalidOptionsException(

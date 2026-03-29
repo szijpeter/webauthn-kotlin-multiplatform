@@ -4,10 +4,10 @@ import at.asitplus.catching
 import dev.webauthn.model.ValidationResult
 
 internal inline fun <T> fromMapperInvalidOptions(message: String, block: () -> T): T =
-    fromMapper(message, block) { composedMessage, error -> IllegalArgumentException(composedMessage, error) }
+    fromMapper(message, block, ::IllegalArgumentException)
 
 internal inline fun <T> fromMapperPlatformResponse(message: String, block: () -> T): T =
-    fromMapper(message, block) { composedMessage, error -> IllegalStateException(composedMessage, error) }
+    fromMapper(message, block, ::IllegalStateException)
 
 private inline fun <T, TThrowable : Throwable> fromMapper(
     message: String,

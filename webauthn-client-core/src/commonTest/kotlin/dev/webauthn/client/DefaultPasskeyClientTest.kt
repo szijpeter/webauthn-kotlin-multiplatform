@@ -245,7 +245,9 @@ class DefaultPasskeyClientTest {
                 ),
             ),
         )
-        val result = client.createCredential(validCreationOptions().copy(extensions = extensions))
+        val result = client.createCredential(
+            validCreationOptions().copy(extensions = extensions),
+        )
 
         assertTrue(result is PasskeyResult.Success)
         assertNotNull(passedExtensions)

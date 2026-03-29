@@ -227,7 +227,9 @@ class IosPasskeyClientImplTest {
         }
         val delegate = IosPasskeyClientImpl(bridge)
 
-        val result = delegate.getAssertion(mockRequestOptions().copy(rpId = null))
+        val result = delegate.getAssertion(
+            mockRequestOptions().copy(rpId = null),
+        )
 
         assertTrue(result is PasskeyResult.Failure, "Expected failure but was $result")
         assertTrue(result.error is PasskeyClientError.InvalidOptions, "Expected InvalidOptions but was ${result.error}")

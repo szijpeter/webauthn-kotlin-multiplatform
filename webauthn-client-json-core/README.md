@@ -41,3 +41,4 @@ flowchart LR
 ## Status
 
 Beta, optional JSON interop layer.
+March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.

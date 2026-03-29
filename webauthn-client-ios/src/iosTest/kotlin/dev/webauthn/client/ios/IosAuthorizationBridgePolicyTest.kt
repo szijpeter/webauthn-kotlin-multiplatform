@@ -114,7 +114,10 @@ class IosAuthorizationBridgePolicyTest {
         val mappedValues = shaped.evalByCredential
         assertNotNull(mappedValues)
         assertEquals(1, mappedValues.size)
-        assertEquals(credentialId.encoded(), mappedValues.keys.single().encoded())
+        assertEquals(
+            credentialId.encoded(),
+            mappedValues.keys.single().encoded(),
+        )
         assertEquals("CQgH", mappedValues.values.single().first.encoded())
     }
 
