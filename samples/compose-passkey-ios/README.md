@@ -29,8 +29,8 @@ open samples/compose-passkey-ios/ComposePasskeyIos.xcodeproj
 
 Expected result:
 - App installs and launches.
-- Compose UI renders.
-- Debug panel shows config and platform capability logs.
+- Compose UI renders with the `Auth` screen first (`Register` / `Sign In`).
+- Signed-in debug logs remain hidden unless the title is double-tapped.
 
 Note:
 - Real passkey register/sign-in may fail on free accounts if Associated Domains entitlement/domain association is unavailable.
@@ -61,7 +61,8 @@ IOS_BUNDLE_ID=<BUNDLE_ID> \
 Expected result:
 - `Register` completes.
 - `Sign In` completes.
-- `PasskeyDemo` logs appear in Xcode console and in-app log panel.
+- Signed-in extension demo screen is shown after successful sign-in.
+- `PasskeyDemo` logs appear in Xcode console and in the hidden in-app debug sheet (title double-tap).
 
 ## Environment variables used by the shared sample
 
