@@ -88,4 +88,14 @@ class TypesTest {
         val custom = WebAuthnExtension.Custom("vendor.example.feature")
         assertEquals("vendor.example.feature", custom.identifier)
     }
+
+    @Test
+    fun standardWebAuthnExtensionsAreIterableViaEnum() {
+        val identifiersFromEnum = WebAuthnExtension.Standard.entries.map { it.identifier }.toSet()
+        val identifiersFromCompanion = WebAuthnExtension.standardExtensions.map { it.identifier }.toSet()
+
+        assertEquals(identifiersFromEnum, identifiersFromCompanion)
+        assertEquals(WebAuthnExtension.Prf, WebAuthnExtension.standardByIdentifier("prf"))
+        assertEquals(WebAuthnExtension.LargeBlob, WebAuthnExtension.standardByIdentifier("largeBlob"))
+    }
 }
