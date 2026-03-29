@@ -53,6 +53,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.compose.ui.tooling)
             implementation(libs.ktor.client.okhttp)
         }
 

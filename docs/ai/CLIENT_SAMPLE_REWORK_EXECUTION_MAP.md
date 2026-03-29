@@ -3,7 +3,7 @@
 Status: Active  
 Owner: `@ai-agent` (paired with maintainers)  
 Started: 2026-03-29  
-Target branch strategy: stacked PRs targeting `client-sample-rework-dev`, then one integration PR from `client-sample-rework-dev` to `main`
+Target branch strategy: stacked PRs where each PR targets the previous PR branch; final PR rebases to `main` and removes temporary tracker docs.
 
 ## Goal
 
@@ -17,15 +17,15 @@ Deliver the client sample rework in six reviewable PRs while keeping sample-only
 
 ## Branch and PR Queue
 
-Each PR below should target `client-sample-rework-dev`.
+Each PR below stacks on the previous PR branch unless explicitly noted.
 
 | PR | Branch | Status | Link | Scope | Exit Criteria |
 | --- | --- | --- | --- | --- | --- |
 | 1 | `client-sample-rework-pr1-policy-visibility` | Completed | [#95](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/95) | Sample policy boundary + visibility cleanup (`explicitApi` exclusion for samples, remove unnecessary `public`) | Sample modules compile with preserved host entrypoints and no accidental public-surface changes. |
 | 2 | `client-sample-rework-pr2-foundation` | Completed | [#96](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/96) | Compose sample architecture skeleton (MVVM+UDF), typed routes, Navigation 3 setup, Koin graph, orchestration split out of monolithic `App()` | Compose sample compiles for Android and iOS simulator targets with new architecture wiring in place and no feature regressions. |
 | 3 | `client-sample-rework-pr3-auth-session` | Completed | [#97](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/97) | Real login flow with `Auth` and `LoggedIn` screens, local session model, local logout behavior | Register/sign-in/logout transitions are deterministic in ViewModel tests and manual smoke checks. |
-| 4 | `client-sample-rework-pr4-debug-structure` | Planned | - | Hidden debug logs in bottom sheet via secret trigger, composable file-structure discipline, state-driven renderers | Debug sheet remains hidden by default, opens via secret trigger, and composable boundaries follow one reusable `internal` composable per file. |
-| 5 | `client-sample-rework-pr5-previews` | Planned | - | Preview catalog + preview-safe UI contracts + tooling setup + preview limitations doc | Previews render with fake/static data and compile paths stay free of DI/network/platform runtime dependencies. |
+| 4 | `client-sample-rework-pr4-debug-structure` | Completed | [#99](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/99) | Hidden debug logs in bottom sheet via secret trigger, composable file-structure discipline, state-driven renderers | Debug sheet remains hidden by default, opens via secret trigger, and composable boundaries follow one reusable `internal` composable per file. |
+| 5 | `client-sample-rework-pr5-previews` | In Progress | - | Preview catalog + preview-safe UI contracts + tooling setup + preview limitations doc | Previews render with fake/static data and compile paths stay free of DI/network/platform runtime dependencies. |
 | 6 | `client-sample-rework-pr6-docs-roadmap` | Planned | - | README/readiness updates, roadmap backlog items, execution-map closure | Docs reflect new flow/behavior, roadmap entries exist, and execution map is closed with next-action pointers. |
 
 ## Validation Gates (Per PR)
@@ -51,6 +51,5 @@ Each PR below should target `client-sample-rework-dev`.
 
 ## Completion Criteria
 
-- PR1-PR6 merged into `client-sample-rework-dev`.
-- Integration PR from `client-sample-rework-dev` to `main` is ready.
-- This execution-map file is updated to `Status: Complete` and then removed in cleanup once effort is fully landed.
+- PR1-PR6 merged into `main` via the stacked sequence.
+- Final PR includes cleanup/removal of this temporary execution-map file.
