@@ -14,13 +14,7 @@ internal fun AuthRoute() {
 
     AuthScreen(
         state = state,
-        debugEntries = viewModel.debugEntries,
         onRegister = viewModel::onRegisterClicked,
         onSignIn = viewModel::onSignInClicked,
-        onSignInWithPrf = viewModel::onSignInWithPrfClicked,
-        onEncrypt = viewModel::onEncryptClicked,
-        onDecrypt = viewModel::onDecryptClicked,
-        onClearPrfSession = viewModel::onClearSessionClicked,
-        onPlaintextChange = viewModel::onPlaintextChanged,
     )
 }
