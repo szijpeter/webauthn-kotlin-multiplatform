@@ -10,6 +10,11 @@ Audience: teams building shared passkey client orchestration across Android/iOS 
 - Shared result/error contracts (`PasskeyResult`, `PasskeyClientError`, `PasskeyFinishResult`).
 - `PasskeyCapabilities` API for querying platform support for extensions and features.
 
+## API organization
+
+Public API types in this module are organized as one top-level public type per Kotlin source file.
+This keeps API contracts easier to discover and review without changing package names or public symbols.
+
 ```mermaid
 flowchart TD
     Action["UI/User action"] --> Start["PasskeyController.start step<br/>serverClient.get*Options"]
