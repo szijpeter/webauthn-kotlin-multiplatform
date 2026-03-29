@@ -4,6 +4,8 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Trace updates
 
+- 2026-03-29: Extension validation composition now preserves invalid hook outcomes even when the invalid result has an empty error list (`CompositeExtensionHook` no longer normalizes that case to valid). This is a validator semantic hardening update to keep failure signaling deterministic across composed hooks.
+- 2026-03-29: PRF authentication validation now only checks global `eval.second` requirement instead of incorrectly validating per-credential `evalByCredential` entries without knowing which credential was selected; this prevents false-positive validation failures when multiple credentials have different PRF requirements. The change affects `PrfExtensionHook.validateAuthenticationExtensions` behavior but does not change the mapped normative requirement.
 - 2026-03-25: Documentation uplift follow-up refreshed `webauthn-core` API KDocs (validator usage boundaries plus extension/origin helper contracts) and module diagrams/samples; no validator/model runtime semantics changed.
 - 2026-03-25: `webauthn-core` validator/model KDoc coverage was expanded for public API clarity only; no validation runtime semantics changed.
 - 2026-03-12: Runtime semantics tightened in parser/validation paths: RP ID parsing now rejects empty/overlong/edge-hyphen labels, DER parser rejects non-canonical long-form lengths, and attestation-object parsing now requires `fmt` + `attStmt` + `authData` with no trailing bytes; tests updated in `TypesTest`, `DerParserTest`, and `AttestationCborParserTest`.

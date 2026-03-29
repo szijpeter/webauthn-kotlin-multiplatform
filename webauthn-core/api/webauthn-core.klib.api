@@ -46,6 +46,11 @@ abstract interface dev.webauthn.core/OriginMetadataProvider { // dev.webauthn.co
     abstract suspend fun getRelatedOrigins(dev.webauthn.model/Origin): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/OriginMetadataProvider.getRelatedOrigins|getRelatedOrigins(dev.webauthn.model.Origin){}[0]
 }
 
+abstract interface dev.webauthn.core/TargetedExtensionHook : dev.webauthn.core/WebAuthnExtensionHook { // dev.webauthn.core/TargetedExtensionHook|null[0]
+    abstract val extension // dev.webauthn.core/TargetedExtensionHook.extension|{}extension[0]
+        abstract fun <get-extension>(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.core/TargetedExtensionHook.extension.<get-extension>|<get-extension>(){}[0]
+}
+
 abstract interface dev.webauthn.core/WebAuthnExtensionHook { // dev.webauthn.core/WebAuthnExtensionHook|null[0]
     abstract fun validateAuthenticationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnExtensionHook.validateAuthenticationExtensions|validateAuthenticationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
     abstract fun validateRegistrationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/WebAuthnExtensionHook.validateRegistrationExtensions|validateRegistrationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
@@ -138,6 +143,13 @@ final class dev.webauthn.core/ChallengeSession { // dev.webauthn.core/ChallengeS
     final fun toString(): kotlin/String // dev.webauthn.core/ChallengeSession.toString|toString(){}[0]
 }
 
+final class dev.webauthn.core/CompositeExtensionHook : dev.webauthn.core/WebAuthnExtensionHook { // dev.webauthn.core/CompositeExtensionHook|null[0]
+    constructor <init>(kotlin.collections/List<dev.webauthn.core/WebAuthnExtensionHook>) // dev.webauthn.core/CompositeExtensionHook.<init>|<init>(kotlin.collections.List<dev.webauthn.core.WebAuthnExtensionHook>){}[0]
+
+    final fun validateAuthenticationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/CompositeExtensionHook.validateAuthenticationExtensions|validateAuthenticationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun validateRegistrationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/CompositeExtensionHook.validateRegistrationExtensions|validateRegistrationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+}
+
 final class dev.webauthn.core/RegistrationValidationInput { // dev.webauthn.core/RegistrationValidationInput|null[0]
     constructor <init>(dev.webauthn.model/PublicKeyCredentialCreationOptions, dev.webauthn.model/RegistrationResponse, dev.webauthn.model/CollectedClientData, dev.webauthn.model/Origin, kotlin.collections/Set<dev.webauthn.model/Origin> = ..., dev.webauthn.core/UserVerificationPolicy = ...) // dev.webauthn.core/RegistrationValidationInput.<init>|<init>(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.model.RegistrationResponse;dev.webauthn.model.CollectedClientData;dev.webauthn.model.Origin;kotlin.collections.Set<dev.webauthn.model.Origin>;dev.webauthn.core.UserVerificationPolicy){}[0]
 
@@ -185,8 +197,24 @@ final class dev.webauthn.core/RegistrationValidationOutput { // dev.webauthn.cor
     final fun toString(): kotlin/String // dev.webauthn.core/RegistrationValidationOutput.toString|toString(){}[0]
 }
 
+final object dev.webauthn.core/LargeBlobExtensionHook : dev.webauthn.core/TargetedExtensionHook { // dev.webauthn.core/LargeBlobExtensionHook|null[0]
+    final val extension // dev.webauthn.core/LargeBlobExtensionHook.extension|{}extension[0]
+        final fun <get-extension>(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.core/LargeBlobExtensionHook.extension.<get-extension>|<get-extension>(){}[0]
+
+    final fun validateAuthenticationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/LargeBlobExtensionHook.validateAuthenticationExtensions|validateAuthenticationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun validateRegistrationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/LargeBlobExtensionHook.validateRegistrationExtensions|validateRegistrationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+}
+
 final object dev.webauthn.core/NoOpOriginMetadataProvider : dev.webauthn.core/OriginMetadataProvider { // dev.webauthn.core/NoOpOriginMetadataProvider|null[0]
     final suspend fun getRelatedOrigins(dev.webauthn.model/Origin): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.core/NoOpOriginMetadataProvider.getRelatedOrigins|getRelatedOrigins(dev.webauthn.model.Origin){}[0]
+}
+
+final object dev.webauthn.core/PrfExtensionHook : dev.webauthn.core/TargetedExtensionHook { // dev.webauthn.core/PrfExtensionHook|null[0]
+    final val extension // dev.webauthn.core/PrfExtensionHook.extension|{}extension[0]
+        final fun <get-extension>(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.core/PrfExtensionHook.extension.<get-extension>|<get-extension>(){}[0]
+
+    final fun validateAuthenticationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/PrfExtensionHook.validateAuthenticationExtensions|validateAuthenticationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun validateRegistrationExtensions(dev.webauthn.model/AuthenticationExtensionsClientInputs?, dev.webauthn.model/AuthenticationExtensionsClientOutputs?): dev.webauthn.model/ValidationResult<kotlin/Unit> // dev.webauthn.core/PrfExtensionHook.validateRegistrationExtensions|validateRegistrationExtensions(dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
 }
 
 final object dev.webauthn.core/WebAuthnCoreValidator { // dev.webauthn.core/WebAuthnCoreValidator|null[0]

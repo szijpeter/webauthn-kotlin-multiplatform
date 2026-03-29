@@ -32,6 +32,7 @@ Use this module when app data must be encrypted with a key derived from a succes
 This flow checks PRF capability, authenticates with PRF, encrypts payload data, and returns the full AEAD payload for later decryption.
 
 ```kotlin
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyResult
@@ -41,6 +42,7 @@ import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.WebAuthnExtension
 
 @OptIn(ExperimentalWebAuthnL3Api::class)
 suspend fun authenticateAndEncrypt(
@@ -49,7 +51,7 @@ suspend fun authenticateAndEncrypt(
     persistedSalt: Base64UrlBytes,
     plaintext: String,
 ): PasskeyResult<PrfCiphertext> {
-    if (!passkeyClient.capabilities().supportsPrf) {
+    if (!passkeyClient.capabilities().supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {
         return PasskeyResult.Failure(PasskeyClientError.InvalidOptions("PRF is not supported on this platform/authenticator"))
     }
 

@@ -8,6 +8,7 @@ Audience: teams building shared passkey client orchestration across Android/iOS 
 - `DefaultPasskeyClient` error-mapped orchestration over platform bridges.
 - `PasskeyController` that coordinates start -> platform prompt -> finish flow with state updates.
 - Shared result/error contracts (`PasskeyResult`, `PasskeyClientError`, `PasskeyFinishResult`).
+- `PasskeyCapabilities` API for querying platform support for extensions and features.
 
 ```mermaid
 flowchart TD
@@ -76,6 +77,30 @@ suspend fun runSignIn(controller: PasskeyController<String, String>, userId: Str
     }
 }
 ```
+
+### Capabilities API
+
+Query platform support for extensions and features:
+
+```kotlin
+suspend fun inspectCapabilities(client: PasskeyClient) {
+    val capabilities = client.capabilities()
+    if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {
+        // Platform supports PRF extension.
+    }
+    if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))) {
+        // Platform supports largeBlob extension.
+    }
+}
+```
+
+Available capabilities:
+- `PasskeyCapability.Extension(WebAuthnExtension.Prf)` - HMAC secret extension (W3C prf)
+- `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` - Large blob storage extension
+- `PasskeyCapability.PlatformFeature("securityKey")` - Cross-platform authenticator support
+- `PasskeyCapability.Extension(WebAuthnExtension.Custom("example"))` - proprietary/draft extension identifier
+
+`PasskeyCapabilities.supports(key)` is key-based; `supports(capability)` requires an exact capability match for that key (same variant/value). Duplicate keys are rejected at construction time.
 
 Usage notes:
 

@@ -4,10 +4,10 @@ package dev.webauthn.client
 
 import dev.webauthn.runtime.suspendCatchingNonCancellation
 import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.WebAuthnExtension
 
 /** Public cross-platform API for WebAuthn registration and authentication ceremonies. */
 public interface PasskeyClient {
@@ -30,14 +30,60 @@ public interface PasskeyClient {
     }
 }
 
-/** Capability hints surfaced by platform implementations. */
+/**
+ * Represents a capability or extension that a passkey client, platform bridge,
+ * or authenticator might support.
+ *
+ * Capabilities are modeled as either a typed W3C WebAuthn [Extension] or a
+ * [PlatformFeature] behavior.
+ */
+public sealed class PasskeyCapability {
+    public abstract val key: String
+
+    /** A capability that resolves directly to a specific W3C protocol extension identifier. */
+    public data class Extension(
+        public val extension: WebAuthnExtension,
+    ) : PasskeyCapability() {
+        override val key: String = extension.identifier
+    }
+
+    /** A capability that represents a literal platform transport or OS feature without a protocol payload. */
+    public data class PlatformFeature(
+        override val key: String,
+    ) : PasskeyCapability()
+}
+
+/**
+ * Capability hints surfaced by platform implementations.
+ *
+ * Use [supports] with a [PasskeyCapability] object to query a specific capability.
+ * Extensions and platform bridges can advertise capabilities dynamically without modifying
+ * this class.
+ */
 public data class PasskeyCapabilities(
-    public val supportsPrf: Boolean = false,
-    public val supportsLargeBlobRead: Boolean = false,
-    public val supportsLargeBlobWrite: Boolean = false,
-    public val supportsSecurityKey: Boolean = false,
+    public val supported: Set<PasskeyCapability> = emptySet(),
     public val platformVersionHints: List<String> = emptyList(),
-)
+) {
+    init {
+        buildSupportedByKey()
+    }
+
+    private fun buildSupportedByKey(): Map<String, PasskeyCapability> = buildMap {
+        for (capability in supported) {
+            val previous = put(capability.key, capability)
+            require(previous == null) {
+                "Duplicate capability key '${capability.key}'"
+            }
+        }
+    }
+
+    /** Returns `true` if the given [capability] is supported. */
+    public fun supports(capability: PasskeyCapability): Boolean =
+        buildSupportedByKey()[capability.key] == capability
+
+    /** Returns `true` if the given capability [key] is supported. */
+    public fun supports(key: String): Boolean = buildSupportedByKey().containsKey(key)
+}
 
 /** Result wrapper for passkey operations. */
 public sealed interface PasskeyResult<out T> {
@@ -149,9 +195,3 @@ private class InvalidOptionsException(
     message: String,
     cause: Throwable? = null,
 ) : IllegalArgumentException(message, cause)
-
-/** Request model for evaluating PRF extension support and behavior. */
-@ExperimentalWebAuthnL3Api
-public data class PrfEvaluationRequest(
-    public val enabled: Boolean,
-)

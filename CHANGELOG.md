@@ -8,11 +8,14 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ### Added
 
-- None yet.
+- Composable extension hook architecture (`TargetedExtensionHook`, `CompositeExtensionHook`) for modular WebAuthn extension validation.
+- Typed `WebAuthnExtension` sealed class hierarchy replacing string-based extension identifiers.
 
 ### Changed
 
-- None yet.
+- **BREAKING**: `PasskeyCapabilities` now exposes `supported: Set<PasskeyCapability>` with deterministic key-based lookup and duplicate-key rejection. Migration: replace legacy booleans with `capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))`, `capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))`, and `capabilities.supports(PasskeyCapability.PlatformFeature("securityKey"))`.
+- **BREAKING**: Removed `PrfEvaluationRequest` type (no longer needed with new capability model).
+- `WebAuthnExtensionValidator` now delegates to `CompositeExtensionHook` for composable validation.
 
 ## 0.2.0 - 2026-03-26
 

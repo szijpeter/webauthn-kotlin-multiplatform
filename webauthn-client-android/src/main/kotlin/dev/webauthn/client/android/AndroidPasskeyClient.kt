@@ -19,6 +19,7 @@ import dev.webauthn.client.encodeAssertionOptionsOrThrowInvalid
 import dev.webauthn.client.encodeCreationOptionsOrThrowInvalid
 import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyJsonMapper
@@ -28,6 +29,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.WebAuthnExtension
 
 private const val RP_ID_VALIDATION_HINT =
     "Troubleshooting: verify RP ID/domain alignment, serve /.well-known/assetlinks.json over HTTPS, " +
@@ -108,10 +110,13 @@ internal class AndroidPasskeyPlatformBridge(
     override suspend fun capabilities(): PasskeyCapabilities {
         val supportsExtensions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         return PasskeyCapabilities(
-            supportsPrf = supportsExtensions,
-            supportsLargeBlobRead = supportsExtensions,
-            supportsLargeBlobWrite = supportsExtensions,
-            supportsSecurityKey = true,
+            supported = buildSet {
+                if (supportsExtensions) {
+                    add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
+                    add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
+                }
+                add(PasskeyCapability.PlatformFeature("securityKey"))
+            },
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )
     }

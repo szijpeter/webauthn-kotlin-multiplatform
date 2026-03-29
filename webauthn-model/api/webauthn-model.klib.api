@@ -111,6 +111,65 @@ sealed interface <#A: out kotlin/Any?> dev.webauthn.model/ValidationResult { // 
     }
 }
 
+sealed interface dev.webauthn.model/WebAuthnExtension { // dev.webauthn.model/WebAuthnExtension|null[0]
+    abstract val identifier // dev.webauthn.model/WebAuthnExtension.identifier|{}identifier[0]
+        abstract fun <get-identifier>(): kotlin/String // dev.webauthn.model/WebAuthnExtension.identifier.<get-identifier>|<get-identifier>(){}[0]
+
+    final enum class Standard : dev.webauthn.model/WebAuthnExtension, kotlin/Enum<dev.webauthn.model/WebAuthnExtension.Standard> { // dev.webauthn.model/WebAuthnExtension.Standard|null[0]
+        enum entry AppId // dev.webauthn.model/WebAuthnExtension.Standard.AppId|null[0]
+        enum entry AppIdExclude // dev.webauthn.model/WebAuthnExtension.Standard.AppIdExclude|null[0]
+        enum entry CredProps // dev.webauthn.model/WebAuthnExtension.Standard.CredProps|null[0]
+        enum entry DevicePubKey // dev.webauthn.model/WebAuthnExtension.Standard.DevicePubKey|null[0]
+        enum entry LargeBlob // dev.webauthn.model/WebAuthnExtension.Standard.LargeBlob|null[0]
+        enum entry Prf // dev.webauthn.model/WebAuthnExtension.Standard.Prf|null[0]
+        enum entry Uvm // dev.webauthn.model/WebAuthnExtension.Standard.Uvm|null[0]
+
+        final val entries // dev.webauthn.model/WebAuthnExtension.Standard.entries|#static{}entries[0]
+            final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.model/WebAuthnExtension.Standard> // dev.webauthn.model/WebAuthnExtension.Standard.entries.<get-entries>|<get-entries>#static(){}[0]
+        final val identifier // dev.webauthn.model/WebAuthnExtension.Standard.identifier|{}identifier[0]
+            final fun <get-identifier>(): kotlin/String // dev.webauthn.model/WebAuthnExtension.Standard.identifier.<get-identifier>|<get-identifier>(){}[0]
+
+        final fun valueOf(kotlin/String): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Standard.valueOf|valueOf#static(kotlin.String){}[0]
+        final fun values(): kotlin/Array<dev.webauthn.model/WebAuthnExtension.Standard> // dev.webauthn.model/WebAuthnExtension.Standard.values|values#static(){}[0]
+    }
+
+    final class Custom : dev.webauthn.model/WebAuthnExtension { // dev.webauthn.model/WebAuthnExtension.Custom|null[0]
+        constructor <init>(kotlin/String) // dev.webauthn.model/WebAuthnExtension.Custom.<init>|<init>(kotlin.String){}[0]
+
+        final val identifier // dev.webauthn.model/WebAuthnExtension.Custom.identifier|{}identifier[0]
+            final fun <get-identifier>(): kotlin/String // dev.webauthn.model/WebAuthnExtension.Custom.identifier.<get-identifier>|<get-identifier>(){}[0]
+        final val key // dev.webauthn.model/WebAuthnExtension.Custom.key|{}key[0]
+            final fun <get-key>(): kotlin/String // dev.webauthn.model/WebAuthnExtension.Custom.key.<get-key>|<get-key>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.model/WebAuthnExtension.Custom.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.model/WebAuthnExtension.Custom // dev.webauthn.model/WebAuthnExtension.Custom.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/WebAuthnExtension.Custom.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.model/WebAuthnExtension.Custom.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.model/WebAuthnExtension.Custom.toString|toString(){}[0]
+    }
+
+    final object Companion { // dev.webauthn.model/WebAuthnExtension.Companion|null[0]
+        final val AppId // dev.webauthn.model/WebAuthnExtension.Companion.AppId|{}AppId[0]
+            final fun <get-AppId>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.AppId.<get-AppId>|<get-AppId>(){}[0]
+        final val AppIdExclude // dev.webauthn.model/WebAuthnExtension.Companion.AppIdExclude|{}AppIdExclude[0]
+            final fun <get-AppIdExclude>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.AppIdExclude.<get-AppIdExclude>|<get-AppIdExclude>(){}[0]
+        final val CredProps // dev.webauthn.model/WebAuthnExtension.Companion.CredProps|{}CredProps[0]
+            final fun <get-CredProps>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.CredProps.<get-CredProps>|<get-CredProps>(){}[0]
+        final val DevicePubKey // dev.webauthn.model/WebAuthnExtension.Companion.DevicePubKey|{}DevicePubKey[0]
+            final fun <get-DevicePubKey>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.DevicePubKey.<get-DevicePubKey>|<get-DevicePubKey>(){}[0]
+        final val LargeBlob // dev.webauthn.model/WebAuthnExtension.Companion.LargeBlob|{}LargeBlob[0]
+            final fun <get-LargeBlob>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.LargeBlob.<get-LargeBlob>|<get-LargeBlob>(){}[0]
+        final val Prf // dev.webauthn.model/WebAuthnExtension.Companion.Prf|{}Prf[0]
+            final fun <get-Prf>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.Prf.<get-Prf>|<get-Prf>(){}[0]
+        final val Uvm // dev.webauthn.model/WebAuthnExtension.Companion.Uvm|{}Uvm[0]
+            final fun <get-Uvm>(): dev.webauthn.model/WebAuthnExtension.Standard // dev.webauthn.model/WebAuthnExtension.Companion.Uvm.<get-Uvm>|<get-Uvm>(){}[0]
+        final val standardExtensions // dev.webauthn.model/WebAuthnExtension.Companion.standardExtensions|{}standardExtensions[0]
+            final fun <get-standardExtensions>(): kotlin.collections/Set<dev.webauthn.model/WebAuthnExtension.Standard> // dev.webauthn.model/WebAuthnExtension.Companion.standardExtensions.<get-standardExtensions>|<get-standardExtensions>(){}[0]
+
+        final fun standardByIdentifier(kotlin/String): dev.webauthn.model/WebAuthnExtension.Standard? // dev.webauthn.model/WebAuthnExtension.Companion.standardByIdentifier|standardByIdentifier(kotlin.String){}[0]
+    }
+}
+
 sealed interface dev.webauthn.model/WebAuthnValidationError { // dev.webauthn.model/WebAuthnValidationError|null[0]
     abstract val field // dev.webauthn.model/WebAuthnValidationError.field|{}field[0]
         abstract fun <get-field>(): kotlin/String // dev.webauthn.model/WebAuthnValidationError.field.<get-field>|<get-field>(){}[0]

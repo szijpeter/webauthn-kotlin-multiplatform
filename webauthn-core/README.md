@@ -8,6 +8,8 @@ Audience: teams validating WebAuthn ceremonies before crypto verification and pe
 - Validation for `authenticatorData` flags and signature counter progression.
 - Allow-list enforcement for authentication (`allowCredentials`) via credential ID checks.
 - Extension hook contracts for optional L3 extension checks.
+- Composable per-extension validation hooks (`PrfExtensionHook`, `LargeBlobExtensionHook`).
+- `CompositeExtensionHook` for mix-and-match extension validation pipelines.
 
 ```mermaid
 flowchart TD
@@ -68,7 +70,28 @@ Important API behavior:
 - `validateRegistration(...)` / `validateAuthentication(...)` return typed outputs for downstream persistence.
 - `allowedOrigins` only broadens origin acceptance when explicitly provided.
 - `previousSignCount` must come from server-trusted credential state.
+- `CompositeExtensionHook` preserves invalid outcomes even when a hook returns `ValidationResult.Invalid(emptyList())`.
 - This module does not verify signatures or attestation statements.
+
+## Composable extension hooks
+
+Each L3 extension ships as a standalone `WebAuthnExtensionHook` implementation:
+
+| Hook | Extension | Spec Section | Notes |
+|------|-----------|-------------|-------|
+| `PrfExtensionHook` | HMAC Secret (prf) | §9.2.1 | Authentication validates global `eval` requirements only; per-credential `evalByCredential` checks require selected credential ID |
+| `LargeBlobExtensionHook` | Large blob storage | §9.2.2 | |
+
+`WebAuthnExtensionValidator` includes both by default. For custom pipelines, use `CompositeExtensionHook`:
+
+```kotlin
+import dev.webauthn.core.CompositeExtensionHook
+import dev.webauthn.core.PrfExtensionHook
+
+// Only validate PRF, skip LargeBlob
+val prfOnly = CompositeExtensionHook(listOf(PrfExtensionHook))
+val result = prfOnly.validateAuthenticationExtensions(inputs, outputs)
+```
 
 ## Pitfalls and limits
 

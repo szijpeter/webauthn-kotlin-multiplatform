@@ -1,6 +1,7 @@
 package dev.webauthn.client.ios
 
 import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyJsonMapper
@@ -14,6 +15,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
@@ -96,14 +98,16 @@ internal class IosPasskeyPlatformBridge(
     }
 
     @OptIn(ExperimentalForeignApi::class)
+    @Suppress("MagicNumber")
     override suspend fun capabilities(): PasskeyCapabilities {
         val version = NSProcessInfo.processInfo.operatingSystemVersion
         val major = version.useContents { majorVersion.toInt() }
         return PasskeyCapabilities(
-            supportsPrf = major >= 18,
-            supportsLargeBlobRead = major >= 17,
-            supportsLargeBlobWrite = major >= 17,
-            supportsSecurityKey = major >= 15,
+            supported = buildSet {
+                if (major >= 18) add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
+                if (major >= 17) add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
+                if (major >= 15) add(PasskeyCapability.PlatformFeature("securityKey"))
+            },
             platformVersionHints = listOf("iosMajor=$major"),
         )
     }

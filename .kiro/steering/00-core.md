@@ -1,0 +1,12 @@
+---
+inclusion: always
+---
+
+Use `docs/ai/STEERING.md` as the source of truth.
+
+Hard constraints:
+
+1. Standards-first WebAuthn behavior.
+2. No security-regression in validator/model semantics.
+3. Preserve module/layer boundaries.
+4. Prefer minimal diff and minimal context expansion.

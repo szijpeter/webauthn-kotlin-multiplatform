@@ -14,6 +14,7 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.WebAuthnExtension
 
 /** WebAuthn ceremony discriminator used for challenge lifecycle management. */
 public enum class CeremonyType {
@@ -86,4 +87,17 @@ public interface WebAuthnExtensionHook {
         inputs: AuthenticationExtensionsClientInputs?,
         outputs: AuthenticationExtensionsClientOutputs?,
     ): ValidationResult<Unit>
+}
+
+/** 
+ * Extension validation hook that maps explicitly to a single W3C WebAuthn protocol extension. 
+ *
+ * Use this interface when implementing logic targeting exactly one extension 
+ * (e.g. `PrfExtensionHook`, `LargeBlobExtensionHook`). 
+ * For structural/composite hooks, implement [WebAuthnExtensionHook] directly.
+ */
+@ExperimentalWebAuthnL3Api
+public interface TargetedExtensionHook : WebAuthnExtensionHook {
+    /** The specific W3C protocol extension this hook targets. */
+    public val extension: WebAuthnExtension
 }

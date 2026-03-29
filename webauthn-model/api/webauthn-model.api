@@ -632,6 +632,49 @@ public final class dev/webauthn/model/ValidationResult$Valid : dev/webauthn/mode
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class dev/webauthn/model/WebAuthnExtension {
+	public static final field Companion Ldev/webauthn/model/WebAuthnExtension$Companion;
+	public abstract fun getIdentifier ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/WebAuthnExtension$Companion {
+	public final fun getAppId ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun getAppIdExclude ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun getCredProps ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun getDevicePubKey ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun getLargeBlob ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun getPrf ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun getStandardExtensions ()Ljava/util/Set;
+	public final fun getUvm ()Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public final fun standardByIdentifier (Ljava/lang/String;)Ldev/webauthn/model/WebAuthnExtension$Standard;
+}
+
+public final class dev/webauthn/model/WebAuthnExtension$Custom : dev/webauthn/model/WebAuthnExtension {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/model/WebAuthnExtension$Custom;
+	public static synthetic fun copy$default (Ldev/webauthn/model/WebAuthnExtension$Custom;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/WebAuthnExtension$Custom;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getIdentifier ()Ljava/lang/String;
+	public final fun getKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/model/WebAuthnExtension$Standard : java/lang/Enum, dev/webauthn/model/WebAuthnExtension {
+	public static final field AppId Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static final field AppIdExclude Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static final field CredProps Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static final field DevicePubKey Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static final field LargeBlob Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static final field Prf Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static final field Uvm Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public fun getIdentifier ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/model/WebAuthnExtension$Standard;
+	public static fun values ()[Ldev/webauthn/model/WebAuthnExtension$Standard;
+}
+
 public abstract interface class dev/webauthn/model/WebAuthnValidationError {
 	public abstract fun getField ()Ljava/lang/String;
 	public abstract fun getMessage ()Ljava/lang/String;
