@@ -1,9 +1,6 @@
 package dev.webauthn.core
 
-import dev.webauthn.model.AuthenticationExtensionsClientInputs
-import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
-import dev.webauthn.model.ValidationResult
 
 /**
  * Default implementation of extension validation logic.

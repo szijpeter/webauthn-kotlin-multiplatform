@@ -24,11 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
-import dev.webauthn.runtime.runSuspendCatching
-import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
 import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
 import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
@@ -102,7 +101,7 @@ public fun App() {
 
     LaunchedEffect(passkeyClient) {
         debugLogs.i(source = "capabilities", message = "Loading capability hints")
-        runSuspendCatching<PasskeyCapabilities>(passkeyClient::capabilities)
+        runSuspendCatching(passkeyClient::capabilities)
             .onSuccess { loaded ->
                 capabilities.value = loaded
                 debugLogs.i(
@@ -218,8 +217,7 @@ public fun App() {
                         scope.launch {
                             prfBusy.value = true
                             try {
-                                val result = prfCryptoDemo.encrypt(prfPlaintext.value)
-                                when (result) {
+                                when (val result = prfCryptoDemo.encrypt(prfPlaintext.value)) {
                                     is PrfDemoResult.Success -> {
                                         prfStatusMessage.value = result.message
                                         prfDecryptedText.value = null
@@ -240,8 +238,7 @@ public fun App() {
                         scope.launch {
                             prfBusy.value = true
                             try {
-                                val result = prfCryptoDemo.decrypt()
-                                when (result) {
+                                when (val result = prfCryptoDemo.decrypt()) {
                                     is PrfDemoResult.Success -> {
                                         prfStatusMessage.value = result.message
                                         prfDecryptedText.value = result.plaintext
@@ -259,8 +256,7 @@ public fun App() {
                         }
                     },
                     onClearSession = {
-                        val result = prfCryptoDemo.clearSession()
-                        when (result) {
+                        when (val result = prfCryptoDemo.clearSession()) {
                             is PrfDemoResult.Success -> {
                                 prfStatusMessage.value = result.message
                                 prfDecryptedText.value = null
