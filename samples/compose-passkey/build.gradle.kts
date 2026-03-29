@@ -8,6 +8,8 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(21)
+
     android {
         namespace = "dev.webauthn.samples.composepasskey"
         compileSdk = 36
@@ -42,6 +44,7 @@ kotlin {
                 implementation(project(":webauthn-client-compose"))
                 implementation(project(":webauthn-client-prf-crypto"))
                 implementation(project(":webauthn-network-ktor-client"))
+                implementation(project(":webauthn-runtime-core"))
             }
         }
 

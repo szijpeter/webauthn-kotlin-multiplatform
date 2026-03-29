@@ -98,7 +98,7 @@ public class DefaultPasskeyClient(
     }
 
     override suspend fun capabilities(): PasskeyCapabilities {
-        return suspendCatchingNonCancellation { bridge.capabilities() }.fold(
+        return suspendCatchingNonCancellation(bridge::capabilities).fold(
             onSuccess = { it },
             onFailure = { _ ->
                 PasskeyCapabilities()

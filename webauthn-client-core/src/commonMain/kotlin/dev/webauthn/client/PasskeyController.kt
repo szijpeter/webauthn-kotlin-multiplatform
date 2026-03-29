@@ -7,7 +7,7 @@ import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
-import kotlinx.coroutines.CancellationException
+import dev.webauthn.runtime.rethrowCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -194,19 +194,18 @@ public class PasskeyController<RegisterParams, SignInParams>(
                     return
                 }
             }
-
-        } catch (e: CancellationException) {
-            if (_uiState.value is PasskeyControllerState.InProgress) {
-                _uiState.value = PasskeyControllerState.Idle
-            }
-            throw e
         } catch (e: Exception) {
+            e.rethrowCancellation()
             val error = when (e) {
                 is IllegalArgumentException -> PasskeyClientError.InvalidOptions(e.message ?: "Invalid options")
                 else -> PasskeyClientError.Transport(e.message ?: "Server interaction failed", e)
             }
             _uiState.value = PasskeyControllerState.Failure(action, error)
         } finally {
+            if (_uiState.value is PasskeyControllerState.InProgress) {
+                // If we exit while still in progress, it implies a CancellationException bubbled up
+                _uiState.value = PasskeyControllerState.Idle
+            }
             ceremonyMutex.unlock()
         }
     }

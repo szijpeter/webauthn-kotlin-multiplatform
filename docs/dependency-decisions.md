@@ -51,7 +51,8 @@ This keeps core/server contracts stable and independent from any single crypto v
 - **Role:** Helps internal sequential success/failure mapping (`catching`, `.transform`) where a single failure cause is expected.
 - **Rule:** `KmmResult` remains an internal implementation detail and must never be exposed in public API contracts. External callers depend on domain-specific result wrappers (for example `PasskeyResult`, `ValidationResult`).
 - **Coroutine cancellation rule:** `CancellationException` is control flow, not a domain failure. Rethrow it at suspend boundaries before mapping to `PasskeyResult`/`ValidationResult`.
-- **Standard helper pattern:** use `rethrowCancellationOrFatal(...)` (which applies `nonFatalOrThrow` + cancellation rethrow) for throwable paths, and `suspendCatchingNonCancellation(...)` when wrapping suspend workflows.
+- **Standard helper pattern:** Use `runSuspendCatching(...)` and `mapSuspendCatching(...)` as coroutine-safe drop-in replacements for stdlib `runCatching`/`mapCatching` in suspend contexts. Use `suspendCatchingNonCancellation(...)` when both cancellation rethrow and fatal-exception filtering (`nonFatalOrThrow`) are needed. Use `rethrowCancellationOrFatal(...)` for manual throwable paths.
+- **External dependency decision:** Self-owned utilities in `webauthn-runtime-core` were chosen over external libraries (Arrow, kotlin-result) because the required functionality is ~30 lines and avoids adding a new transitive dependency. See [kotlinx.coroutines#1814](https://github.com/Kotlin/kotlinx.coroutines/issues/1814) for background.
 - **Shared module:** `webauthn-runtime-core` owns these coroutine-boundary helpers for client/network adapter reuse.
 
 ## Client Runtime Dependencies

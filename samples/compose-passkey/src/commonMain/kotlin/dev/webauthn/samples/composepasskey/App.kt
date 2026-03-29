@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
@@ -100,7 +101,7 @@ public fun App() {
 
     LaunchedEffect(passkeyClient) {
         debugLogs.i(source = "capabilities", message = "Loading capability hints")
-        runCatching { passkeyClient.capabilities() }
+        runSuspendCatching<PasskeyCapabilities>(passkeyClient::capabilities)
             .onSuccess { loaded ->
                 capabilities.value = loaded
                 debugLogs.i(
