@@ -8,7 +8,7 @@ import dev.webauthn.samples.composepasskey.App
 
 private const val TAG: String = "PasskeyDemo"
 
-public class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "MainActivity.onCreate")

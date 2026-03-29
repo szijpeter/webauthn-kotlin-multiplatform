@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-public fun ActionsCard(
+fun ActionsCard(
     actionsEnabled: Boolean,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,

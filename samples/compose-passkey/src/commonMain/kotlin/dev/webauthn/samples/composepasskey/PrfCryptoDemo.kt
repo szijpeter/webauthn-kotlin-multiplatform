@@ -20,7 +20,7 @@ private const val PRF_SALT_LENGTH_BYTES: Int = 32
 private const val SAMPLE_PRF_CONTEXT: String = "samples.compose-passkey.prf.v1"
 private const val SAMPLE_ASSOCIATED_DATA: String = "samples-compose-passkey"
 
-public sealed interface PrfCryptoDemoSessionState {
+sealed interface PrfCryptoDemoSessionState {
     data object NoSession : PrfCryptoDemoSessionState
 
     data object SessionReady : PrfCryptoDemoSessionState

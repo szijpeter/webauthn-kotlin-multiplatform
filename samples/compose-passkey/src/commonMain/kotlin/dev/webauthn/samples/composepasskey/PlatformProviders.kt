@@ -4,6 +4,6 @@ import androidx.compose.runtime.Composable
 import io.ktor.client.HttpClient
 
 @Composable
-public expect fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient
+expect fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient
 
-public expect fun platformRuntimeHint(): String?
+expect fun platformRuntimeHint(): String?

@@ -26,7 +26,7 @@ import dev.webauthn.samples.composepasskey.model.DebugLogEntry
 import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 
 @Composable
-public fun DebugLogCard(entries: List<DebugLogEntry>) {
+fun DebugLogCard(entries: List<DebugLogEntry>) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),

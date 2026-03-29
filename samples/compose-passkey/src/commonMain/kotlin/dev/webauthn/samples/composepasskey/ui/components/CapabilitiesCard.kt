@@ -29,7 +29,7 @@ import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.model.WebAuthnExtension
 
 @Composable
-public fun CapabilitiesCard(
+fun CapabilitiesCard(
     capabilities: PasskeyCapabilities,
 ) {
     val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }

@@ -40,7 +40,7 @@ import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
 import kotlinx.coroutines.launch
 
 @Composable
-public fun App() {
+fun App() {
     val scope = rememberCoroutineScope()
     val debugLogs = remember { DebugLogStore() }
     val httpLogSink: (String) -> Unit = remember(scope, debugLogs) {

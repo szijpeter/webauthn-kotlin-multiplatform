@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 
 @Composable
-public fun Header(status: PasskeyDemoStatus) {
+fun Header(status: PasskeyDemoStatus) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
