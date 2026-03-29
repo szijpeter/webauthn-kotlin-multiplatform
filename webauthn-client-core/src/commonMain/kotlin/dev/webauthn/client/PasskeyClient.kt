@@ -150,8 +150,11 @@ public class DefaultPasskeyClient(
             onSuccess = { PasskeyResult.Success(it) },
             onFailure = { error ->
                 when (error) {
-                    is InvalidOptionsException ->
-                        PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
+                    is IllegalArgumentException -> {
+                        val mapped = bridge.mapPlatformError(error)
+                        val message = mapped.message.ifBlank { error.message ?: "Invalid options" }
+                        PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message))
+                    }
                     else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
                 }
             },
