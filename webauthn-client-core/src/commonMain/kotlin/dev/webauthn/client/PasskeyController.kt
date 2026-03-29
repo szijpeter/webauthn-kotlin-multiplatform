@@ -154,44 +154,29 @@ public class PasskeyController<RegisterParams, SignInParams>(
         }
 
         try {
-            _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.STARTING)
+            emitProgress(action, PasskeyPhase.STARTING)
 
-            // 1. Starting (Network)
-            val validOptions = when (val optionsResult = getOptions()) {
-                is ValidationResult.Valid -> optionsResult.value
-                is ValidationResult.Invalid -> {
-                    val message = optionsResult.errors.joinToString("; ") { "${it.field}: ${it.message}" }
-                    _uiState.value = PasskeyControllerState.Failure(
-                        action,
-                        PasskeyClientError.InvalidOptions("Options validation failed: $message"),
-                    )
-                    return
-                }
+            val options = when (val result = getOptions()) {
+                is ValidationResult.Valid -> result.value
+                is ValidationResult.Invalid -> return fail(
+                    action,
+                    PasskeyClientError.InvalidOptions("Options validation failed: ${result.errorMessage()}"),
+                )
             }
+            val challenge = extractChallenge(options)
 
-            val challengeBase64Url = extractChallenge(validOptions)
-
-            // 2. Platform Prompting
-            _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.PLATFORM_PROMPT)
-            val platformResponse = when (val result = interactWithPlatform(validOptions)) {
+            emitProgress(action, PasskeyPhase.PLATFORM_PROMPT)
+            val response = when (val result = interactWithPlatform(options)) {
                 is PasskeyResult.Success -> result.value
-                is PasskeyResult.Failure -> {
-                    _uiState.value = PasskeyControllerState.Failure(action, result.error)
-                    return
-                }
+                is PasskeyResult.Failure -> return fail(action, result.error)
             }
 
-            // 3. Finishing (Network)
-            _uiState.value = PasskeyControllerState.InProgress(action, PasskeyPhase.FINISHING)
-            when (val finishResult = finish(platformResponse, challengeBase64Url)) {
-                PasskeyFinishResult.Verified -> {
-                    // 4. Success
-                    _uiState.value = PasskeyControllerState.Success(action)
-                }
+            emitProgress(action, PasskeyPhase.FINISHING)
+            when (val result = finish(response, challenge)) {
+                PasskeyFinishResult.Verified -> _uiState.value = PasskeyControllerState.Success(action)
                 is PasskeyFinishResult.Rejected -> {
-                    val message = finishResult.message ?: "${action.name} verification was rejected by the server."
-                    _uiState.value = PasskeyControllerState.Failure(action, PasskeyClientError.Transport(message))
-                    return
+                    val message = result.message ?: "${action.name} verification was rejected by the server."
+                    return fail(action, PasskeyClientError.Transport(message))
                 }
             }
         } catch (e: Exception) {
@@ -209,4 +194,15 @@ public class PasskeyController<RegisterParams, SignInParams>(
             ceremonyMutex.unlock()
         }
     }
+
+    private fun emitProgress(action: PasskeyAction, phase: PasskeyPhase) {
+        _uiState.value = PasskeyControllerState.InProgress(action, phase)
+    }
+
+    private fun fail(action: PasskeyAction, error: PasskeyClientError) {
+        _uiState.value = PasskeyControllerState.Failure(action, error)
+    }
+
+    private fun ValidationResult.Invalid.errorMessage(): String =
+        errors.joinToString("; ") { "${it.field}: ${it.message}" }
 }

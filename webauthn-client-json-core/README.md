@@ -35,6 +35,7 @@ flowchart LR
 ## Pitfalls and limits
 
 - JSON convenience does not remove trust-boundary validation needs on the server.
+- JSON entrypoints use the same validated DTO mapping surface as the typed client APIs; malformed request JSON still fails as `InvalidOptions`.
 - Keep mapper and model versions aligned with BOM to avoid shape drift.
 
 ## Status

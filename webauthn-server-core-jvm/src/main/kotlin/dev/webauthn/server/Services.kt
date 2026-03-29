@@ -24,6 +24,7 @@ import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.UserVerificationRequirement
+import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import java.security.MessageDigest
 
@@ -75,20 +76,7 @@ public class RegistrationService(
                 displayName = request.userDisplayName,
             ),
             challenge = challenge,
-            pubKeyCredParams = listOf(
-                PublicKeyCredentialParameters(
-                    type = PublicKeyCredentialType.PUBLIC_KEY,
-                    alg = CoseAlgorithm.ES256.code,
-                ),
-                PublicKeyCredentialParameters(
-                    type = PublicKeyCredentialType.PUBLIC_KEY,
-                    alg = CoseAlgorithm.RS256.code,
-                ),
-                PublicKeyCredentialParameters(
-                    type = PublicKeyCredentialType.PUBLIC_KEY,
-                    alg = CoseAlgorithm.EdDSA.code,
-                ),
-            ),
+            pubKeyCredParams = supportedCredentialParameters(),
             timeoutMs = request.timeoutMs,
             excludeCredentials = existingCredentials.map(::defaultCredentialDescriptor),
             residentKey = request.residentKey,
@@ -115,42 +103,16 @@ public class RegistrationService(
             return failure("challenge", "Registration challenge has expired")
         }
 
-        val relatedOriginsRequested = session.extensions?.relatedOrigins != null
-        var allowedOrigins = emptySet<Origin>()
-        if (request.clientData.origin != session.origin) {
-            if (!relatedOriginsRequested) {
-                return failure("origin", "Origin mismatch")
-            }
-            allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
-            if (!allowedOrigins.contains(request.clientData.origin)) {
-                return failure("origin", "Origin mismatch")
-            }
+        val allowedOrigins = when (
+            val result = resolveAllowedOrigins(session, request.clientData.origin, originMetadataProvider)
+        ) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
         }
 
-        val options = PublicKeyCredentialCreationOptions(
-            rp = PublicKeyCredentialRpEntity(id = session.rpId, name = session.rpId.value),
-            user = PublicKeyCredentialUserEntity(
-                id = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id,
-                name = session.userName,
-                displayName = session.userName,
-            ),
-            challenge = session.challenge,
-            pubKeyCredParams = listOf(
-                PublicKeyCredentialParameters(
-                    PublicKeyCredentialType.PUBLIC_KEY,
-                    CoseAlgorithm.ES256.code,
-                ),
-                PublicKeyCredentialParameters(
-                    PublicKeyCredentialType.PUBLIC_KEY,
-                    CoseAlgorithm.RS256.code,
-                ),
-                PublicKeyCredentialParameters(
-                    PublicKeyCredentialType.PUBLIC_KEY,
-                    CoseAlgorithm.EdDSA.code,
-                ),
-            ),
-            extensions = session.extensions,
-        )
+        val userHandle = userAccountStore.findByName(session.userName)?.id
+            ?: return failure("userName", "Unknown user")
+        val options = registrationOptionsFor(session, userHandle)
 
         val validation = WebAuthnCoreValidator.validateRegistration(
             RegistrationValidationInput(
@@ -206,7 +168,7 @@ public class RegistrationService(
                     origin = session.origin,
                     userName = session.userName,
                     userDisplayName = session.userName,
-                    userHandle = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id,
+                    userHandle = userHandle,
                 ),
             ),
         )
@@ -280,27 +242,17 @@ public class AuthenticationService(
             return failure("challenge", "Authentication challenge has expired")
         }
 
-        val relatedOriginsRequested = session.extensions?.relatedOrigins != null
-        var allowedOrigins = emptySet<Origin>()
-        if (request.clientData.origin != session.origin) {
-            if (!relatedOriginsRequested) {
-                return failure("origin", "Origin mismatch")
-            }
-            allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
-            if (!allowedOrigins.contains(request.clientData.origin)) {
-                return failure("origin", "Origin mismatch")
-            }
+        val allowedOrigins = when (
+            val result = resolveAllowedOrigins(session, request.clientData.origin, originMetadataProvider)
+        ) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
         }
 
         val storedCredential = credentialStore.findById(response.credentialId)
             ?: return failure("credentialId", "Unknown credential")
 
-        val requestOptions = PublicKeyCredentialRequestOptions(
-            challenge = session.challenge,
-            rpId = session.rpId,
-            allowCredentials = listOf(defaultCredentialDescriptor(storedCredential)),
-            extensions = session.extensions,
-        )
+        val requestOptions = authenticationOptionsFor(session, storedCredential)
 
         val validation = WebAuthnCoreValidator.validateAuthentication(
             AuthenticationValidationInput(
@@ -361,9 +313,60 @@ public class AuthenticationService(
     }
 }
 
-private object UserAccountStoreLookup {
-    suspend fun findRequired(store: UserAccountStore, name: String): UserAccount {
-        return requireNotNull(store.findByName(name)) { "User not found in account store: $name" }
+private fun registrationOptionsFor(
+    session: ChallengeSession,
+    userHandle: UserHandle,
+): PublicKeyCredentialCreationOptions {
+    return PublicKeyCredentialCreationOptions(
+        rp = PublicKeyCredentialRpEntity(id = session.rpId, name = session.rpId.value),
+        user = PublicKeyCredentialUserEntity(
+            id = userHandle,
+            name = session.userName,
+            displayName = session.userName,
+        ),
+        challenge = session.challenge,
+        pubKeyCredParams = supportedCredentialParameters(),
+        extensions = session.extensions,
+    )
+}
+
+private fun authenticationOptionsFor(
+    session: ChallengeSession,
+    storedCredential: StoredCredential,
+): PublicKeyCredentialRequestOptions {
+    return PublicKeyCredentialRequestOptions(
+        challenge = session.challenge,
+        rpId = session.rpId,
+        allowCredentials = listOf(defaultCredentialDescriptor(storedCredential)),
+        extensions = session.extensions,
+    )
+}
+
+private fun supportedCredentialParameters(): List<PublicKeyCredentialParameters> {
+    return listOf(
+        PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.ES256.code),
+        PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.RS256.code),
+        PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.EdDSA.code),
+    )
+}
+
+private suspend fun resolveAllowedOrigins(
+    session: ChallengeSession,
+    actualOrigin: Origin,
+    originMetadataProvider: OriginMetadataProvider,
+): ValidationResult<Set<Origin>> {
+    if (actualOrigin == session.origin) {
+        return ValidationResult.Valid(emptySet())
+    }
+    if (session.extensions?.relatedOrigins == null) {
+        return failure("origin", "Origin mismatch")
+    }
+
+    val allowedOrigins = originMetadataProvider.getRelatedOrigins(session.origin)
+    return if (allowedOrigins.contains(actualOrigin)) {
+        ValidationResult.Valid(allowedOrigins)
+    } else {
+        failure("origin", "Origin mismatch")
     }
 }
 

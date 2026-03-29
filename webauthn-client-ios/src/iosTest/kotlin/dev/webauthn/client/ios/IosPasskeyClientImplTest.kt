@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-class IosPasskeyDelegateTest {
+class IosPasskeyClientImplTest {
 
     private class FakeAuthorizationBridge(
         var createResult: Result<IosRegistrationPayload>? = null,
@@ -70,7 +70,7 @@ class IosPasskeyDelegateTest {
                 )
             )
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.createCredential(mockOptions())
         assertTrue(result is PasskeyResult.Success)
@@ -91,7 +91,7 @@ class IosPasskeyDelegateTest {
                 )
             )
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions())
         assertTrue(result is PasskeyResult.Success)
@@ -120,7 +120,7 @@ class IosPasskeyDelegateTest {
                 ),
             ),
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions())
         assertTrue(result is PasskeyResult.Success)
@@ -135,7 +135,7 @@ class IosPasskeyDelegateTest {
                 IllegalArgumentException("PRF extension requires iOS 18+ with AuthenticationServices PRF APIs."),
             ),
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions())
         assertTrue(result is PasskeyResult.Failure)
@@ -155,7 +155,7 @@ class IosPasskeyDelegateTest {
                 )
             )
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.createCredential(mockOptions())
         assertTrue(result is PasskeyResult.Failure)
@@ -177,7 +177,7 @@ class IosPasskeyDelegateTest {
                 )
             )
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions())
         assertTrue(result is PasskeyResult.Failure)
@@ -191,7 +191,7 @@ class IosPasskeyDelegateTest {
         val bridge = FakeAuthorizationBridge(
             getResult = Result.failure(NSErrorException(error))
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions())
         assertTrue(result is PasskeyResult.Failure)
@@ -204,7 +204,7 @@ class IosPasskeyDelegateTest {
         val bridge = FakeAuthorizationBridge(
             createResult = Result.failure(NSErrorException(error))
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.createCredential(mockOptions())
         assertTrue(result is PasskeyResult.Failure)
@@ -225,7 +225,7 @@ class IosPasskeyDelegateTest {
                 throw IllegalStateException("unused")
             }
         }
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions().copy(rpId = null))
 
@@ -238,7 +238,7 @@ class IosPasskeyDelegateTest {
         val bridge = FakeAuthorizationBridge(
             getResult = Result.failure(CancellationException("cancelled")),
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val error = assertFailsWith<CancellationException> {
             delegate.getAssertion(mockRequestOptions())
@@ -251,7 +251,7 @@ class IosPasskeyDelegateTest {
         val bridge = FakeAuthorizationBridge(
             createResult = Result.failure(CancellationException("cancelled")),
         )
-        val delegate = IosPasskeyDelegate(bridge)
+        val delegate = IosPasskeyClientImpl(bridge)
 
         val error = assertFailsWith<CancellationException> {
             delegate.createCredential(mockOptions())

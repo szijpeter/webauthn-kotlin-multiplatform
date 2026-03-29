@@ -8,9 +8,9 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 
 /** iOS [PasskeyClient] implementation delegated to native AuthenticationServices bridge. */
-public class IosPasskeyClient : PasskeyClient by IosPasskeyDelegate()
+public class IosPasskeyClient : PasskeyClient by IosPasskeyClientImpl()
 
-internal expect class IosPasskeyDelegate() : PasskeyClient {
+internal expect class IosPasskeyClientImpl() : PasskeyClient {
     override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
     ): PasskeyResult<RegistrationResponse>

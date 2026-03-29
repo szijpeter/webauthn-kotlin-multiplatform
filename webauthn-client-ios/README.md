@@ -36,6 +36,7 @@ flowchart LR
 ## Limits and notes
 
 - Platform passkey flows are supported.
+- Boundary naming stays strict: AuthenticationServices adapters use `*Bridge`, while shared orchestration remains in `webauthn-client-core`.
 - Reported capabilities use the shared two-type model:
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` on iOS 18+ runtimes.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.

@@ -137,14 +137,14 @@ public final class dev/webauthn/serialization/AuthenticationResponsePayloadDto$C
 public final class dev/webauthn/serialization/AuthenticatorSelectionCriteriaDto {
 	public static final field Companion Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto$Companion;
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun component2 ()Ljava/lang/Boolean;
+	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
-	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
+	public static synthetic fun copy$default (Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/serialization/AuthenticatorSelectionCriteriaDto;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAuthenticatorAttachment ()Ljava/lang/String;
 	public final fun getRequireResidentKey ()Ljava/lang/Boolean;
@@ -633,8 +633,6 @@ public final class dev/webauthn/serialization/WebAuthnDtoMapper {
 	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
 	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
 	public final fun fromModel (Ldev/webauthn/model/RegistrationResponse;)Ldev/webauthn/serialization/RegistrationResponseDto;
-	public final fun toModel (Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/model/AuthenticationExtensionsClientInputs;
-	public final fun toModel (Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;)Ldev/webauthn/model/AuthenticationExtensionsClientOutputs;
 	public final fun toModel (Ldev/webauthn/serialization/AuthenticationResponseDto;)Ldev/webauthn/model/ValidationResult;
 	public final fun toModel (Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;)Ldev/webauthn/model/ValidationResult;
 	public final fun toModel (Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;)Ldev/webauthn/model/ValidationResult;

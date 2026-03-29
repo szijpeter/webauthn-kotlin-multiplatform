@@ -28,13 +28,13 @@ Last updated: 2026-03-29
 - Shared model contracts now use `Base64UrlBytes` plus domain-specific fixed-size wrappers (`RpIdHash`, `Aaguid`) instead of public raw `ByteArray` properties.
 - Shared byte/domain wrappers now use redacted `toString()` output, add named `ClientDataHash` and `CosePublicKey` values where the semantics matter, and keep the JVM signature verifier on typed COSE-key inputs.
 - Packed attestation now derives flags and AAGUID from `authData` with explicit truncated-input rejection, and MDS trust lookup normalizes hyphenated AAGUID metadata entries.
-- Network interop uses a default backend contract in `webauthn-network-ktor-client` and first-party sample backend routes under `samples/backend-ktor`.
+- Network interop uses default `/webauthn/*` route wiring in `webauthn-network-ktor-client`, path overrides via `KtorPasskeyRoutes`, and first-party sample backend routes under `samples/backend-ktor`.
 - PRF client crypto module (`webauthn-client-prf-crypto`) is now published with Signum-backed HKDF/AES-GCM helpers plus a high-level PRF session facade.
 - Samples include a Compose Multiplatform client-readiness app with committed Android and iOS hosts (`samples/compose-passkey-android`, `samples/compose-passkey-ios`) and shared `MainViewController` entrypoint wiring against the default `/webauthn/*` backend contract.
 - Compose sample now includes a PRF crypto demo (`Sign In + PRF`, caller-owned salt load/generation, encrypt/decrypt, and explicit key clear) with unrecoverable-data warning when passkeys are removed.
 - iOS PRF assertion input mapping now supports both shared `prf.eval` and per-credential `prf.evalByCredential`, with deterministic malformed-key rejection to invalid-options errors.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.
-- Creation-options DTO decoding now honors legacy `authenticatorSelection.requireResidentKey=true` by mapping to `ResidentKeyRequirement.REQUIRED` when `residentKey` is absent.
+- Creation-options DTO decoding now treats `residentKey` as authoritative and rejects legacy `authenticatorSelection.requireResidentKey` payloads explicitly.
 - `AppleAttestationStatementVerifier` tests now use a hardened `authData` parser that explicitly rejects truncated credential data missing the public key.
 - Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 - Repository quality gates now run detekt across all Kotlin modules plus `build-logic` with a shared strict config (`maxIssues=0`, no baseline); CI uploads XML/HTML detekt reports per run.
@@ -87,7 +87,7 @@ Last updated: 2026-03-29
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, targeted RP ID validation troubleshooting hints (invalid-options and platform paths), capability reporting, shared-core delegation | OEM/provider compatibility matrix hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation, PRF extension input/output bridge wiring, platform-first attachment selection when caller leaves attachment unset | More runtime/device matrix coverage |
 | `webauthn-client-prf-crypto` | Beta | Signum-backed PRF helpers (request/response extraction), HKDF-SHA256 key derivation, AES-GCM helpers, and zeroizable in-memory session facade | Additional interop vectors and long-term key-management guidance |
-| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default backend contract (`DefaultBackendContract`), optional extension transport fields on start payloads | Retry/error policy hardening and broader contract fixtures |
+| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default `/webauthn/*` route wiring plus `KtorPasskeyRoutes` path overrides, optional extension transport fields on start payloads | Retry/error policy hardening and broader contract fixtures |
 | `webauthn-attestation-mds` | Beta | Optional trust source module and tests, normalized AAGUID lookup across hyphenated metadata and raw-byte authenticator values | Full attestation format/trust-chain verification depth |
 | `samples:*` | Beta | Runnable backend/android/ios structure and Compose KMP readiness sample wired to default `/webauthn/*` contract via `samples/backend-ktor` | More real-device matrix coverage and extension-focused end-to-end examples |
 

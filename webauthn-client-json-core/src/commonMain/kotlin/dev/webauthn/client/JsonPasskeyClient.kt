@@ -4,7 +4,6 @@
 
 package dev.webauthn.client
 
-import at.asitplus.KmmResult
 import at.asitplus.catching
 
 /** JSON codec abstraction used by the JSON client facade. */
@@ -67,8 +66,7 @@ public class DefaultJsonPasskeyClient(
             }
 
         return when (val result = execute(options)) {
-            is PasskeyResult.Success -> KmmResult(result.value)
-                .mapCatching(encodeResponse)
+            is PasskeyResult.Success -> runCatching { encodeResponse(result.value) }
                 .fold(
                     onSuccess = { PasskeyResult.Success(it) },
                     onFailure = { error ->

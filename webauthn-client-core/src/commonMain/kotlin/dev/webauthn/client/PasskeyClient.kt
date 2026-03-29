@@ -25,9 +25,7 @@ public interface PasskeyClient {
         options: PublicKeyCredentialRequestOptions,
     ): PasskeyResult<AuthenticationResponse>
 
-    public suspend fun capabilities(): PasskeyCapabilities {
-        return PasskeyCapabilities()
-    }
+    public suspend fun capabilities(): PasskeyCapabilities = PasskeyCapabilities()
 }
 
 /**
@@ -64,25 +62,19 @@ public data class PasskeyCapabilities(
     public val supported: Set<PasskeyCapability> = emptySet(),
     public val platformVersionHints: List<String> = emptyList(),
 ) {
-    init {
-        buildSupportedByKey()
-    }
-
-    private fun buildSupportedByKey(): Map<String, PasskeyCapability> = buildMap {
-        for (capability in supported) {
-            val previous = put(capability.key, capability)
-            require(previous == null) {
-                "Duplicate capability key '${capability.key}'"
+    private val supportedByKey: Map<String, PasskeyCapability> =
+        supported.associateBy(PasskeyCapability::key)
+            .also { capabilitiesByKey ->
+                require(capabilitiesByKey.size == supported.size) {
+                    "Duplicate capability keys are not allowed"
+                }
             }
-        }
-    }
 
     /** Returns `true` if the given [capability] is supported. */
-    public fun supports(capability: PasskeyCapability): Boolean =
-        buildSupportedByKey()[capability.key] == capability
+    public fun supports(capability: PasskeyCapability): Boolean = supportedByKey[capability.key] == capability
 
     /** Returns `true` if the given capability [key] is supported. */
-    public fun supports(key: String): Boolean = buildSupportedByKey().containsKey(key)
+    public fun supports(key: String): Boolean = key in supportedByKey
 }
 
 /** Result wrapper for passkey operations. */
@@ -115,9 +107,7 @@ public interface PasskeyPlatformBridge {
 
     public fun mapPlatformError(throwable: Throwable): PasskeyClientError
 
-    public suspend fun capabilities(): PasskeyCapabilities {
-        return PasskeyCapabilities()
-    }
+    public suspend fun capabilities(): PasskeyCapabilities = PasskeyCapabilities()
 }
 
 /** Default [PasskeyClient] orchestration that delegates to a platform bridge. */
@@ -127,7 +117,7 @@ public class DefaultPasskeyClient(
     override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
     ): PasskeyResult<RegistrationResponse> {
-        return runTypedCeremony(
+        return runOperation(
             options = options,
             validate = ::requireCreationOptions,
             operation = bridge::createCredential,
@@ -137,50 +127,35 @@ public class DefaultPasskeyClient(
     override suspend fun getAssertion(
         options: PublicKeyCredentialRequestOptions,
     ): PasskeyResult<AuthenticationResponse> {
-        return runTypedCeremony(
+        return runOperation(
             options = options,
             operation = bridge::getAssertion,
         )
     }
 
     override suspend fun capabilities(): PasskeyCapabilities {
-        return suspendCatchingNonCancellation(bridge::capabilities).fold(
-            onSuccess = { it },
-            onFailure = { _ ->
-                PasskeyCapabilities()
-            },
-        )
+        return suspendCatchingNonCancellation(bridge::capabilities)
+            .getOrElse { PasskeyCapabilities() }
     }
 
-    private suspend fun <TOptions, TResult> runTypedCeremony(
+    private suspend fun <TOptions, TResult> runOperation(
         options: TOptions,
         validate: (TOptions) -> Unit = {},
         operation: suspend (TOptions) -> TResult,
     ): PasskeyResult<TResult> {
-        return runWithErrorMapping {
+        return suspendCatchingNonCancellation {
             validate(options)
             operation(options)
-        }
-    }
-
-    private suspend fun <T> runWithErrorMapping(block: suspend () -> T): PasskeyResult<T> {
-        return suspendCatchingNonCancellation(block).fold(
+        }.fold(
             onSuccess = { PasskeyResult.Success(it) },
             onFailure = { error ->
                 when (error) {
                     is InvalidOptionsException ->
                         PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
-                    is IllegalArgumentException ->
-                        mapIllegalArgumentWithBridge(error)
-
                     else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
                 }
             },
         )
-    }
-
-    private fun mapIllegalArgumentWithBridge(error: IllegalArgumentException): PasskeyResult.Failure {
-        return PasskeyResult.Failure(bridge.mapPlatformError(error))
     }
 
     private fun requireCreationOptions(options: PublicKeyCredentialCreationOptions) {
@@ -188,7 +163,6 @@ public class DefaultPasskeyClient(
             throw InvalidOptionsException("pubKeyCredParams must not be empty")
         }
     }
-
 }
 
 private class InvalidOptionsException(

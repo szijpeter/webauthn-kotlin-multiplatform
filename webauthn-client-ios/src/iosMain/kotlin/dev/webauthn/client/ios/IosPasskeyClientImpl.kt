@@ -1,15 +1,15 @@
 package dev.webauthn.client.ios
 
+import dev.webauthn.client.DefaultPasskeyClient
+import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyJsonMapper
-import dev.webauthn.client.KotlinxPasskeyJsonMapper
+import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
 import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
-import dev.webauthn.client.DefaultPasskeyClient
-import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -27,7 +27,7 @@ import kotlinx.serialization.json.Json
 import platform.Foundation.NSProcessInfo
 import platform.UIKit.UIApplication
 
-internal actual class IosPasskeyDelegate(
+internal actual class IosPasskeyClientImpl(
     private val bridge: IosAuthorizationBridge,
 ) : PasskeyClient by DefaultPasskeyClient(
     bridge = IosPasskeyPlatformBridge(bridge),
@@ -48,17 +48,23 @@ internal class IosPasskeyPlatformBridge(
         ignoreUnknownKeys = true
     }
 
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse =
-        jsonMapper.decodeRegistrationResponseOrThrowPlatform(
-            bridge.createCredential(options).toRegistrationResponseJson(),
-        )
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+        return bridge.createCredential(options).toModel()
+    }
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse =
-        jsonMapper.decodeAuthenticationResponseOrThrowPlatform(
-            bridge.getAssertion(options).toAuthenticationResponseJson(),
-        )
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+        return bridge.getAssertion(options).toModel()
+    }
 
-    private fun IosRegistrationPayload.toRegistrationResponseJson(): String = json.encodeToString(
+    private fun IosRegistrationPayload.toModel(): RegistrationResponse {
+        return jsonMapper.decodeRegistrationResponseOrThrowPlatform(asRegistrationResponseJson())
+    }
+
+    private fun IosAuthenticationPayload.toModel(): AuthenticationResponse {
+        return jsonMapper.decodeAuthenticationResponseOrThrowPlatform(asAuthenticationResponseJson())
+    }
+
+    private fun IosRegistrationPayload.asRegistrationResponseJson(): String = json.encodeToString(
         RegistrationResponseDto.serializer(),
         RegistrationResponseDto(
             id = credentialId.toBase64Url(),
@@ -71,7 +77,7 @@ internal class IosPasskeyPlatformBridge(
         ),
     )
 
-    private fun IosAuthenticationPayload.toAuthenticationResponseJson(): String = json.encodeToString(
+    private fun IosAuthenticationPayload.asAuthenticationResponseJson(): String = json.encodeToString(
         AuthenticationResponseDto.serializer(),
         AuthenticationResponseDto(
             id = credentialId.toBase64Url(),

@@ -14,7 +14,7 @@ Goal: keep Android and iOS client implementation moving with an in-repo backend 
 
 ### Option A: First-party default backend contract
 
-Use `KtorPasskeyServerClient` with `DefaultBackendContract` (default) and call:
+Use `KtorPasskeyServerClient` with its default routes and call:
 
 - `POST /webauthn/registration/start`
 - `POST /webauthn/registration/finish`
@@ -30,11 +30,11 @@ val serverClient = KtorPasskeyServerClient(
 )
 ```
 
-If your backend uses the same payload semantics but different paths, override route paths in `DefaultBackendContract(...)`.
+If your backend uses the same payload semantics but different paths, pass `KtorPasskeyRoutes(...)` to `KtorPasskeyServerClient`.
 
 ### Option B: Host-provided custom backend contract
 
-If your backend payloads differ from `DefaultBackendContract`, provide a custom `BackendContract` implementation and inject it into `KtorPasskeyServerClient`.
+If your backend payloads differ from the default `/webauthn/*` contract, provide your own `PasskeyServerClient` implementation instead of trying to extend `KtorPasskeyServerClient`.
 
 ## Local Backend App (`samples/backend-ktor`)
 
