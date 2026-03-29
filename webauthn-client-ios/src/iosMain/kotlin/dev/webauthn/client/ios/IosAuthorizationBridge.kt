@@ -341,7 +341,7 @@ internal fun shapePrfAssertionInput(prfInput: PrfExtensionInput?): PrfAssertionI
     if (prfInput == null) return null
     val evalByCredential = prfInput.evalByCredential
         ?.mapKeys { (credentialId, _) -> parsePrfCredentialIdKeyOrThrow(credentialId) }
-        ?.takeUnless(Map<Base64UrlBytes, AuthenticationExtensionsPRFValues>::isEmpty)
+        ?.takeUnless { it.isEmpty() }
     if (prfInput.eval == null && evalByCredential == null) return null
     return PrfAssertionInputShape(
         eval = prfInput.eval,
