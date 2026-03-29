@@ -77,16 +77,13 @@ is_integration_change_file() {
         settings.gradle.kts|build.gradle.kts|platform/bom/build.gradle.kts)
             return 0
             ;;
-        webauthn-*/build.gradle.kts)
-            return 0
-            ;;
         *)
             return 1
             ;;
     esac
 }
 
-is_module_contract_change_file() {
+is_module_public_api_change_file() {
     local module="$1"
     local file="$2"
 
@@ -94,19 +91,7 @@ is_module_contract_change_file() {
         "$module/README.md")
             return 1
             ;;
-        "$module/build.gradle.kts"|"$module/api/"*)
-            return 0
-            ;;
-        "$module/src/"*Test/*|"$module/src/"*test/*)
-            return 1
-            ;;
-        "$module/src/"*Main/*|"$module/src/"*main/*)
-            return 0
-            ;;
-        "$module/src/"*)
-            return 1
-            ;;
-        "$module/"*)
+        "$module/api/"*)
             return 0
             ;;
         *)
@@ -145,7 +130,7 @@ for file in "${changed_files[@]}"; do
             continue
         fi
 
-        if is_module_contract_change_file "$module" "$file"; then
+        if is_module_public_api_change_file "$module" "$file"; then
             module_readme_required["$module"]="true"
         fi
     done
@@ -175,10 +160,10 @@ fi
 
 msg="Docs trace required:"
 if [[ ${#missing_module_readmes[@]} -gt 0 ]]; then
-    msg+=" update module README(s) for changed module implementation/build contract -> ${missing_module_readmes[*]};"
+    msg+=" update module README(s) for changed public API baseline -> ${missing_module_readmes[*]};"
 fi
 if [[ ${#integration_missing[@]} -gt 0 ]]; then
-    msg+=" update integration docs for module relationship/integration changes -> ${integration_missing[*]};"
+    msg+=" update integration docs for public integration-surface changes -> ${integration_missing[*]};"
 fi
 
 if [[ "$strict" == "true" ]]; then
