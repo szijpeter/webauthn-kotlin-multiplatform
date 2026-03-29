@@ -52,10 +52,12 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(project(":webauthn-client-android"))
             implementation(libs.ktor.client.okhttp)
         }
 
         iosMain.dependencies {
+            implementation(project(":webauthn-client-ios"))
             implementation(libs.ktor.client.darwin)
         }
 
