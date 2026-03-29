@@ -139,6 +139,26 @@ class PrfExtensionHookTest {
         assertTrue(result is ValidationResult.Invalid)
     }
 
+    @Test
+    fun authenticationDoesNotRequireSecondFromEvalByCredentialWithoutSelectedCredentialContext() {
+        val inputs = AuthenticationExtensionsClientInputs(
+            prf = PrfExtensionInput(
+                evalByCredential = mapOf(
+                    "cred-1" to AuthenticationExtensionsPRFValues(bytes(1), bytes(2)),
+                ),
+            ),
+        )
+        val outputs = AuthenticationExtensionsClientOutputs(
+            prf = PrfExtensionOutput(
+                enabled = true,
+                results = AuthenticationExtensionsPRFValues(bytes(9)),
+            ),
+        )
+
+        val result = PrfExtensionHook.validateAuthenticationExtensions(inputs, outputs)
+        assertTrue(result is ValidationResult.Valid)
+    }
+
     private fun bytes(vararg value: Int): Base64UrlBytes =
         Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 }

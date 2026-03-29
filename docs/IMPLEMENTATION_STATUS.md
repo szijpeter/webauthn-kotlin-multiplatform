@@ -58,6 +58,7 @@ Last updated: 2026-03-29
 - Snapshot adopter note: recompile and update call sites for nullable request-options `rpId`, typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), and `PasskeyFinishResult` handling; sensitive payload `toString()` output is now redacted.
 - Review hardening follow-up (PR #53): CBOR byte scanner now rejects negative offsets and applies overflow-safe bounds checks before string/byte reads, request-options DTO mapping now rejects unknown `userVerification` values consistently, and JSON-core top-level mapper extensions are emitted in the legacy JVM owner class (`JsonPasskeyClientKt`) to preserve binary compatibility.
 - Extension validation hardening (2026-03-29): PRF authentication validation now only checks global `eval.second` requirement instead of incorrectly validating per-credential `evalByCredential` entries without knowing which credential was selected; this prevents false-positive validation failures when multiple credentials have different PRF requirements.
+- Client capability model simplification (2026-03-29): `PasskeyCapability` now uses two explicit variants only (`Extension`, `PlatformFeature`), `PasskeyCapabilities` stores supported values as a set with normalized key-based lookup, and duplicate capability keys now fail fast to keep integrator capability checks deterministic and unambiguous.
 
 ## Plan Progress (Estimated)
 

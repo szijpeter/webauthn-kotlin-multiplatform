@@ -70,6 +70,7 @@ API notes:
 - Use `parseOrThrow(...)` only for trusted bootstrap/config paths.
 - `Challenge.fromBytes(...)` enforces minimum challenge length.
 - Wrapper types (`CredentialId`, `RpIdHash`, `Aaguid`, etc.) are the canonical cross-module value format.
+- `WebAuthnExtension.Custom` rejects reserved standard extension identifiers (for example `prf` and `largeBlob`) to prevent collisions.
 
 ## Pitfalls and limits
 

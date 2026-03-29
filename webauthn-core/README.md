@@ -70,6 +70,7 @@ Important API behavior:
 - `validateRegistration(...)` / `validateAuthentication(...)` return typed outputs for downstream persistence.
 - `allowedOrigins` only broadens origin acceptance when explicitly provided.
 - `previousSignCount` must come from server-trusted credential state.
+- `CompositeExtensionHook` preserves invalid outcomes even when a hook returns `ValidationResult.Invalid(emptyList())`.
 - This module does not verify signatures or attestation statements.
 
 ## Composable extension hooks

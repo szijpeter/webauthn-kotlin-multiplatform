@@ -30,5 +30,23 @@ public sealed class WebAuthnExtension(public val identifier: String) {
     public data object AppId : WebAuthnExtension("appid")
 
     /** Fallback for proprietary, draft, or unrecognized extensions not yet modeled in the core. */
-    public data class Custom(public val key: String) : WebAuthnExtension(key)
+    public data class Custom(public val key: String) : WebAuthnExtension(key) {
+        init {
+            require(key !in STANDARD_IDENTIFIERS) {
+                "Use a typed WebAuthnExtension for standard identifier '$key'"
+            }
+        }
+    }
+
+    private companion object {
+        val STANDARD_IDENTIFIERS: Set<String> = setOf(
+            "prf",
+            "largeBlob",
+            "credProps",
+            "devicePubKey",
+            "uvm",
+            "appidExclude",
+            "appid",
+        )
+    }
 }

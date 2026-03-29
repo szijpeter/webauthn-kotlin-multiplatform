@@ -93,6 +93,37 @@ class CompositeExtensionHookTest {
         assertEquals("extensions.prf.results.second", result.errors.single().field)
     }
 
+    @Test
+    fun invalidWithoutErrorsStaysInvalid() {
+        val composite = CompositeExtensionHook(listOf(EmptyInvalidHook))
+
+        val regResult = composite.validateRegistrationExtensions(
+            inputs = AuthenticationExtensionsClientInputs(),
+            outputs = AuthenticationExtensionsClientOutputs(),
+        )
+        assertTrue(regResult is ValidationResult.Invalid)
+        assertTrue(regResult.errors.isEmpty())
+
+        val authResult = composite.validateAuthenticationExtensions(
+            inputs = AuthenticationExtensionsClientInputs(),
+            outputs = AuthenticationExtensionsClientOutputs(),
+        )
+        assertTrue(authResult is ValidationResult.Invalid)
+        assertTrue(authResult.errors.isEmpty())
+    }
+
+    private object EmptyInvalidHook : WebAuthnExtensionHook {
+        override fun validateRegistrationExtensions(
+            inputs: AuthenticationExtensionsClientInputs?,
+            outputs: AuthenticationExtensionsClientOutputs?,
+        ): ValidationResult<Unit> = ValidationResult.Invalid(emptyList())
+
+        override fun validateAuthenticationExtensions(
+            inputs: AuthenticationExtensionsClientInputs?,
+            outputs: AuthenticationExtensionsClientOutputs?,
+        ): ValidationResult<Unit> = ValidationResult.Invalid(emptyList())
+    }
+
     private fun bytes(vararg value: Int): Base64UrlBytes =
         Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
 }

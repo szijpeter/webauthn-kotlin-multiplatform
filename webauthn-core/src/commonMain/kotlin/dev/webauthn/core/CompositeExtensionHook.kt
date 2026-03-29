@@ -39,16 +39,20 @@ public class CompositeExtensionHook(
         validate: (WebAuthnExtensionHook) -> ValidationResult<Unit>,
     ): ValidationResult<Unit> {
         val allErrors = mutableListOf<WebAuthnValidationError>()
+        var sawInvalid = false
         for (hook in hooks) {
             when (val result = validate(hook)) {
-                is ValidationResult.Invalid -> allErrors.addAll(result.errors)
+                is ValidationResult.Invalid -> {
+                    sawInvalid = true
+                    allErrors.addAll(result.errors)
+                }
                 is ValidationResult.Valid -> Unit
             }
         }
-        return if (allErrors.isEmpty()) {
-            ValidationResult.Valid(Unit)
-        } else {
+        return if (sawInvalid) {
             ValidationResult.Invalid(allErrors)
+        } else {
+            ValidationResult.Valid(Unit)
         }
     }
 }
