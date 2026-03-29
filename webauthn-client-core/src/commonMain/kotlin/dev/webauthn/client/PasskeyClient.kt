@@ -150,7 +150,7 @@ public class DefaultPasskeyClient(
             onSuccess = { PasskeyResult.Success(it) },
             onFailure = { error ->
                 when (error) {
-                    is InvalidOptionsException ->
+                    is IllegalArgumentException ->
                         PasskeyResult.Failure(PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"))
                     else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
                 }

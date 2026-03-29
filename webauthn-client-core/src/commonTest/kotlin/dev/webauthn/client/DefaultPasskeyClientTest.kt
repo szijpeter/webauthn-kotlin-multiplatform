@@ -110,7 +110,7 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
-    fun createCredential_preserves_bridge_mapping_for_illegal_argument() = runTest {
+    fun createCredential_centralizes_invalid_options_for_illegal_argument() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { throw IllegalArgumentException("bad options") },
@@ -121,24 +121,24 @@ class DefaultPasskeyClientTest {
         val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.Platform)
-        assertTrue(result.error.message.contains("unexpected"))
+        assertTrue(result.error is PasskeyClientError.InvalidOptions)
+        assertEquals("bad options", result.error.message)
     }
 
     @Test
-    fun createCredential_uses_bridge_invalid_options_message_for_illegal_argument() = runTest {
+    fun createCredential_maps_non_argument_failures_with_bridge_mapper() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
-                createAction = { throw IllegalArgumentException("RP ID cannot be validated") },
-                errorMapper = { PasskeyClientError.InvalidOptions("RP ID cannot be validated. hint") },
+                createAction = { error("bridge failure") },
+                errorMapper = { PasskeyClientError.Transport("mapped", it) },
             ),
         )
 
         val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.InvalidOptions)
-        assertTrue(result.error.message.contains("hint"))
+        assertTrue(result.error is PasskeyClientError.Transport)
+        assertEquals("mapped", result.error.message)
     }
 
     @Test
