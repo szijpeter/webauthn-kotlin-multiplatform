@@ -42,7 +42,7 @@ import kotlin.test.assertTrue
 
 class KtorPasskeyServerClientTest {
     @Test
-    fun defaultContract_registration_usesExpectedEndpointsAndPayloadShape() = runTest {
+    fun defaultRoutes_registration_usesExpectedEndpointsAndPayloadShape() = runTest {
         val requestBodies = mutableMapOf<String, String>()
         val client = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -79,7 +79,6 @@ class KtorPasskeyServerClientTest {
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            backendContract = DefaultBackendContract(),
         )
         val params = RegistrationStartPayload(
             rpId = "example.com",
@@ -111,7 +110,7 @@ class KtorPasskeyServerClientTest {
     }
 
     @Test
-    fun defaultContract_authentication_usesExpectedEndpointsAndPayloadShape() = runTest {
+    fun defaultRoutes_authentication_usesExpectedEndpointsAndPayloadShape() = runTest {
         val requestBodies = mutableMapOf<String, String>()
         val client = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -147,7 +146,6 @@ class KtorPasskeyServerClientTest {
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            backendContract = DefaultBackendContract(),
         )
         val params = AuthenticationStartPayload(
             rpId = "example.com",
@@ -177,7 +175,7 @@ class KtorPasskeyServerClientTest {
     }
 
     @Test
-    fun customRoutes_overrideDefaultContractPaths() = runTest {
+    fun customRoutes_overrideDefaultPaths() = runTest {
         val seenPaths = mutableListOf<String>()
         val client = createMockClient { request ->
             seenPaths += request.url.encodedPath
@@ -228,11 +226,11 @@ class KtorPasskeyServerClientTest {
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test/",
-            backendContract = DefaultBackendContract(
+            routes = KtorPasskeyRoutes(
                 registerOptionsPath = "custom/register/start",
-                registerVerifyPath = "custom/register/finish",
-                authenticateOptionsPath = "custom/auth/start",
-                authenticateVerifyPath = "custom/auth/finish",
+                registerFinishPath = "custom/register/finish",
+                signInOptionsPath = "custom/auth/start",
+                signInFinishPath = "custom/auth/finish",
             ),
         )
         val registerParams = RegistrationStartPayload(
@@ -294,16 +292,15 @@ class KtorPasskeyServerClientTest {
             }
         }
 
-        val contract = DefaultBackendContract(
-            registerOptionsPath = "/unused/register/start",
-            registerVerifyPath = "/webauthn/registration/finish",
-            authenticateOptionsPath = "/unused/auth/start",
-            authenticateVerifyPath = "/unused/auth/finish",
-        )
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            backendContract = contract,
+            routes = KtorPasskeyRoutes(
+                registerOptionsPath = "/unused/register/start",
+                registerFinishPath = "/webauthn/registration/finish",
+                signInOptionsPath = "/unused/auth/start",
+                signInFinishPath = "/unused/auth/finish",
+            ),
         )
         val params = RegistrationStartPayload(
             rpId = "example.com",
@@ -338,16 +335,15 @@ class KtorPasskeyServerClientTest {
                 else -> error("Unexpected path: ${request.url.encodedPath}")
             }
         }
-        val contract = DefaultBackendContract(
-            registerOptionsPath = "/unused/register/start",
-            registerVerifyPath = "/webauthn/registration/finish",
-            authenticateOptionsPath = "/unused/auth/start",
-            authenticateVerifyPath = "/unused/auth/finish",
-        )
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            backendContract = contract,
+            routes = KtorPasskeyRoutes(
+                registerOptionsPath = "/unused/register/start",
+                registerFinishPath = "/webauthn/registration/finish",
+                signInOptionsPath = "/unused/auth/start",
+                signInFinishPath = "/unused/auth/finish",
+            ),
         )
         val params = RegistrationStartPayload(
             rpId = "example.com",
@@ -380,16 +376,15 @@ class KtorPasskeyServerClientTest {
             }
         }
 
-        val contract = DefaultBackendContract(
-            registerOptionsPath = "/unused/register/start",
-            registerVerifyPath = "/unused/register/finish",
-            authenticateOptionsPath = "/unused/auth/start",
-            authenticateVerifyPath = "/webauthn/authentication/finish",
-        )
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            backendContract = contract,
+            routes = KtorPasskeyRoutes(
+                registerOptionsPath = "/unused/register/start",
+                registerFinishPath = "/unused/register/finish",
+                signInOptionsPath = "/unused/auth/start",
+                signInFinishPath = "/webauthn/authentication/finish",
+            ),
         )
         val params = AuthenticationStartPayload(
             rpId = "example.com",
@@ -514,7 +509,6 @@ class KtorPasskeyServerClientTest {
         val serverClient = KtorPasskeyServerClient(
             httpClient = client,
             endpointBase = "https://example.test",
-            backendContract = DefaultBackendContract(),
         )
         val extensions = AuthenticationExtensionsClientInputsDto(
             prf = PrfExtensionInputDto(

@@ -25,216 +25,141 @@ import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-/** Backend API contract consumed by [KtorPasskeyServerClient]. */
-public interface BackendContract {
-    public suspend fun getRegisterOptions(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: RegistrationStartPayload,
-    ): ValidationResult<PublicKeyCredentialCreationOptions>
-
-    public suspend fun finishRegister(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: RegistrationStartPayload,
-        response: RegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult
-
-    public suspend fun getSignInOptions(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: AuthenticationStartPayload,
-    ): ValidationResult<PublicKeyCredentialRequestOptions>
-
-    public suspend fun finishSignIn(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult
-}
-
-/** Default backend contract matching the sample/server route structure. */
-public class DefaultBackendContract(
-    private val registerOptionsPath: String = "/webauthn/registration/start",
-    private val registerVerifyPath: String = "/webauthn/registration/finish",
-    private val authenticateOptionsPath: String = "/webauthn/authentication/start",
-    private val authenticateVerifyPath: String = "/webauthn/authentication/finish",
-) : BackendContract {
-    override suspend fun getRegisterOptions(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: RegistrationStartPayload,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> {
-        val response = httpClient.post(endpointFor(registerOptionsPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(params)
-        }
-        val responseText = response.bodyAsText()
-        throwIfHttpError(
-            response = response,
-            responseText = responseText,
-            operation = "Registration start",
-        )
-        val dto = decodeOrThrow<PublicKeyCredentialCreationOptionsDto>(
-            body = responseText,
-            operation = "Registration start response",
-        )
-
-        return WebAuthnDtoMapper.toModel(dto)
-    }
-
-    override suspend fun finishRegister(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: RegistrationStartPayload,
-        response: RegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
-        val responseDto = WebAuthnDtoMapper.fromModel(response)
-        val finishPayload = RegistrationFinishPayload(
-            response = responseDto,
-            clientDataType = "webauthn.create",
-            challenge = challengeAsBase64Url,
-            origin = params.origin,
-        )
-        val httpResponse = httpClient.post(endpointFor(registerVerifyPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(finishPayload)
-        }
-        val responseText = httpResponse.bodyAsText()
-        throwIfHttpError(
-            response = httpResponse,
-            responseText = responseText,
-            operation = "Registration finish",
-        )
-        val result = decodeOrThrow<FinishPayloadResponse>(
-            body = responseText,
-            operation = "Registration finish response",
-        )
-        return if (result.status == "ok") {
-            PasskeyFinishResult.Verified
-        } else {
-            PasskeyFinishResult.Rejected(
-                "Registration verification was rejected by the server with status '${result.status}'.",
-            )
-        }
-    }
-
-    override suspend fun getSignInOptions(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: AuthenticationStartPayload,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> {
-        val response = httpClient.post(endpointFor(authenticateOptionsPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(params)
-        }
-        val responseText = response.bodyAsText()
-        throwIfHttpError(
-            response = response,
-            responseText = responseText,
-            operation = "Authentication start",
-        )
-        val dto = decodeOrThrow<PublicKeyCredentialRequestOptionsDto>(
-            body = responseText,
-            operation = "Authentication start response",
-        )
-
-        return WebAuthnDtoMapper.toModel(dto)
-    }
-
-    override suspend fun finishSignIn(
-        httpClient: HttpClient,
-        endpointFor: (String) -> String,
-        params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
-        val responseDto = WebAuthnDtoMapper.fromModel(response)
-        val finishPayload = AuthenticationFinishPayload(
-            response = responseDto,
-            clientDataType = "webauthn.get",
-            challenge = challengeAsBase64Url,
-            origin = params.origin,
-        )
-        val httpResponse = httpClient.post(endpointFor(authenticateVerifyPath)) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(finishPayload)
-        }
-        val responseText = httpResponse.bodyAsText()
-        throwIfHttpError(
-            response = httpResponse,
-            responseText = responseText,
-            operation = "Authentication finish",
-        )
-        val result = decodeOrThrow<FinishPayloadResponse>(
-            body = responseText,
-            operation = "Authentication finish response",
-        )
-        return if (result.status == "ok") {
-            PasskeyFinishResult.Verified
-        } else {
-            PasskeyFinishResult.Rejected(
-                "Authentication verification was rejected by the server with status '${result.status}'.",
-            )
-        }
-    }
-}
+/** Route configuration for [KtorPasskeyServerClient]. */
+public data class KtorPasskeyRoutes(
+    public val registerOptionsPath: String = "/webauthn/registration/start",
+    public val registerFinishPath: String = "/webauthn/registration/finish",
+    public val signInOptionsPath: String = "/webauthn/authentication/start",
+    public val signInFinishPath: String = "/webauthn/authentication/finish",
+)
 
 /** Ktor-based [PasskeyServerClient] implementation for JSON WebAuthn backend endpoints. */
 public class KtorPasskeyServerClient(
     private val httpClient: HttpClient,
     endpointBase: String,
-    private val backendContract: BackendContract = DefaultBackendContract(),
+    private val routes: KtorPasskeyRoutes = KtorPasskeyRoutes(),
 ) : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
     private val endpointBase: String = endpointBase.trimEnd('/')
 
     override suspend fun getRegisterOptions(
         params: RegistrationStartPayload,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> = backendContract.getRegisterOptions(
-        httpClient = httpClient,
-        endpointFor = ::endpointFor,
-        params = params,
-    )
+    ): ValidationResult<PublicKeyCredentialCreationOptions> {
+        return postForOptions(
+            path = routes.registerOptionsPath,
+            params = params,
+            operation = "Registration start",
+            decode = ::decodeRegistrationOptions,
+        )
+    }
 
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
         response: RegistrationResponse,
         challengeAsBase64Url: String,
-    ): PasskeyFinishResult = backendContract.finishRegister(
-        httpClient = httpClient,
-        endpointFor = ::endpointFor,
-        params = params,
-        response = response,
-        challengeAsBase64Url = challengeAsBase64Url,
-    )
+    ): PasskeyFinishResult {
+        return postForFinish(
+            path = routes.registerFinishPath,
+            payload = RegistrationFinishPayload(
+                response = WebAuthnDtoMapper.fromModel(response),
+                clientDataType = "webauthn.create",
+                challenge = challengeAsBase64Url,
+                origin = params.origin,
+            ),
+            operation = "Registration finish",
+        )
+    }
 
     override suspend fun getSignInOptions(
         params: AuthenticationStartPayload,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> = backendContract.getSignInOptions(
-        httpClient = httpClient,
-        endpointFor = ::endpointFor,
-        params = params,
-    )
+    ): ValidationResult<PublicKeyCredentialRequestOptions> {
+        return postForOptions(
+            path = routes.signInOptionsPath,
+            params = params,
+            operation = "Authentication start",
+            decode = ::decodeAuthenticationOptions,
+        )
+    }
 
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
-    ): PasskeyFinishResult = backendContract.finishSignIn(
-        httpClient = httpClient,
-        endpointFor = ::endpointFor,
-        params = params,
-        response = response,
-        challengeAsBase64Url = challengeAsBase64Url,
-    )
+    ): PasskeyFinishResult {
+        return postForFinish(
+            path = routes.signInFinishPath,
+            payload = AuthenticationFinishPayload(
+                response = WebAuthnDtoMapper.fromModel(response),
+                clientDataType = "webauthn.get",
+                challenge = challengeAsBase64Url,
+                origin = params.origin,
+            ),
+            operation = "Authentication finish",
+        )
+    }
 
     private fun endpointFor(path: String): String {
         val normalizedPath = if (path.startsWith("/")) path else "/$path"
         return "$endpointBase$normalizedPath"
+    }
+
+    private suspend fun <TResult> postForOptions(
+        path: String,
+        params: Any,
+        operation: String,
+        decode: (String, String) -> ValidationResult<TResult>,
+    ): ValidationResult<TResult> {
+        val response = httpClient.post(endpointFor(path)) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(params)
+        }
+        val responseText = response.bodyAsText()
+        throwIfHttpError(response, responseText, operation)
+        return decode(responseText, "$operation response")
+    }
+
+    private suspend fun postForFinish(
+        path: String,
+        payload: Any,
+        operation: String,
+    ): PasskeyFinishResult {
+        val response = httpClient.post(endpointFor(path)) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(payload)
+        }
+        val responseText = response.bodyAsText()
+        throwIfHttpError(response, responseText, operation)
+        return decodeFinishResponse(responseText, "$operation response") { status ->
+            "$operation was rejected by the server with status '$status'."
+        }
+    }
+}
+
+private fun decodeRegistrationOptions(
+    body: String,
+    operation: String,
+): ValidationResult<PublicKeyCredentialCreationOptions> {
+    val dto = decodeOrThrow<PublicKeyCredentialCreationOptionsDto>(body, operation)
+    return WebAuthnDtoMapper.toModel(dto)
+}
+
+private fun decodeAuthenticationOptions(
+    body: String,
+    operation: String,
+): ValidationResult<PublicKeyCredentialRequestOptions> {
+    val dto = decodeOrThrow<PublicKeyCredentialRequestOptionsDto>(body, operation)
+    return WebAuthnDtoMapper.toModel(dto)
+}
+
+private fun decodeFinishResponse(
+    body: String,
+    operation: String,
+    rejectedMessage: (String) -> String,
+): PasskeyFinishResult {
+    val result = decodeOrThrow<FinishPayloadResponse>(body, operation)
+    return if (result.status == "ok") {
+        PasskeyFinishResult.Verified
+    } else {
+        PasskeyFinishResult.Rejected(rejectedMessage(result.status))
     }
 }
 

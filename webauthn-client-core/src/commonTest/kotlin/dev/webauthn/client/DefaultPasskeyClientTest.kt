@@ -184,7 +184,7 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
-    fun capabilities_supports_lookup_reflects_mutable_set_updates() {
+    fun capabilities_supports_lookup_uses_a_snapshot_of_supported_capabilities() {
         val mutable = mutableSetOf<PasskeyCapability>(
             PasskeyCapability.Extension(WebAuthnExtension.Prf),
         )
@@ -195,8 +195,8 @@ class DefaultPasskeyClientTest {
         mutable.clear()
         mutable.add(PasskeyCapability.PlatformFeature("securityKey"))
 
-        assertFalse(capabilities.supports("prf"))
-        assertTrue(capabilities.supports("securityKey"))
+        assertTrue(capabilities.supports("prf"))
+        assertFalse(capabilities.supports("securityKey"))
     }
 
     @Test

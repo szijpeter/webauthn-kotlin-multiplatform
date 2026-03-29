@@ -5,6 +5,7 @@ Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server cont
 ## What it provides
 
 - `KtorPasskeyServerClient`
+- `KtorPasskeyRoutes` for path overrides when your backend keeps the default payload semantics
 - Start/finish HTTP call wiring for registration and authentication
 - A drop-in transport module for client orchestration layers
 - Public `HttpClient`-based constructor with transitive `ktor-client-core` export for consumer compile safety
@@ -38,7 +39,7 @@ flowchart LR
 
 ## Pitfalls and limits
 
-- Contract/path assumptions are explicit; custom backend contracts need custom `PasskeyServerClient` implementations.
+- Route/path assumptions are explicit; if your backend payloads differ from the default sample contract, provide your own `PasskeyServerClient` implementation instead of trying to patch this transport.
 - You still need to choose/install an engine dependency (`ktor-client-cio`, Darwin, etc.) in your app runtime.
 - Retry, timeout, auth headers, and observability remain caller-owned through the provided `HttpClient`.
 - `KtorOriginMetadataProvider` fails closed (returns empty related origins) on transport/parse failures, but coroutine cancellation is always rethrown.

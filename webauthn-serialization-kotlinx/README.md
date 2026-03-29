@@ -37,6 +37,7 @@ flowchart LR
 - Mapper validation is strict by design; malformed wire data should be handled as untrusted input.
 - Low-level CBOR traversal relies on `webauthn-cbor-core` strict scanner primitives shared with JVM crypto parsing.
 - Canonical response DTO mapping emits standards-shaped WebAuthn response JSON fields (`type = "public-key"` and `clientExtensionResults`, including empty extension objects when no outputs are present).
+- `residentKey` is the authoritative creation-options field; the mapper no longer keeps a legacy `requireResidentKey` compatibility path.
 - Credential descriptors in `excludeCredentials`/`allowCredentials` must use `type = "public-key"`; mismatched types are rejected with explicit validation errors.
 - `allowCredentials: null` is accepted only as a compatibility decode shim and normalized to an empty list; canonical JSON should still treat `allowCredentials` as an optional sequence (not `null`).
 - Keep model and mapper versions aligned (BOM recommended).

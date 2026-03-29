@@ -79,7 +79,7 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
-    fun creationOptionsRequireResidentKeyTrueMapsToRequired() {
+    fun creationOptionsMissingResidentKeyDefaultsToDiscouraged() {
         val dto = PublicKeyCredentialCreationOptionsDto(
             rp = RpEntityDto(id = "example.com", name = "Example"),
             user = UserEntityDto(
@@ -89,14 +89,12 @@ class WebAuthnDtoMapperTest {
             ),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
             pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
-            authenticatorSelection = AuthenticatorSelectionCriteriaDto(
-                requireResidentKey = true,
-            ),
+            authenticatorSelection = AuthenticatorSelectionCriteriaDto(),
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
         assertTrue(result is ValidationResult.Valid)
-        assertEquals(ResidentKeyRequirement.REQUIRED, result.value.residentKey)
+        assertEquals(ResidentKeyRequirement.DISCOURAGED, result.value.residentKey)
     }
 
     @Test
