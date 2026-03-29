@@ -19,14 +19,14 @@ Deliver the client sample rework in six reviewable PRs while keeping sample-only
 
 Each PR below should target `client-sample-rework-dev`.
 
-| PR | Branch | Status | Scope | Exit Criteria |
-| --- | --- | --- | --- | --- |
-| 1 | `client-sample-rework-pr1-policy-visibility` | Completed | Sample policy boundary + visibility cleanup (`explicitApi` exclusion for samples, remove unnecessary `public`) | Sample modules compile with preserved host entrypoints and no accidental public-surface changes. |
-| 2 | `client-sample-rework-pr2-foundation` | Completed | Compose sample architecture skeleton (MVVM+UDF), typed routes, Navigation 3 setup, Koin graph, orchestration split out of monolithic `App()` | Compose sample compiles for Android and iOS simulator targets with new architecture wiring in place and no feature regressions. |
-| 3 | `client-sample-rework-pr3-auth-session` | Completed | Real login flow with `Auth` and `LoggedIn` screens, local session model, local logout behavior | Register/sign-in/logout transitions are deterministic in ViewModel tests and manual smoke checks. |
-| 4 | `client-sample-rework-pr4-debug-structure` | Planned | Hidden debug logs in bottom sheet via secret trigger, composable file-structure discipline, state-driven renderers | Debug sheet remains hidden by default, opens via secret trigger, and composable boundaries follow one reusable `internal` composable per file. |
-| 5 | `client-sample-rework-pr5-previews` | Planned | Preview catalog + preview-safe UI contracts + tooling setup + preview limitations doc | Previews render with fake/static data and compile paths stay free of DI/network/platform runtime dependencies. |
-| 6 | `client-sample-rework-pr6-docs-roadmap` | Planned | README/readiness updates, roadmap backlog items, execution-map closure | Docs reflect new flow/behavior, roadmap entries exist, and execution map is closed with next-action pointers. |
+| PR | Branch | Status | Link | Scope | Exit Criteria |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `client-sample-rework-pr1-policy-visibility` | Completed | [#95](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/95) | Sample policy boundary + visibility cleanup (`explicitApi` exclusion for samples, remove unnecessary `public`) | Sample modules compile with preserved host entrypoints and no accidental public-surface changes. |
+| 2 | `client-sample-rework-pr2-foundation` | Completed | [#96](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/96) | Compose sample architecture skeleton (MVVM+UDF), typed routes, Navigation 3 setup, Koin graph, orchestration split out of monolithic `App()` | Compose sample compiles for Android and iOS simulator targets with new architecture wiring in place and no feature regressions. |
+| 3 | `client-sample-rework-pr3-auth-session` | Completed | [#97](https://github.com/szijpeter/webauthn-kotlin-multiplatform/pull/97) | Real login flow with `Auth` and `LoggedIn` screens, local session model, local logout behavior | Register/sign-in/logout transitions are deterministic in ViewModel tests and manual smoke checks. |
+| 4 | `client-sample-rework-pr4-debug-structure` | Planned | - | Hidden debug logs in bottom sheet via secret trigger, composable file-structure discipline, state-driven renderers | Debug sheet remains hidden by default, opens via secret trigger, and composable boundaries follow one reusable `internal` composable per file. |
+| 5 | `client-sample-rework-pr5-previews` | Planned | - | Preview catalog + preview-safe UI contracts + tooling setup + preview limitations doc | Previews render with fake/static data and compile paths stay free of DI/network/platform runtime dependencies. |
+| 6 | `client-sample-rework-pr6-docs-roadmap` | Planned | - | README/readiness updates, roadmap backlog items, execution-map closure | Docs reflect new flow/behavior, roadmap entries exist, and execution map is closed with next-action pointers. |
 
 ## Validation Gates (Per PR)
 
