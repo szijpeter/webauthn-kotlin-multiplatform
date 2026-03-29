@@ -2,8 +2,6 @@
 
 package dev.webauthn.client
 
-import dev.webauthn.model.PublicKeyCredentialCreationOptions
-import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.runtime.rethrowCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
