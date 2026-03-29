@@ -10,7 +10,7 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `samples
 4. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
 5. Direct sample wiring to `KtorPasskeyServerClient` default backend contract.
 6. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
-7. Single logger-backed debug log panel in UI (wall-clock timestamps, level, source, message).
+7. Hidden logger-backed debug log sheet in UI (wall-clock timestamps, level, source, message), revealed by secret title double-tap.
 8. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
@@ -85,7 +85,7 @@ Full E2E expectation:
 
 ## Debug logging
 
-The sample emits structured logs with tag `PasskeyDemo` and uses the same entries for the in-app debug panel:
+The sample emits structured logs with tag `PasskeyDemo` and uses the same entries for the hidden in-app debug sheet:
 
 - `app`: startup and configuration
 - `capabilities`: probe start/success/failure
@@ -98,6 +98,21 @@ To inspect logs:
 
 - Android: `adb logcat | grep PasskeyDemo`
 - iOS: Xcode/device console output (`NSLog`)
+- In-app: double-tap the `WebAuthn Kotlin Demo` header title on the signed-in screen to reveal the debug sheet.
+
+## Compose previews
+
+Preview catalog composables live in common source:
+
+- `src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/previews/ScreenPreviewCatalog.kt`
+- `src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/previews/ComponentPreviewCatalog.kt`
+
+Preview limitations and constraints:
+
+1. Previews are static and fake-state only; they must stay free of DI (`koin*`), network clients, and platform runtime calls.
+2. Interactive runtime flows (Navigation 3 back stack, passkey platform prompts, live bottom-sheet gestures) are not fully represented in preview mode.
+3. Android Studio rendering still relies on Android target preview tooling, so `androidMain` includes `compose.ui.tooling` for this module.
+4. Treat previews as UI contract checks, not behavioral verification; lifecycle/interop behavior must still be validated via tests and host-app runs.
 
 ## Test layering (fake vs real client)
 
