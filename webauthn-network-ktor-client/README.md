@@ -47,4 +47,3 @@ flowchart LR
 ## Status
 
 Production-leaning transport helper with explicit backend contract support.
-March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.

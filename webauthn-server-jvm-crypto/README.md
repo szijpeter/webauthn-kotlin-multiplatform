@@ -45,4 +45,3 @@ flowchart LR
 ## Status
 
 Beta, Signum-first JVM backend crypto.
-March 2026: minimal readability/style touch only (small chaining/`::` cleanups where clearer); no API or behavior change.

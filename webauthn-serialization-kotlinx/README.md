@@ -45,4 +45,3 @@ flowchart LR
 ## Status
 
 Beta, strict mapper validation with CBOR/COSE handling.
-March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.

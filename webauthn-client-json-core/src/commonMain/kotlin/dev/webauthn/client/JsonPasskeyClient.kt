@@ -69,7 +69,7 @@ public class DefaultJsonPasskeyClient(
             is PasskeyResult.Success -> runCatching {
                 encodeResponse(result.value)
             }.fold(
-                onSuccess = ::passkeySuccess,
+                onSuccess = { PasskeyResult.Success(it) },
                 onFailure = { error ->
                     PasskeyResult.Failure(
                         PasskeyClientError.Platform(
@@ -83,8 +83,6 @@ public class DefaultJsonPasskeyClient(
             is PasskeyResult.Failure -> result
         }
     }
-
-    private fun passkeySuccess(value: String): PasskeyResult<String> = PasskeyResult.Success(value)
 }
 
 public fun PasskeyClient.withJsonSupport(

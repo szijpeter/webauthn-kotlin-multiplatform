@@ -53,15 +53,11 @@ public class PrfCryptoClient(
                         session = session,
                     )
                 }.fold(
-                    onSuccess = ::passkeySuccess,
+                    onSuccess = { PasskeyResult.Success(it) },
                     onFailure = { error -> error.toFailure() },
                 )
             }
         }
-    }
-
-    private fun passkeySuccess(value: PrfAuthenticationResult): PasskeyResult<PrfAuthenticationResult> {
-        return PasskeyResult.Success(value)
     }
 }
 

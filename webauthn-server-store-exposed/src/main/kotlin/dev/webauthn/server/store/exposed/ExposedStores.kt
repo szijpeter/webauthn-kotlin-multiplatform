@@ -225,7 +225,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                 }
             } else {
                 Credentials.insert {
-                    it[credentialId] = credential.credentialId.value.encoded()
+                    it[credentialId] = encodedCredentialId
                     it[userId] = credential.userId.value.encoded()
                     it[rpId] = credential.rpId.value
                     it[publicKey] = credential.publicKeyCose.bytes()

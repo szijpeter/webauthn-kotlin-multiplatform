@@ -13,6 +13,7 @@ Last updated: 2026-03-29
 ## Overall Snapshot
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
+- PR #92 review follow-up (2026-03-29): reverted low-value one-off helper extractions in client adapters, hardened `InMemoryCredentialStore` concurrency (`computeIfAbsent` + concurrent key set), and reused precomputed credential-id encoding in Exposed insert path; no public API contract change intended.
 - Vertical chaining + callable-reference style consistency pass (2026-03-29): applied readability-only formatting and `::` adoption across client/network/serialization/server/store modules and related tests, with minimal crypto-internal touch-ups; no runtime/API behavior changes intended.
 - Kotlin import hygiene update (2026-03-28): code-body fully qualified type references were removed across touched modules in favor of imports and explicit aliases where needed; this is a readability/maintainability refactor with no runtime or API semantic change.
 - Core validator API KDoc coverage now documents registration/authentication/allow-list validation entry points plus extension-hook contracts; this is a documentation-only clarification with no runtime semantic change.

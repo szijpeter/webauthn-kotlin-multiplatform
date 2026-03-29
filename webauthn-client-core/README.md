@@ -128,4 +128,3 @@ Usage notes:
 ## Status
 
 Beta, shared orchestration layer for client passkey ceremonies.
-March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.

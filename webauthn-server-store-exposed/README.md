@@ -47,4 +47,3 @@ flowchart LR
 ## Status
 
 Beta, contract-tested Exposed storage adapter.
-March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.
