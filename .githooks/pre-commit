@@ -2,6 +2,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
+source "$ROOT_DIR/tools/agent/modern-bash.sh"
+ensure_modern_bash "$0" "$@"
 cd "$ROOT_DIR"
 
 echo "[pre-commit] Running advisory fast quality gate..."

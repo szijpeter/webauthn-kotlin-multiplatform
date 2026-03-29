@@ -26,6 +26,7 @@ required_files=(
   ".gemini/workflows/fast-pr-check.md"
   "tools/agent/quality-gate.sh"
   "tools/agent/check-published-consumer-smoke.sh"
+  "tools/agent/modern-bash.sh"
   "tools/agent/changed-modules.sh"
   "tools/agent/spec-trace-check.sh"
   "tools/agent/context-pack.sh"
@@ -64,8 +65,18 @@ if ! contains_pattern "--mode fast --scope changed --block false" .githooks/pre-
   exit 1
 fi
 
+if ! contains_pattern "modern-bash.sh" .githooks/pre-commit; then
+  echo "pre-commit hook is missing modern bash bootstrap" >&2
+  exit 1
+fi
+
 if ! contains_pattern "--mode strict --scope changed --block false" .githooks/pre-push; then
   echo "pre-push hook is out of policy" >&2
+  exit 1
+fi
+
+if ! contains_pattern "modern-bash.sh" .githooks/pre-push; then
+  echo "pre-push hook is missing modern bash bootstrap" >&2
   exit 1
 fi
 
