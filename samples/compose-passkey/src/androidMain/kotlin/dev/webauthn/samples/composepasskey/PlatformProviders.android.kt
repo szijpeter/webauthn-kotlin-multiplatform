@@ -12,7 +12,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 @Composable
-public actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
+actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
     return remember(onLogLine) {
         HttpClient(OkHttp) {
             install(ContentNegotiation) {
@@ -35,4 +35,4 @@ public actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpC
     }
 }
 
-public actual fun platformRuntimeHint(): String? = null
+actual fun platformRuntimeHint(): String? = null

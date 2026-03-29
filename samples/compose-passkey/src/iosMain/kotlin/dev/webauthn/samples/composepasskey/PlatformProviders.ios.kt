@@ -12,7 +12,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 @Composable
-public actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
+actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
     return remember(onLogLine) {
         HttpClient(Darwin) {
             install(ContentNegotiation) {
@@ -35,6 +35,6 @@ public actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpC
     }
 }
 
-public actual fun platformRuntimeHint(): String? {
+actual fun platformRuntimeHint(): String? {
     return "Passkey register/sign-in may fail unless Associated Domains entitlement and a matching apple-app-site-association setup are configured."
 }

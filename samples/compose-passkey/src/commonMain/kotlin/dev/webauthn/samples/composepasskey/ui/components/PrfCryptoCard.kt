@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
 
 @Composable
-public fun PrfCryptoCard(
+fun PrfCryptoCard(
     modifier: Modifier = Modifier,
     supportsPrf: Boolean,
     actionsEnabled: Boolean,

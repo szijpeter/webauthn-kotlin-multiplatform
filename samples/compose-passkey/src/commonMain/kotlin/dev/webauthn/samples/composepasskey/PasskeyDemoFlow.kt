@@ -8,18 +8,18 @@ import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.model.StatusTone
 
-public data class PasskeyDemoConfig(
-    public val endpointBase: String = PasskeyDemoBuildConfig.ENDPOINT_BASE,
-    public val rpId: String = resolveDefaultRpId(
+data class PasskeyDemoConfig(
+    val endpointBase: String = PasskeyDemoBuildConfig.ENDPOINT_BASE,
+    val rpId: String = resolveDefaultRpId(
         endpointBase = endpointBase,
         configuredRpId = PasskeyDemoBuildConfig.RP_ID,
     ),
-    public val origin: String = resolveDefaultOrigin(
+    val origin: String = resolveDefaultOrigin(
         rpId = rpId,
         configuredOrigin = PasskeyDemoBuildConfig.ORIGIN,
     ),
-    public val userHandle: String = PasskeyDemoBuildConfig.USER_ID,
-    public val userName: String = PasskeyDemoBuildConfig.USER_NAME,
+    val userHandle: String = PasskeyDemoBuildConfig.USER_ID,
+    val userName: String = PasskeyDemoBuildConfig.USER_NAME,
 )
 
 internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean {
@@ -106,7 +106,7 @@ internal fun controllerTransitionLog(
     return null
 }
 
-private enum class PasskeyDemoErrorCategory(public val label: String) {
+private enum class PasskeyDemoErrorCategory(val label: String) {
     INVALID_OPTIONS("Invalid Options"),
     USER_CANCELLED("User Cancelled"),
     PLATFORM("Platform"),

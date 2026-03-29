@@ -4,7 +4,9 @@ plugins {
 }
 
 kotlin {
-    explicitApi()
+    if (!project.path.startsWith(":samples:")) {
+        explicitApi()
+    }
 
     jvmToolchain(21)
 
