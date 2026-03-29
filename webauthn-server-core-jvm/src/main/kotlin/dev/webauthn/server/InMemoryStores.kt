@@ -32,7 +32,8 @@ public class InMemoryCredentialStore : CredentialStore {
     override suspend fun save(credential: StoredCredential) {
         val id = credential.credentialId.value.encoded()
         byId[id] = credential
-        userCredentialIds.getOrPut(credential.userId.value.encoded()) { linkedSetOf() }.add(id)
+        val userCredentials = userCredentialIds.getOrPut(credential.userId.value.encoded()) { linkedSetOf() }
+        userCredentials.add(id)
     }
 
     override suspend fun findById(id: CredentialId): StoredCredential? {
@@ -41,7 +42,7 @@ public class InMemoryCredentialStore : CredentialStore {
 
     override suspend fun findByUserId(userId: UserHandle): List<StoredCredential> {
         return userCredentialIds[userId.value.encoded()]
-            ?.mapNotNull { byId[it] }
+            ?.mapNotNull(byId::get)
             .orEmpty()
     }
 

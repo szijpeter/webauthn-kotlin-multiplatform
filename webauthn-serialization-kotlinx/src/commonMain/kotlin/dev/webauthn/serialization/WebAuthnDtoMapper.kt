@@ -69,7 +69,9 @@ public object WebAuthnDtoMapper {
                 PublicKeyCredentialDescriptorDto(
                     type = PUBLIC_KEY_CREDENTIAL_TYPE,
                     id = it.id.value.encoded(),
-                    transports = it.transports.map { transport -> transport.toDtoValue() }.ifEmpty { null },
+                    transports = it.transports
+                        .map { transport -> transport.toDtoValue() }
+                        .ifEmpty { null },
                 )
             },
             authenticatorSelection = AuthenticatorSelectionCriteriaDto(
@@ -88,7 +90,7 @@ public object WebAuthnDtoMapper {
 
         val rpId = value.rp.id?.let { encodedRpId ->
             RpId.parse(encodedRpId).fold(
-                onValid = { it },
+                onValid = ::identity,
                 onInvalid = { errors += it; null },
             )
         } ?: run {
@@ -96,11 +98,11 @@ public object WebAuthnDtoMapper {
             null
         }
         val userId = UserHandle.parse(value.user.id).fold(
-            onValid = { it },
+            onValid = ::identity,
             onInvalid = { errors += it; null },
         )
         val challenge = Challenge.parse(value.challenge).fold(
-            onValid = { it },
+            onValid = ::identity,
             onInvalid = { errors += it; null },
         )
 
@@ -125,7 +127,7 @@ public object WebAuthnDtoMapper {
                 return@mapIndexedNotNull null
             }
             val id = CredentialId.parse(descriptor.id).fold(
-                onValid = { it },
+                onValid = ::identity,
                 onInvalid = { err ->
                     errors += err
                     null
@@ -245,7 +247,9 @@ public object WebAuthnDtoMapper {
                 PublicKeyCredentialDescriptorDto(
                     type = PUBLIC_KEY_CREDENTIAL_TYPE,
                     id = it.id.value.encoded(),
-                    transports = it.transports.map { transport -> transport.toDtoValue() }.ifEmpty { null },
+                    transports = it.transports
+                        .map { transport -> transport.toDtoValue() }
+                        .ifEmpty { null },
                 )
             },
             userVerification = value.userVerification.name.lowercase(),
@@ -258,12 +262,12 @@ public object WebAuthnDtoMapper {
         val errors = mutableListOf<WebAuthnValidationError>()
 
         val challenge = Challenge.parse(value.challenge).fold(
-            onValid = { it },
+            onValid = ::identity,
             onInvalid = { errors += it; null },
         )
         val rpId = value.rpId?.let { encodedRpId ->
             RpId.parse(encodedRpId).fold(
-                onValid = { it },
+                onValid = ::identity,
                 onInvalid = { errors += it; null },
             )
         }
@@ -277,7 +281,7 @@ public object WebAuthnDtoMapper {
                 return@mapIndexedNotNull null
             }
             val id = CredentialId.parse(descriptor.id).fold(
-                onValid = { it },
+                onValid = ::identity,
                 onInvalid = { err ->
                     errors += err
                     null
@@ -298,7 +302,11 @@ public object WebAuthnDtoMapper {
             if (id == null) {
                 null
             } else {
-                PublicKeyCredentialDescriptor(type = PublicKeyCredentialType.PUBLIC_KEY, id = id, transports = transports)
+                PublicKeyCredentialDescriptor(
+                    type = PublicKeyCredentialType.PUBLIC_KEY,
+                    id = id,
+                    transports = transports,
+                )
             }
         }
 
@@ -781,11 +789,15 @@ private fun extractAuthDataFromAttestationObject(attestationObject: ByteArray): 
         return null
     }
     return runCatching {
-        attestationObjectCbor.decodeFromByteArray<AttestationObjectCborDto>(attestationObject).authData
+        attestationObjectCbor
+            .decodeFromByteArray<AttestationObjectCborDto>(attestationObject)
+            .authData
     }.getOrNull()
 }
 
 private const val FLAG_ATTESTED_CREDENTIAL_DATA: Int = 0x40
+
+private fun <T> identity(value: T): T = value
 
 private inline fun <T, R> ValidationResult<T>.fold(
     onValid: (T) -> R,

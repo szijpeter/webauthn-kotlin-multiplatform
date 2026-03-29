@@ -68,3 +68,4 @@ flowchart LR
 ## Status
 
 Beta, production-leaning ceremony orchestration.
+March 2026: readability/style pass only (vertical chaining and `::` adoption where clearer); no API or behavior change.
