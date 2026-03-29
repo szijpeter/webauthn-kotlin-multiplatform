@@ -183,6 +183,22 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
+    fun capabilities_supports_lookup_reflects_mutable_set_updates() {
+        val mutable = mutableSetOf<PasskeyCapability>(
+            PasskeyCapability.Extension(WebAuthnExtension.Prf),
+        )
+        val capabilities = PasskeyCapabilities(supported = mutable)
+
+        assertTrue(capabilities.supports("prf"))
+
+        mutable.clear()
+        mutable.add(PasskeyCapability.PlatformFeature("securityKey"))
+
+        assertFalse(capabilities.supports("prf"))
+        assertTrue(capabilities.supports("securityKey"))
+    }
+
+    @Test
     fun createCredential_passes_extensions_to_bridge() = runTest {
         var passedExtensions: AuthenticationExtensionsClientInputs? = null
         val client = DefaultPasskeyClient(

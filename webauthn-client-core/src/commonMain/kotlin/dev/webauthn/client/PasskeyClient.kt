@@ -64,7 +64,11 @@ public data class PasskeyCapabilities(
     public val supported: Set<PasskeyCapability> = emptySet(),
     public val platformVersionHints: List<String> = emptyList(),
 ) {
-    private val supportedByKey: Map<String, PasskeyCapability> = buildMap {
+    init {
+        buildSupportedByKey()
+    }
+
+    private fun buildSupportedByKey(): Map<String, PasskeyCapability> = buildMap {
         for (capability in supported) {
             val previous = put(capability.key, capability)
             require(previous == null) {
@@ -74,10 +78,10 @@ public data class PasskeyCapabilities(
     }
 
     /** Returns `true` if the given [capability] is supported. */
-    public fun supports(capability: PasskeyCapability): Boolean = supportedByKey.containsKey(capability.key)
+    public fun supports(capability: PasskeyCapability): Boolean = supports(capability.key)
 
     /** Returns `true` if the given capability [key] is supported. */
-    public fun supports(key: String): Boolean = supportedByKey.containsKey(key)
+    public fun supports(key: String): Boolean = buildSupportedByKey().containsKey(key)
 }
 
 /** Result wrapper for passkey operations. */

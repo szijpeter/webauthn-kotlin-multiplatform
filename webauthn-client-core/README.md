@@ -100,6 +100,8 @@ Available capabilities:
 - `PasskeyCapability.PlatformFeature("securityKey")` - Cross-platform authenticator support
 - `PasskeyCapability.Extension(WebAuthnExtension.Custom("example"))` - proprietary/draft extension identifier
 
+`PasskeyCapabilities` lookups are key-based (`supports(capability)` and `supports(key)`) and duplicate keys are rejected at construction time.
+
 Usage notes:
 
 - `challengeAsBase64Url` is echoed client data; server must verify it against trusted challenge state.
