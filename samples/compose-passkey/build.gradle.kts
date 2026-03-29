@@ -15,11 +15,10 @@ kotlin {
         compileSdk = 36
         minSdk = 30
     }
-    val iosX64 = iosX64()
     val iosArm64 = iosArm64()
     val iosSimulatorArm64 = iosSimulatorArm64()
 
-    listOf(iosX64, iosArm64, iosSimulatorArm64).forEach { target ->
+    listOf(iosArm64, iosSimulatorArm64).forEach { target ->
         target.binaries.framework {
             baseName = "ComposePasskeyShared"
             isStatic = true
@@ -34,9 +33,13 @@ kotlin {
                 implementation(libs.compose.material3)
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling.preview)
+                implementation(libs.navigation3.ui)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+                implementation(libs.koin.compose.navigation3)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.serialization.kotlinx.json)
