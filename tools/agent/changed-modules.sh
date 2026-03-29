@@ -2,6 +2,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT_DIR/tools/agent/modern-bash.sh"
+ensure_modern_bash "$0" "$@"
 cd "$ROOT_DIR"
 
 scope="changed"
