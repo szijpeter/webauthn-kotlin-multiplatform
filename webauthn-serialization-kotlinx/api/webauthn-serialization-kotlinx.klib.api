@@ -146,19 +146,22 @@ final class dev.webauthn.serialization/AuthenticationResponsePayloadDto { // dev
 }
 
 final class dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto { // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto|null[0]
-    constructor <init>(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.<init>|<init>(kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    constructor <init>(kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ..., kotlin/String? = ...) // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.<init>|<init>(kotlin.String?;kotlin.Boolean?;kotlin.String?;kotlin.String?){}[0]
 
     final val authenticatorAttachment // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.authenticatorAttachment|{}authenticatorAttachment[0]
         final fun <get-authenticatorAttachment>(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
+    final val requireResidentKey // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.requireResidentKey|{}requireResidentKey[0]
+        final fun <get-requireResidentKey>(): kotlin/Boolean? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.requireResidentKey.<get-requireResidentKey>|<get-requireResidentKey>(){}[0]
     final val residentKey // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.residentKey|{}residentKey[0]
         final fun <get-residentKey>(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.residentKey.<get-residentKey>|<get-residentKey>(){}[0]
     final val userVerification // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.userVerification|{}userVerification[0]
         final fun <get-userVerification>(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.userVerification.<get-userVerification>|<get-userVerification>(){}[0]
 
     final fun component1(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component1|component1(){}[0]
-    final fun component2(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component2|component2(){}[0]
+    final fun component2(): kotlin/Boolean? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component2|component2(){}[0]
     final fun component3(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component3|component3(){}[0]
-    final fun copy(kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.copy|copy(kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    final fun component4(): kotlin/String? // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.component4|component4(){}[0]
+    final fun copy(kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ..., kotlin/String? = ...): dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.copy|copy(kotlin.String?;kotlin.Boolean?;kotlin.String?;kotlin.String?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto.toString|toString(){}[0]

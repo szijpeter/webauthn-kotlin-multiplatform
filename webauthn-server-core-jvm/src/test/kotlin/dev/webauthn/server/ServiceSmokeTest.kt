@@ -490,6 +490,74 @@ class ServiceSmokeTest {
     }
 
     @Test
+    fun registrationFinishFailsForDeletedUser() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        var storedUser: UserAccount? = null
+        val userStore = object : UserAccountStore {
+            override suspend fun findByName(name: String): UserAccount? {
+                return storedUser?.takeIf { it.name == name }
+            }
+
+            override suspend fun save(user: UserAccount) {
+                storedUser = user
+            }
+        }
+        val rpIdHasher = JvmRpIdHasher()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = rpIdHasher,
+        )
+
+        val startRequest = RegistrationStartRequest(
+            rpId = RpId.parseOrThrow("example.com"),
+            rpName = "Example",
+            origin = Origin.parseOrThrow("https://example.com"),
+            userName = "alice",
+            userDisplayName = "Alice",
+            userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
+        )
+        val options = registrationService.start(startRequest)
+        storedUser = null
+
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+        val attestationObject = attestationObjectWithAuthData(
+            registrationAuthenticatorDataBytes(
+                rpIdHash = rpIdHasher.hashRpId("example.com"),
+                flags = 0x41,
+                signCount = 1,
+                credentialId = credentialId.value.bytes(),
+                cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01, 0x02),
+            ),
+        )
+
+        val result = registrationService.finish(
+            RegistrationFinishRequest(
+                responseDto = RegistrationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = RegistrationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.create",
+                    challenge = options.challenge,
+                    origin = startRequest.origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("userName", result.errors.single().field)
+    }
+
+    @Test
     fun registrationFinishFailsForChallengeReplay() = runBlocking {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()

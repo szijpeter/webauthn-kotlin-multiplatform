@@ -34,7 +34,7 @@ Last updated: 2026-03-29
 - Compose sample now includes a PRF crypto demo (`Sign In + PRF`, caller-owned salt load/generation, encrypt/decrypt, and explicit key clear) with unrecoverable-data warning when passkeys are removed.
 - iOS PRF assertion input mapping now supports both shared `prf.eval` and per-credential `prf.evalByCredential`, with deterministic malformed-key rejection to invalid-options errors.
 - Sample backend attestation policy now defaults to strict verification with explicit `NONE` opt-out for local bring-up only.
-- Creation-options DTO decoding now treats `residentKey` as authoritative and drops the legacy `authenticatorSelection.requireResidentKey` compatibility path.
+- Creation-options DTO decoding now treats `residentKey` as authoritative and rejects legacy `authenticatorSelection.requireResidentKey` payloads explicitly.
 - `AppleAttestationStatementVerifier` tests now use a hardened `authData` parser that explicitly rejects truncated credential data missing the public key.
 - Compose sample config now derives default `rpId` from the runtime `endpointBase` constructor argument (instead of always using build-time endpoint defaults).
 - Repository quality gates now run detekt across all Kotlin modules plus `build-logic` with a shared strict config (`maxIssues=0`, no baseline); CI uploads XML/HTML detekt reports per run.

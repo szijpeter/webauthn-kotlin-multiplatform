@@ -62,6 +62,7 @@ flowchart LR
 
 - Services depend on correctly implemented store semantics (challenge expiry, credential lookup, counter updates).
 - Registration and authentication keep shared fail-fast origin/session handling internally, so callers should expect matching origin-mismatch behavior across both ceremony types.
+- `RegistrationService.finish()` now returns a typed validation error when the user disappears between start and finish instead of throwing from the user store lookup.
 - This module does not define your HTTP contract by itself.
 
 ## Status

@@ -98,6 +98,25 @@ class WebAuthnDtoMapperTest {
     }
 
     @Test
+    fun creationOptionsRejectLegacyRequireResidentKeyField() {
+        val dto = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = "example.com", name = "Example"),
+            user = UserEntityDto(
+                id = "YWFhYWFhYWFhYWFhYWFhYQ",
+                name = "alice",
+                displayName = "Alice",
+            ),
+            challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            authenticatorSelection = AuthenticatorSelectionCriteriaDto(requireResidentKey = true),
+        )
+
+        val result = WebAuthnDtoMapper.toModel(dto)
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("authenticatorSelection.requireResidentKey", result.errors.single().field)
+    }
+
+    @Test
     fun authenticationResponseParsesAuthenticatorDataFields() {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val authenticatorData = authenticatorDataBytes(

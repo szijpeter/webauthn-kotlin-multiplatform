@@ -154,6 +154,13 @@ public object WebAuthnDtoMapper {
             return ValidationResult.Invalid(errors)
         }
 
+        value.authenticatorSelection?.requireResidentKey?.let {
+            errors += WebAuthnValidationError.InvalidValue(
+                field = "authenticatorSelection.requireResidentKey",
+                message = "Legacy requireResidentKey is no longer accepted; send residentKey instead",
+            )
+        }
+
         val residentKey = when (val wireValue = value.authenticatorSelection?.residentKey) {
             null -> ResidentKeyRequirement.DISCOURAGED
             else -> {

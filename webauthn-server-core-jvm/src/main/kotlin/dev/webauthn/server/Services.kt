@@ -110,7 +110,8 @@ public class RegistrationService(
             is ValidationResult.Invalid -> return result
         }
 
-        val userHandle = UserAccountStoreLookup.findRequired(userAccountStore, session.userName).id
+        val userHandle = userAccountStore.findByName(session.userName)?.id
+            ?: return failure("userName", "Unknown user")
         val options = registrationOptionsFor(session, userHandle)
 
         val validation = WebAuthnCoreValidator.validateRegistration(
@@ -309,12 +310,6 @@ public class AuthenticationService(
         val digest = MessageDigest.getInstance("SHA-256")
         val clientDataHash = digest.digest(response.clientDataJson.bytes())
         return response.rawAuthenticatorData.bytes() + clientDataHash
-    }
-}
-
-private object UserAccountStoreLookup {
-    suspend fun findRequired(store: UserAccountStore, name: String): UserAccount {
-        return requireNotNull(store.findByName(name)) { "User not found in account store: $name" }
     }
 }
 

@@ -25,6 +25,7 @@ public data class RelatedOriginsDto(
 @Serializable
 public data class AuthenticatorSelectionCriteriaDto(
     @SerialName("authenticatorAttachment") public val authenticatorAttachment: String? = null,
+    @SerialName("requireResidentKey") public val requireResidentKey: Boolean? = null,
     @SerialName("residentKey") public val residentKey: String? = null,
     @SerialName("userVerification") public val userVerification: String? = null,
 )

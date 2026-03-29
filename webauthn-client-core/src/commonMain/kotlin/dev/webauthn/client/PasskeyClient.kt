@@ -25,9 +25,7 @@ public interface PasskeyClient {
         options: PublicKeyCredentialRequestOptions,
     ): PasskeyResult<AuthenticationResponse>
 
-    public suspend fun capabilities(): PasskeyCapabilities {
-        return PasskeyCapabilities()
-    }
+    public suspend fun capabilities(): PasskeyCapabilities = PasskeyCapabilities()
 }
 
 /**
@@ -64,11 +62,13 @@ public data class PasskeyCapabilities(
     public val supported: Set<PasskeyCapability> = emptySet(),
     public val platformVersionHints: List<String> = emptyList(),
 ) {
-    private val supportedByKey: Map<String, PasskeyCapability> = supported.associateBy(PasskeyCapability::key).also {
-        require(it.size == supported.size) {
-            "Duplicate capability keys are not allowed"
-        }
-    }
+    private val supportedByKey: Map<String, PasskeyCapability> =
+        supported.associateBy(PasskeyCapability::key)
+            .also { capabilitiesByKey ->
+                require(capabilitiesByKey.size == supported.size) {
+                    "Duplicate capability keys are not allowed"
+                }
+            }
 
     /** Returns `true` if the given [capability] is supported. */
     public fun supports(capability: PasskeyCapability): Boolean = supportedByKey[capability.key] == capability
@@ -107,9 +107,7 @@ public interface PasskeyPlatformBridge {
 
     public fun mapPlatformError(throwable: Throwable): PasskeyClientError
 
-    public suspend fun capabilities(): PasskeyCapabilities {
-        return PasskeyCapabilities()
-    }
+    public suspend fun capabilities(): PasskeyCapabilities = PasskeyCapabilities()
 }
 
 /** Default [PasskeyClient] orchestration that delegates to a platform bridge. */
@@ -136,7 +134,8 @@ public class DefaultPasskeyClient(
     }
 
     override suspend fun capabilities(): PasskeyCapabilities {
-        return suspendCatchingNonCancellation(bridge::capabilities).getOrElse { PasskeyCapabilities() }
+        return suspendCatchingNonCancellation(bridge::capabilities)
+            .getOrElse { PasskeyCapabilities() }
     }
 
     private suspend fun <TOptions, TResult> runOperation(
@@ -164,7 +163,6 @@ public class DefaultPasskeyClient(
             throw InvalidOptionsException("pubKeyCredParams must not be empty")
         }
     }
-
 }
 
 private class InvalidOptionsException(

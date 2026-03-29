@@ -111,6 +111,7 @@ Usage notes:
 - `IllegalArgumentException` is mapped via the platform bridge so bridge-level domain classification/message (for example Android `InvalidOptions` RP-ID hints) is preserved.
 - Platform-level "user canceled prompt" remains a domain error (`PasskeyClientError.UserCancelled`) when provided by platform bridge mapping.
 - `PasskeyCapabilities` is a snapshot of platform hints at lookup time; construct a new instance if the underlying platform capability set changes.
+- `PasskeyCapabilities` also enforces unique capability keys up front so `supports(key)` and `supports(capability)` cannot become ambiguous.
 
 ## How it fits in the system
 
