@@ -44,13 +44,12 @@ public fun CapabilitiesCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 CapabilityChip("PRF", capabilities.supports(PasskeyCapability.Prf))
-                CapabilityChip("Large Blob Read", capabilities.supports(PasskeyCapability.LargeBlobRead))
+                CapabilityChip("Large Blob", capabilities.supports(PasskeyCapability.LargeBlob))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("Large Blob Write", capabilities.supports(PasskeyCapability.LargeBlobWrite))
                 CapabilityChip("Security Key", capabilities.supports(PasskeyCapability.SecurityKey))
             }
             Text(

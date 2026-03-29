@@ -106,7 +106,7 @@ public fun App() {
                 capabilities.value = loaded
                 debugLogs.i(
                     source = "capabilities",
-                    message = "Loaded PRF=${loaded.supports(PasskeyCapability.Prf)} largeBlobRead=${loaded.supports(PasskeyCapability.LargeBlobRead)} largeBlobWrite=${loaded.supports(PasskeyCapability.LargeBlobWrite)} securityKey=${loaded.supports(PasskeyCapability.SecurityKey)}",
+                    message = "Loaded PRF=${loaded.supports(PasskeyCapability.Prf)} largeBlob=${loaded.supports(PasskeyCapability.LargeBlob)} securityKey=${loaded.supports(PasskeyCapability.SecurityKey)}",
                 )
             }
             .onFailure { throwable ->

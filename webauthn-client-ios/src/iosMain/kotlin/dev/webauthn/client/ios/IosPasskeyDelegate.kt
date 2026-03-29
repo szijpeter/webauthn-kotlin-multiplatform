@@ -104,8 +104,7 @@ internal class IosPasskeyPlatformBridge(
         return PasskeyCapabilities(
             capabilities = mapOf(
                 PasskeyCapability.Prf to (major >= 18),
-                PasskeyCapability.LargeBlobRead to (major >= 17),
-                PasskeyCapability.LargeBlobWrite to (major >= 17),
+                PasskeyCapability.LargeBlob to (major >= 17),
                 PasskeyCapability.SecurityKey to (major >= 15),
             ),
             platformVersionHints = listOf("iosMajor=$major"),

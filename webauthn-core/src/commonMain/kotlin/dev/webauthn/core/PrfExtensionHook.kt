@@ -56,6 +56,10 @@ public object PrfExtensionHook : TargetedExtensionHook {
     /**
      * Authentication: verifies that requested PRF evaluation returns results and
      * that a requested second output is present.
+     *
+     * Note: Only checks the global `eval.second` requirement since per-credential
+     * requirements in `evalByCredential` cannot be validated without knowing which
+     * credential was selected.
      */
     override fun validateAuthenticationExtensions(
         inputs: AuthenticationExtensionsClientInputs?,
@@ -72,8 +76,9 @@ public object PrfExtensionHook : TargetedExtensionHook {
                     message = "PRF evaluation was requested but no PRF results were returned",
                 )
             } else {
-                val requestedSecond = prfInput.eval?.second != null ||
-                    prfInput.evalByCredential?.values?.any { it.second != null } == true
+                // Only validate global eval requirement; per-credential requirements
+                // cannot be checked without selected credential ID
+                val requestedSecond = prfInput.eval?.second != null
                 if (requestedSecond && prfResults.second == null) {
                     errors += WebAuthnValidationError.InvalidValue(
                         field = "extensions.prf.results.second",

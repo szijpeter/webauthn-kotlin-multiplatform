@@ -7,6 +7,7 @@ iOS platform bridge for passkey operations using AuthenticationServices.
 - `IosPasskeyClient`
 - iOS `PasskeyClient` implementation for registration and authentication
 - Platform integration layer intended to be used with `webauthn-client-core`
+- Capabilities reporting for supported extensions (PRF on iOS 18+, largeBlob) and platform features
 
 ## When to use
 

@@ -76,10 +76,10 @@ Important API behavior:
 
 Each L3 extension ships as a standalone `WebAuthnExtensionHook` implementation:
 
-| Hook | Extension | Spec Section |
-|------|-----------|-------------|
-| `PrfExtensionHook` | HMAC Secret (prf) | §9.2.1 |
-| `LargeBlobExtensionHook` | Large blob storage | §9.2.2 |
+| Hook | Extension | Spec Section | Notes |
+|------|-----------|-------------|-------|
+| `PrfExtensionHook` | HMAC Secret (prf) | §9.2.1 | Authentication validates global `eval` requirements only; per-credential `evalByCredential` checks require selected credential ID |
+| `LargeBlobExtensionHook` | Large blob storage | §9.2.2 | |
 
 `WebAuthnExtensionValidator` includes both by default. For custom pipelines, use `CompositeExtensionHook`:
 

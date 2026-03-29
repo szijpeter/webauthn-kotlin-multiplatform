@@ -111,8 +111,7 @@ internal class AndroidPasskeyPlatformBridge(
         return PasskeyCapabilities(
             capabilities = mapOf(
                 PasskeyCapability.Prf to supportsExtensions,
-                PasskeyCapability.LargeBlobRead to supportsExtensions,
-                PasskeyCapability.LargeBlobWrite to supportsExtensions,
+                PasskeyCapability.LargeBlob to supportsExtensions,
                 PasskeyCapability.SecurityKey to true,
             ),
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),

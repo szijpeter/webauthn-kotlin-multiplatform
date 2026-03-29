@@ -1,0 +1,22 @@
+---
+inclusion: always
+---
+
+Validation sequence:
+
+1. Fast changed-scope gate first.
+2. Strict changed-scope advisory gate before PR updates.
+3. Run `apiCheck` when BCV-covered public API changes.
+4. Run `publishToMavenLocal` when publishing metadata or artifact wiring changes.
+5. Full checks only when cross-cutting risk or requested.
+
+Commands:
+
+```bash
+tools/agent/quality-gate.sh --mode fast --scope changed --block false
+tools/agent/quality-gate.sh --mode strict --scope changed --block false
+./gradlew apiCheck --stacktrace
+./gradlew publishToMavenLocal --stacktrace
+```
+
+If files under `webauthn-core` or `webauthn-model` change validator/rule semantics, update `spec-notes/webauthn-l3-validation-map.md`.

@@ -42,8 +42,8 @@ public sealed class PasskeyCapability(public val key: String) {
     /** A capability that resolves directly to a specific W3C protocol extension identifier. */
     public sealed class ExtensionBacked(
         public val extension: WebAuthnExtension,
-        overrideKey: String = extension.identifier,
-    ) : PasskeyCapability(overrideKey)
+        key: String = extension.identifier,
+    ) : PasskeyCapability(key)
 
     /** A capability that represents a literal platform transport or OS feature without a protocol payload. */
     public sealed class PlatformFeature(key: String) : PasskeyCapability(key)
@@ -51,11 +51,8 @@ public sealed class PasskeyCapability(public val key: String) {
     /** W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf) */
     public data object Prf : ExtensionBacked(WebAuthnExtension.Prf)
 
-    /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — read support. */
-    public data object LargeBlobRead : ExtensionBacked(WebAuthnExtension.LargeBlob, overrideKey = "largeBlobRead")
-
-    /** W3C WebAuthn L3: §9.2.2. Large blob storage extension — write support. */
-    public data object LargeBlobWrite : ExtensionBacked(WebAuthnExtension.LargeBlob, overrideKey = "largeBlobWrite")
+    /** W3C WebAuthn L3: §9.2.2. Large blob storage extension (read and write support). */
+    public data object LargeBlob : ExtensionBacked(WebAuthnExtension.LargeBlob)
 
     /** Platform transport capability: security key (cross-platform authenticator) support. */
     public data object SecurityKey : PlatformFeature("securityKey")
@@ -80,10 +77,10 @@ public data class PasskeyCapabilities(
 
     /** Returns `true` if the given capability [key] is supported. */
     public fun supports(key: String): Boolean {
-        // Find existing standard capability or wrapper
-        val standard = capabilities.keys.find { it.key == key }
-        return if (standard != null) {
-            capabilities[standard] == true
+        // Find existing capability by key
+        val match = capabilities.keys.find { it.key == key }
+        return if (match != null) {
+            capabilities[match] == true
         } else {
             capabilities[PasskeyCapability.Custom(key)] == true
         }

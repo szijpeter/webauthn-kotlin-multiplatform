@@ -7,6 +7,7 @@ Android platform bridge for passkey operations using Credential Manager.
 - `AndroidPasskeyClient`
 - Android `PasskeyClient` implementation for registration and authentication ceremonies
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
+- Capabilities reporting for supported extensions (PRF, largeBlob) and platform features
 
 ## When to use
 

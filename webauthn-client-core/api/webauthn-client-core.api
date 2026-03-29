@@ -52,15 +52,8 @@ public abstract class dev/webauthn/client/PasskeyCapability$ExtensionBacked : de
 	public final fun getExtension ()Ldev/webauthn/model/WebAuthnExtension;
 }
 
-public final class dev/webauthn/client/PasskeyCapability$LargeBlobRead : dev/webauthn/client/PasskeyCapability$ExtensionBacked {
-	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlobRead;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class dev/webauthn/client/PasskeyCapability$LargeBlobWrite : dev/webauthn/client/PasskeyCapability$ExtensionBacked {
-	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlobWrite;
+public final class dev/webauthn/client/PasskeyCapability$LargeBlob : dev/webauthn/client/PasskeyCapability$ExtensionBacked {
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyCapability$LargeBlob;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

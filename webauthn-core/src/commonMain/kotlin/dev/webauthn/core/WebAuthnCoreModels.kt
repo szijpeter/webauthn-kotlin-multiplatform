@@ -14,6 +14,7 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.WebAuthnExtension
 
 /** WebAuthn ceremony discriminator used for challenge lifecycle management. */
 public enum class CeremonyType {
@@ -98,5 +99,5 @@ public interface WebAuthnExtensionHook {
 @ExperimentalWebAuthnL3Api
 public interface TargetedExtensionHook : WebAuthnExtensionHook {
     /** The specific W3C protocol extension this hook targets. */
-    public val extension: dev.webauthn.model.WebAuthnExtension
+    public val extension: WebAuthnExtension
 }

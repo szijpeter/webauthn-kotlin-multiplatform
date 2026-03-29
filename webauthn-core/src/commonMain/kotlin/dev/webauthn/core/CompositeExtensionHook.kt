@@ -20,8 +20,10 @@ import dev.webauthn.model.WebAuthnValidationError
  */
 @ExperimentalWebAuthnL3Api
 public class CompositeExtensionHook(
-    private val hooks: List<WebAuthnExtensionHook>,
+    hooks: List<WebAuthnExtensionHook>,
 ) : WebAuthnExtensionHook {
+    
+    private val hooks: List<WebAuthnExtensionHook> = hooks.toList()
 
     override fun validateRegistrationExtensions(
         inputs: AuthenticationExtensionsClientInputs?,
