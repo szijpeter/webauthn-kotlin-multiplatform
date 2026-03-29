@@ -7,7 +7,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 @OptIn(ExperimentalEncodingApi::class)
 @kotlin.jvm.JvmInline
 public value class Base64UrlBytes private constructor(private val encodedValue: String) {
-    public fun bytes(): ByteArray = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).decode(encodedValue)
+    public fun bytes(): ByteArray = base64UrlNoPadding.decode(encodedValue)
 
     public fun encoded(): String = encodedValue
 
@@ -29,7 +29,7 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
 
             try {
                 // Verify the string can actually be decoded according to Base64Url specs without padding.
-                Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).decode(value)
+                base64UrlNoPadding.decode(value)
             } catch (_: IllegalArgumentException) {
                 return ValidationResult.Invalid(
                     listOf(
@@ -45,7 +45,7 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
         }
 
         public fun fromBytes(value: ByteArray): Base64UrlBytes {
-            return Base64UrlBytes(Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT).encode(value))
+            return Base64UrlBytes(base64UrlNoPadding.encode(value))
         }
 
         public fun parseOrThrow(value: String, field: String = "base64url"): Base64UrlBytes {
@@ -53,3 +53,6 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
         }
     }
 }
+
+@OptIn(ExperimentalEncodingApi::class)
+private val base64UrlNoPadding: Base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)

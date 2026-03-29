@@ -131,7 +131,10 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
     override suspend fun put(session: ChallengeSession) {
         db.ioTransaction {
             val key = key(session.challenge, session.type)
-            val exists = ChallengeSessions.selectAll().where { ChallengeSessions.challengeKey eq key }.singleOrNull() != null
+            val exists = ChallengeSessions
+                .selectAll()
+                .where { ChallengeSessions.challengeKey eq key }
+                .singleOrNull() != null
             if (exists) {
                 ChallengeSessions.update({ ChallengeSessions.challengeKey eq key }) {
                     it[challengeValue] = session.challenge.value.encoded()
@@ -142,7 +145,9 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                     it[createdAtEpochMs] = session.createdAtEpochMs
                     it[expiresAtEpochMs] = session.expiresAtEpochMs
                     it[userVerification] = session.userVerification?.name
-                    it[extensions] = session.extensions?.let { ext -> Json.encodeToString(WebAuthnDtoMapper.fromModel(ext)) }
+                    it[extensions] = session.extensions?.let { ext ->
+                        Json.encodeToString(WebAuthnDtoMapper.fromModel(ext))
+                    }
                 }
             } else {
                 ChallengeSessions.insert {
@@ -155,7 +160,9 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                     it[createdAtEpochMs] = session.createdAtEpochMs
                     it[expiresAtEpochMs] = session.expiresAtEpochMs
                     it[userVerification] = session.userVerification?.name
-                    it[extensions] = session.extensions?.let { ext -> Json.encodeToString(WebAuthnDtoMapper.fromModel(ext)) }
+                    it[extensions] = session.extensions?.let { ext ->
+                        Json.encodeToString(WebAuthnDtoMapper.fromModel(ext))
+                    }
                 }
             }
         }
@@ -164,7 +171,9 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
     override suspend fun consume(challenge: Challenge, type: CeremonyType): ChallengeSession? {
         return db.ioTransaction {
             val key = key(challenge, type)
-            val row = ChallengeSessions.selectAll().where { ChallengeSessions.challengeKey eq key }
+            val row = ChallengeSessions
+                .selectAll()
+                .where { ChallengeSessions.challengeKey eq key }
                 .forUpdate()
                 .singleOrNull() ?: return@ioTransaction null
 
@@ -176,7 +185,8 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
                 createdAtEpochMs = row[ChallengeSessions.createdAtEpochMs],
                 expiresAtEpochMs = row[ChallengeSessions.expiresAtEpochMs],
                 type = CeremonyType.valueOf(row[ChallengeSessions.ceremonyType]),
-                userVerification = row[ChallengeSessions.userVerification]?.let { UserVerificationRequirement.valueOf(it) },
+                userVerification = row[ChallengeSessions.userVerification]
+                    ?.let(UserVerificationRequirement::valueOf),
                 extensions = row[ChallengeSessions.extensions]?.let { json ->
                     val dto = Json.decodeFromString<AuthenticationExtensionsClientInputsDto>(json)
                     when (val res = WebAuthnDtoMapper.toModelValidated(dto)) {
@@ -201,9 +211,13 @@ public class ExposedChallengeStore(private val db: Database) : ChallengeStore {
 public class ExposedCredentialStore(private val db: Database) : CredentialStore {
     override suspend fun save(credential: StoredCredential) {
         db.ioTransaction {
-            val exists = Credentials.selectAll().where { Credentials.credentialId eq credential.credentialId.value.encoded() }.singleOrNull() != null
+            val encodedCredentialId = credential.credentialId.value.encoded()
+            val exists = Credentials
+                .selectAll()
+                .where { Credentials.credentialId eq encodedCredentialId }
+                .singleOrNull() != null
             if (exists) {
-                Credentials.update({ Credentials.credentialId eq credential.credentialId.value.encoded() }) {
+                Credentials.update({ Credentials.credentialId eq encodedCredentialId }) {
                     it[userId] = credential.userId.value.encoded()
                     it[rpId] = credential.rpId.value
                     it[publicKey] = credential.publicKeyCose.bytes()
@@ -211,7 +225,7 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
                 }
             } else {
                 Credentials.insert {
-                    it[credentialId] = credential.credentialId.value.encoded()
+                    it[credentialId] = encodedCredentialId
                     it[userId] = credential.userId.value.encoded()
                     it[rpId] = credential.rpId.value
                     it[publicKey] = credential.publicKeyCose.bytes()
@@ -223,7 +237,9 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
 
     override suspend fun findById(id: CredentialId): StoredCredential? {
         return db.ioTransaction {
-            Credentials.selectAll().where { Credentials.credentialId eq id.value.encoded() }
+            Credentials
+                .selectAll()
+                .where { Credentials.credentialId eq id.value.encoded() }
                 .singleOrNull()?.let { row ->
                     StoredCredential(
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
@@ -238,7 +254,9 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
 
     override suspend fun findByUserId(userId: UserHandle): List<StoredCredential> {
         return db.ioTransaction {
-            Credentials.selectAll().where { Credentials.userId eq userId.value.encoded() }
+            Credentials
+                .selectAll()
+                .where { Credentials.userId eq userId.value.encoded() }
                 .map { row ->
                     StoredCredential(
                         credentialId = CredentialId.parseOrThrow(row[Credentials.credentialId]),
@@ -264,7 +282,9 @@ public class ExposedCredentialStore(private val db: Database) : CredentialStore 
 public class ExposedUserAccountStore(private val db: Database) : UserAccountStore {
     override suspend fun findByName(name: String): UserAccount? {
         return db.ioTransaction {
-            UserAccounts.selectAll().where { UserAccounts.userName eq name }
+            UserAccounts
+                .selectAll()
+                .where { UserAccounts.userName eq name }
                 .singleOrNull()?.let { row ->
                     UserAccount(
                         id = UserHandle.parse(row[UserAccounts.userId]).getOrThrow(),
@@ -277,7 +297,10 @@ public class ExposedUserAccountStore(private val db: Database) : UserAccountStor
 
     override suspend fun save(user: UserAccount) {
         db.ioTransaction {
-            val exists = UserAccounts.selectAll().where { UserAccounts.userName eq user.name }.singleOrNull() != null
+            val exists = UserAccounts
+                .selectAll()
+                .where { UserAccounts.userName eq user.name }
+                .singleOrNull() != null
             if (exists) {
                 UserAccounts.update({ UserAccounts.userName eq user.name }) {
                     it[userId] = user.id.value.encoded()

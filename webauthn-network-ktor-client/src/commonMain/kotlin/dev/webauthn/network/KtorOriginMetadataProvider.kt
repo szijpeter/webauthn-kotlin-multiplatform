@@ -14,7 +14,7 @@ import io.ktor.http.HttpStatusCode
  * Implementation of [OriginMetadataProvider] using Ktor HttpClient.
  */
 public class KtorOriginMetadataProvider(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) : OriginMetadataProvider {
 
     override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
@@ -23,7 +23,9 @@ public class KtorOriginMetadataProvider(
             val response = httpClient.get(url)
             if (response.status == HttpStatusCode.OK) {
                 val dto = response.body<RelatedOriginsDto>()
-                dto.origins.mapNotNull { origin -> Origin.parse(origin).getOrNull() }.toSet()
+                dto.origins
+                    .mapNotNull(::parseOriginOrNull)
+                    .toSet()
             } else {
                 emptySet()
             }
@@ -32,4 +34,8 @@ public class KtorOriginMetadataProvider(
             emptySet()
         }
     }
+}
+
+private fun parseOriginOrNull(encodedOrigin: String): Origin? {
+    return Origin.parse(encodedOrigin).getOrNull()
 }

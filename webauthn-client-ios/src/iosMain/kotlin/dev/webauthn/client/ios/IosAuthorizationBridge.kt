@@ -339,9 +339,9 @@ internal fun isPrfRequested(prfInput: PrfAssertionInputShape?): Boolean {
 
 internal fun shapePrfAssertionInput(prfInput: PrfExtensionInput?): PrfAssertionInputShape? {
     if (prfInput == null) return null
-    val evalByCredential = prfInput.evalByCredential?.mapKeys { (credentialId, _) ->
-        parsePrfCredentialIdKeyOrThrow(credentialId)
-    }?.takeUnless { it.isEmpty() }
+    val evalByCredential = prfInput.evalByCredential
+        ?.mapKeys { (credentialId, _) -> parsePrfCredentialIdKeyOrThrow(credentialId) }
+        ?.takeUnless { it.isEmpty() }
     if (prfInput.eval == null && evalByCredential == null) return null
     return PrfAssertionInputShape(
         eval = prfInput.eval,

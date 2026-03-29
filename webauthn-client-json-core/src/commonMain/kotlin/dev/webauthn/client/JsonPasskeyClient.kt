@@ -34,9 +34,9 @@ public class DefaultJsonPasskeyClient(
     override suspend fun createCredentialJson(requestJson: String): PasskeyResult<String> {
         return runJsonCeremony(
             requestJson = requestJson,
-            decodeOptions = { payload -> jsonMapper.decodeCreationOptionsOrThrowInvalid(payload) },
-            execute = { options -> passkeyClient.createCredential(options) },
-            encodeResponse = { response -> jsonMapper.encodeRegistrationResponse(response) },
+            decodeOptions = jsonMapper::decodeCreationOptionsOrThrowInvalid,
+            execute = passkeyClient::createCredential,
+            encodeResponse = jsonMapper::encodeRegistrationResponse,
             encodeErrorMessage = "Failed to encode registration response JSON",
         )
     }
@@ -44,9 +44,9 @@ public class DefaultJsonPasskeyClient(
     override suspend fun getAssertionJson(requestJson: String): PasskeyResult<String> {
         return runJsonCeremony(
             requestJson = requestJson,
-            decodeOptions = { payload -> jsonMapper.decodeAssertionOptionsOrThrowInvalid(payload) },
-            execute = { options -> passkeyClient.getAssertion(options) },
-            encodeResponse = { response -> jsonMapper.encodeAuthenticationResponse(response) },
+            decodeOptions = jsonMapper::decodeAssertionOptionsOrThrowInvalid,
+            execute = passkeyClient::getAssertion,
+            encodeResponse = jsonMapper::encodeAuthenticationResponse,
             encodeErrorMessage = "Failed to encode authentication response JSON",
         )
     }
@@ -66,18 +66,19 @@ public class DefaultJsonPasskeyClient(
             }
 
         return when (val result = execute(options)) {
-            is PasskeyResult.Success -> runCatching { encodeResponse(result.value) }
-                .fold(
-                    onSuccess = { PasskeyResult.Success(it) },
-                    onFailure = { error ->
-                        PasskeyResult.Failure(
-                            PasskeyClientError.Platform(
-                                "$encodeErrorMessage: ${error.message ?: "unknown error"}",
-                                error,
-                            ),
-                        )
-                    },
-                )
+            is PasskeyResult.Success -> runCatching {
+                encodeResponse(result.value)
+            }.fold(
+                onSuccess = { PasskeyResult.Success(it) },
+                onFailure = { error ->
+                    PasskeyResult.Failure(
+                        PasskeyClientError.Platform(
+                            "$encodeErrorMessage: ${error.message ?: "unknown error"}",
+                            error,
+                        ),
+                    )
+                },
+            )
 
             is PasskeyResult.Failure -> result
         }

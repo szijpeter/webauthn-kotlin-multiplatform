@@ -80,7 +80,9 @@ class PrfCryptoClientTest {
             .onSuccess { fail("Decrypt should fail with wrong key") }
 
         val tamperedNonce = encrypted.copy(
-            nonce = Base64UrlBytes.fromBytes(encrypted.nonce.bytes().also { it[0] = (it[0] + 1).toByte() }),
+            nonce = Base64UrlBytes.fromBytes(
+                encrypted.nonce.bytes().also { it[0] = (it[0] + 1).toByte() },
+            ),
         )
         runCatching { PrfCrypto.decryptAesGcm(key, tamperedNonce) }
             .onSuccess { fail("Decrypt should fail with tampered nonce") }

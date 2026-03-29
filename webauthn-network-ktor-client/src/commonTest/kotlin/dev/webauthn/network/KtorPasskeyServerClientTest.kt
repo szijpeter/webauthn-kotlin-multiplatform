@@ -451,7 +451,8 @@ class KtorPasskeyServerClientTest {
                 userDisplayName = "Alice Sensitive",
                 userHandle = "AQID-sensitive",
                 extensions = extensions,
-            ).toString().contains("extensions=present"),
+            ).toString()
+                .contains("extensions=present"),
         )
         assertTrue(
             AuthenticationStartPayload(
@@ -460,7 +461,8 @@ class KtorPasskeyServerClientTest {
                 userName = "bob-sensitive",
                 userHandle = "Qk9CLXNlbnNpdGl2ZQ",
                 extensions = extensions,
-            ).toString().contains("extensions=present"),
+            ).toString()
+                .contains("extensions=present"),
         )
     }
 
@@ -539,16 +541,22 @@ class KtorPasskeyServerClientTest {
 
         val registerStartBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/start")).jsonObject
         val authStartBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
-        assertEquals("AQID", registerStartBody["extensions"]?.jsonObject
-            ?.get("prf")?.jsonObject
-            ?.get("eval")?.jsonObject
-            ?.get("first")?.jsonPrimitive
-            ?.content)
-        assertEquals("AQID", authStartBody["extensions"]?.jsonObject
-            ?.get("prf")?.jsonObject
-            ?.get("eval")?.jsonObject
-            ?.get("first")?.jsonPrimitive
-            ?.content)
+        assertEquals(
+            "AQID",
+            registerStartBody["extensions"]?.jsonObject
+                ?.get("prf")?.jsonObject
+                ?.get("eval")?.jsonObject
+                ?.get("first")?.jsonPrimitive
+                ?.content,
+        )
+        assertEquals(
+            "AQID",
+            authStartBody["extensions"]?.jsonObject
+                ?.get("prf")?.jsonObject
+                ?.get("eval")?.jsonObject
+                ?.get("first")?.jsonPrimitive
+                ?.content,
+        )
     }
 
     private fun createMockClient(

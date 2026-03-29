@@ -49,11 +49,15 @@ internal class IosPasskeyPlatformBridge(
     }
 
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
-        return bridge.createCredential(options).toModel()
+        return bridge
+            .createCredential(options)
+            .toModel()
     }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
-        return bridge.getAssertion(options).toModel()
+        return bridge
+            .getAssertion(options)
+            .toModel()
     }
 
     private fun IosRegistrationPayload.toModel(): RegistrationResponse {

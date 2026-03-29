@@ -27,12 +27,15 @@ public class InMemoryChallengeStore : ChallengeStore {
 /** In-memory credential store for development and tests. */
 public class InMemoryCredentialStore : CredentialStore {
     private val byId: MutableMap<String, StoredCredential> = ConcurrentHashMap()
-    private val userCredentialIds: MutableMap<String, MutableSet<String>> = ConcurrentHashMap()
+    private val userCredentialIds: ConcurrentHashMap<String, MutableSet<String>> = ConcurrentHashMap()
 
     override suspend fun save(credential: StoredCredential) {
         val id = credential.credentialId.value.encoded()
         byId[id] = credential
-        userCredentialIds.getOrPut(credential.userId.value.encoded()) { linkedSetOf() }.add(id)
+        val userCredentials = userCredentialIds.computeIfAbsent(credential.userId.value.encoded()) {
+            ConcurrentHashMap.newKeySet<String>()
+        }
+        userCredentials.add(id)
     }
 
     override suspend fun findById(id: CredentialId): StoredCredential? {
@@ -41,7 +44,7 @@ public class InMemoryCredentialStore : CredentialStore {
 
     override suspend fun findByUserId(userId: UserHandle): List<StoredCredential> {
         return userCredentialIds[userId.value.encoded()]
-            ?.mapNotNull { byId[it] }
+            ?.mapNotNull(byId::get)
             .orEmpty()
     }
 

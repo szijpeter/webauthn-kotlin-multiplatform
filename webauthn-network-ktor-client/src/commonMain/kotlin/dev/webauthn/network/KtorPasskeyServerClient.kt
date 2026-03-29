@@ -263,8 +263,9 @@ private fun serverErrorMessage(body: String): String {
     val fromErrors = runCatching {
         contractJson.decodeFromString<ServerErrorPayload>(trimmed)
             .errors
-            ?.filter { it.isNotBlank() }
+            ?.filter(String::isNotBlank)
             ?.joinToString("; ")
-    }.getOrNull()?.takeIf { it.isNotBlank() }
+    }.getOrNull()
+        ?.takeIf(String::isNotBlank)
     return fromErrors ?: "<redacted non-empty body length=${trimmed.length}>"
 }

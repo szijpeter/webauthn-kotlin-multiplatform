@@ -102,13 +102,16 @@ abstract class StoreContractTestBase {
             val outcomes = coroutineScope {
                 (1..10).map {
                     async { registrationService.finish(request) }
-                }.awaitAll()
+                }
+                    .awaitAll()
             }
 
             val successes = outcomes.count { it is ValidationResult.Valid }
             assertEquals(1, successes, "Exactly one registration should succeed")
 
-            val errors = outcomes.filterIsInstance<ValidationResult.Invalid>().flatMap { it.errors }
+            val errors = outcomes
+                .filterIsInstance<ValidationResult.Invalid>()
+                .flatMap(ValidationResult.Invalid::errors)
             assertTrue(errors.all { it.message.contains("challenge") }, "Errors should be challenge-related")
         }
     }
@@ -173,13 +176,16 @@ abstract class StoreContractTestBase {
             val outcomes = coroutineScope {
                 (1..10).map {
                     async { authenticationService.finish(request) }
-                }.awaitAll()
+                }
+                    .awaitAll()
             }
 
             val successes = outcomes.count { it is ValidationResult.Valid }
             assertEquals(1, successes, "Exactly one authentication should succeed")
 
-            val errors = outcomes.filterIsInstance<ValidationResult.Invalid>().flatMap { it.errors }
+            val errors = outcomes
+                .filterIsInstance<ValidationResult.Invalid>()
+                .flatMap(ValidationResult.Invalid::errors)
             assertTrue(errors.all { it.message.contains("challenge") }, "Errors should be challenge-related")
         }
     }

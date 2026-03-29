@@ -67,7 +67,9 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             )
 
         // W3C WebAuthn L3: §8.5 Step 1: Verify that response is a valid SafetyNet response of version ver by following the steps indicated by the verifier
-        val parsedJws = JwsSigned.deserialize(responseBytes.decodeToString()).getOrNull()
+        val parsedJws = JwsSigned
+            .deserialize(responseBytes.decodeToString())
+            .getOrNull()
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("response", "Invalid JWS format")),
             )
@@ -120,7 +122,9 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.InvalidValue("response", "No public key found in JWS header")),
             )
 
-        val verifier = algorithm.verifierFor(publicKey).getOrNull()
+        val verifier = algorithm
+            .verifierFor(publicKey)
+            .getOrNull()
             ?: return ValidationResult.Invalid(
                 listOf(WebAuthnValidationError.InvalidValue("response", "JWS verifier initialization failed")),
             )
@@ -149,7 +153,7 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
                 listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
             )
         val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
-        
+
         // W3C WebAuthn L3: §8.5 Step 2: Verify that the nonce attribute in the payload of response is identical to the Base64 encoding of the SHA-256 hash of the concatenation of authData and clientDataHash
         val expectedNonce = SignumPrimitives.sha256(authData + clientDataHash)
 
