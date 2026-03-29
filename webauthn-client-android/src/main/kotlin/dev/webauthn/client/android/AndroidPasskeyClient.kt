@@ -29,6 +29,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.WebAuthnExtension
 
 private const val RP_ID_VALIDATION_HINT =
     "Troubleshooting: verify RP ID/domain alignment, serve /.well-known/assetlinks.json over HTTPS, " +
@@ -109,11 +110,13 @@ internal class AndroidPasskeyPlatformBridge(
     override suspend fun capabilities(): PasskeyCapabilities {
         val supportsExtensions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         return PasskeyCapabilities(
-            capabilities = mapOf(
-                PasskeyCapability.Prf to supportsExtensions,
-                PasskeyCapability.LargeBlob to supportsExtensions,
-                PasskeyCapability.SecurityKey to true,
-            ),
+            supported = buildSet {
+                if (supportsExtensions) {
+                    add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
+                    add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
+                }
+                add(PasskeyCapability.PlatformFeature("securityKey"))
+            },
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )
     }

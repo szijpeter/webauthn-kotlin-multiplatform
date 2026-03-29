@@ -24,12 +24,14 @@ import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.UserHandle
+import dev.webauthn.model.WebAuthnExtension
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -145,9 +147,7 @@ class DefaultPasskeyClientTest {
             bridge = TestBridge(
                 capabilitiesAction = {
                     PasskeyCapabilities(
-                        capabilities = mapOf(
-                            PasskeyCapability.Prf to true,
-                        ),
+                        supported = setOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
                         platformVersionHints = listOf("test"),
                     )
                 },
@@ -155,8 +155,31 @@ class DefaultPasskeyClientTest {
         )
 
         val capabilities = client.capabilities()
-        assertTrue(capabilities.supports(PasskeyCapability.Prf))
+        assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
         assertEquals(listOf("test"), capabilities.platformVersionHints)
+    }
+
+    @Test
+    fun capabilities_supports_lookup_is_key_based() {
+        val capabilities = PasskeyCapabilities(
+            supported = setOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
+        )
+
+        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("prf")))
+        assertTrue(capabilities.supports("prf"))
+        assertFalse(capabilities.supports("unknown"))
+    }
+
+    @Test
+    fun capabilities_reject_duplicate_keys() {
+        assertFailsWith<IllegalArgumentException> {
+            PasskeyCapabilities(
+                supported = setOf(
+                    PasskeyCapability.Extension(WebAuthnExtension.Custom("same")),
+                    PasskeyCapability.PlatformFeature("same"),
+                ),
+            )
+        }
     }
 
     @Test

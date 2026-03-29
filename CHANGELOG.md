@@ -13,7 +13,7 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ### Changed
 
-- **BREAKING**: `PasskeyCapabilities` refactored from boolean properties to `Map<PasskeyCapability, Boolean>` with sealed capability hierarchy. Migration: replace `capabilities.supportsPrf` with `capabilities.supports(PasskeyCapability.Prf)`, and similarly for `LargeBlob`, `SecurityKey`.
+- **BREAKING**: `PasskeyCapabilities` now exposes `supported: Set<PasskeyCapability>` with deterministic key-based lookup and duplicate-key rejection. Migration: replace legacy booleans with `capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))`, `capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))`, and `capabilities.supports(PasskeyCapability.PlatformFeature("securityKey"))`.
 - **BREAKING**: Removed `PrfEvaluationRequest` type (no longer needed with new capability model).
 - `WebAuthnExtensionValidator` now delegates to `CompositeExtensionHook` for composable validation.
 

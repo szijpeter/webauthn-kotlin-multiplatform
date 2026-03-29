@@ -34,31 +34,23 @@ public interface PasskeyClient {
  * Represents a capability or extension that a passkey client, platform bridge,
  * or authenticator might support.
  *
- * Capabilities map either to W3C WebAuthn [ExtensionBacked] features, or pure 
- * [PlatformFeature] behaviors. New or proprietary capabilities use [Custom].
+ * Capabilities are modeled as either a typed W3C WebAuthn [Extension] or a
+ * [PlatformFeature] behavior.
  */
-public sealed class PasskeyCapability(public val key: String) {
+public sealed class PasskeyCapability {
+    public abstract val key: String
 
     /** A capability that resolves directly to a specific W3C protocol extension identifier. */
-    public sealed class ExtensionBacked(
+    public data class Extension(
         public val extension: WebAuthnExtension,
-        key: String = extension.identifier,
-    ) : PasskeyCapability(key)
+    ) : PasskeyCapability() {
+        override val key: String = extension.identifier
+    }
 
     /** A capability that represents a literal platform transport or OS feature without a protocol payload. */
-    public sealed class PlatformFeature(key: String) : PasskeyCapability(key)
-
-    /** W3C WebAuthn L3: §9.2.1. HMAC Secret Extension (prf) */
-    public data object Prf : ExtensionBacked(WebAuthnExtension.Prf)
-
-    /** W3C WebAuthn L3: §9.2.2. Large blob storage extension (read and write support). */
-    public data object LargeBlob : ExtensionBacked(WebAuthnExtension.LargeBlob)
-
-    /** Platform transport capability: security key (cross-platform authenticator) support. */
-    public data object SecurityKey : PlatformFeature("securityKey")
-
-    /** Fallback for proprietary, draft, or unrecognized capabilities not yet modeled in the core. */
-    public data class Custom(val identifier: String) : PasskeyCapability(identifier)
+    public data class PlatformFeature(
+        override val key: String,
+    ) : PasskeyCapability()
 }
 
 /**
@@ -69,22 +61,23 @@ public sealed class PasskeyCapability(public val key: String) {
  * this class.
  */
 public data class PasskeyCapabilities(
-    public val capabilities: Map<PasskeyCapability, Boolean> = emptyMap(),
+    public val supported: Set<PasskeyCapability> = emptySet(),
     public val platformVersionHints: List<String> = emptyList(),
 ) {
-    /** Returns `true` if the given [capability] is supported. */
-    public fun supports(capability: PasskeyCapability): Boolean = capabilities[capability] == true
-
-    /** Returns `true` if the given capability [key] is supported. */
-    public fun supports(key: String): Boolean {
-        // Find existing capability by key
-        val match = capabilities.keys.find { it.key == key }
-        return if (match != null) {
-            capabilities[match] == true
-        } else {
-            capabilities[PasskeyCapability.Custom(key)] == true
+    private val supportedByKey: Map<String, PasskeyCapability> = buildMap {
+        for (capability in supported) {
+            val previous = put(capability.key, capability)
+            require(previous == null) {
+                "Duplicate capability key '${capability.key}'"
+            }
         }
     }
+
+    /** Returns `true` if the given [capability] is supported. */
+    public fun supports(capability: PasskeyCapability): Boolean = supportedByKey.containsKey(capability.key)
+
+    /** Returns `true` if the given capability [key] is supported. */
+    public fun supports(key: String): Boolean = supportedByKey.containsKey(key)
 }
 
 /** Result wrapper for passkey operations. */
@@ -197,4 +190,3 @@ private class InvalidOptionsException(
     message: String,
     cause: Throwable? = null,
 ) : IllegalArgumentException(message, cause)
-

@@ -7,7 +7,7 @@ iOS platform bridge for passkey operations using AuthenticationServices.
 - `IosPasskeyClient`
 - iOS `PasskeyClient` implementation for registration and authentication
 - Platform integration layer intended to be used with `webauthn-client-core`
-- Capabilities reporting for supported extensions (PRF on iOS 18+, largeBlob) and platform features
+- Capabilities reporting via `PasskeyCapabilities.supported: Set<PasskeyCapability>` with key-based lookup
 
 ## When to use
 
@@ -36,6 +36,10 @@ flowchart LR
 ## Limits and notes
 
 - Platform passkey flows are supported.
+- Reported capabilities use the shared two-type model:
+  - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` on iOS 18+ runtimes.
+  - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
+  - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
 - Registration request selection is explicit:
   - `authenticatorAttachment = null` or `platform` requests platform registration.
   - `authenticatorAttachment = cross-platform` requests security-key registration on iOS 15+.

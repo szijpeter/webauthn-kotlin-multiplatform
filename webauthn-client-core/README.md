@@ -83,20 +83,22 @@ suspend fun runSignIn(controller: PasskeyController<String, String>, userId: Str
 Query platform support for extensions and features:
 
 ```kotlin
-val capabilities = client.capabilities()
-if (capabilities.supports(PasskeyCapability.Prf)) {
-    // Platform supports PRF extension
-}
-if (capabilities.supports(PasskeyCapability.LargeBlob)) {
-    // Platform supports largeBlob extension (read/write)
+suspend fun inspectCapabilities(client: PasskeyClient) {
+    val capabilities = client.capabilities()
+    if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {
+        // Platform supports PRF extension.
+    }
+    if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))) {
+        // Platform supports largeBlob extension.
+    }
 }
 ```
 
 Available capabilities:
-- `PasskeyCapability.Prf` - HMAC secret extension (W3C prf)
-- `PasskeyCapability.LargeBlob` - Large blob storage extension
-- `PasskeyCapability.SecurityKey` - Cross-platform authenticator support
-- `PasskeyCapability.Custom(identifier)` - Custom/proprietary capabilities
+- `PasskeyCapability.Extension(WebAuthnExtension.Prf)` - HMAC secret extension (W3C prf)
+- `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` - Large blob storage extension
+- `PasskeyCapability.PlatformFeature("securityKey")` - Cross-platform authenticator support
+- `PasskeyCapability.Extension(WebAuthnExtension.Custom("example"))` - proprietary/draft extension identifier
 
 Usage notes:
 

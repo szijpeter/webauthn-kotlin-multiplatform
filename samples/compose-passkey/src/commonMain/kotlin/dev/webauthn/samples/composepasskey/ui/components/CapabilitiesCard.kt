@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,11 +26,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.model.WebAuthnExtension
 
 @Composable
 public fun CapabilitiesCard(
     capabilities: PasskeyCapabilities,
 ) {
+    val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }
+    val largeBlobCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) }
+    val securityKeyCapability = remember { PasskeyCapability.PlatformFeature("securityKey") }
+
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -43,14 +49,14 @@ public fun CapabilitiesCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("PRF", capabilities.supports(PasskeyCapability.Prf))
-                CapabilityChip("Large Blob", capabilities.supports(PasskeyCapability.LargeBlob))
+                CapabilityChip("PRF", capabilities.supports(prfCapability))
+                CapabilityChip("Large Blob", capabilities.supports(largeBlobCapability))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("Security Key", capabilities.supports(PasskeyCapability.SecurityKey))
+                CapabilityChip("Security Key", capabilities.supports(securityKeyCapability))
             }
             Text(
                 text = if (capabilities.platformVersionHints.isEmpty()) {

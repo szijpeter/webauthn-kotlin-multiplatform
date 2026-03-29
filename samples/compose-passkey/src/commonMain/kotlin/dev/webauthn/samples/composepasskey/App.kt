@@ -27,6 +27,7 @@ import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
 import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.samples.composepasskey.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
@@ -73,6 +74,9 @@ public fun App() {
     }
 
     val capabilities = remember { mutableStateOf(PasskeyCapabilities()) }
+    val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }
+    val largeBlobCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) }
+    val securityKeyCapability = remember { PasskeyCapability.PlatformFeature("securityKey") }
     val uiState by passkeyController.uiState.collectAsState()
     val previousUiState = remember { mutableStateOf(passkeyController.uiState.value) }
     val prfBusy = remember { mutableStateOf(false) }
@@ -106,7 +110,7 @@ public fun App() {
                 capabilities.value = loaded
                 debugLogs.i(
                     source = "capabilities",
-                    message = "Loaded PRF=${loaded.supports(PasskeyCapability.Prf)} largeBlob=${loaded.supports(PasskeyCapability.LargeBlob)} securityKey=${loaded.supports(PasskeyCapability.SecurityKey)}",
+                    message = "Loaded PRF=${loaded.supports(prfCapability)} largeBlob=${loaded.supports(largeBlobCapability)} securityKey=${loaded.supports(securityKeyCapability)}",
                 )
             }
             .onFailure { throwable ->
@@ -179,7 +183,7 @@ public fun App() {
                 )
 
                 PrfCryptoCard(
-                    supportsPrf = capabilities.value.supports(PasskeyCapability.Prf),
+                    supportsPrf = capabilities.value.supports(prfCapability),
                     actionsEnabled = actionsEnabled,
                     sessionState = prfCryptoDemo.sessionState,
                     plaintext = prfPlaintext.value,
@@ -193,7 +197,7 @@ public fun App() {
                                 debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
                                 val result = prfCryptoDemo.signInWithPrf(
                                     config = config,
-                                    supportsPrf = capabilities.value.supports(PasskeyCapability.Prf),
+                                    supportsPrf = capabilities.value.supports(prfCapability),
                                 )
                                 when (result) {
                                     is PrfDemoResult.Success -> {
