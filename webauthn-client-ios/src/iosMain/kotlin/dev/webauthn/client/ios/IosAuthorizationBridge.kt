@@ -72,7 +72,7 @@ internal interface IosAuthorizationBridge {
 
 @OptIn(ExperimentalForeignApi::class)
 internal class AuthenticationServicesAuthorizationBridge(
-    private val windowProvider: () -> UIWindow
+    private val anchorProvider: PasskeyPresentationAnchorProvider,
 ) : IosAuthorizationBridge {
     private val activeDelegates = mutableSetOf<Any>()
 
@@ -249,6 +249,13 @@ internal class AuthenticationServicesAuthorizationBridge(
         extractPayload: (Any?) -> TPayload,
     ): TPayload {
         return suspendCancellableCoroutine { continuation ->
+            val presentationAnchor = anchorProvider.currentAnchorOrNull()
+            if (presentationAnchor == null) {
+                continuation.resumeWithException(
+                    IllegalStateException("No active iOS presentation anchor available for passkey prompt."),
+                )
+                return@suspendCancellableCoroutine
+            }
             val requests = buildRequests()
             val controller = ASAuthorizationController(requests)
             var retainedDelegate: Any? = null
@@ -275,7 +282,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                 override fun presentationAnchorForAuthorizationController(
                     controller: ASAuthorizationController)
                 : UIWindow {
-                    return windowProvider()
+                    return presentationAnchor
                 }
 
                 override fun authorizationController(

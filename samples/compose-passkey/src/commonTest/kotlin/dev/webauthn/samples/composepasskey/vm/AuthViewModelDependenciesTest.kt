@@ -37,46 +37,22 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AuthViewModelRuntimeBindingTest {
+class AuthViewModelDependenciesTest {
     @Test
-    fun register_uses_latest_bound_server_client() = runMainBoundTest {
-        val viewModel = createViewModel()
-        val firstServer = CountingServerClient()
-        val secondServer = CountingServerClient()
-        val passkeyClient = StubPasskeyClient()
-
-        viewModel.bindRuntimeDependencies(passkeyClient = passkeyClient, serverClient = firstServer)
-        viewModel.onRegisterClicked()
-        advanceUntilIdle()
-
-        viewModel.bindRuntimeDependencies(passkeyClient = passkeyClient, serverClient = secondServer)
-        viewModel.onRegisterClicked()
-        advanceUntilIdle()
-
-        assertEquals(1, firstServer.registerOptionsCalls)
-        assertEquals(1, secondServer.registerOptionsCalls)
-
-        viewModel.viewModelScope.cancel()
-    }
-
-    @Test
-    fun register_uses_latest_bound_passkey_client() = runMainBoundTest {
-        val viewModel = createViewModel()
-        val serverClient = CountingServerClient(
+    fun register_uses_injected_dependencies() = runMainBoundTest {
+        val server = CountingServerClient(
             registerOptions = ValidationResult.Valid(validCreationOptions()),
         )
-        val firstPasskeyClient = StubPasskeyClient()
-        val secondPasskeyClient = StubPasskeyClient()
-
-        viewModel.bindRuntimeDependencies(passkeyClient = firstPasskeyClient, serverClient = serverClient)
+        val passkeyClient = StubPasskeyClient()
+        val viewModel = createViewModel(
+            passkeyClient = passkeyClient,
+            serverClient = server,
+        )
         viewModel.onRegisterClicked()
         advanceUntilIdle()
 
-        viewModel.bindRuntimeDependencies(passkeyClient = secondPasskeyClient, serverClient = serverClient)
-        viewModel.onRegisterClicked()
-        advanceUntilIdle()
-        assertEquals(1, firstPasskeyClient.createCredentialCalls)
-        assertEquals(1, secondPasskeyClient.createCredentialCalls)
+        assertEquals(1, server.registerOptionsCalls)
+        assertEquals(1, passkeyClient.createCredentialCalls)
 
         viewModel.viewModelScope.cancel()
     }
@@ -90,7 +66,10 @@ class AuthViewModelRuntimeBindingTest {
         }
     }
 
-    private fun createViewModel(): AuthViewModel {
+    private fun createViewModel(
+        passkeyClient: PasskeyClient = StubPasskeyClient(),
+        serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> = CountingServerClient(),
+    ): AuthViewModel {
         return AuthViewModel(
             config = PasskeyDemoConfig(
                 endpointBase = "https://example.test",
@@ -101,6 +80,8 @@ class AuthViewModelRuntimeBindingTest {
             ),
             debugLogs = DebugLogStore(),
             sessionStore = AppSessionStore(),
+            passkeyClient = passkeyClient,
+            serverClient = serverClient,
         )
     }
 }

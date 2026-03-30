@@ -1,12 +1,13 @@
 package dev.webauthn.samples.composepasskey
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.client.compose.rememberPasskeyClient
+import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.samples.composepasskey.di.sampleAppModules
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
@@ -33,23 +34,14 @@ fun App() {
             endpointBase = config.endpointBase.normalizedEndpoint(),
         )
     }
-    val runtimeDependencies = remember(passkeyClient, serverClient) {
-        AuthRuntimeDependencies(
-            passkeyClient = passkeyClient,
-            serverClient = serverClient,
-        )
-    }
+    val typedServerClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> = serverClient
 
-    DisposableEffect(httpClient) {
-        onDispose {
-            httpClient.close()
-        }
-    }
-
-    val modules = remember(config, debugLogs) {
+    val modules = remember(config, debugLogs, passkeyClient, typedServerClient) {
         sampleAppModules(
             config = config,
             debugLogs = debugLogs,
+            passkeyClient = passkeyClient,
+            serverClient = typedServerClient,
         )
     }
     val koinConfig = remember(modules) {
@@ -58,12 +50,10 @@ fun App() {
         }
     }
 
-    CompositionLocalProvider(LocalAuthRuntimeDependencies provides runtimeDependencies) {
-        KoinApplication(
-            configuration = koinConfig,
-            logLevel = Level.INFO,
-        ) {
-            SampleAppRoot()
-        }
+    KoinApplication(
+        configuration = koinConfig,
+        logLevel = Level.INFO,
+    ) {
+        SampleAppRoot()
     }
 }

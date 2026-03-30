@@ -6,6 +6,10 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyServerClient
 
+/** Remembers a lifecycle-safe platform [PasskeyClient]. */
+@Composable
+public expect fun rememberPasskeyClient(): PasskeyClient
+
 /** Remembers a [PasskeyController] instance for the provided [serverClient]. */
 @Composable
 public fun <R, S> rememberPasskeyController(
@@ -16,7 +20,3 @@ public fun <R, S> rememberPasskeyController(
         PasskeyController(passkeyClient, serverClient)
     }
 }
-
-/** Remembers a platform-specific [PasskeyClient]. */
-@Composable
-public expect fun rememberPasskeyClient(): PasskeyClient

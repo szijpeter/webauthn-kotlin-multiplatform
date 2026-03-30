@@ -1,6 +1,9 @@
 package dev.webauthn.client.android
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import androidx.credentials.CreateCredentialResponse
 import androidx.credentials.CreatePublicKeyCredentialRequest
@@ -38,22 +41,36 @@ private const val RP_ID_VALIDATION_HINT =
 /**
  * Android `CredentialManager` backed [PasskeyClient] implementation.
  *
- * The supplied [context] must be an Activity context because passkey ceremonies
- * may launch system UI.
+ * The supplied prompt context provider must resolve an Activity-backed context because passkey
+ * ceremonies may launch system UI.
  */
 public class AndroidPasskeyClient(
-    private val context: Context,
-    private val credentialManager: CredentialManager = CredentialManager.create(context),
+    private val contextProvider: PasskeyPromptContextProvider,
+    private val credentialManagerFactory: (Context) -> CredentialManager = CredentialManager::create,
 ) : PasskeyClient by DefaultPasskeyClient(
     bridge = AndroidPasskeyPlatformBridge(
-        context = context,
-        credentialManager = credentialManager,
+        contextProvider = contextProvider,
+        credentialManagerFactory = credentialManagerFactory,
     ),
-)
+) {
+    /**
+     * Convenience constructor for apps that want default prompt-context handling.
+     *
+     * The client tracks current foreground activity when possible, while still allowing callers
+     * to inject a custom [PasskeyPromptContextProvider] via the primary constructor when needed.
+     */
+    public constructor(
+        context: Context,
+        credentialManager: CredentialManager = CredentialManager.create(context),
+    ) : this(
+        contextProvider = defaultPromptContextProvider(context),
+        credentialManagerFactory = { credentialManager },
+    )
+}
 
 internal class AndroidPasskeyPlatformBridge(
-    private val context: Context,
-    private val credentialManager: CredentialManager,
+    private val contextProvider: PasskeyPromptContextProvider,
+    private val credentialManagerFactory: (Context) -> CredentialManager,
     private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
 ) : PasskeyPlatformBridge {
     /**
@@ -61,6 +78,8 @@ internal class AndroidPasskeyPlatformBridge(
      * Maps to Android Credential Manager CreatePublicKeyCredentialRequest
      */
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+        val context = requirePromptContext()
+        val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
             options = options,
             encodeOptions = jsonMapper::encodeCreationOptionsOrThrowInvalid,
@@ -80,6 +99,8 @@ internal class AndroidPasskeyPlatformBridge(
      * Maps to Android Credential Manager GetCredentialRequest/GetPublicKeyCredentialOption
      */
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+        val context = requirePromptContext()
+        val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
             options = options,
             encodeOptions = jsonMapper::encodeAssertionOptionsOrThrowInvalid,
@@ -119,6 +140,13 @@ internal class AndroidPasskeyPlatformBridge(
             },
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )
+    }
+
+    private fun requirePromptContext(): Context {
+        val context = contextProvider.currentContextOrNull()
+            ?: throw IllegalStateException("No active UI context available for passkey prompt")
+        return context.findActivityOrNull()
+            ?: throw IllegalStateException("Activity-backed context required for passkey prompt")
     }
 
     private fun requireCreatePublicKeyResponse(response: CreateCredentialResponse): CreatePublicKeyCredentialResponse {
@@ -162,4 +190,27 @@ private fun looksLikeRpIdValidationFailure(message: String): Boolean {
         normalized.contains("can't be validated") ||
         normalized.contains("cannot be verified")
     return mentionsRpId && mentionsValidationFailure
+}
+
+private fun Context.findActivityOrNull(): Activity? {
+    var cursor: Context? = this
+    while (cursor is ContextWrapper) {
+        if (cursor is Activity) {
+            return cursor
+        }
+        cursor = cursor.baseContext
+    }
+    return cursor as? Activity
+}
+
+private fun defaultPromptContextProvider(context: Context): PasskeyPromptContextProvider {
+    val application = context.applicationContext as? Application
+    return if (application != null) {
+        ForegroundActivityPasskeyPromptContextProvider.forApplication(
+            application = application,
+            contextHint = context,
+        )
+    } else {
+        MutablePasskeyPromptContextProvider(context)
+    }
 }
