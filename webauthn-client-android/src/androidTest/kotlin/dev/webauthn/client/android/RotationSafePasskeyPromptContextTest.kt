@@ -65,6 +65,11 @@ class RuntimeHostActivity : ComponentActivity() {
         super.onResume()
         viewModel.updateContext(this)
     }
+
+    override fun onPause() {
+        viewModel.updateContext(null)
+        super.onPause()
+    }
 }
 
 class RuntimeHostViewModel : ViewModel() {
@@ -82,7 +87,7 @@ class RuntimeHostViewModel : ViewModel() {
     val registerStartCalls: Int
         get() = fakeServerClient.registerStartCalls
 
-    fun updateContext(activity: ComponentActivity) {
+    fun updateContext(activity: ComponentActivity?) {
         contextProvider.update(activity)
     }
 

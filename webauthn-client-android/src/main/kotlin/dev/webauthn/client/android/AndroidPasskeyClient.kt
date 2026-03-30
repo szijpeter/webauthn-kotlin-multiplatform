@@ -1,6 +1,8 @@
 package dev.webauthn.client.android
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import androidx.credentials.CreateCredentialResponse
 import androidx.credentials.CreatePublicKeyCredentialRequest
@@ -128,7 +130,8 @@ internal class AndroidPasskeyPlatformBridge(
     private fun requirePromptContext(): Context {
         val context = contextProvider.currentContextOrNull()
             ?: throw IllegalStateException("No active UI context available for passkey prompt")
-        return context
+        return context.findActivityOrNull()
+            ?: throw IllegalStateException("Activity-backed context required for passkey prompt")
     }
 
     private fun requireCreatePublicKeyResponse(response: CreateCredentialResponse): CreatePublicKeyCredentialResponse {
@@ -172,4 +175,15 @@ private fun looksLikeRpIdValidationFailure(message: String): Boolean {
         normalized.contains("can't be validated") ||
         normalized.contains("cannot be verified")
     return mentionsRpId && mentionsValidationFailure
+}
+
+private fun Context.findActivityOrNull(): Activity? {
+    var cursor: Context? = this
+    while (cursor is ContextWrapper) {
+        if (cursor is Activity) {
+            return cursor
+        }
+        cursor = cursor.baseContext
+    }
+    return cursor as? Activity
 }

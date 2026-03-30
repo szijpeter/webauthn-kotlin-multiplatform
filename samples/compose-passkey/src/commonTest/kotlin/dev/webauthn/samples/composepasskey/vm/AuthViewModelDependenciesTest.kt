@@ -39,7 +39,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthViewModelDependenciesTest {
     @Test
-    fun register_uses_injected_server_client() = runMainBoundTest {
+    fun register_uses_injected_dependencies() = runMainBoundTest {
         val server = CountingServerClient(
             registerOptions = ValidationResult.Valid(validCreationOptions()),
         )
@@ -53,24 +53,6 @@ class AuthViewModelDependenciesTest {
 
         assertEquals(1, server.registerOptionsCalls)
         assertEquals(1, passkeyClient.createCredentialCalls)
-
-        viewModel.viewModelScope.cancel()
-    }
-
-    @Test
-    fun register_uses_injected_passkey_client() = runMainBoundTest {
-        val serverClient = CountingServerClient(
-            registerOptions = ValidationResult.Valid(validCreationOptions()),
-        )
-        val passkeyClient = StubPasskeyClient()
-        val viewModel = createViewModel(
-            passkeyClient = passkeyClient,
-            serverClient = serverClient,
-        )
-        viewModel.onRegisterClicked()
-        advanceUntilIdle()
-        assertEquals(1, passkeyClient.createCredentialCalls)
-        assertEquals(1, serverClient.registerOptionsCalls)
 
         viewModel.viewModelScope.cancel()
     }

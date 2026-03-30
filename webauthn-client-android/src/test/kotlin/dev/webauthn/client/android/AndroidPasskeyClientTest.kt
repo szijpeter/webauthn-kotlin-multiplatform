@@ -1,5 +1,6 @@
 package dev.webauthn.client.android
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.credentials.CredentialManager
@@ -41,7 +42,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 class AndroidPasskeyClientTest {
     private fun testClient(
-        context: Context = mockk(relaxed = true),
+        context: Context = mockk<Activity>(relaxed = true),
         credentialManager: CredentialManager = mockk(relaxed = true),
     ): AndroidPasskeyClient = AndroidPasskeyClient(
         contextProvider = PasskeyPromptContextProvider { context },
