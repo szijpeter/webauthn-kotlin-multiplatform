@@ -37,9 +37,6 @@ internal class LoggedInViewModel(
 
     val uiState: StateFlow<LoggedInUiState> = uiStateFlow.asStateFlow()
 
-    val debugEntries
-        get() = debugLogs.entries
-
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
     private var runtimeBindings: RuntimeBindings? = null
 

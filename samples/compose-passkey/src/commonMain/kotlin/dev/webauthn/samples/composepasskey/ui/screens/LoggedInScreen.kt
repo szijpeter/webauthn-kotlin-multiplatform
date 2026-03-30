@@ -9,29 +9,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.webauthn.samples.composepasskey.model.DebugLogEntry
 import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.model.StatusTone
 import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
-import dev.webauthn.samples.composepasskey.ui.components.DebugLogSheet
 import dev.webauthn.samples.composepasskey.ui.components.Header
 import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
 import dev.webauthn.samples.composepasskey.ui.components.SessionActionsCard
 import dev.webauthn.samples.composepasskey.ui.state.LoggedInUiState
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 internal fun LoggedInScreen(
     state: LoggedInUiState,
-    debugEntries: List<DebugLogEntry>,
+    onHeaderSecretTap: () -> Unit,
     onSignInWithPrf: () -> Unit,
     onEncrypt: () -> Unit,
     onDecrypt: () -> Unit,
@@ -39,17 +30,6 @@ internal fun LoggedInScreen(
     onPlaintextChange: (String) -> Unit,
     onLogout: () -> Unit,
 ) {
-    var showDebugSheet by remember { mutableStateOf(false) }
-    val debugSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    if (showDebugSheet) {
-        DebugLogSheet(
-            entries = debugEntries,
-            sheetState = debugSheetState,
-            onDismissRequest = { showDebugSheet = false },
-        )
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,7 +43,7 @@ internal fun LoggedInScreen(
                 headline = "Signed in",
                 detail = "Extension demo area is now active.",
             ),
-            onTitleDoubleTap = { showDebugSheet = true },
+            onTitleDoubleTap = onHeaderSecretTap,
         )
 
         CapabilitiesCard(

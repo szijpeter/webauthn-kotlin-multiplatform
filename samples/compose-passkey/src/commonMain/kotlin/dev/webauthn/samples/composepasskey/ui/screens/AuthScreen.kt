@@ -20,6 +20,7 @@ import dev.webauthn.samples.composepasskey.ui.state.AuthUiState
 @Composable
 internal fun AuthScreen(
     state: AuthUiState,
+    onHeaderSecretTap: () -> Unit,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
 ) {
@@ -30,7 +31,10 @@ internal fun AuthScreen(
             .padding(horizontal = 20.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Header(status = state.status)
+        Header(
+            status = state.status,
+            onTitleDoubleTap = onHeaderSecretTap,
+        )
 
         if (state.status.detail != null) {
             Text(
