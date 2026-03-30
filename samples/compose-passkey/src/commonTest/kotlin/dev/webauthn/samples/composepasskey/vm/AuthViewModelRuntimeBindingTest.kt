@@ -1,25 +1,29 @@
 package dev.webauthn.samples.composepasskey.vm
 
 import androidx.lifecycle.viewModelScope
-import dev.webauthn.client.PasskeyCapabilities
-import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.Challenge
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
+import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.PublicKeyCredentialRpEntity
+import dev.webauthn.model.PublicKeyCredentialType
+import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RpId
+import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
-import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.model.WebAuthnValidationError
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.samples.composepasskey.DebugLogStore
-import dev.webauthn.samples.composepasskey.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.session.AppSessionStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -31,8 +35,6 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.test.resetMain
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthViewModelRuntimeBindingTest {
@@ -41,7 +43,7 @@ class AuthViewModelRuntimeBindingTest {
         val viewModel = createViewModel()
         val firstServer = CountingServerClient()
         val secondServer = CountingServerClient()
-        val passkeyClient = StubPasskeyClient(capabilities = PasskeyCapabilities())
+        val passkeyClient = StubPasskeyClient()
 
         viewModel.bindRuntimeDependencies(passkeyClient = passkeyClient, serverClient = firstServer)
         viewModel.onRegisterClicked()
@@ -58,23 +60,23 @@ class AuthViewModelRuntimeBindingTest {
     }
 
     @Test
-    fun bind_runtime_dependencies_refreshes_capabilities_from_latest_client() = runMainBoundTest {
+    fun register_uses_latest_bound_passkey_client() = runMainBoundTest {
         val viewModel = createViewModel()
-        val serverClient = CountingServerClient()
-        val withoutPrf = StubPasskeyClient(capabilities = PasskeyCapabilities())
-        val withPrf = StubPasskeyClient(
-            capabilities = PasskeyCapabilities(
-                supported = setOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
-            ),
+        val serverClient = CountingServerClient(
+            registerOptions = ValidationResult.Valid(validCreationOptions()),
         )
+        val firstPasskeyClient = StubPasskeyClient()
+        val secondPasskeyClient = StubPasskeyClient()
 
-        viewModel.bindRuntimeDependencies(passkeyClient = withoutPrf, serverClient = serverClient)
+        viewModel.bindRuntimeDependencies(passkeyClient = firstPasskeyClient, serverClient = serverClient)
+        viewModel.onRegisterClicked()
         advanceUntilIdle()
-        assertFalse(viewModel.uiState.value.capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
 
-        viewModel.bindRuntimeDependencies(passkeyClient = withPrf, serverClient = serverClient)
+        viewModel.bindRuntimeDependencies(passkeyClient = secondPasskeyClient, serverClient = serverClient)
+        viewModel.onRegisterClicked()
         advanceUntilIdle()
-        assertTrue(viewModel.uiState.value.capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
+        assertEquals(1, firstPasskeyClient.createCredentialCalls)
+        assertEquals(1, secondPasskeyClient.createCredentialCalls)
 
         viewModel.viewModelScope.cancel()
     }
@@ -98,12 +100,21 @@ class AuthViewModelRuntimeBindingTest {
                 userName = "demo@local",
             ),
             debugLogs = DebugLogStore(),
-            saltStore = InMemoryPrfSaltStore(),
+            sessionStore = AppSessionStore(),
         )
     }
 }
 
-private class CountingServerClient : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
+private class CountingServerClient(
+    private val registerOptions: ValidationResult<PublicKeyCredentialCreationOptions> = ValidationResult.Invalid(
+        errors = listOf(
+            WebAuthnValidationError.InvalidValue(
+                field = "register",
+                message = "invalid for test",
+            ),
+        ),
+    ),
+) : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
     var registerOptionsCalls: Int = 0
         private set
 
@@ -111,14 +122,7 @@ private class CountingServerClient : PasskeyServerClient<RegistrationStartPayloa
         params: RegistrationStartPayload,
     ): ValidationResult<PublicKeyCredentialCreationOptions> {
         registerOptionsCalls += 1
-        return ValidationResult.Invalid(
-            errors = listOf(
-                WebAuthnValidationError.InvalidValue(
-                    field = "register",
-                    message = "invalid for test",
-                ),
-            ),
-        )
+        return registerOptions
     }
 
     override suspend fun finishRegister(
@@ -147,12 +151,14 @@ private class CountingServerClient : PasskeyServerClient<RegistrationStartPayloa
     ): PasskeyFinishResult = PasskeyFinishResult.Verified
 }
 
-private class StubPasskeyClient(
-    private val capabilities: PasskeyCapabilities,
-) : PasskeyClient {
+private class StubPasskeyClient : PasskeyClient {
+    var createCredentialCalls: Int = 0
+        private set
+
     override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
     ): PasskeyResult<RegistrationResponse> {
+        createCredentialCalls += 1
         return PasskeyResult.Failure(PasskeyClientError.Platform("not used in test"))
     }
 
@@ -161,6 +167,22 @@ private class StubPasskeyClient(
     ): PasskeyResult<AuthenticationResponse> {
         return PasskeyResult.Failure(PasskeyClientError.Platform("not used in test"))
     }
+}
 
-    override suspend fun capabilities(): PasskeyCapabilities = capabilities
+private fun validCreationOptions(): PublicKeyCredentialCreationOptions {
+    return PublicKeyCredentialCreationOptions(
+        rp = PublicKeyCredentialRpEntity(id = RpId.parseOrThrow("example.test"), name = "Example"),
+        user = PublicKeyCredentialUserEntity(
+            id = UserHandle.fromBytes(byteArrayOf(1, 2, 3)),
+            name = "demo",
+            displayName = "Demo User",
+        ),
+        challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
+        pubKeyCredParams = listOf(
+            PublicKeyCredentialParameters(
+                type = PublicKeyCredentialType.PUBLIC_KEY,
+                alg = -7,
+            ),
+        ),
+    )
 }
