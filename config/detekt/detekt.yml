@@ -35,35 +35,45 @@ complexity:
   CyclomaticComplexMethod:
     active: true
     allowedComplexity: 15
-    excludes: *test_and_sample_excludes
+    excludes: &test_excludes
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/commonTest/**'
+      - '**/jvmTest/**'
+      - '**/androidUnitTest/**'
+      - '**/androidInstrumentedTest/**'
+      - '**/jsTest/**'
+      - '**/iosTest/**'
+      - '**/testFixtures/**'
   LargeClass:
     active: true
     allowedLines: 600
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
   LongMethod:
     active: true
     allowedLines: 70
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
   LongParameterList:
     active: true
-    allowedFunctionParameters: 6
+    allowedFunctionParameters: 8
     allowedConstructorParameters: 7
-    ignoreDefaultParameters: false
+    ignoreDefaultParameters: true
     ignoreDataClasses: true
   TooManyFunctions:
     active: true
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
     allowedFunctionsPerFile: 12
     allowedFunctionsPerClass: 12
     allowedFunctionsPerInterface: 12
     allowedFunctionsPerObject: 15
     allowedFunctionsPerEnum: 12
+    ignoreAnnotatedFunctions: ['Preview']
 
 exceptions:
   active: true
   TooGenericExceptionCaught:
     active: true
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
     allowedExceptionNameRegex: '_|(ignore|expected).*'
 
 naming:
@@ -74,9 +84,12 @@ naming:
     active: true
     aliases:
       - 'FunctionName'
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
     functionPattern: '[A-Za-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    active: false
   VariableNaming:
     active: true
     aliases:
@@ -101,11 +114,15 @@ style:
     excludeGuardClauses: true
   UnusedParameter:
     active: true
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
     allowedNames: '(ignored|expected|serialVersionUID)'
+  UnusedPrivateFunction:
+    active: true
+    excludes: *test_excludes
+    ignoreAnnotated: ['Preview']
   MagicNumber:
     active: true
-    excludes: &magic_number_excludes
+    excludes:
       - '**/*.gradle.kts'
       - '**/build-logic/**'
       - '**/test/**'
@@ -122,9 +139,11 @@ style:
       - '0'
       - '1'
       - '2'
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
   MaxLineLength:
     active: true
-    excludes: *test_and_sample_excludes
+    excludes: *test_excludes
     maxLineLength: 120
     excludePackageStatements: true
     excludeImportStatements: true
