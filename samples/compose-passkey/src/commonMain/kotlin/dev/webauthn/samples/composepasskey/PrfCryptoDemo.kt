@@ -117,7 +117,8 @@ internal class PrfCryptoDemoController(
                     transitionTo(SessionDataState.SessionReady(authResult.session))
                     sessionTransferred = true
                     PrfDemoResult.Success(
-                        message = "PRF session ready (${authResult.session.keyFingerprint}). Caller-owned salt loaded for $saltScope.",
+                        message = "PRF session ready (${authResult.session.keyFingerprint}). " +
+                            "Caller-owned salt loaded for $saltScope.",
                     )
                 }
 

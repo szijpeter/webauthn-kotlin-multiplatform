@@ -24,7 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -48,7 +47,8 @@ internal class AuthViewModel(
         debugLogs.i(source = "app", message = "First render complete")
         debugLogs.i(
             source = "app",
-            message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} origin=${config.origin} user=${config.userName}",
+            message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} " +
+                "origin=${config.origin} user=${config.userName}",
         )
         platformRuntimeHint()?.let { hint ->
             debugLogs.w(source = "platform", message = hint)
@@ -96,7 +96,8 @@ internal class AuthViewModel(
         viewModelScope.launch {
             debugLogs.i(
                 source = "action",
-                message = "Register tapped endpoint=${config.endpointBase} rpId=${config.rpId} user=${config.userName}",
+                message = "Register tapped endpoint=${config.endpointBase} " +
+                    "rpId=${config.rpId} user=${config.userName}",
             )
             bindings.passkeyController.register(config.toRegistrationStartPayload())
         }
@@ -108,13 +109,16 @@ internal class AuthViewModel(
         viewModelScope.launch {
             debugLogs.i(
                 source = "action",
-                message = "Sign In tapped endpoint=${config.endpointBase} rpId=${config.rpId} userHandle=${config.userHandle}",
+                message = "Sign In tapped endpoint=${config.endpointBase} " +
+                    "rpId=${config.rpId} userHandle=${config.userHandle}",
             )
             bindings.passkeyController.signIn(config.toAuthenticationStartPayload())
         }
     }
 
-    private fun observeControllerState(passkeyController: PasskeyController<RegistrationStartPayload, AuthenticationStartPayload>) {
+    private fun observeControllerState(
+        passkeyController: PasskeyController<RegistrationStartPayload, AuthenticationStartPayload>
+    ) {
         controllerStateJob = viewModelScope.launch {
             passkeyController.uiState.collect { current ->
                 val transition = controllerTransitionLog(previous = previousControllerState, current = current)
