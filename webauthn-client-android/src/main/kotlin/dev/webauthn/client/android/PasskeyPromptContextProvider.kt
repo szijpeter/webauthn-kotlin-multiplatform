@@ -17,13 +17,6 @@ public fun interface PasskeyPromptContextProvider {
     public fun currentContextOrNull(): Context?
 }
 
-/** Fixed-context provider for apps that keep a stable Activity host. */
-public class StaticPasskeyPromptContextProvider(
-    private val context: Context,
-) : PasskeyPromptContextProvider {
-    override fun currentContextOrNull(): Context = context
-}
-
 /**
  * Thread-safe, updateable [PasskeyPromptContextProvider] for UI layers (Compose, Activities).
  */

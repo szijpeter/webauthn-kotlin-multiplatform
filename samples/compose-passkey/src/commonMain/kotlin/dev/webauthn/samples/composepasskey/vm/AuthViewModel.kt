@@ -20,7 +20,6 @@ import dev.webauthn.samples.composepasskey.toAuthenticationStartPayload
 import dev.webauthn.samples.composepasskey.toRegistrationStartPayload
 import dev.webauthn.samples.composepasskey.toStatusPresentation
 import dev.webauthn.samples.composepasskey.ui.state.AuthUiState
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,7 +39,6 @@ internal class AuthViewModel(
 
     val uiState: StateFlow<AuthUiState> = uiStateFlow.asStateFlow()
 
-    private var controllerStateJob: Job? = null
     private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
     private var hasSuccessfulRegistration: Boolean = false
     private val passkeyController = PasskeyController(
@@ -67,10 +65,6 @@ internal class AuthViewModel(
             )
         }
         observeControllerState(passkeyController)
-    }
-
-    override fun onCleared() {
-        controllerStateJob?.cancel()
     }
 
     fun onRegisterClicked() {
@@ -100,7 +94,7 @@ internal class AuthViewModel(
     private fun observeControllerState(
         passkeyController: PasskeyController<RegistrationStartPayload, AuthenticationStartPayload>
     ) {
-        controllerStateJob = viewModelScope.launch {
+        viewModelScope.launch {
             passkeyController.uiState.collect { current ->
                 val transition = controllerTransitionLog(previous = previousControllerState, current = current)
                 if (transition != null) {

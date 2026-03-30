@@ -38,8 +38,8 @@ private const val RP_ID_VALIDATION_HINT =
 /**
  * Android `CredentialManager` backed [PasskeyClient] implementation.
  *
- * The supplied [context] must be an Activity context because passkey ceremonies
- * may launch system UI.
+ * The supplied prompt context provider must resolve an Activity-backed context because passkey
+ * ceremonies may launch system UI.
  */
 public class AndroidPasskeyClient(
     private val contextProvider: PasskeyPromptContextProvider,
@@ -49,20 +49,7 @@ public class AndroidPasskeyClient(
         contextProvider = contextProvider,
         credentialManagerFactory = credentialManagerFactory,
     ),
-) {
-    /**
-     * Convenience constructor for apps that have a stable Activity context.
-     *
-     * Note: passkey prompts require an Activity-backed context.
-     */
-    public constructor(
-        context: Context,
-        credentialManager: CredentialManager = CredentialManager.create(context),
-    ) : this(
-        contextProvider = StaticPasskeyPromptContextProvider(context),
-        credentialManagerFactory = { credentialManager },
-    )
-}
+)
 
 internal class AndroidPasskeyPlatformBridge(
     private val contextProvider: PasskeyPromptContextProvider,
