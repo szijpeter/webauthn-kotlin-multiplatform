@@ -2,6 +2,7 @@ package dev.webauthn.samples.composepasskey
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.webauthn.client.compose.rememberPasskeyClient
@@ -25,8 +26,8 @@ fun App() {
     }
     val httpClient = rememberPlatformHttpClient(onLogLine = httpLogSink)
     val config = remember { PasskeyDemoConfig() }
-    val passkeyClient = rememberPasskeyClient()
-    val serverClient = remember(httpClient, config.endpointBase) {
+    val passkeyClient = ComposePasskeySampleOverrides.passkeyClientOverride ?: rememberPasskeyClient()
+    val serverClient = ComposePasskeySampleOverrides.serverClientOverride ?: remember(httpClient, config.endpointBase) {
         KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = config.endpointBase.normalizedEndpoint(),
@@ -53,10 +54,12 @@ fun App() {
         }
     }
 
-    KoinApplication(
-        configuration = koinConfig,
-        logLevel = Level.INFO,
-    ) {
-        SampleAppRoot()
+    key(modules) {
+        KoinApplication(
+            configuration = koinConfig,
+            logLevel = Level.INFO,
+        ) {
+            SampleAppRoot()
+        }
     }
 }
