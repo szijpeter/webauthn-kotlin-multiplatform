@@ -42,18 +42,31 @@ private const val RP_ID_VALIDATION_HINT =
  * may launch system UI.
  */
 public class AndroidPasskeyClient(
-    private val context: Context,
-    private val credentialManager: CredentialManager = CredentialManager.create(context),
+    private val contextProvider: PasskeyPromptContextProvider,
+    private val credentialManagerFactory: (Context) -> CredentialManager = CredentialManager::create,
 ) : PasskeyClient by DefaultPasskeyClient(
     bridge = AndroidPasskeyPlatformBridge(
-        context = context,
-        credentialManager = credentialManager,
+        contextProvider = contextProvider,
+        credentialManagerFactory = credentialManagerFactory,
     ),
-)
+) {
+    /**
+     * Convenience constructor for apps that have a stable Activity context.
+     *
+     * Note: passkey prompts require an Activity-backed context.
+     */
+    public constructor(
+        context: Context,
+        credentialManager: CredentialManager = CredentialManager.create(context),
+    ) : this(
+        contextProvider = StaticPasskeyPromptContextProvider(context),
+        credentialManagerFactory = { credentialManager },
+    )
+}
 
 internal class AndroidPasskeyPlatformBridge(
-    private val context: Context,
-    private val credentialManager: CredentialManager,
+    private val contextProvider: PasskeyPromptContextProvider,
+    private val credentialManagerFactory: (Context) -> CredentialManager,
     private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
 ) : PasskeyPlatformBridge {
     /**
@@ -61,6 +74,8 @@ internal class AndroidPasskeyPlatformBridge(
      * Maps to Android Credential Manager CreatePublicKeyCredentialRequest
      */
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+        val context = requirePromptContext()
+        val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
             options = options,
             encodeOptions = jsonMapper::encodeCreationOptionsOrThrowInvalid,
@@ -80,6 +95,8 @@ internal class AndroidPasskeyPlatformBridge(
      * Maps to Android Credential Manager GetCredentialRequest/GetPublicKeyCredentialOption
      */
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+        val context = requirePromptContext()
+        val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
             options = options,
             encodeOptions = jsonMapper::encodeAssertionOptionsOrThrowInvalid,
@@ -119,6 +136,12 @@ internal class AndroidPasskeyPlatformBridge(
             },
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )
+    }
+
+    private fun requirePromptContext(): Context {
+        val context = contextProvider.currentContextOrNull()
+            ?: throw IllegalStateException("No active UI context available for passkey prompt")
+        return context
     }
 
     private fun requireCreatePublicKeyResponse(response: CreateCredentialResponse): CreatePublicKeyCredentialResponse {

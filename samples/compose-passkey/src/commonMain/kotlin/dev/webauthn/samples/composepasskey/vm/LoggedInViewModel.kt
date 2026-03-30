@@ -31,6 +31,8 @@ internal class LoggedInViewModel(
     private val debugLogs: DebugLogStore,
     private val sessionStore: AppSessionStore,
     private val saltStore: PrfSaltStore,
+    passkeyClient: PasskeyClient,
+    serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
 ) : ViewModel() {
     private val uiStateFlow: MutableStateFlow<LoggedInUiState> =
         MutableStateFlow(LoggedInUiState(userName = config.userName))
@@ -38,33 +40,14 @@ internal class LoggedInViewModel(
     val uiState: StateFlow<LoggedInUiState> = uiStateFlow.asStateFlow()
 
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
-    private var runtimeBindings: RuntimeBindings? = null
+    private val prfDemo = PrfCryptoDemoController(
+        passkeyClient = passkeyClient,
+        serverClient = serverClient,
+        saltStore = saltStore,
+    )
 
     init {
         observeSession()
-    }
-
-    fun bindRuntimeDependencies(
-        passkeyClient: PasskeyClient,
-        serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
-    ) {
-        val current = runtimeBindings
-        if (current != null && current.passkeyClient === passkeyClient && current.serverClient === serverClient) {
-            return
-        }
-
-        current?.prfDemo?.clearSession()
-        val prfDemo = PrfCryptoDemoController(
-            passkeyClient = passkeyClient,
-            serverClient = serverClient,
-            saltStore = saltStore,
-        )
-        runtimeBindings = RuntimeBindings(
-            passkeyClient = passkeyClient,
-            serverClient = serverClient,
-            prfDemo = prfDemo,
-        )
-
         uiStateFlow.update {
             it.copy(
                 sessionState = PrfCryptoDemoSessionState.NoSession,
@@ -75,7 +58,6 @@ internal class LoggedInViewModel(
     }
 
     fun onSignInWithPrfClicked() {
-        val prfDemo = runtimeBindings?.prfDemo ?: return
         if (uiStateFlow.value.busy) return
         viewModelScope.launch {
             setBusy(true)
@@ -93,7 +75,6 @@ internal class LoggedInViewModel(
     }
 
     fun onEncryptClicked() {
-        val prfDemo = runtimeBindings?.prfDemo ?: return
         if (uiStateFlow.value.busy) return
         viewModelScope.launch {
             setBusy(true)
@@ -106,7 +87,6 @@ internal class LoggedInViewModel(
     }
 
     fun onDecryptClicked() {
-        val prfDemo = runtimeBindings?.prfDemo ?: return
         if (uiStateFlow.value.busy) return
         viewModelScope.launch {
             setBusy(true)
@@ -119,7 +99,6 @@ internal class LoggedInViewModel(
     }
 
     fun onClearSessionClicked() {
-        val prfDemo = runtimeBindings?.prfDemo ?: return
         applyPrfResult(prfDemo.clearSession(), prfDemo)
     }
 
@@ -128,7 +107,7 @@ internal class LoggedInViewModel(
     }
 
     fun onLogoutClicked() {
-        runtimeBindings?.prfDemo?.clearSession()?.let { clearResult ->
+        prfDemo.clearSession().let { clearResult ->
             if (clearResult is PrfDemoResult.Success) {
                 debugLogs.i(source = "session", message = clearResult.message)
             }
@@ -219,10 +198,4 @@ internal class LoggedInViewModel(
     private fun setBusy(value: Boolean) {
         uiStateFlow.update { it.copy(busy = value) }
     }
-
-    private data class RuntimeBindings(
-        val passkeyClient: PasskeyClient,
-        val serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
-        val prfDemo: PrfCryptoDemoController,
-    )
 }

@@ -25,7 +25,6 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import kotlinx.serialization.json.Json
 import platform.Foundation.NSProcessInfo
-import platform.UIKit.UIApplication
 
 internal actual class IosPasskeyClientImpl(
     private val bridge: IosAuthorizationBridge,
@@ -33,9 +32,13 @@ internal actual class IosPasskeyClientImpl(
     bridge = IosPasskeyPlatformBridge(bridge),
 ) {
     actual constructor() : this(
-        AuthenticationServicesAuthorizationBridge {
-            checkNotNull(UIApplication.sharedApplication.keyWindow) { "No key window available" }
-        },
+        AuthenticationServicesAuthorizationBridge(UIKitPasskeyPresentationAnchorProvider),
+    )
+
+    internal constructor(
+        anchorProvider: PasskeyPresentationAnchorProvider,
+    ) : this(
+        AuthenticationServicesAuthorizationBridge(anchorProvider),
     )
 }
 
