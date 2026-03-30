@@ -1,7 +1,6 @@
 package dev.webauthn.samples.composepasskey
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.webauthn.client.PasskeyServerClient
@@ -36,12 +35,6 @@ fun App() {
         )
     }
     val typedServerClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> = serverClient
-
-    DisposableEffect(httpClient) {
-        onDispose {
-            httpClient.close()
-        }
-    }
 
     val modules = remember(config, debugLogs, passkeyClient, typedServerClient) {
         sampleAppModules(
