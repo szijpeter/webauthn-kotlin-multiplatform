@@ -9,7 +9,7 @@ internal data class LoggedInUiState(
     val busy: Boolean = false,
     val supportsPrf: Boolean = false,
     val sessionState: PrfCryptoDemoSessionState = PrfCryptoDemoSessionState.NoSession,
-    val plaintext: String = "Top secret from passkey PRF",
+    val plaintext: String = "The answer is 42",
     val decryptedText: String? = null,
     val statusMessage: String = "Run Sign In + PRF to derive an in-memory AES session key.",
 )
