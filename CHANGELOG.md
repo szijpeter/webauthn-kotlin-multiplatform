@@ -6,6 +6,8 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ## Unreleased
 
+## 0.3.0 - 2026-03-31
+
 ### Added
 
 - Composable extension hook architecture (`TargetedExtensionHook`, `CompositeExtensionHook`) for modular WebAuthn extension validation.
