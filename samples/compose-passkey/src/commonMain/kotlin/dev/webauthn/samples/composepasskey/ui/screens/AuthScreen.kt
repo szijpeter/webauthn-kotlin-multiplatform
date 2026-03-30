@@ -50,6 +50,7 @@ internal fun AuthScreen(
 
         ActionsCard(
             actionsEnabled = state.actionsEnabled,
+            showRegister = state.canRegister,
             onRegister = onRegister,
             onSignIn = onSignIn,
         )

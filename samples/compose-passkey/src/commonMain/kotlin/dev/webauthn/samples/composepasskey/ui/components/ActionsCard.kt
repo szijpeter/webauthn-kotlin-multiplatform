@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ActionsCard(
     actionsEnabled: Boolean,
+    showRegister: Boolean = true,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
 ) {
@@ -30,12 +31,14 @@ fun ActionsCard(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Button(
-                onClick = onRegister,
-                enabled = actionsEnabled,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text("Register")
+            if (showRegister) {
+                Button(
+                    onClick = onRegister,
+                    enabled = actionsEnabled,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("Register")
+                }
             }
             FilledTonalButton(
                 onClick = onSignIn,

@@ -7,5 +7,6 @@ import dev.webauthn.samples.composepasskey.toStatusPresentation
 internal data class AuthUiState(
     val status: PasskeyDemoStatus = PasskeyControllerState.Idle.toStatusPresentation(),
     val actionsEnabled: Boolean = true,
+    val canRegister: Boolean = true,
     val runtimeHint: String? = null,
 )

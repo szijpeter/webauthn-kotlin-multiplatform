@@ -3,7 +3,6 @@ package dev.webauthn.samples.composepasskey.di
 import dev.webauthn.samples.composepasskey.DebugLogStore
 import dev.webauthn.samples.composepasskey.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
-import dev.webauthn.samples.composepasskey.PrfCryptoDemoController
 import dev.webauthn.samples.composepasskey.PrfSaltStore
 import dev.webauthn.samples.composepasskey.navigation.AppRoute
 import dev.webauthn.samples.composepasskey.session.AppSessionStore
@@ -27,14 +26,6 @@ internal fun sampleAppModules(
             single<AppSessionStore> { AppSessionStore() }
             single<PrfSaltStore> { InMemoryPrfSaltStore() }
 
-            factory<PrfCryptoDemoController> {
-                PrfCryptoDemoController(
-                    passkeyClient = get(),
-                    serverClient = get(),
-                    saltStore = get(),
-                )
-            }
-
             viewModel {
                 AuthViewModel(
                     config = get(),
@@ -44,11 +35,10 @@ internal fun sampleAppModules(
             }
             viewModel {
                 LoggedInViewModel(
-                    passkeyClient = get(),
                     config = get(),
                     debugLogs = get(),
                     sessionStore = get(),
-                    prfDemo = get(),
+                    saltStore = get(),
                 )
             }
 

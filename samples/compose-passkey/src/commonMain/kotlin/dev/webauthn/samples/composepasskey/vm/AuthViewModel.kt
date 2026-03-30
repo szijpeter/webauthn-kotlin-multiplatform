@@ -42,6 +42,7 @@ internal class AuthViewModel(
     private var runtimeBindings: RuntimeBindings? = null
     private var controllerStateJob: Job? = null
     private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
+    private var hasSuccessfulRegistration: Boolean = false
 
     init {
         debugLogs.i(source = "app", message = "First render complete")
@@ -83,6 +84,7 @@ internal class AuthViewModel(
             it.copy(
                 status = passkeyController.uiState.value.toStatusPresentation(),
                 actionsEnabled = areCeremonyActionsEnabled(passkeyController.uiState.value),
+                canRegister = !hasSuccessfulRegistration,
             )
         }
         observeControllerState(passkeyController)
@@ -129,7 +131,16 @@ internal class AuthViewModel(
                     it.copy(
                         status = current.toStatusPresentation(),
                         actionsEnabled = areCeremonyActionsEnabled(current),
+                        canRegister = !hasSuccessfulRegistration,
                     )
+                }
+
+                if (
+                    current is PasskeyControllerState.Success &&
+                    current.action == PasskeyAction.REGISTER
+                ) {
+                    hasSuccessfulRegistration = true
+                    uiStateFlow.update { it.copy(canRegister = false) }
                 }
 
                 if (
