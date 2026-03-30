@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.credentials.play.services.auth)
     debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
 }

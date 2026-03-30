@@ -1,43 +1,17 @@
-@file:Suppress("LongMethod", "MagicNumber", "MaxLineLength")
-
 package dev.webauthn.samples.composepasskey
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import dev.webauthn.client.PasskeyCapabilities
-import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.compose.rememberPasskeyClient
-import dev.webauthn.client.compose.rememberPasskeyController
 import dev.webauthn.network.KtorPasskeyServerClient
-import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.runtime.runSuspendCatching
-import dev.webauthn.samples.composepasskey.model.DebugLogLevel
-import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
-import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
-import dev.webauthn.samples.composepasskey.ui.components.DebugLogCard
-import dev.webauthn.samples.composepasskey.ui.components.Header
-import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
+import dev.webauthn.samples.composepasskey.di.sampleAppModules
 import kotlinx.coroutines.launch
+import org.koin.compose.KoinApplication
+import org.koin.core.logger.Level
+import org.koin.dsl.koinConfiguration
 
 @Composable
 fun App() {
@@ -52,232 +26,44 @@ fun App() {
     }
     val httpClient = rememberPlatformHttpClient(onLogLine = httpLogSink)
     val config = remember { PasskeyDemoConfig() }
+    val passkeyClient = rememberPasskeyClient()
     val serverClient = remember(httpClient, config.endpointBase) {
         KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = config.endpointBase.normalizedEndpoint(),
         )
     }
-
-    val passkeyClient = rememberPasskeyClient()
-    val passkeyController = rememberPasskeyController(
-        serverClient = serverClient,
-        passkeyClient = passkeyClient,
-    )
-    val prfSaltStore = remember { InMemoryPrfSaltStore() }
-    val prfCryptoDemo = remember(passkeyClient, serverClient, prfSaltStore) {
-        PrfCryptoDemoController(
+    val runtimeDependencies = remember(passkeyClient, serverClient) {
+        AuthRuntimeDependencies(
             passkeyClient = passkeyClient,
             serverClient = serverClient,
-            saltStore = prfSaltStore,
         )
     }
 
-    val capabilities = remember { mutableStateOf(PasskeyCapabilities()) }
-    val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }
-    val largeBlobCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) }
-    val securityKeyCapability = remember { PasskeyCapability.PlatformFeature("securityKey") }
-    val uiState by passkeyController.uiState.collectAsState()
-    val previousUiState = remember { mutableStateOf(passkeyController.uiState.value) }
-    val prfBusy = remember { mutableStateOf(false) }
-    val prfPlaintext = remember { mutableStateOf("Top secret from passkey PRF") }
-    val prfStatusMessage = remember { mutableStateOf("Run Sign In + PRF to derive an in-memory AES session key.") }
-    val prfDecryptedText = remember { mutableStateOf<String?>(null) }
-
     DisposableEffect(httpClient) {
-        debugLogs.i(source = "app", message = "App composition entered")
         onDispose {
-            prfCryptoDemo.clearSession()
             httpClient.close()
         }
     }
 
-    LaunchedEffect(Unit) {
-        debugLogs.i(source = "app", message = "First render complete")
-        debugLogs.i(
-            source = "app",
-            message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} origin=${config.origin} user=${config.userName}",
+    val modules = remember(config, debugLogs) {
+        sampleAppModules(
+            config = config,
+            debugLogs = debugLogs,
         )
-        platformRuntimeHint()?.let { hint ->
-            debugLogs.w(source = "platform", message = hint)
+    }
+    val koinConfig = remember(modules) {
+        koinConfiguration {
+            modules(modules)
         }
     }
 
-    LaunchedEffect(passkeyClient) {
-        debugLogs.i(source = "capabilities", message = "Loading capability hints")
-        runSuspendCatching(passkeyClient::capabilities)
-            .onSuccess { loaded ->
-                capabilities.value = loaded
-                debugLogs.i(
-                    source = "capabilities",
-                    message = "Loaded PRF=${loaded.supports(prfCapability)} largeBlob=${loaded.supports(largeBlobCapability)} securityKey=${loaded.supports(securityKeyCapability)}",
-                )
-            }
-            .onFailure { throwable ->
-                capabilities.value = PasskeyCapabilities()
-                debugLogs.e(
-                    source = "capabilities",
-                    message = "Failed to load capabilities: ${throwable.message ?: "using defaults"}",
-                    throwable = throwable,
-                )
-            }
-    }
-
-    LaunchedEffect(uiState) {
-        val transition = controllerTransitionLog(
-            previous = previousUiState.value,
-            current = uiState,
-        )
-        if (transition != null) {
-            when (transition.level) {
-                DebugLogLevel.DEBUG -> debugLogs.d(source = "controller", message = transition.message)
-                DebugLogLevel.INFO -> debugLogs.i(source = "controller", message = transition.message)
-                DebugLogLevel.WARN -> debugLogs.w(source = "controller", message = transition.message)
-                DebugLogLevel.ERROR -> debugLogs.e(source = "controller", message = transition.message)
-            }
-        }
-        previousUiState.value = uiState
-    }
-
-    val status = uiState.toStatusPresentation()
-    val actionsEnabled = areCeremonyActionsEnabled(uiState) && !prfBusy.value
-
-    MaterialTheme(
-        colorScheme = EditorialPalette,
-        typography = EditorialTypography,
-    ) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 18.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-            ) {
-                Header(status = status)
-
-                CapabilitiesCard(
-                    capabilities = capabilities.value,
-                )
-
-                ActionsCard(
-                    actionsEnabled = actionsEnabled,
-                    onRegister = {
-                        scope.launch {
-                            debugLogs.i(
-                                source = "action",
-                                message = "Register tapped endpoint=${config.endpointBase} rpId=${config.rpId} user=${config.userName}",
-                            )
-                            passkeyController.register(config.toRegistrationStartPayload())
-                        }
-                    },
-                    onSignIn = {
-                        scope.launch {
-                            debugLogs.i(
-                                source = "action",
-                                message = "Sign In tapped endpoint=${config.endpointBase} rpId=${config.rpId} userHandle=${config.userHandle}",
-                            )
-                            passkeyController.signIn(config.toAuthenticationStartPayload())
-                        }
-                    },
-                )
-
-                PrfCryptoCard(
-                    supportsPrf = capabilities.value.supports(prfCapability),
-                    actionsEnabled = actionsEnabled,
-                    sessionState = prfCryptoDemo.sessionState,
-                    plaintext = prfPlaintext.value,
-                    decryptedText = prfDecryptedText.value,
-                    statusMessage = prfStatusMessage.value,
-                    onPlaintextChange = { prfPlaintext.value = it },
-                    onSignInWithPrf = {
-                        scope.launch {
-                            prfBusy.value = true
-                            try {
-                                debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
-                                val result = prfCryptoDemo.signInWithPrf(
-                                    config = config,
-                                    supportsPrf = capabilities.value.supports(prfCapability),
-                                )
-                                when (result) {
-                                    is PrfDemoResult.Success -> {
-                                        prfStatusMessage.value = result.message
-                                        prfDecryptedText.value = null
-                                        debugLogs.i(source = "prf", message = result.message)
-                                    }
-
-                                    is PrfDemoResult.Failure -> {
-                                        prfStatusMessage.value = result.message
-                                        prfDecryptedText.value = null
-                                        debugLogs.w(source = "prf", message = result.message)
-                                    }
-                                }
-                            } finally {
-                                prfBusy.value = false
-                            }
-                        }
-                    },
-                    onEncrypt = {
-                        scope.launch {
-                            prfBusy.value = true
-                            try {
-                                when (val result = prfCryptoDemo.encrypt(prfPlaintext.value)) {
-                                    is PrfDemoResult.Success -> {
-                                        prfStatusMessage.value = result.message
-                                        prfDecryptedText.value = null
-                                        debugLogs.i(source = "prf", message = result.message)
-                                    }
-
-                                    is PrfDemoResult.Failure -> {
-                                        prfStatusMessage.value = result.message
-                                        debugLogs.w(source = "prf", message = result.message)
-                                    }
-                                }
-                            } finally {
-                                prfBusy.value = false
-                            }
-                        }
-                    },
-                    onDecrypt = {
-                        scope.launch {
-                            prfBusy.value = true
-                            try {
-                                when (val result = prfCryptoDemo.decrypt()) {
-                                    is PrfDemoResult.Success -> {
-                                        prfStatusMessage.value = result.message
-                                        prfDecryptedText.value = result.plaintext
-                                        debugLogs.i(source = "prf", message = result.message)
-                                    }
-
-                                    is PrfDemoResult.Failure -> {
-                                        prfStatusMessage.value = result.message
-                                        debugLogs.w(source = "prf", message = result.message)
-                                    }
-                                }
-                            } finally {
-                                prfBusy.value = false
-                            }
-                        }
-                    },
-                    onClearSession = {
-                        when (val result = prfCryptoDemo.clearSession()) {
-                            is PrfDemoResult.Success -> {
-                                prfStatusMessage.value = result.message
-                                prfDecryptedText.value = null
-                                debugLogs.i(source = "prf", message = result.message)
-                            }
-
-                            is PrfDemoResult.Failure -> {
-                                prfStatusMessage.value = result.message
-                                debugLogs.w(source = "prf", message = result.message)
-                            }
-                        }
-                    },
-                )
-
-                DebugLogCard(entries = debugLogs.entries)
-                Spacer(modifier = Modifier.height(20.dp))
-            }
+    CompositionLocalProvider(LocalAuthRuntimeDependencies provides runtimeDependencies) {
+        KoinApplication(
+            configuration = koinConfig,
+            logLevel = Level.INFO,
+        ) {
+            SampleAppRoot()
         }
     }
 }
