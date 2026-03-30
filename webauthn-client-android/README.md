@@ -17,11 +17,8 @@ Use this in Android apps that need real platform passkey prompts and credentials
 
 ```kotlin
 import dev.webauthn.client.android.AndroidPasskeyClient
-import dev.webauthn.client.android.MutablePasskeyPromptContextProvider
 
-val client = AndroidPasskeyClient(
-    contextProvider = MutablePasskeyPromptContextProvider(context),
-)
+val client = AndroidPasskeyClient(context)
 ```
 
 Real-world scenario: your shared app logic drives ceremony flow in `PasskeyController`, while `AndroidPasskeyClient` performs the platform call into Credential Manager.

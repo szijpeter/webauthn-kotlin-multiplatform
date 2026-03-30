@@ -1,6 +1,7 @@
 package dev.webauthn.client.android
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
@@ -51,7 +52,21 @@ public class AndroidPasskeyClient(
         contextProvider = contextProvider,
         credentialManagerFactory = credentialManagerFactory,
     ),
-)
+) {
+    /**
+     * Convenience constructor for apps that want default prompt-context handling.
+     *
+     * The client tracks current foreground activity when possible, while still allowing callers
+     * to inject a custom [PasskeyPromptContextProvider] via the primary constructor when needed.
+     */
+    public constructor(
+        context: Context,
+        credentialManager: CredentialManager = CredentialManager.create(context),
+    ) : this(
+        contextProvider = defaultPromptContextProvider(context),
+        credentialManagerFactory = { credentialManager },
+    )
+}
 
 internal class AndroidPasskeyPlatformBridge(
     private val contextProvider: PasskeyPromptContextProvider,
@@ -186,4 +201,16 @@ private fun Context.findActivityOrNull(): Activity? {
         cursor = cursor.baseContext
     }
     return cursor as? Activity
+}
+
+private fun defaultPromptContextProvider(context: Context): PasskeyPromptContextProvider {
+    val application = context.applicationContext as? Application
+    return if (application != null) {
+        ForegroundActivityPasskeyPromptContextProvider.forApplication(
+            application = application,
+            contextHint = context,
+        )
+    } else {
+        MutablePasskeyPromptContextProvider(context)
+    }
 }

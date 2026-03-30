@@ -98,11 +98,8 @@ JSON interop wrapper example for a typed client:
 ```kotlin
 import dev.webauthn.client.withJsonSupport
 import dev.webauthn.client.android.AndroidPasskeyClient
-import dev.webauthn.client.android.MutablePasskeyPromptContextProvider
 
-val typedClient = AndroidPasskeyClient(
-    contextProvider = MutablePasskeyPromptContextProvider(context),
-)
+val typedClient = AndroidPasskeyClient(context)
 val jsonClient = typedClient.withJsonSupport()
 ```
 
