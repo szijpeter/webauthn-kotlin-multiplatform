@@ -53,7 +53,8 @@ internal fun SampleAppRoot() {
             }
 
             is AppSessionState.SignedIn -> {
-                if (backStack.lastOrNull() != AppRoute.LoggedIn) {
+                if (backStack.size != 1 || backStack.lastOrNull() != AppRoute.LoggedIn) {
+                    backStack.clear()
                     backStack += AppRoute.LoggedIn
                 }
             }
