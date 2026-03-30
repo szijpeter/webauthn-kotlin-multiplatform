@@ -34,6 +34,7 @@ kotlin {
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.navigation3.ui)
+                implementation(libs.lifecycle.viewmodel.navigation3)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.serialization.json)

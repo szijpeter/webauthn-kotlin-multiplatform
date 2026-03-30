@@ -3,8 +3,10 @@ package dev.webauthn.samples.composepasskey
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.webauthn.samples.composepasskey.navigation.AppRoute
 import dev.webauthn.samples.composepasskey.navigation.NavBackStackConfig
@@ -34,6 +36,10 @@ internal fun SampleAppRoot() {
                 transitionSpec = noTransitionSpec(),
                 popTransitionSpec = noTransitionSpec(),
                 predictivePopTransitionSpec = noPredictiveTransitionSpec(),
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
                 entryProvider = entryProvider,
             )
         }
