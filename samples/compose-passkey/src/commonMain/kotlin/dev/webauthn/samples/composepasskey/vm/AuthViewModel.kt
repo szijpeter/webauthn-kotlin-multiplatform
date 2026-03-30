@@ -16,6 +16,7 @@ import dev.webauthn.samples.composepasskey.DebugLogStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.PrfCryptoDemoController
 import dev.webauthn.samples.composepasskey.PrfDemoResult
+import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
 import dev.webauthn.samples.composepasskey.PrfSaltStore
 import dev.webauthn.samples.composepasskey.areCeremonyActionsEnabled
 import dev.webauthn.samples.composepasskey.controllerTransitionLog
@@ -31,14 +32,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 internal class AuthViewModel(
-    passkeyClient: PasskeyClient,
-    serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
     private val config: PasskeyDemoConfig,
     private val debugLogs: DebugLogStore,
-    saltStore: PrfSaltStore,
+    private val saltStore: PrfSaltStore,
 ) : ViewModel() {
     private val uiStateFlow: MutableStateFlow<AuthUiState> = MutableStateFlow(
         AuthUiState(runtimeHint = platformRuntimeHint()),
@@ -49,15 +49,11 @@ internal class AuthViewModel(
     val debugEntries: List<DebugLogEntry>
         get() = debugLogs.entries
 
-    private val passkeyController = PasskeyController(passkeyClient = passkeyClient, serverClient = serverClient)
-    private val prfDemo = PrfCryptoDemoController(
-        passkeyClient = passkeyClient,
-        serverClient = serverClient,
-        saltStore = saltStore,
-    )
+    private var runtimeBindings: RuntimeBindings? = null
+    private var controllerStateJob: Job? = null
 
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
-    private var previousControllerState: PasskeyControllerState = passkeyController.uiState.value
+    private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
 
     init {
         debugLogs.i(source = "app", message = "First render complete")
@@ -68,45 +64,85 @@ internal class AuthViewModel(
         platformRuntimeHint()?.let { hint ->
             debugLogs.w(source = "platform", message = hint)
         }
-
-        observeControllerState()
-        loadCapabilities(passkeyClient)
     }
 
     override fun onCleared() {
-        prfDemo.clearSession()
+        controllerStateJob?.cancel()
+        runtimeBindings?.prfDemo?.clearSession()
+    }
+
+    fun bindRuntimeDependencies(
+        passkeyClient: PasskeyClient,
+        serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
+    ) {
+        val current = runtimeBindings
+        if (current != null && current.passkeyClient === passkeyClient && current.serverClient === serverClient) {
+            return
+        }
+
+        current?.prfDemo?.clearSession()
+        controllerStateJob?.cancel()
+
+        val controller = PasskeyController(
+            passkeyClient = passkeyClient,
+            serverClient = serverClient,
+        )
+        val prfDemo = PrfCryptoDemoController(
+            passkeyClient = passkeyClient,
+            serverClient = serverClient,
+            saltStore = saltStore,
+        )
+        runtimeBindings = RuntimeBindings(
+            passkeyClient = passkeyClient,
+            serverClient = serverClient,
+            passkeyController = controller,
+            prfDemo = prfDemo,
+        )
+        previousControllerState = controller.uiState.value
+        uiStateFlow.update {
+            it.copy(
+                status = controller.uiState.value.toStatusPresentation(),
+                actionsEnabled = areCeremonyActionsEnabled(controller.uiState.value),
+                prfSessionState = prfDemo.sessionState,
+            )
+        }
+        observeControllerState(controller)
+        loadCapabilities(passkeyClient)
     }
 
     fun onRegisterClicked() {
+        val bindings = runtimeBindings ?: return
         if (!uiStateFlow.value.actionsEnabled || uiStateFlow.value.prfBusy) return
         viewModelScope.launch {
             debugLogs.i(
                 source = "action",
                 message = "Register tapped endpoint=${config.endpointBase} rpId=${config.rpId} user=${config.userName}",
             )
-            passkeyController.register(config.toRegistrationStartPayload())
+            bindings.passkeyController.register(config.toRegistrationStartPayload())
         }
     }
 
     fun onSignInClicked() {
+        val bindings = runtimeBindings ?: return
         if (!uiStateFlow.value.actionsEnabled || uiStateFlow.value.prfBusy) return
         viewModelScope.launch {
             debugLogs.i(
                 source = "action",
                 message = "Sign In tapped endpoint=${config.endpointBase} rpId=${config.rpId} userHandle=${config.userHandle}",
             )
-            passkeyController.signIn(config.toAuthenticationStartPayload())
+            bindings.passkeyController.signIn(config.toAuthenticationStartPayload())
         }
     }
 
     fun onSignInWithPrfClicked() {
+        val bindings = runtimeBindings ?: return
         if (!uiStateFlow.value.actionsEnabled || uiStateFlow.value.prfBusy) return
         viewModelScope.launch {
             setBusy(true)
             try {
                 debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
                 val supportsPrf = uiStateFlow.value.capabilities.supports(prfCapability)
-                when (val result = prfDemo.signInWithPrf(config = config, supportsPrf = supportsPrf)) {
+                when (val result = bindings.prfDemo.signInWithPrf(config = config, supportsPrf = supportsPrf)) {
                     is PrfDemoResult.Success -> {
                         debugLogs.i(source = "prf", message = result.message)
                         updatePrfStatus(
@@ -123,7 +159,7 @@ internal class AuthViewModel(
                         )
                     }
                 }
-                syncPrfSessionState()
+                syncPrfSessionState(bindings.prfDemo)
             } finally {
                 setBusy(false)
             }
@@ -131,11 +167,12 @@ internal class AuthViewModel(
     }
 
     fun onEncryptClicked() {
+        val bindings = runtimeBindings ?: return
         if (!uiStateFlow.value.actionsEnabled || uiStateFlow.value.prfBusy) return
         viewModelScope.launch {
             setBusy(true)
             try {
-                when (val result = prfDemo.encrypt(uiStateFlow.value.prfPlaintext)) {
+                when (val result = bindings.prfDemo.encrypt(uiStateFlow.value.prfPlaintext)) {
                     is PrfDemoResult.Success -> {
                         debugLogs.i(source = "prf", message = result.message)
                         updatePrfStatus(
@@ -152,7 +189,7 @@ internal class AuthViewModel(
                         )
                     }
                 }
-                syncPrfSessionState()
+                syncPrfSessionState(bindings.prfDemo)
             } finally {
                 setBusy(false)
             }
@@ -160,11 +197,12 @@ internal class AuthViewModel(
     }
 
     fun onDecryptClicked() {
+        val bindings = runtimeBindings ?: return
         if (!uiStateFlow.value.actionsEnabled || uiStateFlow.value.prfBusy) return
         viewModelScope.launch {
             setBusy(true)
             try {
-                when (val result = prfDemo.decrypt()) {
+                when (val result = bindings.prfDemo.decrypt()) {
                     is PrfDemoResult.Success -> {
                         debugLogs.i(source = "prf", message = result.message)
                         updatePrfStatus(
@@ -181,7 +219,7 @@ internal class AuthViewModel(
                         )
                     }
                 }
-                syncPrfSessionState()
+                syncPrfSessionState(bindings.prfDemo)
             } finally {
                 setBusy(false)
             }
@@ -189,7 +227,8 @@ internal class AuthViewModel(
     }
 
     fun onClearSessionClicked() {
-        when (val result = prfDemo.clearSession()) {
+        val bindings = runtimeBindings ?: return
+        when (val result = bindings.prfDemo.clearSession()) {
             is PrfDemoResult.Success -> {
                 debugLogs.i(source = "prf", message = result.message)
                 updatePrfStatus(
@@ -206,15 +245,15 @@ internal class AuthViewModel(
                 )
             }
         }
-        syncPrfSessionState()
+        syncPrfSessionState(bindings.prfDemo)
     }
 
     fun onPlaintextChanged(value: String) {
         uiStateFlow.update { it.copy(prfPlaintext = value) }
     }
 
-    private fun observeControllerState() {
-        viewModelScope.launch {
+    private fun observeControllerState(passkeyController: PasskeyController<RegistrationStartPayload, AuthenticationStartPayload>) {
+        controllerStateJob = viewModelScope.launch {
             passkeyController.uiState.collect { current ->
                 val transition = controllerTransitionLog(previous = previousControllerState, current = current)
                 if (transition != null) {
@@ -272,9 +311,16 @@ internal class AuthViewModel(
         }
     }
 
-    private fun syncPrfSessionState() {
+    private fun syncPrfSessionState(prfDemo: PrfCryptoDemoController?) {
         uiStateFlow.update {
-            it.copy(prfSessionState = prfDemo.sessionState)
+            it.copy(prfSessionState = prfDemo?.sessionState ?: PrfCryptoDemoSessionState.NoSession)
         }
     }
+
+    private data class RuntimeBindings(
+        val passkeyClient: PasskeyClient,
+        val serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
+        val passkeyController: PasskeyController<RegistrationStartPayload, AuthenticationStartPayload>,
+        val prfDemo: PrfCryptoDemoController,
+    )
 }

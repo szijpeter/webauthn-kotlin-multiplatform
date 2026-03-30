@@ -1,9 +1,5 @@
 package dev.webauthn.samples.composepasskey.di
 
-import dev.webauthn.client.PasskeyClient
-import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.network.AuthenticationStartPayload
-import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.samples.composepasskey.DebugLogStore
 import dev.webauthn.samples.composepasskey.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
@@ -18,23 +14,17 @@ import org.koin.dsl.navigation3.navigation
 
 @OptIn(KoinExperimentalAPI::class)
 internal fun sampleAppModules(
-    passkeyClient: PasskeyClient,
-    serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
     config: PasskeyDemoConfig,
     debugLogs: DebugLogStore,
 ): List<Module> {
     return listOf(
         module {
-            single<PasskeyClient> { passkeyClient }
-            single<PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>> { serverClient }
             single<PasskeyDemoConfig> { config }
             single<DebugLogStore> { debugLogs }
             single<PrfSaltStore> { InMemoryPrfSaltStore() }
 
             viewModel {
                 AuthViewModel(
-                    passkeyClient = get(),
-                    serverClient = get(),
                     config = get(),
                     debugLogs = get(),
                     saltStore = get(),

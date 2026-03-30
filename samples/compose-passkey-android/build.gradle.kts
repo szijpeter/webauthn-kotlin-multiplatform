@@ -56,7 +56,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(project(":webauthn-client-core"))
-    androidTestImplementation(project(":webauthn-model"))
-    androidTestImplementation(project(":webauthn-network-ktor-client"))
 }
