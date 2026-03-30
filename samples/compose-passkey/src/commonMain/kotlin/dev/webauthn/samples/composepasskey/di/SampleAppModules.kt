@@ -5,7 +5,9 @@ import dev.webauthn.samples.composepasskey.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.PrfSaltStore
 import dev.webauthn.samples.composepasskey.navigation.AppRoute
+import dev.webauthn.samples.composepasskey.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.vm.AuthViewModel
+import dev.webauthn.samples.composepasskey.vm.LoggedInViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.Module
@@ -21,12 +23,21 @@ internal fun sampleAppModules(
         module {
             single<PasskeyDemoConfig> { config }
             single<DebugLogStore> { debugLogs }
+            single<AppSessionStore> { AppSessionStore() }
             single<PrfSaltStore> { InMemoryPrfSaltStore() }
 
             viewModel {
                 AuthViewModel(
                     config = get(),
                     debugLogs = get(),
+                    sessionStore = get(),
+                )
+            }
+            viewModel {
+                LoggedInViewModel(
+                    config = get(),
+                    debugLogs = get(),
+                    sessionStore = get(),
                     saltStore = get(),
                 )
             }

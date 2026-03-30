@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-03-26
+Last updated: 2026-03-30
 
 ## North-Star Exit Criteria
 
@@ -79,3 +79,9 @@ Definition of done:
 1. Continue remaining attestation trust-path hardening (`android-safetynet`, `apple`) with vectors.
 2. Keep captured assertion-vector checks as a standing guardrail while running the coordinated dependency set (`kotlinx-serialization 1.10.0`, Signum `0.12.0`, indispensable `3.20.0`).
 3. Keep outreach-facing docs current as sample flows evolve (sample recordings were added to the root README on 2026-03-26).
+
+## Sample App Backlog (Post-Rework)
+
+1. Add account delete flow in sample UX once backend lifecycle endpoints exist (backend required).
+2. Add account recovery flow in sample UX once backend recovery endpoints exist (backend required).
+3. Explore discoverable credential flow support as a potential `webauthn-client-core` feature expansion, with sample integration after core contract decision.

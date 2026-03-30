@@ -35,7 +35,7 @@ This repo focuses on those needs:
 
 | Android | iOS |
 | --- | --- |
-| <video src="https://github.com/user-attachments/assets/54826cb3-8dba-4d28-a50c-d934b47741b1" height="300" controls></video> | <video src="https://github.com/user-attachments/assets/a8912a65-78be-4bc5-9a65-604c6d390f78" height="300" controls></video> |
+| <video src="https://github.com/user-attachments/assets/87a94b1f-692a-4b16-a674-778046e6bae2" height="300" controls></video> | <video src="https://github.com/user-attachments/assets/27ccb9c0-1d5c-41cf-9733-5b17fd501450" height="300" controls></video> |
 
 ## WebAuthn Core Concepts
 

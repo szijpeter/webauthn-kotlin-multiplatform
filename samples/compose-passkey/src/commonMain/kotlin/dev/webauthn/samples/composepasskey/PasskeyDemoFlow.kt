@@ -58,7 +58,11 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
         is PasskeyControllerState.Failure -> {
             val category = error.toCategory()
             PasskeyDemoStatus(
-                tone = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) StatusTone.WARNING else StatusTone.ERROR,
+                tone = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {
+                    StatusTone.WARNING
+                } else {
+                    StatusTone.ERROR
+                },
                 headline = category.label,
                 detail = "[${category.label}] ${error.message.withProviderDependencyHint()}",
             )
@@ -98,8 +102,13 @@ internal fun controllerTransitionLog(
     if (current is PasskeyControllerState.Failure && previous != current) {
         val category = current.error.toCategory()
         return ControllerTransitionLog(
-            level = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) DebugLogLevel.WARN else DebugLogLevel.ERROR,
-            message = "${current.action.label()} failed [${category.label}] ${current.error.message.withProviderDependencyHint()}",
+            level = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {
+                DebugLogLevel.WARN
+            } else {
+                DebugLogLevel.ERROR
+            },
+            message = "${current.action.label()} failed [${category.label}] " +
+                current.error.message.withProviderDependencyHint(),
         )
     }
 

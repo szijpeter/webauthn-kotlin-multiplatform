@@ -15,6 +15,7 @@ kotlin {
         compileSdk = 36
         minSdk = 30
     }
+
     val iosArm64 = iosArm64()
     val iosSimulatorArm64 = iosSimulatorArm64()
 
@@ -66,4 +67,8 @@ kotlin {
             implementation(libs.ktor.client.mock)
         }
     }
+}
+
+dependencies {
+    androidRuntimeClasspath(libs.compose.ui.tooling)
 }

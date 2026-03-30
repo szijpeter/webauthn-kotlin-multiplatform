@@ -62,9 +62,11 @@ adb shell am start -n dev.webauthn.samples.composepasskey.android/.MainActivity
 Pass criteria:
 
 1. App launch succeeds.
-2. `Register` succeeds and debug log records registration success.
-3. `Sign In` succeeds and debug log records authentication success.
-4. No fatal crash in logcat while running the flow.
+2. `Auth` screen is shown first with both `Register` and `Sign In` actions.
+3. `Register` succeeds and debug log records registration success.
+4. `Sign In` succeeds, transitions to the signed-in demo screen, and debug log records authentication success.
+5. `Local Logout` returns to `Auth` and clears active local session state.
+6. No fatal crash in logcat while running the flow.
 
 Suggested crash check:
 
@@ -83,6 +85,7 @@ adb logcat | rg "PasskeyDemo"
 Pass condition:
 
 - app/action/controller/http events are present and readable.
+- hidden in-app debug sheet opens only after double-tapping the `WebAuthn Kotlin Demo` title on the signed-in screen.
 
 ## 5. Optional emulator smoke run
 
