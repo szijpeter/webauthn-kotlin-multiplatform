@@ -74,7 +74,7 @@ internal fun SampleAppRoot() {
         }
         Surface {
             CompositionLocalProvider(
-                LocalRevealDebugLogs provides { showDebugSheet = true },
+                LocalShowDebugLogs provides { showDebugSheet = true },
             ) {
                 NavDisplay(
                     backStack = backStack,

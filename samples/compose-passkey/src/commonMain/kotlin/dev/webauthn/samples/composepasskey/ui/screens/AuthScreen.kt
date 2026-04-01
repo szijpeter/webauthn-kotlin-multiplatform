@@ -13,14 +13,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
-import dev.webauthn.samples.composepasskey.ui.state.AuthUiState
 
 @Composable
 internal fun AuthScreen(
-    state: AuthUiState,
-    onHeaderSecretTap: () -> Unit,
+    status: PasskeyDemoStatus,
+    actionsEnabled: Boolean,
+    canRegister: Boolean,
+    runtimeHint: String?,
+    onShowLogs: () -> Unit,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
 ) {
@@ -32,29 +35,29 @@ internal fun AuthScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Header(
-            status = state.status,
-            onTitleDoubleTap = onHeaderSecretTap,
+            status = status,
+            onShowLogs = onShowLogs,
         )
 
-        if (state.status.detail != null) {
+        if (status.detail != null) {
             Text(
-                text = state.status.detail,
+                text = status.detail,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
-        if (state.runtimeHint != null) {
+        if (runtimeHint != null) {
             Text(
-                text = state.runtimeHint,
+                text = runtimeHint,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
         ActionsCard(
-            actionsEnabled = state.actionsEnabled,
-            showRegister = state.canRegister,
+            actionsEnabled = actionsEnabled,
+            showRegister = canRegister,
             onRegister = onRegister,
             onSignIn = onSignIn,
         )

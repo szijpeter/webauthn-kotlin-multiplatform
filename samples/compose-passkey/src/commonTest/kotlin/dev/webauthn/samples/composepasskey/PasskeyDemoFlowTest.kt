@@ -140,22 +140,22 @@ class PasskeyDemoFlowTest {
     }
 
     @Test
-    fun controller_transition_logs_cover_start_success_and_failure() {
-        val started = controllerTransitionLog(
+    fun controller_transition_events_cover_start_success_and_failure() {
+        val started = controllerTransitionEvent(
             previous = PasskeyControllerState.Idle,
             current = PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.STARTING,
             ),
         )
-        val completed = controllerTransitionLog(
+        val completed = controllerTransitionEvent(
             previous = PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.FINISHING,
             ),
             current = PasskeyControllerState.Success(PasskeyAction.REGISTER),
         )
-        val failed = controllerTransitionLog(
+        val failed = controllerTransitionEvent(
             previous = PasskeyControllerState.InProgress(
                 action = PasskeyAction.SIGN_IN,
                 phase = PasskeyPhase.PLATFORM_PROMPT,

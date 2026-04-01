@@ -2,8 +2,11 @@
 
 iOS sample client wrapper for trying the iOS passkey integration.
 
-Use this sample when you want a minimal iOS-oriented reference around `webauthn-client-ios`.
+Status: legacy thin wrapper sample, not the primary showcase; sample app, not published.
 
-For a ready-to-run iOS app host that mounts the shared Compose demo, use [`samples/compose-passkey-ios`](../compose-passkey-ios/README.md).
+Use this sample only when you want a minimal iOS-oriented wrapper around `webauthn-client-ios`.
 
-Status: sample app, not published.
+For the current end-to-end reference path, prefer:
+
+- [`samples/compose-passkey`](../compose-passkey/README.md)
+- [`samples/compose-passkey-ios`](../compose-passkey-ios/README.md)
