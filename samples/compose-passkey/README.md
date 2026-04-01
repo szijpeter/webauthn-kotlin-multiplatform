@@ -115,6 +115,9 @@ val controllerState by controller.uiState.collectAsState()
 AuthScreen(
     status = controllerState.toDemoStatus(),
     actionsEnabled = areCeremonyActionsEnabled(controllerState),
+    canRegister = authState.canRegister,
+    runtimeHint = authState.runtimeHint,
+    onShowLogs = showDebugLogs,
     onRegister = { scope.launch { controller.register(config.toRegistrationStartPayload()) } },
     onSignIn = { scope.launch { controller.signIn(config.toAuthenticationStartPayload()) } },
 )

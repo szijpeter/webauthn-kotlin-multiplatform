@@ -57,7 +57,7 @@ internal fun AuthRoute() {
         runtimeHint = authState.runtimeHint,
         onShowLogs = showDebugLogs,
         onRegister = {
-            if (actionsEnabled) {
+            if (actionsEnabled && authState.canRegister) {
                 coordinator.onRegisterClicked()
                 scope.launch {
                     controller.register(config.toRegistrationStartPayload())

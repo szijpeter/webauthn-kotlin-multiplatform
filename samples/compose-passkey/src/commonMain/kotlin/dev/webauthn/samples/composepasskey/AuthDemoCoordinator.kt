@@ -30,7 +30,7 @@ internal class AuthDemoCoordinator(
         debugLogs.i(
             source = "app",
             message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} " +
-                "origin=${config.origin} user=${config.userName}",
+                "origin=${config.origin}",
         )
         runtimeHint?.let { hint ->
             debugLogs.w(source = "platform", message = hint)
@@ -41,7 +41,7 @@ internal class AuthDemoCoordinator(
         debugLogs.i(
             source = "action",
             message = "Register tapped endpoint=${config.endpointBase} " +
-                "rpId=${config.rpId} user=${config.userName}",
+                "rpId=${config.rpId}",
         )
     }
 
@@ -49,7 +49,7 @@ internal class AuthDemoCoordinator(
         debugLogs.i(
             source = "action",
             message = "Sign In tapped endpoint=${config.endpointBase} " +
-                "rpId=${config.rpId} userHandle=${config.userHandle}",
+                "rpId=${config.rpId}",
         )
     }
 

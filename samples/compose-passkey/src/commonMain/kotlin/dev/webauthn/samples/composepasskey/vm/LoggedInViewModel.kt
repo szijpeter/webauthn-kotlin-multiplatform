@@ -57,7 +57,7 @@ internal class LoggedInViewModel(
 
     fun onSignInWithPrfClicked() {
         runBusyAction {
-            debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
+            debugLogs.i(source = "prf", message = "Sign In + PRF tapped")
             prfDemoController.signInWithPrf(
                 config = config,
                 supportsPrf = uiStateFlow.value.supportsPrf,
