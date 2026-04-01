@@ -145,8 +145,8 @@ internal class MainViewModel(
 
     private fun runBusyAction(action: suspend () -> PrfDemoResult) {
         if (uiStateFlow.value.busy) return
+        setBusy(true)
         viewModelScope.launch {
-            setBusy(true)
             try {
                 applyPrfResult(action())
             } finally {
