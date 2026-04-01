@@ -3,7 +3,7 @@ package dev.webauthn.samples.composepasskey.ui.state
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
 
-internal data class LoggedInUiState(
+internal data class MainUiState(
     val userName: String = "",
     val capabilities: PasskeyCapabilities = PasskeyCapabilities(),
     val busy: Boolean = false,

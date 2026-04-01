@@ -16,11 +16,7 @@ fun App() {
     val scope = rememberCoroutineScope()
     val debugLogs = remember { DebugLogStore() }
     val httpLogSink: (String) -> Unit = remember(scope, debugLogs) {
-        { line ->
-            scope.launch {
-                debugLogs.d(source = "http", message = line)
-            }
-        }
+        { line -> scope.launch { debugLogs.d("http", line) } }
     }
     val httpClient = rememberPlatformHttpClient(onLogLine = httpLogSink)
     val config = remember { PasskeyDemoConfig() }

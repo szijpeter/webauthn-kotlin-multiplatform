@@ -6,9 +6,9 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.samples.composepasskey.DemoPasskeyServerClient
 import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.samples.composepasskey.DebugLogStore
+import dev.webauthn.samples.composepasskey.DemoPasskeyServerClient
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.PrfCryptoDemoController
 import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
@@ -16,15 +16,14 @@ import dev.webauthn.samples.composepasskey.PrfDemoResult
 import dev.webauthn.samples.composepasskey.PrfSaltStore
 import dev.webauthn.samples.composepasskey.session.AppSessionState
 import dev.webauthn.samples.composepasskey.session.AppSessionStore
-import dev.webauthn.samples.composepasskey.ui.state.LoggedInUiState
+import dev.webauthn.samples.composepasskey.ui.state.MainUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class LoggedInViewModel(
+internal class MainViewModel(
     private val config: PasskeyDemoConfig,
     private val debugLogs: DebugLogStore,
     private val sessionStore: AppSessionStore,
@@ -32,10 +31,10 @@ internal class LoggedInViewModel(
     passkeyClient: PasskeyClient,
     serverClient: DemoPasskeyServerClient,
 ) : ViewModel() {
-    private val uiStateFlow: MutableStateFlow<LoggedInUiState> =
-        MutableStateFlow(LoggedInUiState(userName = config.userName))
+    private val uiStateFlow: MutableStateFlow<MainUiState> =
+        MutableStateFlow(MainUiState(userName = config.userName))
 
-    val uiState: StateFlow<LoggedInUiState> = uiStateFlow.asStateFlow()
+    val uiState: StateFlow<MainUiState> = uiStateFlow.asStateFlow()
 
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
     private val prfDemoController = PrfCryptoDemoController(

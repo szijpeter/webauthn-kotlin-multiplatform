@@ -22,7 +22,6 @@ internal fun AuthScreen(
     status: PasskeyDemoStatus,
     actionsEnabled: Boolean,
     canRegister: Boolean,
-    runtimeHint: String?,
     onShowLogs: () -> Unit,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
@@ -43,14 +42,6 @@ internal fun AuthScreen(
             Text(
                 text = status.detail,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        if (runtimeHint != null) {
-            Text(
-                text = runtimeHint,
-                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

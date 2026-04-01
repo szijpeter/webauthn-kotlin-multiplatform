@@ -1,8 +1,8 @@
 package dev.webauthn.samples.composepasskey
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -19,8 +19,6 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.webauthn.samples.composepasskey.navigation.AppRoute
 import dev.webauthn.samples.composepasskey.navigation.NavBackStackConfig
-import dev.webauthn.samples.composepasskey.navigation.noPredictiveTransitionSpec
-import dev.webauthn.samples.composepasskey.navigation.noTransitionSpec
 import dev.webauthn.samples.composepasskey.session.AppSessionState
 import dev.webauthn.samples.composepasskey.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.ui.components.DebugLogSheet
@@ -53,9 +51,9 @@ internal fun SampleAppRoot() {
             }
 
             is AppSessionState.SignedIn -> {
-                if (backStack.size != 1 || backStack.lastOrNull() != AppRoute.LoggedIn) {
+                if (backStack.size != 1 || backStack.lastOrNull() != AppRoute.Main) {
                     backStack.clear()
-                    backStack += AppRoute.LoggedIn
+                    backStack += AppRoute.Main
                 }
             }
         }
@@ -78,9 +76,6 @@ internal fun SampleAppRoot() {
             ) {
                 NavDisplay(
                     backStack = backStack,
-                    transitionSpec = noTransitionSpec(),
-                    popTransitionSpec = noTransitionSpec(),
-                    predictivePopTransitionSpec = noPredictiveTransitionSpec(),
                     entryDecorators = listOf(
                         rememberSaveableStateHolderNavEntryDecorator(),
                         rememberViewModelStoreNavEntryDecorator(),

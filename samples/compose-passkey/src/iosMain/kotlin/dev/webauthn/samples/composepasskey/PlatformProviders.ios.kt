@@ -34,8 +34,3 @@ actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
         }
     }
 }
-
-actual fun platformRuntimeHint(): String? {
-    return "Passkey register/sign-in may fail unless Associated Domains entitlement " +
-        "and a matching apple-app-site-association setup are configured."
-}

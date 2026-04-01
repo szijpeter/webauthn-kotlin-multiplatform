@@ -43,7 +43,7 @@ internal fun AuthRoute() {
         passkeyClient = passkeyClient,
     )
     val controllerState by controller.uiState.collectAsState()
-    val authState by coordinator.uiState.collectAsState()
+    val canRegister by coordinator.canRegister.collectAsState()
     val actionsEnabled = areCeremonyActionsEnabled(controllerState)
 
     LaunchedEffect(controllerState) {
@@ -53,11 +53,10 @@ internal fun AuthRoute() {
     AuthScreen(
         status = controllerState.toDemoStatus(),
         actionsEnabled = actionsEnabled,
-        canRegister = authState.canRegister,
-        runtimeHint = authState.runtimeHint,
+        canRegister = canRegister,
         onShowLogs = showDebugLogs,
         onRegister = {
-            if (actionsEnabled && authState.canRegister) {
+            if (actionsEnabled && canRegister) {
                 coordinator.onRegisterClicked()
                 scope.launch {
                     controller.register(config.toRegistrationStartPayload())

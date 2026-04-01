@@ -10,14 +10,8 @@ import dev.webauthn.samples.composepasskey.model.StatusTone
 
 data class PasskeyDemoConfig(
     val endpointBase: String = PasskeyDemoBuildConfig.ENDPOINT_BASE,
-    val rpId: String = resolveDefaultRpId(
-        endpointBase = endpointBase,
-        configuredRpId = PasskeyDemoBuildConfig.RP_ID,
-    ),
-    val origin: String = resolveDefaultOrigin(
-        rpId = rpId,
-        configuredOrigin = PasskeyDemoBuildConfig.ORIGIN,
-    ),
+    val rpId: String = resolveDefaultRpId(endpointBase, PasskeyDemoBuildConfig.RP_ID),
+    val origin: String = resolveDefaultOrigin(rpId, PasskeyDemoBuildConfig.ORIGIN),
     val userHandle: String = PasskeyDemoBuildConfig.USER_ID,
     val userName: String = PasskeyDemoBuildConfig.USER_NAME,
 )

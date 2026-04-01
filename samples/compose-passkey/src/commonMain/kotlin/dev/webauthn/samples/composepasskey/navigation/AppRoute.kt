@@ -9,5 +9,5 @@ internal sealed interface AppRoute : NavKey {
     data object Auth : AppRoute
 
     @Serializable
-    data object LoggedIn : AppRoute
+    data object Main : AppRoute
 }

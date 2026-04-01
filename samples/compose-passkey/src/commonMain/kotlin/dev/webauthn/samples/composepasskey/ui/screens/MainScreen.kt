@@ -17,11 +17,11 @@ import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
 import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
 import dev.webauthn.samples.composepasskey.ui.components.SessionActionsCard
-import dev.webauthn.samples.composepasskey.ui.state.LoggedInUiState
+import dev.webauthn.samples.composepasskey.ui.state.MainUiState
 
 @Composable
-internal fun LoggedInScreen(
-    state: LoggedInUiState,
+internal fun MainScreen(
+    state: MainUiState,
     onShowLogs: () -> Unit,
     onSignInWithPrf: () -> Unit,
     onEncrypt: () -> Unit,

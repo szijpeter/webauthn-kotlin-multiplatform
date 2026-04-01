@@ -7,22 +7,14 @@ import dev.webauthn.samples.composepasskey.session.AppSessionStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-
-internal data class AuthDemoState(
-    val canRegister: Boolean = true,
-    val runtimeHint: String? = null,
-)
 
 internal class AuthDemoCoordinator(
     private val config: PasskeyDemoConfig,
     private val debugLogs: DebugLogStore,
     private val sessionStore: AppSessionStore,
-    runtimeHint: String? = platformRuntimeHint(),
 ) {
-    private val uiStateFlow = MutableStateFlow(AuthDemoState(runtimeHint = runtimeHint))
-
-    val uiState: StateFlow<AuthDemoState> = uiStateFlow.asStateFlow()
+    private val canRegisterStateFlow = MutableStateFlow(true)
+    val canRegister: StateFlow<Boolean> = canRegisterStateFlow.asStateFlow()
 
     private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
 
@@ -32,9 +24,6 @@ internal class AuthDemoCoordinator(
             message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} " +
                 "origin=${config.origin}",
         )
-        runtimeHint?.let { hint ->
-            debugLogs.w(source = "platform", message = hint)
-        }
     }
 
     fun onRegisterClicked() {
@@ -65,7 +54,7 @@ internal class AuthDemoCoordinator(
 
         when {
             current is PasskeyControllerState.Success && current.action == PasskeyAction.REGISTER -> {
-                uiStateFlow.update { it.copy(canRegister = false) }
+                canRegisterStateFlow.value = false
             }
 
             current is PasskeyControllerState.Success && current.action == PasskeyAction.SIGN_IN -> {

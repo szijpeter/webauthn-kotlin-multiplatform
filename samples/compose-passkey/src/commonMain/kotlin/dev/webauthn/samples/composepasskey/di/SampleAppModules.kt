@@ -1,19 +1,19 @@
 package dev.webauthn.samples.composepasskey.di
 
 import dev.webauthn.client.PasskeyClient
-import dev.webauthn.samples.composepasskey.DemoPasskeyServerClient
 import dev.webauthn.samples.composepasskey.DebugLogStore
+import dev.webauthn.samples.composepasskey.DemoPasskeyServerClient
 import dev.webauthn.samples.composepasskey.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.PrfSaltStore
 import dev.webauthn.samples.composepasskey.navigation.AppRoute
 import dev.webauthn.samples.composepasskey.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.ui.routes.AuthRoute
-import dev.webauthn.samples.composepasskey.ui.routes.LoggedInRoute
-import dev.webauthn.samples.composepasskey.vm.LoggedInViewModel
+import dev.webauthn.samples.composepasskey.ui.routes.MainRoute
+import dev.webauthn.samples.composepasskey.vm.MainViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
 
@@ -34,7 +34,7 @@ internal fun sampleAppModules(
             single<PrfSaltStore> { InMemoryPrfSaltStore() }
 
             viewModel {
-                LoggedInViewModel(
+                MainViewModel(
                     config = get(),
                     debugLogs = get(),
                     sessionStore = get(),
@@ -47,8 +47,8 @@ internal fun sampleAppModules(
             navigation<AppRoute.Auth> {
                 AuthRoute()
             }
-            navigation<AppRoute.LoggedIn> {
-                LoggedInRoute()
+            navigation<AppRoute.Main> {
+                MainRoute()
             }
         },
     )

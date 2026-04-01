@@ -34,5 +34,3 @@ actual fun rememberPlatformHttpClient(onLogLine: (String) -> Unit): HttpClient {
         }
     }
 }
-
-actual fun platformRuntimeHint(): String? = null
