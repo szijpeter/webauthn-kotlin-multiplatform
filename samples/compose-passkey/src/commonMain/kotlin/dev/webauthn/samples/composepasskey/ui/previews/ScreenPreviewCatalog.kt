@@ -10,11 +10,11 @@ import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.domain.model.StatusTone
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
-import dev.webauthn.samples.composepasskey.ui.auth.AuthScreen
-import dev.webauthn.samples.composepasskey.ui.main.MainScreen
-import dev.webauthn.samples.composepasskey.ui.main.MainUiState
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
+import dev.webauthn.samples.composepasskey.ui.screens.auth.AuthScreen
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainScreen
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainUiState
+import dev.webauthn.samples.composepasskey.ui.theme.Palette
+import dev.webauthn.samples.composepasskey.ui.theme.Typography
 
 @Preview(name = "Auth Screen - Idle")
 @Composable
@@ -88,8 +88,8 @@ private fun MainScreenPreview() {
 @Composable
 private fun PreviewSurface(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = EditorialPalette,
-        typography = EditorialTypography,
+        colorScheme = Palette,
+        typography = Typography,
     ) {
         Surface {
             content()

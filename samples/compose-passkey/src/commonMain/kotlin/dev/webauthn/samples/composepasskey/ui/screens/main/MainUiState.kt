@@ -1,4 +1,4 @@
-package dev.webauthn.samples.composepasskey.ui.main
+package dev.webauthn.samples.composepasskey.ui.screens.main
 
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState

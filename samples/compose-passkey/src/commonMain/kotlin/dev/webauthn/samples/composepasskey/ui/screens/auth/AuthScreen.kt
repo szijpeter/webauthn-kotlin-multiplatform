@@ -1,4 +1,4 @@
-package dev.webauthn.samples.composepasskey.ui.auth
+package dev.webauthn.samples.composepasskey.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

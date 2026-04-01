@@ -1,4 +1,4 @@
-package dev.webauthn.samples.composepasskey.ui.auth
+package dev.webauthn.samples.composepasskey.ui.screens.auth
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

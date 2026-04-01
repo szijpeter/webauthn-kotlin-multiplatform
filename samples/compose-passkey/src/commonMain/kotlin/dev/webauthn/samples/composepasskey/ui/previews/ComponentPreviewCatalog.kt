@@ -25,8 +25,8 @@ import dev.webauthn.samples.composepasskey.ui.components.DebugLogCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
 import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
 import dev.webauthn.samples.composepasskey.ui.components.SessionActionsCard
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
+import dev.webauthn.samples.composepasskey.ui.theme.Palette
+import dev.webauthn.samples.composepasskey.ui.theme.Typography
 import kotlin.time.Instant
 
 @Preview(name = "Header")
@@ -168,8 +168,8 @@ private fun SpacerBlock() {
 @Composable
 private fun PreviewSurface(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = EditorialPalette,
-        typography = EditorialTypography,
+        colorScheme = Palette,
+        typography = Typography,
     ) {
         Surface {
             content()

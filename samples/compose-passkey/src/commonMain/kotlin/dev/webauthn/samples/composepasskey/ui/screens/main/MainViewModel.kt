@@ -1,4 +1,4 @@
-package dev.webauthn.samples.composepasskey.ui.main
+package dev.webauthn.samples.composepasskey.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

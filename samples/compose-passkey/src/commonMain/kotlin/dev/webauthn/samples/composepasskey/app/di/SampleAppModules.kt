@@ -8,9 +8,9 @@ import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.prf.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
-import dev.webauthn.samples.composepasskey.ui.auth.AuthRoute
-import dev.webauthn.samples.composepasskey.ui.main.MainRoute
-import dev.webauthn.samples.composepasskey.ui.main.MainViewModel
+import dev.webauthn.samples.composepasskey.ui.screens.auth.AuthRoute
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainRoute
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel

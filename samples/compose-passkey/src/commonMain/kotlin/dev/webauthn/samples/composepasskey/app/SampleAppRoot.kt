@@ -23,8 +23,8 @@ import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.ui.components.DebugLogSheet
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
+import dev.webauthn.samples.composepasskey.ui.theme.Palette
+import dev.webauthn.samples.composepasskey.ui.theme.Typography
 import org.koin.compose.koinInject
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -61,8 +61,8 @@ internal fun SampleAppRoot() {
     }
 
     MaterialTheme(
-        colorScheme = EditorialPalette,
-        typography = EditorialTypography,
+        colorScheme = Palette,
+        typography = Typography,
     ) {
         if (showDebugSheet) {
             DebugLogSheet(
