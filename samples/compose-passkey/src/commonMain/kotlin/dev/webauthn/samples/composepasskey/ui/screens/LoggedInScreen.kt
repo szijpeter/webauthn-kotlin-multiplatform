@@ -22,7 +22,7 @@ import dev.webauthn.samples.composepasskey.ui.state.LoggedInUiState
 @Composable
 internal fun LoggedInScreen(
     state: LoggedInUiState,
-    onHeaderSecretTap: () -> Unit,
+    onShowLogs: () -> Unit,
     onSignInWithPrf: () -> Unit,
     onEncrypt: () -> Unit,
     onDecrypt: () -> Unit,
@@ -41,9 +41,9 @@ internal fun LoggedInScreen(
             status = PasskeyDemoStatus(
                 tone = StatusTone.SUCCESS,
                 headline = "Signed in",
-                detail = "Extension demo area is now active.",
+                detail = "PRF extension demo is ready.",
             ),
-            onTitleDoubleTap = onHeaderSecretTap,
+            onShowLogs = onShowLogs,
         )
 
         CapabilitiesCard(

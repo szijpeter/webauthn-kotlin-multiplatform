@@ -8,10 +8,10 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `samples
 2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.
-5. Controller-driven lifecycle state (`PasskeyControllerState`) driving UI status and action enablement.
-6. Direct sample wiring to `KtorPasskeyServerClient` default backend contract.
+5. Compose-first auth wiring via `rememberPasskeyController(...)`, with `PasskeyControllerState` driving UI status and action enablement.
+6. Direct sample wiring to `KtorPasskeyServerClient` against the default backend contract.
 7. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
-8. Hidden logger-backed debug log sheet in UI (wall-clock timestamps, level, source, message), revealed by secret title double-tap.
+8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
@@ -86,7 +86,7 @@ Full E2E expectation:
 
 ## Debug logging
 
-The sample emits structured logs with tag `PasskeyDemo` and uses the same entries for the hidden in-app debug sheet:
+The sample emits structured logs with tag `PasskeyDemo` and uses the same entries for the in-app debug sheet:
 
 - `app`: startup and configuration
 - `capabilities`: probe start/success/failure
@@ -99,7 +99,31 @@ To inspect logs:
 
 - Android: `adb logcat | grep PasskeyDemo`
 - iOS: Xcode/device console output (`NSLog`)
-- In-app: double-tap the `WebAuthn Kotlin Demo` header title on the signed-in screen to reveal the debug sheet.
+- In-app: tap `Logs` in the header on either screen to open the debug sheet.
+
+## Auth route showcase
+
+The auth screen is intentionally the cleanest API example in the repo:
+
+```kotlin
+val controller = rememberPasskeyController(
+    serverClient = serverClient,
+    passkeyClient = passkeyClient,
+)
+val controllerState by controller.uiState.collectAsState()
+
+AuthScreen(
+    status = controllerState.toDemoStatus(),
+    actionsEnabled = areCeremonyActionsEnabled(controllerState),
+    onRegister = { scope.launch { controller.register(config.toRegistrationStartPayload()) } },
+    onSignIn = { scope.launch { controller.signIn(config.toAuthenticationStartPayload()) } },
+)
+```
+
+Sample-only side effects stay outside the library API surface:
+
+- `AuthDemoCoordinator` logs taps/state transitions.
+- `AppSessionStore` handles local signed-in navigation state.
 
 ## Compose previews
 

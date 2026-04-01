@@ -26,12 +26,12 @@ internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean
     return uiState !is PasskeyControllerState.InProgress
 }
 
-internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
+internal fun PasskeyControllerState.toDemoStatus(): PasskeyDemoStatus {
     return when (this) {
         PasskeyControllerState.Idle -> PasskeyDemoStatus(
             tone = StatusTone.IDLE,
             headline = "Ready",
-            detail = "Run Register or Sign In to exercise the E2E flow.",
+            detail = "Run Register or Sign In to exercise the end-to-end passkey flow.",
         )
 
         is PasskeyControllerState.InProgress -> PasskeyDemoStatus(
@@ -41,9 +41,9 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
                 PasskeyAction.SIGN_IN -> "Sign In in progress"
             },
             detail = when (phase) {
-                PasskeyPhase.STARTING -> "Loading options."
-                PasskeyPhase.PLATFORM_PROMPT -> "Waiting for passkey prompt."
-                PasskeyPhase.FINISHING -> "Verifying response."
+                PasskeyPhase.STARTING -> "Loading server options."
+                PasskeyPhase.PLATFORM_PROMPT -> "Waiting for the platform passkey prompt."
+                PasskeyPhase.FINISHING -> "Verifying the passkey response."
             },
         )
 
@@ -52,6 +52,10 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
             headline = when (action) {
                 PasskeyAction.REGISTER -> "Register complete"
                 PasskeyAction.SIGN_IN -> "Sign In complete"
+            },
+            detail = when (action) {
+                PasskeyAction.REGISTER -> "Passkey created. Run Sign In to verify the round trip."
+                PasskeyAction.SIGN_IN -> "Authenticated successfully. Opening the extension demo."
             },
         )
 
@@ -70,22 +74,22 @@ internal fun PasskeyControllerState.toStatusPresentation(): PasskeyDemoStatus {
     }
 }
 
-internal data class ControllerTransitionLog(
+internal data class ControllerTransitionEvent(
     val level: DebugLogLevel,
     val message: String,
 )
 
-internal fun controllerTransitionLog(
+internal fun controllerTransitionEvent(
     previous: PasskeyControllerState,
     current: PasskeyControllerState,
-): ControllerTransitionLog? {
+): ControllerTransitionEvent? {
     if (current is PasskeyControllerState.InProgress) {
         val changed =
             previous !is PasskeyControllerState.InProgress ||
                 previous.action != current.action ||
                 previous.phase != current.phase
         if (changed) {
-            return ControllerTransitionLog(
+            return ControllerTransitionEvent(
                 level = DebugLogLevel.INFO,
                 message = "${current.action.label()} ${current.phase.logLabel()}",
             )
@@ -93,7 +97,7 @@ internal fun controllerTransitionLog(
     }
 
     if (current is PasskeyControllerState.Success && previous != current) {
-        return ControllerTransitionLog(
+        return ControllerTransitionEvent(
             level = DebugLogLevel.INFO,
             message = "${current.action.label()} success",
         )
@@ -101,7 +105,7 @@ internal fun controllerTransitionLog(
 
     if (current is PasskeyControllerState.Failure && previous != current) {
         val category = current.error.toCategory()
-        return ControllerTransitionLog(
+        return ControllerTransitionEvent(
             level = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {
                 DebugLogLevel.WARN
             } else {

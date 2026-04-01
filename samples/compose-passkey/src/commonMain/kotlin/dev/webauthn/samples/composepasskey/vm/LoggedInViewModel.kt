@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
-import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.network.AuthenticationStartPayload
-import dev.webauthn.network.RegistrationStartPayload
+import dev.webauthn.samples.composepasskey.DemoPasskeyServerClient
 import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.samples.composepasskey.DebugLogStore
 import dev.webauthn.samples.composepasskey.PasskeyDemoConfig
@@ -32,7 +30,7 @@ internal class LoggedInViewModel(
     private val sessionStore: AppSessionStore,
     private val saltStore: PrfSaltStore,
     passkeyClient: PasskeyClient,
-    serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
+    serverClient: DemoPasskeyServerClient,
 ) : ViewModel() {
     private val uiStateFlow: MutableStateFlow<LoggedInUiState> =
         MutableStateFlow(LoggedInUiState(userName = config.userName))
@@ -40,7 +38,7 @@ internal class LoggedInViewModel(
     val uiState: StateFlow<LoggedInUiState> = uiStateFlow.asStateFlow()
 
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
-    private val prfDemo = PrfCryptoDemoController(
+    private val prfDemoController = PrfCryptoDemoController(
         passkeyClient = passkeyClient,
         serverClient = serverClient,
         saltStore = saltStore,
@@ -58,48 +56,25 @@ internal class LoggedInViewModel(
     }
 
     fun onSignInWithPrfClicked() {
-        if (uiStateFlow.value.busy) return
-        viewModelScope.launch {
-            setBusy(true)
-            try {
-                debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
-                val result = prfDemo.signInWithPrf(
-                    config = config,
-                    supportsPrf = uiStateFlow.value.supportsPrf,
-                )
-                applyPrfResult(result, prfDemo)
-            } finally {
-                setBusy(false)
-            }
+        runBusyAction {
+            debugLogs.i(source = "prf", message = "Sign In + PRF tapped for ${config.userName}")
+            prfDemoController.signInWithPrf(
+                config = config,
+                supportsPrf = uiStateFlow.value.supportsPrf,
+            )
         }
     }
 
     fun onEncryptClicked() {
-        if (uiStateFlow.value.busy) return
-        viewModelScope.launch {
-            setBusy(true)
-            try {
-                applyPrfResult(prfDemo.encrypt(uiStateFlow.value.plaintext), prfDemo)
-            } finally {
-                setBusy(false)
-            }
-        }
+        runBusyAction { prfDemoController.encrypt(uiStateFlow.value.plaintext) }
     }
 
     fun onDecryptClicked() {
-        if (uiStateFlow.value.busy) return
-        viewModelScope.launch {
-            setBusy(true)
-            try {
-                applyPrfResult(prfDemo.decrypt(), prfDemo)
-            } finally {
-                setBusy(false)
-            }
-        }
+        runBusyAction { prfDemoController.decrypt() }
     }
 
     fun onClearSessionClicked() {
-        applyPrfResult(prfDemo.clearSession(), prfDemo)
+        applyPrfResult(prfDemoController.clearSession())
     }
 
     fun onPlaintextChanged(value: String) {
@@ -107,7 +82,7 @@ internal class LoggedInViewModel(
     }
 
     fun onLogoutClicked() {
-        prfDemo.clearSession().let { clearResult ->
+        prfDemoController.clearSession().let { clearResult ->
             if (clearResult is PrfDemoResult.Success) {
                 debugLogs.i(source = "session", message = clearResult.message)
             }
@@ -170,28 +145,45 @@ internal class LoggedInViewModel(
         }
     }
 
-    private fun applyPrfResult(result: PrfDemoResult, prfDemo: PrfCryptoDemoController) {
+    private fun runBusyAction(action: suspend () -> PrfDemoResult) {
+        if (uiStateFlow.value.busy) return
+        viewModelScope.launch {
+            setBusy(true)
+            try {
+                applyPrfResult(action())
+            } finally {
+                setBusy(false)
+            }
+        }
+    }
+
+    private fun applyPrfResult(result: PrfDemoResult) {
         when (result) {
             is PrfDemoResult.Success -> {
-                uiStateFlow.update {
-                    it.copy(
-                        statusMessage = result.message,
-                        decryptedText = result.plaintext,
-                        sessionState = prfDemo.sessionState,
-                    )
-                }
+                updatePrfUi(
+                    statusMessage = result.message,
+                    decryptedText = result.plaintext,
+                )
                 debugLogs.i(source = "prf", message = result.message)
             }
 
             is PrfDemoResult.Failure -> {
-                uiStateFlow.update {
-                    it.copy(
-                        statusMessage = result.message,
-                        sessionState = prfDemo.sessionState,
-                    )
-                }
+                updatePrfUi(statusMessage = result.message)
                 debugLogs.w(source = "prf", message = result.message)
             }
+        }
+    }
+
+    private fun updatePrfUi(
+        statusMessage: String,
+        decryptedText: String? = uiStateFlow.value.decryptedText,
+    ) {
+        uiStateFlow.update {
+            it.copy(
+                statusMessage = statusMessage,
+                decryptedText = decryptedText,
+                sessionState = prfDemoController.sessionState,
+            )
         }
     }
 

@@ -32,19 +32,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.client.compose.rememberPasskeyController
 import kotlinx.coroutines.launch
 
 @Composable
 fun <RegisterParams, SignInParams> PasskeyEntryScreen(
     serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
+    passkeyClient: PasskeyClient = rememberPasskeyClient(),
     registerParams: RegisterParams,
     signInParams: SignInParams,
 ) {
     val scope = rememberCoroutineScope()
-    val controller = rememberPasskeyController(serverClient = serverClient)
+    val controller = rememberPasskeyController(
+        serverClient = serverClient,
+        passkeyClient = passkeyClient,
+    )
     val state by controller.uiState.collectAsState()
 
     fun onRegisterClick() = scope.launch { controller.register(registerParams) }
@@ -70,6 +76,7 @@ fun <RegisterParams, SignInParams> PasskeyEntryScreen(
 Usage notes:
 
 - Keep `serverClient` stable (for example `remember { ... }` at composition boundary).
+- Keep the platform client stable when you pass one explicitly.
 - Reflect `InProgress`, `Success`, and `Failure` explicitly in UI; avoid silent failures.
 - Call `controller.resetToIdle()` when your UX needs a fresh post-success state.
 

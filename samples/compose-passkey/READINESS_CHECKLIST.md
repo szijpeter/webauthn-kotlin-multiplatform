@@ -19,7 +19,7 @@ Pass condition:
 
 - all commands succeed without test failures.
 - shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus debug-log transition behavior.
-- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
+- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`), and the auth route remains the clearest reference usage.
 - Android UI smoke test sources compile in CI (`:samples:compose-passkey-android:compileDebugAndroidTestKotlin`).
 
 ## 2. Local sample backend
@@ -85,7 +85,7 @@ adb logcat | rg "PasskeyDemo"
 Pass condition:
 
 - app/action/controller/http events are present and readable.
-- hidden in-app debug sheet opens only after double-tapping the `WebAuthn Kotlin Demo` title on the signed-in screen.
+- in-app debug sheet opens from the explicit `Logs` header action on both screens.
 
 ## 5. Optional emulator smoke run
 

@@ -3,11 +3,8 @@ package dev.webauthn.samples.composepasskey
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.client.compose.rememberPasskeyClient
-import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.KtorPasskeyServerClient
-import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.samples.composepasskey.di.sampleAppModules
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
@@ -28,20 +25,19 @@ fun App() {
     val httpClient = rememberPlatformHttpClient(onLogLine = httpLogSink)
     val config = remember { PasskeyDemoConfig() }
     val passkeyClient = rememberPasskeyClient()
-    val serverClient = remember(httpClient, config.endpointBase) {
+    val serverClient: DemoPasskeyServerClient = remember(httpClient, config.endpointBase) {
         KtorPasskeyServerClient(
             httpClient = httpClient,
             endpointBase = config.endpointBase.normalizedEndpoint(),
         )
     }
-    val typedServerClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> = serverClient
 
-    val modules = remember(config, debugLogs, passkeyClient, typedServerClient) {
+    val modules = remember(config, debugLogs, passkeyClient, serverClient) {
         sampleAppModules(
             config = config,
             debugLogs = debugLogs,
             passkeyClient = passkeyClient,
-            serverClient = typedServerClient,
+            serverClient = serverClient,
         )
     }
     val koinConfig = remember(modules) {

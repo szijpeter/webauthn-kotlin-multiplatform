@@ -12,7 +12,6 @@ import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.model.StatusTone
 import dev.webauthn.samples.composepasskey.ui.screens.AuthScreen
 import dev.webauthn.samples.composepasskey.ui.screens.LoggedInScreen
-import dev.webauthn.samples.composepasskey.ui.state.AuthUiState
 import dev.webauthn.samples.composepasskey.ui.state.LoggedInUiState
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
@@ -22,15 +21,15 @@ import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
 private fun AuthScreenIdlePreview() {
     PreviewSurface {
         AuthScreen(
-            state = AuthUiState(
-                status = PasskeyDemoStatus(
-                    tone = StatusTone.IDLE,
-                    headline = "Ready",
-                    detail = "Tap Register or Sign In to begin.",
-                ),
-                actionsEnabled = true,
+            status = PasskeyDemoStatus(
+                tone = StatusTone.IDLE,
+                headline = "Ready",
+                detail = "Tap Register or Sign In to begin.",
             ),
-            onHeaderSecretTap = {},
+            actionsEnabled = true,
+            canRegister = true,
+            runtimeHint = null,
+            onShowLogs = {},
             onRegister = {},
             onSignIn = {},
         )
@@ -42,16 +41,15 @@ private fun AuthScreenIdlePreview() {
 private fun AuthScreenBusyPreview() {
     PreviewSurface {
         AuthScreen(
-            state = AuthUiState(
-                status = PasskeyDemoStatus(
-                    tone = StatusTone.WORKING,
-                    headline = "Platform prompt active",
-                    detail = "Complete the passkey prompt to continue.",
-                ),
-                actionsEnabled = false,
-                runtimeHint = "Security key provider appears unavailable on this device.",
+            status = PasskeyDemoStatus(
+                tone = StatusTone.WORKING,
+                headline = "Platform prompt active",
+                detail = "Complete the passkey prompt to continue.",
             ),
-            onHeaderSecretTap = {},
+            actionsEnabled = false,
+            canRegister = true,
+            runtimeHint = "Security key provider appears unavailable on this device.",
+            onShowLogs = {},
             onRegister = {},
             onSignIn = {},
         )
@@ -78,7 +76,7 @@ private fun LoggedInScreenPreview() {
                 decryptedText = "The answer is 42",
                 statusMessage = "Decrypt succeeded.",
             ),
-            onHeaderSecretTap = {},
+            onShowLogs = {},
             onSignInWithPrf = {},
             onEncrypt = {},
             onDecrypt = {},
