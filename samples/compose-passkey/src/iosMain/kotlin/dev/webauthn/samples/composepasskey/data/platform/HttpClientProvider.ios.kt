@@ -1,4 +1,4 @@
-package dev.webauthn.samples.composepasskey.data.platform
+package dev.webauthn.samples.composepasskey.data.network
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

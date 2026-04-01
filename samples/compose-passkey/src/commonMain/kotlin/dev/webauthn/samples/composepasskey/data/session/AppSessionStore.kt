@@ -13,15 +13,14 @@ internal sealed interface AppSessionState {
 }
 
 internal class AppSessionStore {
-    private val stateFlow: MutableStateFlow<AppSessionState> = MutableStateFlow(AppSessionState.SignedOut)
-
-    val state: StateFlow<AppSessionState> = stateFlow.asStateFlow()
+    private val _state: MutableStateFlow<AppSessionState> = MutableStateFlow(AppSessionState.SignedOut)
+    val state: StateFlow<AppSessionState> = _state.asStateFlow()
 
     fun signIn(userName: String) {
-        stateFlow.value = AppSessionState.SignedIn(userName = userName)
+        _state.value = AppSessionState.SignedIn(userName = userName)
     }
 
     fun signOut() {
-        stateFlow.value = AppSessionState.SignedOut
+        _state.value = AppSessionState.SignedOut
     }
 }

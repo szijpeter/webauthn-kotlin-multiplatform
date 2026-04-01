@@ -9,7 +9,7 @@ import dev.webauthn.samples.composepasskey.app.di.sampleAppModules
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
 import dev.webauthn.samples.composepasskey.data.network.normalizedEndpoint
-import dev.webauthn.samples.composepasskey.data.platform.rememberPlatformHttpClient
+import dev.webauthn.samples.composepasskey.data.network.rememberPlatformHttpClient
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
