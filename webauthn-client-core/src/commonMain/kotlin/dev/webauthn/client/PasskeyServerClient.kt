@@ -10,6 +10,12 @@ import dev.webauthn.model.ValidationResult
 
 /** Backend contract used by [PasskeyController] to start/finish ceremonies. */
 public interface PasskeyServerClient<RegisterParams, SignInParams> {
+    /**
+     * Starts registration by fetching server-issued creation options for the supplied [params].
+     *
+     * Implementations should return a [ValidationResult.Invalid] when the backend response
+     * cannot be decoded into trustworthy WebAuthn creation options.
+     */
     public suspend fun getRegisterOptions(params: RegisterParams): ValidationResult<PublicKeyCredentialCreationOptions>
 
     /**
@@ -25,6 +31,12 @@ public interface PasskeyServerClient<RegisterParams, SignInParams> {
         challengeAsBase64Url: String,
     ): PasskeyFinishResult
 
+    /**
+     * Starts authentication by fetching server-issued request options for the supplied [params].
+     *
+     * Implementations should return a [ValidationResult.Invalid] when the backend response
+     * cannot be decoded into trustworthy WebAuthn request options.
+     */
     public suspend fun getSignInOptions(params: SignInParams): ValidationResult<PublicKeyCredentialRequestOptions>
 
     /**
