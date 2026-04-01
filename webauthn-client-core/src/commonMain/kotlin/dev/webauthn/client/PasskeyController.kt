@@ -60,12 +60,12 @@ public class PasskeyController<RegisterParams, SignInParams>(
     }
 
     @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
-    private suspend fun <OptionsT, ResponseT> runCeremony(
+    private suspend fun <Options, Response> runCeremony(
         action: PasskeyAction,
-        getOptions: suspend () -> ValidationResult<OptionsT>,
-        extractChallenge: (OptionsT) -> String,
-        interactWithPlatform: suspend (options: OptionsT) -> PasskeyResult<ResponseT>,
-        finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> PasskeyFinishResult,
+        getOptions: suspend () -> ValidationResult<Options>,
+        extractChallenge: (Options) -> String,
+        interactWithPlatform: suspend (options: Options) -> PasskeyResult<Response>,
+        finish: suspend (response: Response, challengeAsBase64Url: String) -> PasskeyFinishResult,
     ) {
         if (!ceremonyMutex.tryLock()) {
             return
