@@ -7,12 +7,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
-import dev.webauthn.samples.composepasskey.model.StatusTone
-import dev.webauthn.samples.composepasskey.ui.screens.AuthScreen
-import dev.webauthn.samples.composepasskey.ui.screens.MainScreen
-import dev.webauthn.samples.composepasskey.ui.state.MainUiState
+import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
+import dev.webauthn.samples.composepasskey.domain.model.StatusTone
+import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
+import dev.webauthn.samples.composepasskey.ui.auth.AuthScreen
+import dev.webauthn.samples.composepasskey.ui.main.MainScreen
+import dev.webauthn.samples.composepasskey.ui.main.MainUiState
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
 import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
 

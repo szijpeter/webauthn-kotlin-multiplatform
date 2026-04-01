@@ -3,8 +3,11 @@ package dev.webauthn.samples.composepasskey
 import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyPhase
-import dev.webauthn.samples.composepasskey.session.AppSessionState
-import dev.webauthn.samples.composepasskey.session.AppSessionStore
+import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
+import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
+import dev.webauthn.samples.composepasskey.data.session.AppSessionState
+import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -19,7 +22,6 @@ class AuthDemoCoordinatorTest {
             config = testDemoConfig(),
             debugLogs = debugLogs,
             sessionStore = sessionStore,
-            runtimeHint = "Provider hint",
         )
 
         coordinator.onRegisterClicked()
@@ -31,8 +33,7 @@ class AuthDemoCoordinatorTest {
         )
         coordinator.onControllerStateChanged(PasskeyControllerState.Success(PasskeyAction.REGISTER))
 
-        assertFalse(coordinator.uiState.value.canRegister)
-        assertEquals("Provider hint", coordinator.uiState.value.runtimeHint)
+        assertFalse(coordinator.canRegister.value)
         assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Register tapped") })
         assertTrue(debugLogs.entries.any { it.source == "controller" && it.message.contains("Register success") })
     }

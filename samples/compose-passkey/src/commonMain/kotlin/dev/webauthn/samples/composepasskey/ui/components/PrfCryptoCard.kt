@@ -15,7 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
+import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
 
 @Composable
 fun PrfCryptoCard(

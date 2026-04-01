@@ -1,10 +1,11 @@
 package dev.webauthn.samples.composepasskey
 
-import dev.webauthn.samples.composepasskey.model.DebugLogLevel
-import kotlin.time.Clock
+import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
+import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Clock
 
 class DebugLogStoreTest {
     @Test
