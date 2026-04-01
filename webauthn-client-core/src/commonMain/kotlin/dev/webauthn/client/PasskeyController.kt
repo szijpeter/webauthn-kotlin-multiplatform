@@ -23,13 +23,6 @@ public class PasskeyController<RegisterParams, SignInParams>(
     public val uiState: StateFlow<PasskeyControllerState> = _uiState.asStateFlow()
 
     /**
-     * Resets the controller state to [PasskeyControllerState.Idle].
-     */
-    public fun resetToIdle() {
-        _uiState.value = PasskeyControllerState.Idle
-    }
-
-    /**
      * Triggers a full registration ceremony.
      *
      * @param params Client-specific parameters needed by the server to start/finish registration.
@@ -57,6 +50,13 @@ public class PasskeyController<RegisterParams, SignInParams>(
             interactWithPlatform = passkeyClient::getAssertion,
             finish = { response, challenge -> serverClient.finishSignIn(params, response, challenge) },
         )
+    }
+
+    /**
+     * Resets the controller state to [PasskeyControllerState.Idle].
+     */
+    public fun resetToIdle() {
+        _uiState.value = PasskeyControllerState.Idle
     }
 
     @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
