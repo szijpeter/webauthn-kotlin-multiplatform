@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-val EditorialPalette: androidx.compose.material3.ColorScheme = lightColorScheme(
+val Palette: androidx.compose.material3.ColorScheme = lightColorScheme(
     primary = Color(0xFF1E4A68),
     onPrimary = Color(0xFFFFFFFF),
     secondary = Color(0xFF6D8A56),
@@ -24,7 +24,7 @@ val EditorialPalette: androidx.compose.material3.ColorScheme = lightColorScheme(
     onError = Color(0xFFFFFFFF),
 )
 
-val EditorialTypography: Typography = Typography().run {
+val Typography: Typography = Typography().run {
     copy(
         headlineLarge = headlineLarge.copy(
             fontFamily = FontFamily.Serif,

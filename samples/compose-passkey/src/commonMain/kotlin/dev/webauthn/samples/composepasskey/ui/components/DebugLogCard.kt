@@ -21,9 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.webauthn.samples.composepasskey.formatTimestampForDisplay
-import dev.webauthn.samples.composepasskey.model.DebugLogEntry
-import dev.webauthn.samples.composepasskey.model.DebugLogLevel
+import dev.webauthn.samples.composepasskey.data.logging.formatTimestampForDisplay
+import dev.webauthn.samples.composepasskey.domain.model.DebugLogEntry
+import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
 
 @Composable
 fun DebugLogCard(entries: List<DebugLogEntry>) {

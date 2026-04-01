@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.webauthn.samples.composepasskey.model.StatusTone
+import dev.webauthn.samples.composepasskey.domain.model.StatusTone
 
 @Composable
 internal fun StatusPill(tone: StatusTone, text: String) {

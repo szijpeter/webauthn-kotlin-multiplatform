@@ -9,8 +9,8 @@ import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.Aaguid
+import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
@@ -31,7 +31,12 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
-import dev.webauthn.samples.composepasskey.model.DebugLogLevel
+import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.passkey.areCeremonyActionsEnabled
+import dev.webauthn.samples.composepasskey.domain.passkey.controllerTransitionEvent
+import dev.webauthn.samples.composepasskey.domain.passkey.toAuthenticationStartPayload
+import dev.webauthn.samples.composepasskey.domain.passkey.toRegistrationStartPayload
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

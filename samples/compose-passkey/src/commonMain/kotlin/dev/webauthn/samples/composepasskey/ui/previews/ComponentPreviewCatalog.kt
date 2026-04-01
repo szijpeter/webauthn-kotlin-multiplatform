@@ -14,19 +14,19 @@ import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
-import dev.webauthn.samples.composepasskey.model.DebugLogEntry
-import dev.webauthn.samples.composepasskey.model.DebugLogLevel
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
-import dev.webauthn.samples.composepasskey.model.StatusTone
+import dev.webauthn.samples.composepasskey.domain.model.DebugLogEntry
+import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
+import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
+import dev.webauthn.samples.composepasskey.domain.model.StatusTone
+import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
 import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
 import dev.webauthn.samples.composepasskey.ui.components.DebugLogCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
 import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
 import dev.webauthn.samples.composepasskey.ui.components.SessionActionsCard
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
+import dev.webauthn.samples.composepasskey.ui.theme.Palette
+import dev.webauthn.samples.composepasskey.ui.theme.Typography
 import kotlin.time.Instant
 
 @Preview(name = "Header")
@@ -168,8 +168,8 @@ private fun SpacerBlock() {
 @Composable
 private fun PreviewSurface(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = EditorialPalette,
-        typography = EditorialTypography,
+        colorScheme = Palette,
+        typography = Typography,
     ) {
         Surface {
             content()

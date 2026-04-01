@@ -7,14 +7,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.samples.composepasskey.PrfCryptoDemoSessionState
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
-import dev.webauthn.samples.composepasskey.model.StatusTone
-import dev.webauthn.samples.composepasskey.ui.screens.AuthScreen
-import dev.webauthn.samples.composepasskey.ui.screens.LoggedInScreen
-import dev.webauthn.samples.composepasskey.ui.state.LoggedInUiState
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialPalette
-import dev.webauthn.samples.composepasskey.ui.theme.EditorialTypography
+import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
+import dev.webauthn.samples.composepasskey.domain.model.StatusTone
+import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
+import dev.webauthn.samples.composepasskey.ui.screens.auth.AuthScreen
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainScreen
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainUiState
+import dev.webauthn.samples.composepasskey.ui.theme.Palette
+import dev.webauthn.samples.composepasskey.ui.theme.Typography
 
 @Preview(name = "Auth Screen - Idle")
 @Composable
@@ -28,7 +28,6 @@ private fun AuthScreenIdlePreview() {
             ),
             actionsEnabled = true,
             canRegister = true,
-            runtimeHint = null,
             onShowLogs = {},
             onRegister = {},
             onSignIn = {},
@@ -48,7 +47,6 @@ private fun AuthScreenBusyPreview() {
             ),
             actionsEnabled = false,
             canRegister = true,
-            runtimeHint = "Security key provider appears unavailable on this device.",
             onShowLogs = {},
             onRegister = {},
             onSignIn = {},
@@ -56,12 +54,12 @@ private fun AuthScreenBusyPreview() {
     }
 }
 
-@Preview(name = "Logged-In Screen")
+@Preview(name = "Main Screen")
 @Composable
-private fun LoggedInScreenPreview() {
+private fun MainScreenPreview() {
     PreviewSurface {
-        LoggedInScreen(
-            state = LoggedInUiState(
+        MainScreen(
+            state = MainUiState(
                 userName = "demo@local",
                 capabilities = PasskeyCapabilities(
                     supported = setOf(
@@ -90,8 +88,8 @@ private fun LoggedInScreenPreview() {
 @Composable
 private fun PreviewSurface(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = EditorialPalette,
-        typography = EditorialTypography,
+        colorScheme = Palette,
+        typography = Typography,
     ) {
         Surface {
             content()

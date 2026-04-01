@@ -14,24 +14,28 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
-import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoController
+import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
+import dev.webauthn.samples.composepasskey.domain.prf.PrfDemoResult
+import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.test.assertFailsWith
 
 class PrfCryptoDemoControllerTest {
     @Test

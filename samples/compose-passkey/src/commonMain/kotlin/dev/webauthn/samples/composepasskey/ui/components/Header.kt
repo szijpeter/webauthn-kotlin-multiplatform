@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.webauthn.samples.composepasskey.model.PasskeyDemoStatus
+import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
 
 @Composable
 fun Header(
