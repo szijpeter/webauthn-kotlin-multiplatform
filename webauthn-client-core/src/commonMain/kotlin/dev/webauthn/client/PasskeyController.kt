@@ -23,13 +23,6 @@ public class PasskeyController<RegisterParams, SignInParams>(
     public val uiState: StateFlow<PasskeyControllerState> = _uiState.asStateFlow()
 
     /**
-     * Resets the controller state to [PasskeyControllerState.Idle].
-     */
-    public fun resetToIdle() {
-        _uiState.value = PasskeyControllerState.Idle
-    }
-
-    /**
      * Triggers a full registration ceremony.
      *
      * @param params Client-specific parameters needed by the server to start/finish registration.
@@ -59,13 +52,20 @@ public class PasskeyController<RegisterParams, SignInParams>(
         )
     }
 
+    /**
+     * Resets the controller state to [PasskeyControllerState.Idle].
+     */
+    public fun resetToIdle() {
+        _uiState.value = PasskeyControllerState.Idle
+    }
+
     @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
-    private suspend fun <OptionsT, ResponseT> runCeremony(
+    private suspend fun <Options, Response> runCeremony(
         action: PasskeyAction,
-        getOptions: suspend () -> ValidationResult<OptionsT>,
-        extractChallenge: (OptionsT) -> String,
-        interactWithPlatform: suspend (options: OptionsT) -> PasskeyResult<ResponseT>,
-        finish: suspend (response: ResponseT, challengeAsBase64Url: String) -> PasskeyFinishResult,
+        getOptions: suspend () -> ValidationResult<Options>,
+        extractChallenge: (Options) -> String,
+        interactWithPlatform: suspend (options: Options) -> PasskeyResult<Response>,
+        finish: suspend (response: Response, challengeAsBase64Url: String) -> PasskeyFinishResult,
     ) {
         if (!ceremonyMutex.tryLock()) {
             return
