@@ -14,11 +14,18 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
+import java.net.URLClassLoader
+import java.nio.file.Files
 import java.security.MessageDigest
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.SerializationException
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalWebAuthnL3Api::class)
@@ -257,6 +264,109 @@ class CeremonyFixtureTest {
             MessageDigest.getInstance("SHA-256").digest(Base64UrlBytes.parseOrThrow(fixture.response.clientDataJson).bytes())
 
         assertContentEquals(expected, signedData)
+    }
+
+    @Test
+    fun loadRegistrationCeremonyFixtureRejectsWrongDeclaredKind() {
+        withFixtureClassLoader(
+            path = "fixtures/ceremony/bad-registration-kind.json",
+            json = """
+                {
+                  "name": "bad_registration_kind",
+                  "kind": "authentication",
+                  "relyingParty": {
+                    "rpId": "example.com",
+                    "origin": "https://example.com",
+                    "challenge": "LA5DLbYCrdcg0MuKTxH5hiR5eHWTQF6ObjeAzvvlcrI",
+                    "userName": "Ford Prefect",
+                    "userHandle": "NDI"
+                  },
+                  "response": {
+                    "id": "adnJdzQQOzHT8aobzfRCfA",
+                    "rawId": "adnJdzQQOzHT8aobzfRCfA",
+                    "clientDataJson": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiTEE1RExiWUNyZGNnME11S1R4SDVoaVI1ZUhXVFFGNk9iamVBenZ2bGNySSIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5jb20ifQ",
+                    "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YUPu"
+                  },
+                  "expected": {
+                    "accept": true,
+                    "flags": [],
+                    "signCount": 0,
+                    "credentialIdPresent": true,
+                    "credentialId": "adnJdzQQOzHT8aobzfRCfA",
+                    "aaguid": "6puNZk0BHSE85La0jLV11A",
+                    "publicKeyCose": "pQECAyYgASFYIHflyS-aHVhwAzewMoOb5NS3wrABqgvYKVxzLYLXoRY6IlggJ5K-fCUDYnGk0SH-8wC05tBuSYdQUk45X4tBxNOSMgw",
+                    "alg": -7,
+                    "extensionsPresent": false
+                  }
+                }
+            """.trimIndent(),
+        ) { classLoader ->
+            val error = assertFailsWith<IllegalArgumentException> {
+                loadRegistrationCeremonyFixture(
+                    path = "fixtures/ceremony/bad-registration-kind.json",
+                    classLoader = classLoader,
+                )
+            }
+
+            assertContains(error.message.orEmpty(), "must declare kind=registration")
+        }
+    }
+
+    @Test
+    fun loadAuthenticationCeremonyFixtureRejectsUnknownFields() {
+        withFixtureClassLoader(
+            path = "fixtures/ceremony/bad-authentication-schema.json",
+            json = """
+                {
+                  "name": "bad_authentication_schema",
+                  "kind": "authentication",
+                  "relyingParty": {
+                    "rpId": "example.com",
+                    "origin": "https://example.com",
+                    "challenge": "JpE2XdxmrNqpe1loYEcfm8K_oZfAkE1ZSwEIuMEOBOA",
+                    "userName": "Ford Prefect",
+                    "userHandle": "NDI"
+                  },
+                  "credential": {
+                    "credentialId": "adnJdzQQOzHT8aobzfRCfA",
+                    "publicKeyCose": "pQECAyYgASFYIHflyS-aHVhwAzewMoOb5NS3wrABqgvYKVxzLYLXoRY6IlggJ5K-fCUDYnGk0SH-8wC05tBuSYdQUk45X4tBxNOSMgw",
+                    "signCount": 0
+                  },
+                  "response": {
+                    "id": "adnJdzQQOzHT8aobzfRCfA",
+                    "rawId": "adnJdzQQOzHT8aobzfRCfA",
+                    "clientDataJson": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiSnBFMlhkeG1yTnFwZTFsb1lFY2ZtOEtfb1pmQWtFMVpTd0VJdU1FT0JPQSIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5jb20ifQ",
+                    "authenticatorData": "1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWodAAAAAA",
+                    "signature": "MEYCIQDK_YzkGEhtIf4K6XM8LAjU4f3qASY3J5cgggiQOW7Y6wIhAKqCT7k80zLi_GADyhg41TK6S32uaSJiZ_aGzM_gfiCk",
+                    "userHandle": "NDI"
+                  },
+                  "expected": {
+                    "accept": true,
+                    "flags": [],
+                    "signCount": 0,
+                    "credentialIdPresent": true,
+                    "credentialId": "adnJdzQQOzHT8aobzfRCfA",
+                    "alg": -7,
+                    "extensionsPresent": false
+                  },
+                  "unexpected": true
+                }
+            """.trimIndent(),
+        ) { classLoader ->
+            assertFailsWith<SerializationException> {
+                loadAuthenticationCeremonyFixture(
+                    path = "fixtures/ceremony/bad-authentication-schema.json",
+                    classLoader = classLoader,
+                )
+            }
+        }
+    }
+
+    private fun withFixtureClassLoader(path: String, json: String, block: (ClassLoader) -> Unit) {
+        val root = Files.createTempDirectory("ceremony-fixture-test")
+        root.resolve(path).parent.createDirectories()
+        root.resolve(path).writeText(json)
+        URLClassLoader(arrayOf(root.toUri().toURL()), null).use(block)
     }
 
     private suspend fun authenticationServiceFor(

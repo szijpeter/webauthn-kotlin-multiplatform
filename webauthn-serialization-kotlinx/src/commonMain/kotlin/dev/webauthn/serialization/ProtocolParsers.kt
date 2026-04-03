@@ -36,9 +36,9 @@ private data class ParsedAttestedCredentialSection(
 
 @Serializable
 private data class CollectedClientDataJsonDto(
-    val type: String? = null,
-    val challenge: String? = null,
-    val origin: String? = null,
+    val type: String,
+    val challenge: String,
+    val origin: String,
     val crossOrigin: Boolean? = null,
 )
 
@@ -89,6 +89,16 @@ internal fun parseCollectedClientDataJson(
         )
     }
 
+    if (CLIENT_DATA_TYPE !in jsonObject) {
+        return missingField("$field.$CLIENT_DATA_TYPE", CLIENT_DATA_TYPE)
+    }
+    if (CLIENT_DATA_CHALLENGE !in jsonObject) {
+        return missingField("$field.$CLIENT_DATA_CHALLENGE", CLIENT_DATA_CHALLENGE)
+    }
+    if (CLIENT_DATA_ORIGIN !in jsonObject) {
+        return missingField("$field.$CLIENT_DATA_ORIGIN", CLIENT_DATA_ORIGIN)
+    }
+
     val dto = runCatching {
         clientDataJsonParser.decodeFromString<CollectedClientDataJsonDto>(text)
     }.getOrElse {
@@ -102,21 +112,18 @@ internal fun parseCollectedClientDataJson(
         )
     }
 
-    val type = dto.type ?: return missingField("$field.type", "type")
-    val challenge = dto.challenge ?: return missingField("$field.challenge", "challenge")
-    val origin = dto.origin ?: return missingField("$field.origin", "origin")
-    val parsedChallenge = when (val result = Challenge.parse(challenge)) {
+    val parsedChallenge = when (val result = Challenge.parse(dto.challenge)) {
         is ValidationResult.Valid -> result.value
         is ValidationResult.Invalid -> return reprefixedInvalid(result.errors, "challenge", "$field.challenge")
     }
-    val parsedOrigin = when (val result = Origin.parse(origin)) {
+    val parsedOrigin = when (val result = Origin.parse(dto.origin)) {
         is ValidationResult.Valid -> result.value
         is ValidationResult.Invalid -> return reprefixedInvalid(result.errors, "origin", "$field.origin")
     }
 
     return ValidationResult.Valid(
         CollectedClientData(
-            type = type,
+            type = dto.type,
             challenge = parsedChallenge,
             origin = parsedOrigin,
             crossOrigin = dto.crossOrigin,
@@ -286,3 +293,6 @@ internal const val FLAG_EXTENSION_DATA_INCLUDED: Int = 0x80
 private const val UNSIGNED_BYTE_MASK = 0xFF
 private const val CBOR_MAJOR_TYPE_SHIFT = 5
 private const val CBOR_MAP_MAJOR_TYPE = 5
+private const val CLIENT_DATA_TYPE = "type"
+private const val CLIENT_DATA_CHALLENGE = "challenge"
+private const val CLIENT_DATA_ORIGIN = "origin"

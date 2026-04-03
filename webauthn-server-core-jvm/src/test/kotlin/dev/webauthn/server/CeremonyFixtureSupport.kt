@@ -15,26 +15,38 @@ import java.io.InputStreamReader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-private val ceremonyFixtureJson = Json { ignoreUnknownKeys = true }
+private val ceremonyFixtureJson = Json.Default
 
 internal fun loadRegistrationCeremonyFixture(
     path: String,
     classLoader: ClassLoader,
 ): RegistrationCeremonyFixture {
-    return classLoader.getResourceAsStream(path).use { stream ->
+    val fixture: RegistrationCeremonyFixture = classLoader.getResourceAsStream(path).use { stream ->
         requireNotNull(stream) { "Missing fixture: $path" }
-        ceremonyFixtureJson.decodeFromString(InputStreamReader(stream, Charsets.UTF_8).readText())
+        ceremonyFixtureJson.decodeFromString<RegistrationCeremonyFixture>(
+            InputStreamReader(stream, Charsets.UTF_8).readText(),
+        )
     }
+    require(fixture.kind == CEREMONY_KIND_REGISTRATION) {
+        "Fixture $path must declare kind=$CEREMONY_KIND_REGISTRATION, was ${fixture.kind}"
+    }
+    return fixture
 }
 
 internal fun loadAuthenticationCeremonyFixture(
     path: String,
     classLoader: ClassLoader,
 ): AuthenticationCeremonyFixture {
-    return classLoader.getResourceAsStream(path).use { stream ->
+    val fixture: AuthenticationCeremonyFixture = classLoader.getResourceAsStream(path).use { stream ->
         requireNotNull(stream) { "Missing fixture: $path" }
-        ceremonyFixtureJson.decodeFromString(InputStreamReader(stream, Charsets.UTF_8).readText())
+        ceremonyFixtureJson.decodeFromString<AuthenticationCeremonyFixture>(
+            InputStreamReader(stream, Charsets.UTF_8).readText(),
+        )
     }
+    require(fixture.kind == CEREMONY_KIND_AUTHENTICATION) {
+        "Fixture $path must declare kind=$CEREMONY_KIND_AUTHENTICATION, was ${fixture.kind}"
+    }
+    return fixture
 }
 
 internal fun RegistrationCeremonyFixture.userHandle(): UserHandle =
@@ -204,3 +216,6 @@ internal data class AuthenticationCeremonyFixture(
     val response: AuthenticationResponseFixture,
     val expected: AuthenticationExpectedFixture,
 )
+
+private const val CEREMONY_KIND_REGISTRATION = "registration"
+private const val CEREMONY_KIND_AUTHENTICATION = "authentication"

@@ -73,6 +73,23 @@ class ProtocolParsersGoldenTest {
     }
 
     @Test
+    fun parseCollectedClientDataJsonRejectsExplicitNullRequiredFieldAsTypeError() {
+        val result = parseCollectedClientDataJson(
+            """
+                {
+                  "type": "webauthn.create",
+                  "challenge": null,
+                  "origin": "https://example.com"
+                }
+            """.trimIndent().encodeToByteArray(),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("clientDataJSON", result.errors.single().field)
+        assertEquals("clientDataJSON must use valid JSON field types", result.errors.single().message)
+    }
+
+    @Test
     fun parseCollectedClientDataJsonPreservesExactTypeChallengeAndOriginValues() {
         val result = parseCollectedClientDataJson(
             """
