@@ -279,7 +279,7 @@ public class AuthenticationService(
 
         // W3C WebAuthn L3: §7.2 Step 23: Verify that sig is a valid signature
         // over the binary concatenation of authData and hash.
-        val signedData = signedAuthenticationData(response)
+        val signedData = buildSignedAuthenticationData(response)
         val signatureOk = CoseAlgorithm.entries.any { algorithm ->
             signatureVerifier.verify(
                 algorithm = algorithm,
@@ -305,12 +305,12 @@ public class AuthenticationService(
 
         return ValidationResult.Valid(response)
     }
+}
 
-    private fun signedAuthenticationData(response: AuthenticationResponse): ByteArray {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val clientDataHash = digest.digest(response.clientDataJson.bytes())
-        return response.rawAuthenticatorData.bytes() + clientDataHash
-    }
+internal fun buildSignedAuthenticationData(response: AuthenticationResponse): ByteArray {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val clientDataHash = digest.digest(response.clientDataJson.bytes())
+    return response.rawAuthenticatorData.bytes() + clientDataHash
 }
 
 private fun registrationOptionsFor(

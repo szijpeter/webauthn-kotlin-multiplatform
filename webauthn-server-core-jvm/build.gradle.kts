@@ -2,6 +2,7 @@ plugins {
     id("webauthn.kotlin.jvm")
     id("webauthn.published-library")
     id("java-test-fixtures")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
@@ -14,6 +15,9 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.h2)
+    testImplementation(libs.kotlinx.serialization.json)
+    testImplementation("com.webauthn4j:webauthn4j-core:0.30.0.RELEASE")
+    testImplementation("com.yubico:webauthn-server-core:2.8.1")
     testFixturesApi(project(":webauthn-core"))
     testFixturesApi(project(":webauthn-crypto-api"))
     testFixturesApi(project(":webauthn-serialization-kotlinx"))

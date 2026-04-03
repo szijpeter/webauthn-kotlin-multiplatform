@@ -2,9 +2,6 @@
 
 package dev.webauthn.serialization
 
-import dev.webauthn.cbor.skipCborItem
-import dev.webauthn.cbor.readUint16
-import dev.webauthn.cbor.readUint32
 import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AttestationConveyancePreference
 import dev.webauthn.model.AuthenticationResponse
@@ -13,17 +10,13 @@ import dev.webauthn.model.AuthenticatorTransport
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Base64UrlBytes
-import dev.webauthn.model.Aaguid
-import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
-import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.LargeBlobExtensionInput
 import dev.webauthn.model.LargeBlobExtensionOutput
 import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PrfExtensionOutput
-import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -38,12 +31,8 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.cbor.ByteString
 import kotlinx.serialization.cbor.Cbor
-import kotlinx.serialization.decodeFromByteArray
 
 private const val PUBLIC_KEY_CREDENTIAL_TYPE = "public-key"
 
@@ -662,24 +651,6 @@ public object WebAuthnDtoMapper {
 
 }
 
-private data class ParsedAuthenticatorData(
-    val authenticatorData: AuthenticatorData,
-    val attestedCredentialData: AttestedCredentialData?,
-)
-
-@OptIn(ExperimentalSerializationApi::class)
-private val attestationObjectCbor = Cbor {
-    ignoreUnknownKeys = true
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-@Serializable
-private data class AttestationObjectCborDto(
-    @SerialName("authData")
-    @ByteString
-    val authData: ByteArray? = null,
-)
-
 private fun parseMatchingCredentialId(id: String, rawId: String): ValidationResult<CredentialId> {
     val parsedId = CredentialId.parse(id)
     if (parsedId is ValidationResult.Invalid) {
@@ -706,96 +677,6 @@ private fun parseMatchingCredentialId(id: String, rawId: String): ValidationResu
         )
     }
 }
-
-@Suppress("MagicNumber")
-private fun parseAuthenticatorData(bytes: ByteArray, field: String): ValidationResult<ParsedAuthenticatorData> {
-    if (bytes.size < 37) {
-        return ValidationResult.Invalid(
-            listOf(
-                WebAuthnValidationError.InvalidFormat(
-                    field = field,
-                    message = "Authenticator data must be at least 37 bytes",
-                ),
-            ),
-        )
-    }
-
-    val rpIdHash = RpIdHash.fromBytes(bytes.copyOfRange(0, 32))
-    val flags = bytes[32].toInt() and 0xFF
-    val signCount = bytes.readUint32(33)
-    var offset = 37
-
-    val attestedCredentialData = if ((flags and FLAG_ATTESTED_CREDENTIAL_DATA) != 0) {
-        if (bytes.size < offset + 16 + 2) {
-            return ValidationResult.Invalid(
-                listOf(
-                    WebAuthnValidationError.InvalidFormat(
-                        field = field,
-                        message = "Attested credential data is truncated",
-                    ),
-                ),
-            )
-        }
-        val aaguid = Aaguid.fromBytes(bytes.copyOfRange(offset, offset + 16))
-        offset += 16
-        val credentialIdLength = bytes.readUint16(offset)
-        offset += 2
-        if (bytes.size < offset + credentialIdLength) {
-            return ValidationResult.Invalid(
-                listOf(
-                    WebAuthnValidationError.InvalidFormat(
-                        field = field,
-                        message = "Credential ID bytes are truncated",
-                    ),
-                ),
-            )
-        }
-        val credentialId = bytes.copyOfRange(offset, offset + credentialIdLength)
-        offset += credentialIdLength
-        val coseEnd = skipCborItem(bytes, offset)
-            ?: return ValidationResult.Invalid(
-                listOf(
-                    WebAuthnValidationError.InvalidFormat(
-                        field = field,
-                        message = "COSE public key is malformed",
-                    ),
-                ),
-            )
-        AttestedCredentialData(
-            aaguid = aaguid,
-            credentialId = CredentialId.fromBytes(credentialId),
-            cosePublicKey = CosePublicKey.fromBytes(bytes.copyOfRange(offset, coseEnd)),
-        )
-    } else {
-        null
-    }
-
-    return ValidationResult.Valid(
-        ParsedAuthenticatorData(
-            authenticatorData = AuthenticatorData(
-                rpIdHash = rpIdHash,
-                flags = flags,
-                signCount = signCount,
-            ),
-            attestedCredentialData = attestedCredentialData,
-        ),
-    )
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-private fun extractAuthDataFromAttestationObject(attestationObject: ByteArray): ByteArray? {
-    val itemEnd = skipCborItem(attestationObject, 0) ?: return null
-    if (itemEnd != attestationObject.size) {
-        return null
-    }
-    return runCatching {
-        attestationObjectCbor
-            .decodeFromByteArray<AttestationObjectCborDto>(attestationObject)
-            .authData
-    }.getOrNull()
-}
-
-private const val FLAG_ATTESTED_CREDENTIAL_DATA: Int = 0x40
 
 private fun <T> identity(value: T): T = value
 
