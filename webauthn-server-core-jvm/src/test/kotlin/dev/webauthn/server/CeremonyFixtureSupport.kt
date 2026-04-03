@@ -23,7 +23,7 @@ internal fun loadRegistrationCeremonyFixture(
 ): RegistrationCeremonyFixture {
     return classLoader.getResourceAsStream(path).use { stream ->
         requireNotNull(stream) { "Missing fixture: $path" }
-        ceremonyFixtureJson.decodeFromString(InputStreamReader(stream).readText())
+        ceremonyFixtureJson.decodeFromString(InputStreamReader(stream, Charsets.UTF_8).readText())
     }
 }
 
@@ -33,7 +33,7 @@ internal fun loadAuthenticationCeremonyFixture(
 ): AuthenticationCeremonyFixture {
     return classLoader.getResourceAsStream(path).use { stream ->
         requireNotNull(stream) { "Missing fixture: $path" }
-        ceremonyFixtureJson.decodeFromString(InputStreamReader(stream).readText())
+        ceremonyFixtureJson.decodeFromString(InputStreamReader(stream, Charsets.UTF_8).readText())
     }
 }
 

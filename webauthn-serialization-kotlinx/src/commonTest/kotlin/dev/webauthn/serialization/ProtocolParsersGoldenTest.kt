@@ -168,6 +168,40 @@ class ProtocolParsersGoldenTest {
         assertTrue(trailingBytes is ValidationResult.Invalid)
     }
 
+    @Test
+    fun parseAuthenticatorDataRejectsNonMapCosePublicKey() {
+        val result = parseAuthenticatorData(
+            bytes = registrationAuthenticatorDataBytes(
+                rpIdHash = ByteArray(32) { 0x11 },
+                flags = FLAG_ATTESTED_CREDENTIAL_DATA or 0x01,
+                signCount = 1,
+                credentialId = ByteArray(16) { 0x22 },
+                cosePublicKey = cborText("not-a-cose-key"),
+                extensionData = null,
+            ),
+            field = "attestationObject.authData",
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("COSE public key must be a CBOR map", result.errors.single().message)
+    }
+
+    @Test
+    fun parseAuthenticatorDataRejectsNonMapExtensionData() {
+        val result = parseAuthenticatorData(
+            bytes = authenticatorDataBytes(
+                rpIdHash = ByteArray(32) { 0x33 },
+                flags = FLAG_EXTENSION_DATA_INCLUDED or 0x01,
+                signCount = 1,
+                extensionData = cborText("not-an-extension-map"),
+            ),
+            field = "response.authenticatorData",
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("Extension data must be a CBOR map", result.errors.single().message)
+    }
+
     private fun authenticatorDataBytes(
         rpIdHash: ByteArray,
         flags: Int,

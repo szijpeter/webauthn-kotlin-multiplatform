@@ -193,6 +193,9 @@ private fun parseAttestedCredentialSection(
 
     val credentialId = bytes.copyOfRange(nextOffset, nextOffset + credentialIdLength)
     nextOffset += credentialIdLength
+    if (!isCborMap(bytes, nextOffset)) {
+        return invalidFormat(field, "COSE public key must be a CBOR map")
+    }
     val coseEnd = skipCborItem(bytes, nextOffset) ?: return invalidFormat(field, "COSE public key is malformed")
     val cosePublicKey = CosePublicKey.fromBytes(bytes.copyOfRange(nextOffset, coseEnd))
 
@@ -209,11 +212,21 @@ private fun parseAttestedCredentialSection(
 }
 
 private fun parseExtensionData(bytes: ByteArray, offset: Int, field: String): ValidationResult<ByteArray> {
+    if (!isCborMap(bytes, offset)) {
+        return invalidFormat(field, "Extension data must be a CBOR map")
+    }
     val extensionEnd = skipCborItem(bytes, offset) ?: return invalidFormat(field, "Extension data is malformed")
     if (extensionEnd != bytes.size) {
         return invalidFormat(field, "Unexpected trailing bytes after extension data")
     }
     return ValidationResult.Valid(bytes.copyOfRange(offset, extensionEnd))
+}
+
+private fun isCborMap(bytes: ByteArray, offset: Int): Boolean {
+    if (offset >= bytes.size) {
+        return false
+    }
+    return ((bytes[offset].toInt() and UNSIGNED_BYTE_MASK) ushr CBOR_MAJOR_TYPE_SHIFT) == CBOR_MAP_MAJOR_TYPE
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -269,3 +282,7 @@ private fun reprefixedInvalid(
 
 internal const val FLAG_ATTESTED_CREDENTIAL_DATA: Int = 0x40
 internal const val FLAG_EXTENSION_DATA_INCLUDED: Int = 0x80
+
+private const val UNSIGNED_BYTE_MASK = 0xFF
+private const val CBOR_MAJOR_TYPE_SHIFT = 5
+private const val CBOR_MAP_MAJOR_TYPE = 5
