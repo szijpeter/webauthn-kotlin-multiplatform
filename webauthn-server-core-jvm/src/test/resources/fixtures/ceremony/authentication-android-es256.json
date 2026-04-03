@@ -1,0 +1,33 @@
+{
+  "name": "android_es256_authentication_success",
+  "kind": "authentication",
+  "relyingParty": {
+    "rpId": "nella-intercrinal-cryptically.ngrok-free.dev",
+    "origin": "android:apk-key-hash:Vbj-mPe9x0NEiHDGG3EOi04ETGT5SIoEc3f2zpc7qC8",
+    "challenge": "JpE2XdxmrNqpe1loYEcfm8K_oZfAkE1ZSwEIuMEOBOA",
+    "userName": "Zaphod Beeblebrox",
+    "userHandle": "NDI"
+  },
+  "credential": {
+    "credentialId": "adnJdzQQOzHT8aobzfRCfA",
+    "publicKeyCose": "pQECAyYgASFYIHflyS-aHVhwAzewMoOb5NS3wrABqgvYKVxzLYLXoRY6IlggJ5K-fCUDYnGk0SH-8wC05tBuSYdQUk45X4tBxNOSMgw",
+    "signCount": 0
+  },
+  "response": {
+    "id": "adnJdzQQOzHT8aobzfRCfA",
+    "rawId": "adnJdzQQOzHT8aobzfRCfA",
+    "clientDataJson": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiSnBFMlhkeG1yTnFwZTFsb1lFY2ZtOEtfb1pmQWtFMVpTd0VJdU1FT0JPQSIsIm9yaWdpbiI6ImFuZHJvaWQ6YXBrLWtleS1oYXNoOlZiai1tUGU5eDBORWlIREdHM0VPaTA0RVRHVDVTSW9FYzNmMnpwYzdxQzgiLCJhbmRyb2lkUGFja2FnZU5hbWUiOiJkZXYud2ViYXV0aG4uc2FtcGxlcy5jb21wb3NlcGFzc2tleS5hbmRyb2lkIn0",
+    "authenticatorData": "1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWodAAAAAA",
+    "signature": "MEYCIQDK_YzkGEhtIf4K6XM8LAjU4f3qASY3J5cgggiQOW7Y6wIhAKqCT7k80zLi_GADyhg41TK6S32uaSJiZ_aGzM_gfiCk",
+    "userHandle": "NDI"
+  },
+  "expected": {
+    "accept": true,
+    "flags": ["UP", "UV", "BE", "BS"],
+    "signCount": 0,
+    "credentialIdPresent": true,
+    "credentialId": "adnJdzQQOzHT8aobzfRCfA",
+    "alg": -7,
+    "extensionsPresent": false
+  }
+}

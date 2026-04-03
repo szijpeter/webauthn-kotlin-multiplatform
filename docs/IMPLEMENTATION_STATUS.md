@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-03-29
+Last updated: 2026-04-03
 
 ## Status Legend
 
@@ -13,6 +13,7 @@ Last updated: 2026-03-29
 ## Overall Snapshot
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
+- Conformance hardening update (2026-04-03): added RFC-style golden coverage for base64url/CBOR/authenticator data parsing, offline registration and assertion ceremony fixtures, JVM-only differential checks against WebAuthn4J and Yubico server behavior, and client JSON interop checks for Yubico-generated browser payloads; serialization now rejects trailing `authenticatorData` bytes and malformed extension CBOR deterministically before ceremony verification.
 - PR #92 review follow-up (2026-03-29): reverted low-value one-off helper extractions in client adapters, hardened `InMemoryCredentialStore` concurrency (`computeIfAbsent` + concurrent key set), and reused precomputed credential-id encoding in Exposed insert path; no public API contract change intended.
 - Vertical chaining + callable-reference style consistency pass (2026-03-29): applied readability-only formatting and `::` adoption across client/network/serialization/server/store modules and related tests, with minimal crypto-internal touch-ups; no runtime/API behavior changes intended.
 - Kotlin import hygiene update (2026-03-28): code-body fully qualified type references were removed across touched modules in favor of imports and explicit aliases where needed; this is a readability/maintainability refactor with no runtime or API semantic change.
@@ -77,14 +78,14 @@ Last updated: 2026-03-29
 | `webauthn-cbor-core` | Beta | Shared strict CBOR byte scanner helpers for attestation/authenticator parsing, minimal-encoding rejection, common KMP module consumed via normal project dependencies | Wider parser/vector coverage and compatibility guidance for direct consumption |
 | `webauthn-runtime-core` | Beta | Shared coroutine-cancellation and suspend-boundary failure helpers (`rethrowCancellation`, `rethrowCancellationOrFatal`, `suspendCatchingNonCancellation`) reused by client/network adapters | Broader adoption across remaining adapter modules as they converge on shared runtime helpers |
 | `webauthn-core` | Production-leaning | Core ceremony validation (type/challenge/origin/rpIdHash/UP/UV-policy/BE-BS-consistency/signCount/allowCredentials), allowedOrigins (Related Origins), broad negative-path tests, extension processing hooks, LargeBlob validation, PRF missing-output checks | Additional L3 extension hardening |
-| `webauthn-serialization-kotlinx` | Beta | DTO mapping + typed CBOR authData extraction, shared `webauthn-cbor-core` byte scanner usage, strict minimal CBOR/COSE rejection for registration parsing, round-trip tests, attachment/attestation/transports mapping, canonical response JSON emission (`type` + `clientExtensionResults`) and null-tolerant `allowCredentials` decode shim | Deeper COSE/CBOR vector coverage |
+| `webauthn-serialization-kotlinx` | Beta | DTO mapping + typed CBOR authData extraction, shared `webauthn-cbor-core` byte scanner usage, strict minimal CBOR/COSE rejection for registration parsing, round-trip tests, attachment/attestation/transports mapping, canonical response JSON emission (`type` + `clientExtensionResults`) and null-tolerant `allowCredentials` decode shim, plus low-level golden tests for `clientDataJSON`, `authenticatorData`, malformed COSE keys, and extension-data rejection | Wider cross-implementation differential coverage beyond current JVM fixture set |
 | `webauthn-crypto-api` | Beta | Lean cross-module contracts (`SignatureVerifier`, `AttestationVerifier`, `TrustAnchorSource`, `RpIdHasher`, `CoseAlgorithm`, `coseAlgorithmFromCode`, payload models), typed `CosePublicKey` and `ClientDataHash` surfaces for crypto-relevant bytes | Additional implementations and cross-platform behavior parity |
 | `webauthn-server-jvm-crypto` | Beta | Signum-first crypto path (digest, COSE decode, signature verification, JOSE SafetyNet decode), typed COSE-key verification boundary, `none`/`packed`/`android-key`/`apple`/`tpm`/`android-safetynet`/`fido-u2f` verifiers, deterministic malformed/unsupported COSE rejection vectors, shared `webauthn-cbor-core` byte scanner usage, strict minimal CBOR attestation parsing, packed-attestation `authData` length enforcement for AAGUID extraction, unified trust-chain flow through `TrustChainVerifier` | Broader attestation vector and trust-anchor coverage depth |
-| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores, strict UV policy mapping through `Services.kt` | Broader external store implementations beyond H2 contract adapter |
+| `webauthn-server-core-jvm` | Beta | Registration/authentication service flow + rpId hash verification + in-memory stores + failure-path tests + persistence race tests + shared store-contract tests validated on in-memory and H2-backed stores, strict UV policy mapping through `Services.kt`, offline registration/assertion ceremony fixtures, signed-assertion-bytes coverage, and JVM-side differential checks against WebAuthn4J and Yubico for selected success/reject outcomes | Broader external store implementations beyond H2 contract adapter |
 | `webauthn-server-store-exposed` | Beta | JetBrains Exposed store module (`ExposedChallengeStore`, `ExposedCredentialStore`, `ExposedUserAccountStore`), forUpdate() row locking for challenge consumption, database-agnostic via Exposed, H2-backed contract tests + Docker-gated PostgreSQL Testcontainers tests, persists `ChallengeSession.extensions` via JSON | Additional database vendor testing and production hardening |
 | `webauthn-server-ktor` | Beta | Thin route adapters + tests | Operational hardening and sample-level integration depth |
 | `webauthn-client-core` | Beta | Shared typed ceremony orchestration (`DefaultPasskeyClient`), deterministic invalid-options vs platform error behavior, coroutine cancellation passthrough, capability model | More extension-focused policy helpers and fixture coverage |
-| `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable mapper contract (`PasskeyJsonMapper`), default kotlinx mapper | Additional fixture depth and profile-oriented JSON interop coverage |
+| `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`), replaceable mapper contract (`PasskeyJsonMapper`), default kotlinx mapper, and JVM-side Yubico JSON interop tests for options/response payload compatibility | Additional fixture depth and profile-oriented JSON interop coverage |
 | `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyController`) for controller-driven state and retained-VM-safe prompt resolution | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-android` | Beta | Thin Credential Manager bridge, deterministic platform error mapping, targeted RP ID validation troubleshooting hints (invalid-options and platform paths), capability reporting, shared-core delegation | OEM/provider compatibility matrix hardening |
 | `webauthn-client-ios` | Beta | Thin AuthenticationServices bridge, deterministic NSError mapping, capability reporting, shared-core delegation, PRF extension input/output bridge wiring, platform-first attachment selection when caller leaves attachment unset | More runtime/device matrix coverage |
@@ -102,10 +103,12 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 - signCount non-increase invalid case
 - strict base64url parsing guarantees
 - allowCredentials membership enforcement
+- deterministic rejection of malformed `authenticatorData` / embedded credential public key bytes before server verification
 
 Pending high-impact coverage:
 
 - L3 extension runtime hardening (PRF computation context hooks and richer authenticator interoperability vectors)
+- broader reference-fixture matrix for additional authenticators, attestation formats, and non-ES256 algorithms
 
 ## Current Quality Gates
 

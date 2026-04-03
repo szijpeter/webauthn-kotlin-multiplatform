@@ -6,6 +6,24 @@ import kotlin.test.assertTrue
 
 class Base64UrlBytesTest {
     @Test
+    fun fromBytesMatchesRfc4648UrlSafeGoldenCases() {
+        val cases = listOf(
+            byteArrayOf() to "",
+            "f".encodeToByteArray() to "Zg",
+            "fo".encodeToByteArray() to "Zm8",
+            "foo".encodeToByteArray() to "Zm9v",
+            "foob".encodeToByteArray() to "Zm9vYg",
+            "fooba".encodeToByteArray() to "Zm9vYmE",
+            "foobar".encodeToByteArray() to "Zm9vYmFy",
+            byteArrayOf(0xFB.toByte(), 0xEF.toByte(), 0xFF.toByte()) to "--__",
+        )
+
+        cases.forEach { (bytes, expectedEncoded) ->
+            assertEquals(expectedEncoded, Base64UrlBytes.fromBytes(bytes).encoded())
+        }
+    }
+
+    @Test
     fun parseRejectsPadding() {
         val result = Base64UrlBytes.parse("YWJjZA==")
         assertTrue(result is ValidationResult.Invalid)
@@ -27,6 +45,12 @@ class Base64UrlBytesTest {
     @Test
     fun parseRejectsImpossibleUnpaddedLength() {
         val result = Base64UrlBytes.parse("A")
+        assertTrue(result is ValidationResult.Invalid)
+    }
+
+    @Test
+    fun parseRejectsStandardBase64Alphabet() {
+        val result = Base64UrlBytes.parse("++//")
         assertTrue(result is ValidationResult.Invalid)
     }
 
