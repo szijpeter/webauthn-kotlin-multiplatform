@@ -253,6 +253,9 @@ Start with:
 - [`samples/backend-ktor`](./samples/backend-ktor/README.md)
 - [`samples/compose-passkey`](./samples/compose-passkey/README.md)
 - [`samples/compose-passkey-ios`](./samples/compose-passkey-ios/README.md)
+- [`samples/passkey-cli`](./samples/passkey-cli/README.md) for a macOS-first experimental native-authenticator CLI POC
+
+Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY.md`](./docs/DESKTOP_CLI_STRATEGY.md).
 
 ## Public Modules
 
