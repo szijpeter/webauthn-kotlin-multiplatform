@@ -89,6 +89,39 @@ class PythonFido2AdapterTest {
 
         assertTrue(error.message?.contains("python-fido2 missing") == true)
     }
+
+    @Test
+    fun createCredential_failsWhenBridgeReturnsErrorEnvelopeOnStdout() = runTest {
+        val json = Json { ignoreUnknownKeys = true }
+        val fakeExecutor = FakeCommandExecutor(
+            CommandExecutionResult(
+                exitCode = 1,
+                stdout = json.encodeToString(
+                    PythonBridgeEnvelope.serializer(),
+                    PythonBridgeEnvelope(ok = false, error = "bridge exploded"),
+                ),
+                stderr = "",
+            ),
+        )
+        val adapter = PythonFido2Adapter(
+            commandExecutor = fakeExecutor,
+            pythonBinary = "python3",
+            bridgeScriptPath = "bridge.py",
+            json = json,
+        )
+        val options = PublicKeyCredentialCreationOptionsDto(
+            rp = RpEntityDto(id = "localhost", name = "localhost"),
+            user = UserEntityDto(id = "AQID", name = "alice", displayName = "Alice"),
+            challenge = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+        )
+
+        val error = assertFailsWith<IllegalStateException> {
+            adapter.createCredential(origin = "https://localhost", options = options)
+        }
+
+        assertTrue(error.message?.contains("bridge exploded") == true)
+    }
 }
 
 private class FakeCommandExecutor(

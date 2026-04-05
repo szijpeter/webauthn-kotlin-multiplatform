@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
@@ -96,6 +97,41 @@ class PasskeyCeremonyRunnerTest {
 
         assertNotEquals(0, exitCode)
         assertTrue(stderr.toString().contains("failed validation"))
+    }
+
+    @Test
+    fun register_rejectedWithoutMessage_usesSafeFallbackText() = runTest {
+        val serverClient = FakeServerClient(
+            registerOptions = ValidationResult.Valid(validRegisterOptions()),
+            authOptions = ValidationResult.Valid(validAuthenticationOptions()),
+            finishRegisterResult = PasskeyFinishResult.Rejected(),
+            finishSignInResult = PasskeyFinishResult.Verified,
+        )
+        val adapter = FakeAuthenticatorAdapter(
+            registrationResponse = validRegistrationResponseDto(),
+            authenticationResponse = validAuthenticationResponseDto(),
+        )
+        val stdout = StringBuilder()
+        val stderr = StringBuilder()
+        val runner = PasskeyCeremonyRunner(
+            authenticatorAdapter = adapter,
+            serverClient = serverClient,
+            stdout = stdout,
+            stderr = stderr,
+        )
+
+        val exitCode = runner.runRegister(
+            CliInvocation.Register(
+                common = defaultCommonOptions(),
+                userName = "alice",
+                userDisplayName = "Alice",
+                userHandle = "YWxpY2U",
+            ),
+        )
+
+        assertEquals(5, exitCode)
+        assertTrue(stderr.toString().contains("no reason provided"))
+        assertFalse(stderr.toString().contains("null"))
     }
 }
 

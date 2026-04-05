@@ -19,7 +19,7 @@ internal class CliApplication(
         } catch (error: CliUsageException) {
             stderr.appendLine(error.message)
             stderr.appendLine(CliParser.usage())
-            return 2
+            return EXIT_PARSE_USAGE
         }
 
         return when (invocation) {
@@ -76,3 +76,5 @@ internal class CliApplication(
         }
     }
 }
+
+internal const val EXIT_PARSE_USAGE: Int = 64

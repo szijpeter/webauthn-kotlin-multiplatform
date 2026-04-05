@@ -18,6 +18,15 @@ This sample is intentionally scoped as a **POC**:
 python3 -m pip install fido2
 ```
 
+Optional virtualenv flow:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install fido2
+./gradlew :samples:passkey-cli:run --args="doctor --python-bin $(pwd)/.venv/bin/python"
+```
+
 - A compatible CTAP authenticator (for example, a USB security key)
 
 ## Commands

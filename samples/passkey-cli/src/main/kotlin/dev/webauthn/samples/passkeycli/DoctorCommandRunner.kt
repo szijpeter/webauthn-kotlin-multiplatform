@@ -48,9 +48,17 @@ internal class DoctorCommandRunner(
     }
 
     private suspend fun checkPython(pythonBinary: String): Boolean {
-        val pythonVersion = commandExecutor.execute(
-            command = listOf(pythonBinary, "--version"),
-        )
+        val pythonVersion = runCatching {
+            commandExecutor.execute(
+                command = listOf(pythonBinary, "--version"),
+            )
+        }.getOrElse { error ->
+            stderr.appendLine(
+                "Python check failed: unable to execute '$pythonBinary --version'. " +
+                    "${error.message ?: error::class.simpleName}",
+            )
+            return false
+        }
         if (pythonVersion.exitCode == 0) {
             val resolvedVersion = pythonVersion.stdout.ifBlank { pythonVersion.stderr }
             stdout.appendLine("Python check: $resolvedVersion")
@@ -64,13 +72,21 @@ internal class DoctorCommandRunner(
     }
 
     private suspend fun checkPythonFido2(pythonBinary: String): Boolean {
-        val fido2Import = commandExecutor.execute(
-            command = listOf(
-                pythonBinary,
-                "-c",
-                "import fido2; print('python-fido2 import ok')",
-            ),
-        )
+        val fido2Import = runCatching {
+            commandExecutor.execute(
+                command = listOf(
+                    pythonBinary,
+                    "-c",
+                    "import fido2; print('python-fido2 import ok')",
+                ),
+            )
+        }.getOrElse { error ->
+            stderr.appendLine(
+                "Dependency check failed: python-fido2 import invocation failed. " +
+                    "${error.message ?: error::class.simpleName}",
+            )
+            return false
+        }
         if (fido2Import.exitCode == 0) {
             stdout.appendLine("Dependency check: ${fido2Import.stdout}")
             return true
@@ -80,13 +96,21 @@ internal class DoctorCommandRunner(
     }
 
     private suspend fun probeDevices(pythonBinary: String) {
-        val deviceProbe = commandExecutor.execute(
-            command = listOf(
-                pythonBinary,
-                "-c",
-                "from fido2.hid import CtapHidDevice; print(len(list(CtapHidDevice.list_devices())))",
-            ),
-        )
+        val deviceProbe = runCatching {
+            commandExecutor.execute(
+                command = listOf(
+                    pythonBinary,
+                    "-c",
+                    "from fido2.hid import CtapHidDevice; print(len(list(CtapHidDevice.list_devices())))",
+                ),
+            )
+        }.getOrElse { error ->
+            stderr.appendLine(
+                "Device probe warning: unable to probe CTAP devices via '$pythonBinary'. " +
+                    "${error.message ?: error::class.simpleName}",
+            )
+            return
+        }
         if (deviceProbe.exitCode == 0) {
             val discovered = deviceProbe.stdout.toIntOrNull()
             when {

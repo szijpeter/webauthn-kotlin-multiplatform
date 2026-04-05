@@ -47,23 +47,19 @@ internal class PythonFido2Adapter(
             command = listOf(pythonBinary, bridgeScriptPath),
             stdin = payload,
         )
+        val envelope = decodeEnvelopeOrNull(result.stdout)
+
         if (result.exitCode != 0) {
+            if (envelope != null) {
+                fail("Python bridge returned error: ${envelope.error ?: "unknown failure"}")
+            }
             val details = result.stderr.ifBlank { result.stdout }.ifBlank { "<no output>" }
             fail(
                 "Python bridge failed (exit=${result.exitCode}): $details",
             )
         }
-        if (result.stdout.isBlank()) {
+        if (envelope == null) {
             fail("Python bridge returned empty stdout.")
-        }
-
-        val envelope = runCatching {
-            json.decodeFromString(PythonBridgeEnvelope.serializer(), result.stdout)
-        }.getOrElse { error ->
-            val abbreviated = result.stdout.take(BRIDGE_OUTPUT_SNIPPET_LIMIT)
-            fail(
-                "Python bridge returned invalid JSON envelope: ${error.message}. Output: $abbreviated",
-            )
         }
 
         if (!envelope.ok || envelope.response == null) {
@@ -76,6 +72,20 @@ internal class PythonFido2Adapter(
 
     private fun fail(message: String): Nothing {
         throw IllegalStateException(message)
+    }
+
+    private fun decodeEnvelopeOrNull(stdout: String): PythonBridgeEnvelope? {
+        if (stdout.isBlank()) {
+            return null
+        }
+        return runCatching {
+            json.decodeFromString(PythonBridgeEnvelope.serializer(), stdout)
+        }.getOrElse { error ->
+            val abbreviated = stdout.take(BRIDGE_OUTPUT_SNIPPET_LIMIT)
+            fail(
+                "Python bridge returned invalid JSON envelope: ${error.message}. Output: $abbreviated",
+            )
+        }
     }
 }
 

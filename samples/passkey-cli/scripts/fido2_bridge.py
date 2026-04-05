@@ -69,7 +69,7 @@ def _success(payload: dict[str, Any]) -> int:
 
 
 def _failure(message: str) -> int:
-    print(json.dumps({"ok": False, "error": message}, separators=(",", ":")), file=sys.stderr)
+    print(json.dumps({"ok": False, "error": message}, separators=(",", ":")))
     return 1
 
 

@@ -140,7 +140,7 @@ internal class PasskeyCeremonyRunner(
                 EXIT_SUCCESS
             }
             is PasskeyFinishResult.Rejected -> {
-                stderr.appendLine("Registration was rejected by server: ${finish.message}")
+                stderr.appendLine("Registration was rejected by server: ${finish.message ?: "no reason provided"}")
                 EXIT_REJECTED
             }
         }
@@ -169,7 +169,7 @@ internal class PasskeyCeremonyRunner(
                 EXIT_SUCCESS
             }
             is PasskeyFinishResult.Rejected -> {
-                stderr.appendLine("Authentication was rejected by server: ${finish.message}")
+                stderr.appendLine("Authentication was rejected by server: ${finish.message ?: "no reason provided"}")
                 EXIT_REJECTED
             }
         }
