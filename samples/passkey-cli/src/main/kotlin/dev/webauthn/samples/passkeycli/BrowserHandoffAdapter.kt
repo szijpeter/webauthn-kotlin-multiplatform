@@ -69,15 +69,24 @@ internal class BrowserHandoffAdapter(
             command = command,
         )
         stdout.appendLine("Opening browser for platform passkey flow: $browserUrl")
-        if (!browserLauncher.open(URI(browserUrl))) {
-            callbackServer.close()
-            fail(
-                "Unable to open system browser. " +
-                    "Open this URL manually to continue: $browserUrl",
-            )
-        }
 
         try {
+            val browserOpened = runCatching {
+                browserLauncher.open(URI(browserUrl))
+            }.getOrElse { error ->
+                stdout.appendLine(
+                    "Unable to open system browser automatically (${error.displayMessage()}). " +
+                        "Open this URL manually to continue: $browserUrl",
+                )
+                false
+            }
+            if (!browserOpened) {
+                stdout.appendLine(
+                    "System browser did not open automatically. " +
+                        "Open this URL manually to continue: $browserUrl",
+                )
+            }
+
             val completion = try {
                 withTimeout(callbackTimeoutMs) {
                     callbackServer.completion.await()
@@ -345,3 +354,9 @@ private fun HttpExchange.respondJson(
 private const val BROWSER_TOKEN_BYTES: Int = 24
 private const val BROWSER_CALLBACK_TIMEOUT_MS: Long = 180_000
 private const val HTTP_STATUS_NO_CONTENT: Int = 204
+
+private fun Throwable.displayMessage(): String {
+    return message?.takeIf { it.isNotBlank() }
+        ?: this::class.simpleName
+        ?: "unknown error"
+}

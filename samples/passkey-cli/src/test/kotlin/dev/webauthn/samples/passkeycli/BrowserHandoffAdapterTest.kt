@@ -112,6 +112,58 @@ class BrowserHandoffAdapterTest {
 
         assertTrue(error.message?.contains("Timed out waiting for browser handoff callback") == true)
     }
+
+    @Test
+    fun createCredential_whenBrowserLauncherReturnsFalse_allowsManualFallbackFlow() = runTest {
+        val json = Json { ignoreUnknownKeys = true }
+        val expectedResponse = validRegistrationResponseDto()
+        val launcher = BrowserLauncher { uri ->
+            postSuccessfulRegistrationCallback(uri, json, expectedResponse)
+            false
+        }
+        val stdout = StringBuilder()
+        val adapter = BrowserHandoffAdapter(
+            endpointBase = "http://localhost:8080",
+            browserLauncher = launcher,
+            callbackTimeoutMs = 5_000,
+            stdout = stdout,
+            json = json,
+        )
+
+        val actual = adapter.createCredential(
+            origin = "http://localhost:8080",
+            options = validCreationOptionsDto(),
+        )
+
+        assertEquals(expectedResponse.id, actual.id)
+        assertTrue(stdout.toString().contains("System browser did not open automatically"))
+    }
+
+    @Test
+    fun createCredential_whenBrowserLauncherThrows_allowsManualFallbackFlow() = runTest {
+        val json = Json { ignoreUnknownKeys = true }
+        val expectedResponse = validRegistrationResponseDto()
+        val launcher = BrowserLauncher { uri ->
+            postSuccessfulRegistrationCallback(uri, json, expectedResponse)
+            throw IllegalStateException("launcher crashed")
+        }
+        val stdout = StringBuilder()
+        val adapter = BrowserHandoffAdapter(
+            endpointBase = "http://localhost:8080",
+            browserLauncher = launcher,
+            callbackTimeoutMs = 5_000,
+            stdout = stdout,
+            json = json,
+        )
+
+        val actual = adapter.createCredential(
+            origin = "http://localhost:8080",
+            options = validCreationOptionsDto(),
+        )
+
+        assertEquals(expectedResponse.id, actual.id)
+        assertTrue(stdout.toString().contains("Unable to open system browser automatically"))
+    }
 }
 
 private class SimulatedBrowserLauncher(
@@ -132,6 +184,27 @@ private fun URI.queryParam(key: String): String {
         ?.getOrNull(1)
         ?.let { URLDecoder.decode(it, StandardCharsets.UTF_8) }
         .orEmpty()
+}
+
+private fun postSuccessfulRegistrationCallback(
+    uri: URI,
+    json: Json,
+    response: RegistrationResponseDto,
+) {
+    val callback = uri.queryParam("callback")
+    val token = uri.queryParam("token")
+    val optionsResponse = httpGet("$callback/options?token=$token")
+    val optionsEnvelope = json.parseToJsonElement(optionsResponse).jsonObject
+    assertEquals("true", optionsEnvelope.getValue("ok").jsonPrimitive.content)
+    assertEquals("register", optionsEnvelope.getValue("command").jsonPrimitive.content)
+
+    val completionPayload = json.encodeToString(
+        buildJsonObject {
+            put("ok", true)
+            put("response", json.encodeToJsonElement(RegistrationResponseDto.serializer(), response))
+        },
+    )
+    httpPost("$callback/complete?token=$token", completionPayload)
 }
 
 private fun httpGet(url: String): String {

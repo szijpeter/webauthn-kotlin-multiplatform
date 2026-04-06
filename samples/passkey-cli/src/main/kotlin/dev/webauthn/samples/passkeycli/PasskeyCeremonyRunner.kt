@@ -21,6 +21,7 @@ internal class PasskeyCeremonyRunner(
     suspend fun runRegister(command: CliInvocation.Register): Int {
         val startPayload = RegistrationStartPayload(
             rpId = command.common.rpId,
+            // For this sample POC we mirror rpId; rpName can be promoted to a distinct CLI input when needed.
             rpName = command.common.rpId,
             origin = command.common.origin,
             userName = command.userName,

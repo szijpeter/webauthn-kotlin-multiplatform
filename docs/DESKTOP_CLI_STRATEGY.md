@@ -26,9 +26,9 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 
 ## 3. What Other WebAuthn Libraries Do
 
-- Server-focused libraries dominate Java/Kotlin ecosystems (`java-webauthn-server`, `WebAuthn4J` style positioning).
-- Native desktop/device CLI patterns exist in ecosystems like `libfido2`, `python-fido2`, and `webauthn-rs` companion tools.
-- Common pattern: keep WebAuthn ceremony/business logic in library modules and place CLI/GUI in separate deployable modules.
+- As of April 2026, server-focused libraries dominate Java/Kotlin ecosystems (`java-webauthn-server`, `WebAuthn4J` style positioning). See [Yubico java-webauthn-server](https://github.com/Yubico/java-webauthn-server), [WebAuthn4J](https://github.com/webauthn4j/webauthn4j).
+- As of April 2026, native desktop/device CLI patterns are more common in tooling ecosystems like `libfido2`, `python-fido2`, and `webauthn-rs` companion tools. See [libfido2](https://github.com/Yubico/libfido2), [python-fido2](https://github.com/Yubico/python-fido2), [webauthn-rs](https://github.com/kanidm/webauthn-rs).
+- As of April 2026, a common pattern is keeping WebAuthn ceremony/business logic in library modules and placing CLI/GUI in separate deployable modules; the [passkeys.dev libraries index](https://passkeys.dev/docs/tools-libraries/libraries/) reflects this split across many stacks.
 
 ## 4. CLI Strategy For This Repository
 
