@@ -268,9 +268,10 @@ private fun validAuthenticationOptions(): PublicKeyCredentialRequestOptions {
 
 private fun defaultCommonOptions(): CommonCliOptions {
     return CommonCliOptions(
-        endpointBase = "http://127.0.0.1:8080",
+        endpointBase = "http://localhost:8080",
         rpId = "localhost",
-        origin = "https://localhost",
+        origin = "http://localhost:8080",
+        authenticatorMode = AuthenticatorMode.BROWSER,
         pythonBinary = "python3",
         pythonBridgePath = "samples/passkey-cli/scripts/fido2_bridge.py",
     )

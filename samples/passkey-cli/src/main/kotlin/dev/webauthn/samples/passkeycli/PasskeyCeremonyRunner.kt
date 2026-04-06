@@ -87,7 +87,7 @@ internal class PasskeyCeremonyRunner(
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runSuspendCatching { authenticatorAdapter.createCredential(origin, optionsDto) }
             .getOrElse { error ->
-                stderr.appendLine("Native authenticator registration failed: ${error.displayMessage()}")
+                stderr.appendLine("Authenticator registration failed: ${error.displayMessage()}")
                 return null
             }
         return when (val parsed = WebAuthnDtoMapper.toModel(responseDto)) {
@@ -106,7 +106,7 @@ internal class PasskeyCeremonyRunner(
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runSuspendCatching { authenticatorAdapter.getAssertion(origin, optionsDto) }
             .getOrElse { error ->
-                stderr.appendLine("Native authenticator authentication failed: ${error.displayMessage()}")
+                stderr.appendLine("Authenticator authentication failed: ${error.displayMessage()}")
                 return null
             }
         return when (val parsed = WebAuthnDtoMapper.toModel(responseDto)) {

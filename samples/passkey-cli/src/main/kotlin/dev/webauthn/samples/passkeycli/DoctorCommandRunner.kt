@@ -1,5 +1,7 @@
 package dev.webauthn.samples.passkeycli
 
+import java.awt.Desktop
+import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isRegularFile
@@ -10,6 +12,27 @@ internal class DoctorCommandRunner(
     private val stderr: Appendable = System.err,
 ) {
     suspend fun run(command: CliInvocation.Doctor): Int {
+        return when (command.common.authenticatorMode) {
+            AuthenticatorMode.BROWSER -> runBrowserDoctor(command)
+            AuthenticatorMode.CTAP -> runCtapDoctor(command)
+        }
+    }
+
+    private suspend fun runBrowserDoctor(command: CliInvocation.Doctor): Int {
+        var failedChecks = 0
+        if (!checkDesktopBrowserSupport()) failedChecks += 1
+        if (!checkOriginEndpointConsistency(command.common.endpointBase, command.common.origin)) failedChecks += 1
+
+        return if (failedChecks == 0) {
+            stdout.appendLine("Doctor result: PASS")
+            0
+        } else {
+            stderr.appendLine("Doctor result: FAIL ($failedChecks blocking check(s) failed).")
+            1
+        }
+    }
+
+    private suspend fun runCtapDoctor(command: CliInvocation.Doctor): Int {
         var failedChecks = 0
         if (!checkOs()) failedChecks += 1
         if (!checkBridgeScript(command.common.pythonBridgePath)) failedChecks += 1
@@ -24,6 +47,53 @@ internal class DoctorCommandRunner(
             stderr.appendLine("Doctor result: FAIL ($failedChecks blocking check(s) failed).")
             1
         }
+    }
+
+    private fun checkDesktopBrowserSupport(): Boolean {
+        if (!Desktop.isDesktopSupported()) {
+            stderr.appendLine("Browser check failed: Java Desktop API is unavailable on this runtime.")
+            return false
+        }
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            stderr.appendLine("Browser check failed: Desktop browse action is unsupported.")
+            return false
+        }
+        stdout.appendLine("Browser check: Desktop browse action is supported.")
+        return true
+    }
+
+    private fun checkOriginEndpointConsistency(endpointBase: String, origin: String): Boolean {
+        val endpointOrigin = endpointOrigin(endpointBase)
+        if (endpointOrigin == null) {
+            stderr.appendLine("Endpoint/origin check failed: endpoint '$endpointBase' is not a valid URI.")
+            return false
+        }
+        if (origin != endpointOrigin) {
+            stderr.appendLine(
+                "Endpoint/origin check failed: origin '$origin' does not match endpoint origin '$endpointOrigin'. " +
+                    "Browser mode requires matching origin.",
+            )
+            return false
+        }
+        stdout.appendLine("Endpoint/origin check: origin matches endpoint ($endpointOrigin).")
+        return true
+    }
+
+    private fun endpointOrigin(endpointBase: String): String? {
+        return runCatching {
+            val endpoint = URI(endpointBase)
+            val scheme = endpoint.scheme
+            val host = endpoint.host
+            if (scheme.isNullOrBlank() || host.isNullOrBlank()) {
+                return@runCatching null
+            }
+            val port = endpoint.port
+            if (port == -1) {
+                "$scheme://$host"
+            } else {
+                "$scheme://$host:$port"
+            }
+        }.getOrNull()
     }
 
     private fun checkOs(): Boolean {
@@ -119,7 +189,10 @@ internal class DoctorCommandRunner(
                         "Device probe warning: unexpected output '${deviceProbe.stdout}'.",
                     )
                 }
-                discovered == 0 -> stderr.appendLine("Device probe warning: no CTAP HID device detected.")
+                discovered == 0 -> stderr.appendLine(
+                    "Device probe warning: no CTAP HID device detected. " +
+                        "Use --authenticator browser for platform passkeys.",
+                )
                 else -> stdout.appendLine("Device probe: detected $discovered CTAP HID device(s).")
             }
             return

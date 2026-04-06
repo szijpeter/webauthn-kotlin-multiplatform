@@ -1,6 +1,7 @@
 package dev.webauthn.samples.passkeycli
 
 import dev.webauthn.model.Base64UrlBytes
+import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isRegularFile
@@ -9,9 +10,27 @@ internal data class CommonCliOptions(
     val endpointBase: String,
     val rpId: String,
     val origin: String,
+    val authenticatorMode: AuthenticatorMode,
     val pythonBinary: String,
     val pythonBridgePath: String,
 )
+
+internal enum class AuthenticatorMode(
+    val cliValue: String,
+) {
+    BROWSER("browser"),
+    CTAP("ctap"),
+    ;
+
+    companion object {
+        fun parse(value: String): AuthenticatorMode {
+            return entries.firstOrNull { it.cliValue == value.lowercase() }
+                ?: throw CliUsageException(
+                    "Unsupported authenticator mode '$value'. Supported values: browser, ctap.",
+                )
+        }
+    }
+}
 
 internal sealed interface CliInvocation {
     data object Help : CliInvocation
@@ -106,13 +125,40 @@ internal class CliParser(
     }
 
     private fun commonOptions(options: Map<String, String>): CommonCliOptions {
+        val endpointBase = options["--endpoint"] ?: DEFAULT_ENDPOINT
         return CommonCliOptions(
-            endpointBase = options["--endpoint"] ?: "http://127.0.0.1:8080",
-            rpId = options["--rp-id"] ?: "localhost",
-            origin = options["--origin"] ?: "https://localhost",
+            endpointBase = endpointBase,
+            rpId = options["--rp-id"] ?: defaultRpIdForEndpoint(endpointBase),
+            origin = options["--origin"] ?: defaultOriginForEndpoint(endpointBase),
+            authenticatorMode = options["--authenticator"]?.let(AuthenticatorMode::parse) ?: AuthenticatorMode.BROWSER,
             pythonBinary = options["--python-bin"] ?: resolveDefaultPythonBinary(),
             pythonBridgePath = options["--python-bridge"] ?: resolveDefaultBridgePath(),
         )
+    }
+
+    private fun defaultRpIdForEndpoint(endpointBase: String): String {
+        return runCatching {
+            val host = URI(endpointBase).host
+            if (host.isNullOrBlank()) {
+                DEFAULT_RP_ID
+            } else {
+                host
+            }
+        }.getOrDefault(DEFAULT_RP_ID)
+    }
+
+    private fun defaultOriginForEndpoint(endpointBase: String): String {
+        return runCatching {
+            val endpointUri = URI(endpointBase)
+            val scheme = endpointUri.scheme ?: return@runCatching DEFAULT_ORIGIN
+            val host = endpointUri.host ?: return@runCatching DEFAULT_ORIGIN
+            val port = endpointUri.port
+            if (port == -1) {
+                "$scheme://$host"
+            } else {
+                "$scheme://$host:$port"
+            }
+        }.getOrDefault(DEFAULT_ORIGIN)
     }
 
     private fun parseOptions(args: List<String>): Map<String, String> {
@@ -189,6 +235,7 @@ internal class CliParser(
             "--endpoint",
             "--rp-id",
             "--origin",
+            "--authenticator",
             "--python-bin",
             "--python-bridge",
         )
@@ -210,11 +257,12 @@ internal class CliParser(
                   passkey-cli authenticate --user-name <name> [authenticate options] [common options]
                 
                 Common options:
-                  --endpoint <url>            Backend base URL (default: http://127.0.0.1:8080)
-                  --rp-id <rpId>              Relying party ID (default: localhost)
-                  --origin <origin>           WebAuthn origin (default: https://localhost)
-                  --python-bin <path>         Python executable (default: auto .venv/bin/python, else python3)
-                  --python-bridge <path>      Path to fido2 bridge script
+                  --endpoint <url>            Backend base URL (default: http://localhost:8080)
+                  --rp-id <rpId>              Relying party ID (default: endpoint host)
+                  --origin <origin>           WebAuthn origin (default: endpoint origin)
+                  --authenticator <mode>      browser (default) or ctap
+                  --python-bin <path>         Python executable (ctap mode; default: auto .venv/bin/python, else python3)
+                  --python-bridge <path>      Path to fido2 bridge script (ctap mode)
                 
                 Register options:
                   --user-name <name>          Required account username
@@ -228,3 +276,7 @@ internal class CliParser(
         }
     }
 }
+
+private const val DEFAULT_ENDPOINT: String = "http://localhost:8080"
+private const val DEFAULT_RP_ID: String = "localhost"
+private const val DEFAULT_ORIGIN: String = "http://localhost:8080"

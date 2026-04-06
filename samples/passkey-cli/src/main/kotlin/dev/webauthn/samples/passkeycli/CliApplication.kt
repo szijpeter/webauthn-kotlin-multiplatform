@@ -44,11 +44,17 @@ internal class CliApplication(
                 httpClient = httpClient,
                 endpointBase = invocation.common.endpointBase,
             )
-            val adapter = PythonFido2Adapter(
-                commandExecutor = commandExecutor,
-                pythonBinary = invocation.common.pythonBinary,
-                bridgeScriptPath = invocation.common.pythonBridgePath,
-            )
+            val adapter = when (invocation.common.authenticatorMode) {
+                AuthenticatorMode.BROWSER -> BrowserHandoffAdapter(
+                    endpointBase = invocation.common.endpointBase,
+                    stdout = stdout,
+                )
+                AuthenticatorMode.CTAP -> PythonFido2Adapter(
+                    commandExecutor = commandExecutor,
+                    pythonBinary = invocation.common.pythonBinary,
+                    bridgeScriptPath = invocation.common.pythonBridgePath,
+                )
+            }
             val runner = PasskeyCeremonyRunner(
                 authenticatorAdapter = adapter,
                 serverClient = serverClient,

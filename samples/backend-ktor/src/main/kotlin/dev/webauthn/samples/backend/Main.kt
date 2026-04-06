@@ -122,6 +122,12 @@ public fun Application.installSampleBackend(
                 ),
             )
         }
+        get("/webauthn/cli/browser") {
+            call.respondText(
+                text = PASSKEY_CLI_BROWSER_BRIDGE_PAGE,
+                contentType = ContentType.Text.Html,
+            )
+        }
         get("/") {
             call.respondText(
                 text = buildString {
@@ -143,6 +149,7 @@ public fun Application.installSampleBackend(
                     appendLine("GET  /.well-known/assetlinks.json")
                     appendLine("GET  /.well-known/apple-app-site-association")
                     appendLine("GET  /apple-app-site-association")
+                    appendLine("GET  /webauthn/cli/browser")
                 },
                 contentType = ContentType.Text.Plain,
             )
@@ -254,3 +261,183 @@ private fun String?.orIfBlank(default: String): String {
     val value = this?.trim()
     return if (value.isNullOrEmpty()) default else value
 }
+
+private const val PASSKEY_CLI_BROWSER_BRIDGE_PAGE: String =
+    """
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Passkey CLI Browser Bridge</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem auto; max-width: 42rem; line-height: 1.45; padding: 0 1rem; }
+    h1 { font-size: 1.4rem; margin-bottom: .5rem; }
+    code { background: #f3f4f6; border-radius: 4px; padding: 0 .25rem; }
+    .status { margin-top: 1rem; padding: .75rem 1rem; border-radius: 6px; background: #eef2ff; }
+    .error { background: #fee2e2; color: #7f1d1d; }
+  </style>
+</head>
+<body>
+  <h1>Passkey CLI Browser Handoff</h1>
+  <p id="summary">Preparing browser passkey ceremony...</p>
+  <div id="status" class="status">Loading...</div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const callbackBase = params.get("callback");
+    const token = params.get("token");
+    const command = params.get("command");
+    const summaryEl = document.getElementById("summary");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.className = isError ? "status error" : "status";
+    }
+
+    function b64urlToBytes(value) {
+      if (typeof value !== "string") return value;
+      const padded = value + "=".repeat((4 - value.length % 4) % 4);
+      const b64 = padded.replace(/-/g, "+").replace(/_/g, "/");
+      const decoded = atob(b64);
+      const bytes = new Uint8Array(decoded.length);
+      for (let i = 0; i < decoded.length; i += 1) {
+        bytes[i] = decoded.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    function bytesToB64url(input) {
+      if (input === null || input === undefined) return null;
+      const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+      let binary = "";
+      for (const b of bytes) binary += String.fromCharCode(b);
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+
+    function normalizeCreationOptions(options) {
+      const normalized = JSON.parse(JSON.stringify(options));
+      normalized.challenge = b64urlToBytes(normalized.challenge);
+      if (normalized.user && normalized.user.id) {
+        normalized.user.id = b64urlToBytes(normalized.user.id);
+      }
+      if (Array.isArray(normalized.excludeCredentials)) {
+        normalized.excludeCredentials = normalized.excludeCredentials.map((credential) => ({
+          ...credential,
+          id: b64urlToBytes(credential.id),
+        }));
+      }
+      return normalized;
+    }
+
+    function normalizeRequestOptions(options) {
+      const normalized = JSON.parse(JSON.stringify(options));
+      normalized.challenge = b64urlToBytes(normalized.challenge);
+      if (Array.isArray(normalized.allowCredentials)) {
+        normalized.allowCredentials = normalized.allowCredentials.map((credential) => ({
+          ...credential,
+          id: b64urlToBytes(credential.id),
+        }));
+      }
+      return normalized;
+    }
+
+    function normalizeClientExtensions(result) {
+      if (!result || typeof result !== "object") return undefined;
+      const output = {};
+      for (const [key, value] of Object.entries(result)) {
+        if (value instanceof ArrayBuffer || value instanceof Uint8Array) {
+          output[key] = bytesToB64url(value);
+          continue;
+        }
+        if (value && typeof value === "object") {
+          output[key] = normalizeClientExtensions(value);
+          continue;
+        }
+        output[key] = value;
+      }
+      return output;
+    }
+
+    function registrationPayload(credential) {
+      return {
+        id: credential.id,
+        rawId: bytesToB64url(credential.rawId),
+        type: credential.type || "public-key",
+        response: {
+          clientDataJSON: bytesToB64url(credential.response.clientDataJSON),
+          attestationObject: bytesToB64url(credential.response.attestationObject),
+        },
+        clientExtensionResults: normalizeClientExtensions(credential.getClientExtensionResults?.()),
+      };
+    }
+
+    function authenticationPayload(credential) {
+      return {
+        id: credential.id,
+        rawId: bytesToB64url(credential.rawId),
+        type: credential.type || "public-key",
+        response: {
+          clientDataJSON: bytesToB64url(credential.response.clientDataJSON),
+          authenticatorData: bytesToB64url(credential.response.authenticatorData),
+          signature: bytesToB64url(credential.response.signature),
+          userHandle: bytesToB64url(credential.response.userHandle),
+        },
+        clientExtensionResults: normalizeClientExtensions(credential.getClientExtensionResults?.()),
+      };
+    }
+
+    async function postCompletion(payload) {
+      await fetch(callbackBase + "/complete?token=" + encodeURIComponent(token), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
+
+    async function run() {
+      if (!callbackBase || !token || !command) {
+        setStatus("Missing required query parameters (callback, token, command).", true);
+        return;
+      }
+      summaryEl.textContent = "Command: " + command;
+      setStatus("Requesting ceremony options from CLI...");
+      try {
+        const optionsResponse = await fetch(
+          callbackBase + "/options?token=" + encodeURIComponent(token),
+          { method: "GET" },
+        );
+        const optionsEnvelope = await optionsResponse.json();
+        if (!optionsEnvelope.ok) {
+          throw new Error(optionsEnvelope.error || "Failed to read ceremony options from CLI.");
+        }
+
+        setStatus("Prompting platform authenticator...");
+        let credential;
+        if (command === "register") {
+          const publicKey = normalizeCreationOptions(optionsEnvelope.options);
+          credential = await navigator.credentials.create({ publicKey });
+          await postCompletion({ ok: true, response: registrationPayload(credential) });
+          setStatus("Registration response sent to CLI. You can return to terminal.");
+          return;
+        }
+        if (command === "authenticate") {
+          const publicKey = normalizeRequestOptions(optionsEnvelope.options);
+          credential = await navigator.credentials.get({ publicKey });
+          await postCompletion({ ok: true, response: authenticationPayload(credential) });
+          setStatus("Authentication response sent to CLI. You can return to terminal.");
+          return;
+        }
+        throw new Error("Unsupported command '" + command + "'.");
+      } catch (error) {
+        const message = error?.message || String(error);
+        await postCompletion({ ok: false, error: message });
+        setStatus(message, true);
+      }
+    }
+
+    run();
+  </script>
+</body>
+</html>
+"""

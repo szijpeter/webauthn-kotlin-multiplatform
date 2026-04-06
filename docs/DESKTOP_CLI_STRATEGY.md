@@ -43,5 +43,5 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 
 ## POC Outcome
 
-- Added a runnable sample CLI (`doctor`, `register`, `authenticate`) with macOS-first native CTAP integration via `python-fido2`.
+- Added a runnable sample CLI (`doctor`, `register`, `authenticate`) with browser-orchestrated platform passkey flow (default) and optional macOS-first native CTAP integration via `python-fido2`.
 - Kept scope isolated to samples/docs with no published API changes.

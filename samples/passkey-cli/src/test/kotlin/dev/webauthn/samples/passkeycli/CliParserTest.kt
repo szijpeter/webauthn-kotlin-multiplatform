@@ -24,9 +24,10 @@ class CliParserTest {
         )
 
         assertTrue(invocation is CliInvocation.Register)
-        assertEquals("http://127.0.0.1:8080", invocation.common.endpointBase)
+        assertEquals("http://localhost:8080", invocation.common.endpointBase)
         assertEquals("localhost", invocation.common.rpId)
-        assertEquals("https://localhost", invocation.common.origin)
+        assertEquals("http://localhost:8080", invocation.common.origin)
+        assertEquals(AuthenticatorMode.BROWSER, invocation.common.authenticatorMode)
         assertEquals("python3", invocation.common.pythonBinary)
         assertEquals("alice", invocation.userDisplayName)
         assertEquals(
@@ -46,10 +47,13 @@ class CliParserTest {
                 "/opt/homebrew/bin/python3",
                 "--python-bridge",
                 "/repo/samples/passkey-cli/scripts/fido2_bridge.py",
+                "--authenticator",
+                "ctap",
             ),
         )
 
         assertTrue(invocation is CliInvocation.Doctor)
+        assertEquals(AuthenticatorMode.CTAP, invocation.common.authenticatorMode)
         assertEquals("/opt/homebrew/bin/python3", invocation.common.pythonBinary)
         assertEquals("/repo/samples/passkey-cli/scripts/fido2_bridge.py", invocation.common.pythonBridgePath)
     }
@@ -61,6 +65,42 @@ class CliParserTest {
         assertFailsWith<CliUsageException> {
             parser.parse(arrayOf("unknown-cmd"))
         }
+    }
+
+    @Test
+    fun parseRegister_invalidAuthenticator_throwsUsageException() {
+        val parser = CliParser(cwd = createTempDirectory(prefix = "passkey-cli-auth-mode"))
+
+        assertFailsWith<CliUsageException> {
+            parser.parse(
+                arrayOf(
+                    "register",
+                    "--user-name",
+                    "alice",
+                    "--authenticator",
+                    "magic",
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun parseRegister_derivesRpIdAndOriginFromEndpoint_whenNotProvided() {
+        val parser = CliParser(cwd = createTempDirectory(prefix = "passkey-cli-endpoint-defaults"))
+
+        val invocation = parser.parse(
+            arrayOf(
+                "register",
+                "--user-name",
+                "alice",
+                "--endpoint",
+                "https://login.example.com:8443/base",
+            ),
+        )
+
+        assertTrue(invocation is CliInvocation.Register)
+        assertEquals("login.example.com", invocation.common.rpId)
+        assertEquals("https://login.example.com:8443", invocation.common.origin)
     }
 
     @Test

@@ -12,6 +12,7 @@ Ktor sample backend for local/mobile passkey end-to-end flows.
 - `GET /.well-known/assetlinks.json`
 - `GET /.well-known/apple-app-site-association`
 - `GET /apple-app-site-association`
+- `GET /webauthn/cli/browser`
 
 ## Run
 
