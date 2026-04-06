@@ -5,15 +5,18 @@ from __future__ import annotations
 
 import json
 import sys
+from collections.abc import Mapping, Sequence
 from getpass import getpass
 from typing import Any
 
+import fido2.features
 from fido2.client import Fido2Client, UserInteraction
 from fido2.hid import CtapHidDevice
-from fido2.webauthn import (
-    PublicKeyCredentialCreationOptions,
-    PublicKeyCredentialRequestOptions,
-)
+from fido2.utils import websafe_encode
+
+
+# Opt-in to python-fido2 JSON mapping that decodes base64url JSON fields to bytes.
+fido2.features.webauthn_json_mapping.enabled = True
 
 
 class CliInteraction(UserInteraction):
@@ -61,17 +64,65 @@ def _client(origin: str) -> Fido2Client:
         )
 
 
+def _encode_b64url(value: bytes) -> str:
+    return websafe_encode(bytes(value))
+
+
+def _normalize_extensions(value: Any) -> Any:
+    if isinstance(value, bytes):
+        return _encode_b64url(value)
+    if isinstance(value, Mapping):
+        return {k: _normalize_extensions(v) for k, v in value.items()}
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        return [_normalize_extensions(item) for item in value]
+    return value
+
+
 def _register(origin: str, options_payload: dict[str, Any]) -> dict[str, Any]:
-    options = PublicKeyCredentialCreationOptions.from_dict(options_payload)
-    response = _client(origin).make_credential(options)
-    return dict(response)
+    response = _client(origin).make_credential(options_payload)
+    credential_data = response.attestation_object.auth_data.credential_data
+    if credential_data is None:
+        raise RuntimeError("Credential attestation response did not include credential data.")
+
+    credential_id = credential_data.credential_id
+    result: dict[str, Any] = {
+        "id": _encode_b64url(credential_id),
+        "rawId": _encode_b64url(credential_id),
+        "response": {
+            "clientDataJSON": _encode_b64url(bytes(response.client_data)),
+            "attestationObject": _encode_b64url(bytes(response.attestation_object)),
+        },
+    }
+    extension_results = _normalize_extensions(response.extension_results or {})
+    if extension_results:
+        result["clientExtensionResults"] = extension_results
+    return result
 
 
 def _authenticate(origin: str, options_payload: dict[str, Any]) -> dict[str, Any]:
-    options = PublicKeyCredentialRequestOptions.from_dict(options_payload)
-    assertion_selection = _client(origin).get_assertion(options)
+    assertion_selection = _client(origin).get_assertion(options_payload)
     response = assertion_selection.get_response(0)
-    return dict(response)
+
+    credential_id = response.credential_id
+    if credential_id is None:
+        raise RuntimeError("Assertion response did not include credential ID.")
+
+    payload: dict[str, Any] = {
+        "id": _encode_b64url(credential_id),
+        "rawId": _encode_b64url(credential_id),
+        "response": {
+            "clientDataJSON": _encode_b64url(bytes(response.client_data)),
+            "authenticatorData": _encode_b64url(bytes(response.authenticator_data)),
+            "signature": _encode_b64url(bytes(response.signature)),
+        },
+    }
+    if response.user_handle is not None:
+        payload["response"]["userHandle"] = _encode_b64url(bytes(response.user_handle))
+
+    extension_results = _normalize_extensions(response.extension_results or {})
+    if extension_results:
+        payload["clientExtensionResults"] = extension_results
+    return payload
 
 
 def _success(payload: dict[str, Any]) -> int:
