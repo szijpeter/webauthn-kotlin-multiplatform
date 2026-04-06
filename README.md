@@ -312,6 +312,7 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 
 ## Related Docs
 
+- [`docs/wiki/README.md`](./docs/wiki/README.md)
 - [`docs/CLIENT_FIRST_EXECUTION.md`](./docs/CLIENT_FIRST_EXECUTION.md)
 - [`docs/CLIENT_API_BENCHMARKS.md`](./docs/CLIENT_API_BENCHMARKS.md)
 - [`docs/IMPLEMENTATION_STATUS.md`](./docs/IMPLEMENTATION_STATUS.md)
