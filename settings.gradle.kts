@@ -43,6 +43,7 @@ include(
     ":samples:backend-ktor",
     ":samples:android-passkey",
     ":samples:ios-passkey",
+    ":samples:passkey-cli",
     ":samples:compose-passkey",
     ":samples:compose-passkey-android",
     ":webauthn-server-store-exposed",

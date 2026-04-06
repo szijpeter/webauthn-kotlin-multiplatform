@@ -76,6 +76,11 @@ class SampleBackendRoutesTest {
                 .first()
                 .jsonPrimitive.content,
         )
+
+        val cliBrowserPage = client.get("/webauthn/cli/browser").bodyAsText()
+        assertTrue(cliBrowserPage.contains("Passkey CLI Browser Handoff"))
+        assertTrue(cliBrowserPage.contains("navigator.credentials.create"))
+        assertTrue(cliBrowserPage.contains("navigator.credentials.get"))
     }
 
     @Test

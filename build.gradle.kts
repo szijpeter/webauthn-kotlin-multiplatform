@@ -42,6 +42,7 @@ apiValidation {
         "compose-passkey",
         "compose-passkey-android",
         "ios-passkey",
+        "passkey-cli",
     )
 }
 

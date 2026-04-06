@@ -82,6 +82,11 @@ flowchart TB
 
 V1 backend target is Kotlin/JVM. Core ceremony services are in `webauthn-server-core-jvm` and stay framework-agnostic.
 
+## Deployable Samples
+
+Sample apps and CLIs are separate deployable modules under `samples/*` rather than extra targets inside published library modules.
+This keeps packaging/runtime concerns isolated from reusable API modules (for example, `samples/passkey-cli` for the experimental macOS-first native CLI flow).
+
 ## Framework adapters
 
 Ktor adapter modules are intentionally thin wrappers around core services.
