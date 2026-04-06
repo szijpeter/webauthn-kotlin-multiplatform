@@ -395,26 +395,6 @@ private const val PASSKEY_CLI_BROWSER_BRIDGE_PAGE: String =
       });
     }
 
-    function closeWindowIfPossible(messagePrefix) {
-      setStatus(messagePrefix + " response sent to CLI. Closing this tab...");
-      setTimeout(() => {
-        try {
-          window.close();
-        } catch (_) {}
-        if (!window.closed) {
-          try {
-            window.open("", "_self");
-            window.close();
-          } catch (_) {}
-        }
-        if (!window.closed) {
-          setStatus(
-            messagePrefix + " response sent to CLI. This browser blocked auto-close; you can close this tab.",
-          );
-        }
-      }, 300);
-    }
-
     async function run() {
       if (!callbackBase || !token || !command) {
         setStatus("Missing required query parameters (callback, token, command).", true);
@@ -438,14 +418,14 @@ private const val PASSKEY_CLI_BROWSER_BRIDGE_PAGE: String =
           const publicKey = normalizeCreationOptions(optionsEnvelope.options);
           credential = await navigator.credentials.create({ publicKey });
           await postCompletion({ ok: true, response: registrationPayload(credential) });
-          closeWindowIfPossible("Registration");
+          setStatus("Registration response sent to CLI. You can return to terminal and close this tab.");
           return;
         }
         if (command === "authenticate") {
           const publicKey = normalizeRequestOptions(optionsEnvelope.options);
           credential = await navigator.credentials.get({ publicKey });
           await postCompletion({ ok: true, response: authenticationPayload(credential) });
-          closeWindowIfPossible("Authentication");
+          setStatus("Authentication response sent to CLI. You can return to terminal and close this tab.");
           return;
         }
         throw new Error("Unsupported command '" + command + "'.");

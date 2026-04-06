@@ -81,7 +81,6 @@ class SampleBackendRoutesTest {
         assertTrue(cliBrowserPage.contains("Passkey CLI Browser Handoff"))
         assertTrue(cliBrowserPage.contains("navigator.credentials.create"))
         assertTrue(cliBrowserPage.contains("navigator.credentials.get"))
-        assertTrue(cliBrowserPage.contains("window.close()"))
     }
 
     @Test
