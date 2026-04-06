@@ -5,6 +5,7 @@ import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.isRegularFile
+import kotlin.io.path.readLines
 
 internal data class CommonCliOptions(
     val endpointBase: String,
@@ -62,6 +63,8 @@ internal class CliUsageException(message: String) : IllegalArgumentException(mes
 internal class CliParser(
     private val cwd: Path = Path.of("").toAbsolutePath(),
 ) {
+    private val localPropertiesDefaults: LocalPropertiesDefaults by lazy { resolveLocalPropertiesDefaults(cwd) }
+
     fun parse(args: Array<String>): CliInvocation {
         if (args.isEmpty()) {
             return CliInvocation.Help
@@ -125,40 +128,24 @@ internal class CliParser(
     }
 
     private fun commonOptions(options: Map<String, String>): CommonCliOptions {
-        val endpointBase = options["--endpoint"] ?: DEFAULT_ENDPOINT
+        val endpointBase = options["--endpoint"] ?: localPropertiesDefaults.endpointBase ?: DEFAULT_ENDPOINT
+        val endpointExplicit = "--endpoint" in options
         return CommonCliOptions(
             endpointBase = endpointBase,
-            rpId = options["--rp-id"] ?: defaultRpIdForEndpoint(endpointBase),
-            origin = options["--origin"] ?: defaultOriginForEndpoint(endpointBase),
+            rpId = when {
+                "--rp-id" in options -> options.getValue("--rp-id")
+                endpointExplicit -> defaultRpIdForEndpoint(endpointBase)
+                else -> localPropertiesDefaults.rpId ?: defaultRpIdForEndpoint(endpointBase)
+            },
+            origin = when {
+                "--origin" in options -> options.getValue("--origin")
+                endpointExplicit -> defaultOriginForEndpoint(endpointBase)
+                else -> localPropertiesDefaults.origin ?: defaultOriginForEndpoint(endpointBase)
+            },
             authenticatorMode = options["--authenticator"]?.let(AuthenticatorMode::parse) ?: AuthenticatorMode.BROWSER,
             pythonBinary = options["--python-bin"] ?: resolveDefaultPythonBinary(),
             pythonBridgePath = options["--python-bridge"] ?: resolveDefaultBridgePath(),
         )
-    }
-
-    private fun defaultRpIdForEndpoint(endpointBase: String): String {
-        return runCatching {
-            val host = URI(endpointBase).host
-            if (host.isNullOrBlank()) {
-                DEFAULT_RP_ID
-            } else {
-                host
-            }
-        }.getOrDefault(DEFAULT_RP_ID)
-    }
-
-    private fun defaultOriginForEndpoint(endpointBase: String): String {
-        return runCatching {
-            val endpointUri = URI(endpointBase)
-            val scheme = endpointUri.scheme ?: return@runCatching DEFAULT_ORIGIN
-            val host = endpointUri.host ?: return@runCatching DEFAULT_ORIGIN
-            val port = endpointUri.port
-            if (port == -1) {
-                "$scheme://$host"
-            } else {
-                "$scheme://$host:$port"
-            }
-        }.getOrDefault(DEFAULT_ORIGIN)
     }
 
     private fun parseOptions(args: List<String>): Map<String, String> {
@@ -200,22 +187,9 @@ internal class CliParser(
         return Base64UrlBytes.fromBytes(userName.encodeToByteArray()).encoded()
     }
 
-    private fun findUpwards(vararg candidates: String): Path? {
-        var cursor: Path? = cwd
-        while (cursor != null) {
-            for (candidate in candidates) {
-                val candidatePath = cursor.resolve(candidate)
-                if (candidatePath.exists() && candidatePath.isRegularFile()) {
-                    return candidatePath
-                }
-            }
-            cursor = cursor.parent
-        }
-        return null
-    }
-
     private fun resolveDefaultBridgePath(): String {
         return findUpwards(
+            cwd,
             "samples/passkey-cli/scripts/fido2_bridge.py",
             "scripts/fido2_bridge.py",
         )?.toString()
@@ -224,6 +198,7 @@ internal class CliParser(
 
     private fun resolveDefaultPythonBinary(): String {
         return findUpwards(
+            cwd,
             "samples/passkey-cli/.venv/bin/python",
             ".venv/bin/python",
         )?.toString() ?: "python3"
@@ -257,9 +232,9 @@ internal class CliParser(
                   passkey-cli authenticate --user-name <name> [authenticate options] [common options]
                 
                 Common options:
-                  --endpoint <url>            Backend base URL (default: http://localhost:8080)
-                  --rp-id <rpId>              Relying party ID (default: endpoint host)
-                  --origin <origin>           WebAuthn origin (default: endpoint origin)
+                  --endpoint <url>            Backend base URL (default: local.properties WEBAUTHN_DEMO_ENDPOINT, else http://localhost:8080)
+                  --rp-id <rpId>              Relying party ID (default: local.properties WEBAUTHN_DEMO_RP_ID, else endpoint host)
+                  --origin <origin>           WebAuthn origin (default: local.properties WEBAUTHN_DEMO_ORIGIN, else endpoint origin)
                   --authenticator <mode>      browser (default) or ctap
                   --python-bin <path>         Python executable (ctap mode; default: auto .venv/bin/python, else python3)
                   --python-bridge <path>      Path to fido2 bridge script (ctap mode)
@@ -280,3 +255,76 @@ internal class CliParser(
 private const val DEFAULT_ENDPOINT: String = "http://localhost:8080"
 private const val DEFAULT_RP_ID: String = "localhost"
 private const val DEFAULT_ORIGIN: String = "http://localhost:8080"
+
+private data class LocalPropertiesDefaults(
+    val endpointBase: String? = null,
+    val rpId: String? = null,
+    val origin: String? = null,
+)
+
+private fun defaultRpIdForEndpoint(endpointBase: String): String {
+    return runCatching {
+        val host = URI(endpointBase).host
+        if (host.isNullOrBlank()) {
+            DEFAULT_RP_ID
+        } else {
+            host
+        }
+    }.getOrDefault(DEFAULT_RP_ID)
+}
+
+private fun defaultOriginForEndpoint(endpointBase: String): String {
+    return runCatching {
+        val endpointUri = URI(endpointBase)
+        val scheme = endpointUri.scheme ?: return@runCatching DEFAULT_ORIGIN
+        val host = endpointUri.host ?: return@runCatching DEFAULT_ORIGIN
+        val port = endpointUri.port
+        if (port == -1) {
+            "$scheme://$host"
+        } else {
+            "$scheme://$host:$port"
+        }
+    }.getOrDefault(DEFAULT_ORIGIN)
+}
+
+private fun findUpwards(start: Path, vararg candidates: String): Path? {
+    var cursor: Path? = start
+    while (cursor != null) {
+        for (candidate in candidates) {
+            val candidatePath = cursor.resolve(candidate)
+            if (candidatePath.exists() && candidatePath.isRegularFile()) {
+                return candidatePath
+            }
+        }
+        cursor = cursor.parent
+    }
+    return null
+}
+
+private fun resolveLocalPropertiesDefaults(cwd: Path): LocalPropertiesDefaults {
+    val localPropertiesPath = findUpwards(cwd, "local.properties") ?: return LocalPropertiesDefaults()
+    val values = runCatching {
+        localPropertiesPath.readLines()
+            .mapNotNull(::parsePropertyLine)
+            .toMap()
+    }.getOrElse { emptyMap() }
+    return LocalPropertiesDefaults(
+        endpointBase = values["WEBAUTHN_DEMO_ENDPOINT"]?.takeIf(String::isNotBlank),
+        rpId = values["WEBAUTHN_DEMO_RP_ID"]?.takeIf(String::isNotBlank),
+        origin = values["WEBAUTHN_DEMO_ORIGIN"]?.takeIf(String::isNotBlank),
+    )
+}
+
+private fun parsePropertyLine(line: String): Pair<String, String>? {
+    val trimmed = line.trim()
+    if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+        return null
+    }
+    val separatorIndex = trimmed.indexOf('=')
+    if (separatorIndex <= 0) {
+        return null
+    }
+    val key = trimmed.substring(0, separatorIndex).trim()
+    val value = trimmed.substring(separatorIndex + 1).trim()
+    return key to value
+}

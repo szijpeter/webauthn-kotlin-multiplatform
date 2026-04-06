@@ -125,4 +125,60 @@ class CliParserTest {
         assertTrue(invocation is CliInvocation.Register)
         assertEquals(venvPython.toString(), invocation.common.pythonBinary)
     }
+
+    @Test
+    fun parseRegister_usesLocalPropertiesDefaults_whenPresent() {
+        val rootDir = createTempDirectory(prefix = "passkey-cli-local-properties")
+        rootDir.resolve("local.properties").writeText(
+            """
+                WEBAUTHN_DEMO_ENDPOINT=https://sample.ngrok-free.app
+                WEBAUTHN_DEMO_RP_ID=sample.ngrok-free.app
+                WEBAUTHN_DEMO_ORIGIN=https://sample.ngrok-free.app
+            """.trimIndent(),
+        )
+        val parserCwd = rootDir.resolve("samples/passkey-cli").createDirectories()
+        val parser = CliParser(cwd = parserCwd)
+
+        val invocation = parser.parse(
+            arrayOf(
+                "register",
+                "--user-name",
+                "alice",
+            ),
+        )
+
+        assertTrue(invocation is CliInvocation.Register)
+        assertEquals("https://sample.ngrok-free.app", invocation.common.endpointBase)
+        assertEquals("sample.ngrok-free.app", invocation.common.rpId)
+        assertEquals("https://sample.ngrok-free.app", invocation.common.origin)
+    }
+
+    @Test
+    fun parseRegister_explicitEndpointDerivesRpIdAndOrigin_evenWithLocalProperties() {
+        val rootDir = createTempDirectory(prefix = "passkey-cli-local-properties-endpoint-override")
+        rootDir.resolve("local.properties").writeText(
+            """
+                WEBAUTHN_DEMO_ENDPOINT=https://sample.ngrok-free.app
+                WEBAUTHN_DEMO_RP_ID=sample.ngrok-free.app
+                WEBAUTHN_DEMO_ORIGIN=https://sample.ngrok-free.app
+            """.trimIndent(),
+        )
+        val parserCwd = rootDir.resolve("samples/passkey-cli").createDirectories()
+        val parser = CliParser(cwd = parserCwd)
+
+        val invocation = parser.parse(
+            arrayOf(
+                "register",
+                "--user-name",
+                "alice",
+                "--endpoint",
+                "https://login.example.com:8443/base",
+            ),
+        )
+
+        assertTrue(invocation is CliInvocation.Register)
+        assertEquals("https://login.example.com:8443/base", invocation.common.endpointBase)
+        assertEquals("login.example.com", invocation.common.rpId)
+        assertEquals("https://login.example.com:8443", invocation.common.origin)
+    }
 }

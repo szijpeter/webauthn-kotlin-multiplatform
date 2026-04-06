@@ -42,9 +42,9 @@ Available commands:
 
 Common options:
 
-- `--endpoint <url>` (default: `http://localhost:8080`)
-- `--rp-id <rpId>` (default: endpoint host)
-- `--origin <origin>` (default: endpoint origin)
+- `--endpoint <url>` (default: `local.properties` `WEBAUTHN_DEMO_ENDPOINT`, else `http://localhost:8080`)
+- `--rp-id <rpId>` (default: `local.properties` `WEBAUTHN_DEMO_RP_ID`, else endpoint host)
+- `--origin <origin>` (default: `local.properties` `WEBAUTHN_DEMO_ORIGIN`, else endpoint origin)
 - `--authenticator <browser|ctap>` (default: `browser`)
 - `--python-bin <path>` (`ctap` mode only; default auto-detect local `.venv/bin/python`, then `python3`)
 - `--python-bridge <path>` (`ctap` mode only; default resolves to `samples/passkey-cli/scripts/fido2_bridge.py`)

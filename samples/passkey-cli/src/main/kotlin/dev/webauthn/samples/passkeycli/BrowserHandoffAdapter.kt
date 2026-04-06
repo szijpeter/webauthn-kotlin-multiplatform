@@ -291,7 +291,12 @@ private fun buildBrowserUrl(
     val encodedCallback = URLEncoder.encode(callbackBase, StandardCharsets.UTF_8)
     val encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8)
     val encodedCommand = URLEncoder.encode(command, StandardCharsets.UTF_8)
-    return "$normalizedEndpoint/webauthn/cli/browser?callback=$encodedCallback&token=$encodedToken&command=$encodedCommand"
+    return buildString {
+        append("$normalizedEndpoint/webauthn/cli/browser")
+        append("?callback=$encodedCallback")
+        append("&token=$encodedToken")
+        append("&command=$encodedCommand")
+    }
 }
 
 private fun HttpExchange.authorizeToken(expectedToken: String): Boolean {
@@ -317,7 +322,7 @@ private fun HttpExchange.respondNoContent() {
     responseHeaders.add("Access-Control-Allow-Origin", "*")
     responseHeaders.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
     responseHeaders.add("Access-Control-Allow-Headers", "Content-Type")
-    sendResponseHeaders(204, -1)
+    sendResponseHeaders(HTTP_STATUS_NO_CONTENT, -1)
     close()
 }
 
@@ -339,3 +344,4 @@ private fun HttpExchange.respondJson(
 
 private const val BROWSER_TOKEN_BYTES: Int = 24
 private const val BROWSER_CALLBACK_TIMEOUT_MS: Long = 180_000
+private const val HTTP_STATUS_NO_CONTENT: Int = 204
