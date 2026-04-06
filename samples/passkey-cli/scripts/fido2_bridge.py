@@ -8,7 +8,7 @@ import sys
 from getpass import getpass
 from typing import Any
 
-from fido2.client import DefaultClientDataCollector, Fido2Client, UserInteraction
+from fido2.client import Fido2Client, UserInteraction
 from fido2.hid import CtapHidDevice
 from fido2.webauthn import (
     PublicKeyCredentialCreationOptions,
@@ -43,11 +43,22 @@ def _first_hid_device():
 
 
 def _client(origin: str) -> Fido2Client:
-    return Fido2Client(
-        _first_hid_device(),
-        client_data_collector=DefaultClientDataCollector(origin),
-        user_interaction=CliInteraction(),
-    )
+    device = _first_hid_device()
+    interaction = CliInteraction()
+    try:
+        return Fido2Client(
+            device,
+            origin=origin,
+            user_interaction=interaction,
+        )
+    except TypeError:
+        from fido2.client import DefaultClientDataCollector  # type: ignore
+
+        return Fido2Client(
+            device,
+            client_data_collector=DefaultClientDataCollector(origin),
+            user_interaction=interaction,
+        )
 
 
 def _register(origin: str, options_payload: dict[str, Any]) -> dict[str, Any]:
