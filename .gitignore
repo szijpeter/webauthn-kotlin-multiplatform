@@ -47,6 +47,9 @@ local.properties
 node_modules/
 temp.server/node_modules/
 
+# Local Python virtual environments
+.venv/
+
 # Local standards/spec cache artifacts (keep cache docs tracked)
 spec-cache/**/*
 !spec-cache/*/
