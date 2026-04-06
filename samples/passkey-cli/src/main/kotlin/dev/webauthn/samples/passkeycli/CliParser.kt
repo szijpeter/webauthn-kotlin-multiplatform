@@ -154,36 +154,33 @@ internal class CliParser(
         return Base64UrlBytes.fromBytes(userName.encodeToByteArray()).encoded()
     }
 
-    private fun resolveDefaultBridgePath(): String {
+    private fun findUpwards(vararg candidates: String): Path? {
         var cursor: Path? = cwd
         while (cursor != null) {
-            val repoRelative = cursor.resolve("samples/passkey-cli/scripts/fido2_bridge.py")
-            if (repoRelative.exists() && repoRelative.isRegularFile()) {
-                return repoRelative.toString()
-            }
-            val moduleRelative = cursor.resolve("scripts/fido2_bridge.py")
-            if (moduleRelative.exists() && moduleRelative.isRegularFile()) {
-                return moduleRelative.toString()
+            for (candidate in candidates) {
+                val candidatePath = cursor.resolve(candidate)
+                if (candidatePath.exists() && candidatePath.isRegularFile()) {
+                    return candidatePath
+                }
             }
             cursor = cursor.parent
         }
-        return cwd.resolve("samples/passkey-cli/scripts/fido2_bridge.py").normalize().toString()
+        return null
+    }
+
+    private fun resolveDefaultBridgePath(): String {
+        return findUpwards(
+            "samples/passkey-cli/scripts/fido2_bridge.py",
+            "scripts/fido2_bridge.py",
+        )?.toString()
+            ?: cwd.resolve("samples/passkey-cli/scripts/fido2_bridge.py").normalize().toString()
     }
 
     private fun resolveDefaultPythonBinary(): String {
-        var cursor: Path? = cwd
-        while (cursor != null) {
-            val repoLocalVenvPython = cursor.resolve("samples/passkey-cli/.venv/bin/python")
-            if (repoLocalVenvPython.exists() && repoLocalVenvPython.isRegularFile()) {
-                return repoLocalVenvPython.toString()
-            }
-            val moduleLocalVenvPython = cursor.resolve(".venv/bin/python")
-            if (moduleLocalVenvPython.exists() && moduleLocalVenvPython.isRegularFile()) {
-                return moduleLocalVenvPython.toString()
-            }
-            cursor = cursor.parent
-        }
-        return "python3"
+        return findUpwards(
+            "samples/passkey-cli/.venv/bin/python",
+            ".venv/bin/python",
+        )?.toString() ?: "python3"
     }
 
     companion object {

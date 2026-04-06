@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 class CliParserTest {
     @Test
     fun parseRegister_usesDefaultsAndGeneratedUserHandle() {
-        val parser = CliParser(cwd = Path.of("/tmp/webauthn"))
+        val parser = CliParser(cwd = createTempDirectory(prefix = "passkey-cli-defaults"))
 
         val invocation = parser.parse(
             arrayOf(
@@ -37,7 +37,7 @@ class CliParserTest {
 
     @Test
     fun parseDoctor_acceptsCommonOptions() {
-        val parser = CliParser(cwd = Path.of("/tmp/webauthn"))
+        val parser = CliParser(cwd = createTempDirectory(prefix = "passkey-cli-doctor"))
 
         val invocation = parser.parse(
             arrayOf(
@@ -56,7 +56,7 @@ class CliParserTest {
 
     @Test
     fun parseUnknownCommand_throwsUsageException() {
-        val parser = CliParser(cwd = Path.of("/tmp/webauthn"))
+        val parser = CliParser(cwd = createTempDirectory(prefix = "passkey-cli-unknown"))
 
         assertFailsWith<CliUsageException> {
             parser.parse(arrayOf("unknown-cmd"))
