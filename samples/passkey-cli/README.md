@@ -13,6 +13,7 @@ This sample is intentionally scoped as a **POC**:
 - Browser mode:
   - any modern browser with WebAuthn support
   - endpoint/origin must match (`--origin` defaults to endpoint origin)
+  - origin must be `https://...` (sample backend enforces strict origin parsing)
 - CTAP mode:
   - Python 3 (`python3`)
   - a compatible CTAP authenticator (for example, a USB security key)
@@ -51,13 +52,13 @@ Common options:
 
 ## Local Smoke Path (opt-in)
 
-1. Start backend sample:
+1. Start backend + HTTPS tunnel helper (writes `WEBAUTHN_DEMO_*` to `local.properties`):
 
 ```bash
-./gradlew :samples:backend-ktor:run
+./samples/backend-ktor/start-server.sh
 ```
 
-2. Verify CLI environment:
+2. Verify CLI environment (defaults resolve from `local.properties`):
 
 ```bash
 ./gradlew :samples:passkey-cli:run --args="doctor"
@@ -80,6 +81,8 @@ Common options:
 ```bash
 ./gradlew :samples:passkey-cli:run --args="register --authenticator ctap --user-name alice --user-display-name Alice"
 ```
+
+If you do not use the helper script, pass explicit HTTPS values with `--endpoint` (and optional `--rp-id` / `--origin`) for each command.
 
 ## Caveats
 
