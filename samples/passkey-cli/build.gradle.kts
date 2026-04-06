@@ -26,4 +26,6 @@ tasks.register<Exec>("bootstrapVenv") {
     description = "Create sample-local .venv and install requirements.txt dependencies."
     workingDir = projectDir
     commandLine("bash", "scripts/bootstrap_venv.sh")
+    inputs.files("scripts/bootstrap_venv.sh", "requirements.txt")
+    outputs.dir(projectDir.resolve(".venv"))
 }

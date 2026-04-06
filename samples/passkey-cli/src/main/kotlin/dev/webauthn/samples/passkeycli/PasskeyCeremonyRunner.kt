@@ -51,7 +51,7 @@ internal class PasskeyCeremonyRunner(
     ): PublicKeyCredentialCreationOptions? {
         val result = runSuspendCatching { serverClient.getRegisterOptions(payload) }
             .getOrElse { error ->
-                stderr.appendLine("Failed to fetch registration options: ${error.message}")
+                stderr.appendLine("Failed to fetch registration options: ${error.displayMessage()}")
                 return null
             }
         return when (result) {
@@ -68,7 +68,7 @@ internal class PasskeyCeremonyRunner(
     ): PublicKeyCredentialRequestOptions? {
         val result = runSuspendCatching { serverClient.getSignInOptions(payload) }
             .getOrElse { error ->
-                stderr.appendLine("Failed to fetch authentication options: ${error.message}")
+                stderr.appendLine("Failed to fetch authentication options: ${error.displayMessage()}")
                 return null
             }
         return when (result) {
@@ -87,7 +87,7 @@ internal class PasskeyCeremonyRunner(
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runSuspendCatching { authenticatorAdapter.createCredential(origin, optionsDto) }
             .getOrElse { error ->
-                stderr.appendLine("Native authenticator registration failed: ${error.message}")
+                stderr.appendLine("Native authenticator registration failed: ${error.displayMessage()}")
                 return null
             }
         return when (val parsed = WebAuthnDtoMapper.toModel(responseDto)) {
@@ -106,7 +106,7 @@ internal class PasskeyCeremonyRunner(
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runSuspendCatching { authenticatorAdapter.getAssertion(origin, optionsDto) }
             .getOrElse { error ->
-                stderr.appendLine("Native authenticator authentication failed: ${error.message}")
+                stderr.appendLine("Native authenticator authentication failed: ${error.displayMessage()}")
                 return null
             }
         return when (val parsed = WebAuthnDtoMapper.toModel(responseDto)) {
@@ -131,7 +131,7 @@ internal class PasskeyCeremonyRunner(
                 challengeAsBase64Url = challenge,
             )
         }.getOrElse { error ->
-            stderr.appendLine("Registration finish call failed: ${error.message}")
+            stderr.appendLine("Registration finish call failed: ${error.displayMessage()}")
             return EXIT_FINISH_FAILURE
         }
 
@@ -160,7 +160,7 @@ internal class PasskeyCeremonyRunner(
                 challengeAsBase64Url = challenge,
             )
         }.getOrElse { error ->
-            stderr.appendLine("Authentication finish call failed: ${error.message}")
+            stderr.appendLine("Authentication finish call failed: ${error.displayMessage()}")
             return EXIT_FINISH_FAILURE
         }
 
@@ -181,6 +181,12 @@ private fun ValidationResult.Invalid.formatErrors(): String {
     return errors.joinToString(separator = "; ") { error ->
         "${error.field}: ${error.message}"
     }
+}
+
+private fun Throwable.displayMessage(): String {
+    return message?.takeIf { it.isNotBlank() }
+        ?: this::class.simpleName
+        ?: "unknown error"
 }
 
 private const val EXIT_SUCCESS: Int = 0
