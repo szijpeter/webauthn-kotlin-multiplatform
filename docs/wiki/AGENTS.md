@@ -60,7 +60,7 @@ Periodically check for:
 ## Page Conventions
 
 - Keep pages short and synthesis-oriented.
-- Use relative markdown links between wiki pages and back to source docs.
+- Use relative Markdown links between wiki pages and back to source docs.
 - Prefer exact module names and exact dates.
 - Note when a page reflects current status rather than a permanent architectural truth.
 - Avoid copying large code examples from source docs unless they are essential.
