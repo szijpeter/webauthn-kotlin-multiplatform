@@ -19,3 +19,10 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
 }
+
+tasks.register<Exec>("bootstrapVenv") {
+    group = "application"
+    description = "Create sample-local .venv and install requirements.txt dependencies."
+    workingDir = projectDir
+    commandLine("bash", "scripts/bootstrap_venv.sh")
+}

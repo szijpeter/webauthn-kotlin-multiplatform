@@ -12,22 +12,16 @@ This sample is intentionally scoped as a **POC**:
 ## Prerequisites
 
 - Python 3 (`python3`)
-- `python-fido2`:
-
-```bash
-python3 -m pip install fido2
-```
-
-Optional virtualenv flow:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install fido2
-./gradlew :samples:passkey-cli:run --args="doctor --python-bin $(pwd)/.venv/bin/python"
-```
-
 - A compatible CTAP authenticator (for example, a USB security key)
+
+Recommended self-contained setup (sample-local virtualenv):
+
+```bash
+./gradlew :samples:passkey-cli:bootstrapVenv
+```
+
+This creates `samples/passkey-cli/.venv` and installs dependencies from `requirements.txt`.
+When this venv exists, the CLI auto-selects `samples/passkey-cli/.venv/bin/python` unless `--python-bin` is explicitly provided.
 
 ## Commands
 
@@ -48,7 +42,7 @@ Common options:
 - `--endpoint <url>` (default: `http://127.0.0.1:8080`)
 - `--rp-id <rpId>` (default: `localhost`)
 - `--origin <origin>` (default: `https://localhost`)
-- `--python-bin <path>` (default: `python3`)
+- `--python-bin <path>` (default: auto-detect local `.venv/bin/python`, then `python3`)
 - `--python-bridge <path>` (default resolves to `samples/passkey-cli/scripts/fido2_bridge.py`)
 
 ## Local Smoke Path (opt-in)

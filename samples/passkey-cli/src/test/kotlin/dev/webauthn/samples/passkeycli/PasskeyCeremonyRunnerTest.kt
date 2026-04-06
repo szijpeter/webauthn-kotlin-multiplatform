@@ -18,11 +18,13 @@ import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.RegistrationResponseDto
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
@@ -133,6 +135,31 @@ class PasskeyCeremonyRunnerTest {
         assertTrue(stderr.toString().contains("no reason provided"))
         assertFalse(stderr.toString().contains("null"))
     }
+
+    @Test
+    fun register_whenStartIsCancelled_rethrowsCancellationException() = runTest {
+        val adapter = FakeAuthenticatorAdapter(
+            registrationResponse = validRegistrationResponseDto(),
+            authenticationResponse = validAuthenticationResponseDto(),
+        )
+        val runner = PasskeyCeremonyRunner(
+            authenticatorAdapter = adapter,
+            serverClient = CancellationServerClient(),
+            stdout = StringBuilder(),
+            stderr = StringBuilder(),
+        )
+
+        assertFailsWith<CancellationException> {
+            runner.runRegister(
+                CliInvocation.Register(
+                    common = defaultCommonOptions(),
+                    userName = "alice",
+                    userDisplayName = "Alice",
+                    userHandle = "YWxpY2U",
+                ),
+            )
+        }
+    }
 }
 
 private class FakeAuthenticatorAdapter(
@@ -180,6 +207,35 @@ private class FakeServerClient(
         response: AuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult = finishSignInResult
+}
+
+private class CancellationServerClient :
+    PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
+    override suspend fun getRegisterOptions(
+        params: RegistrationStartPayload,
+    ): ValidationResult<PublicKeyCredentialCreationOptions> {
+        throw CancellationException("simulated cancellation")
+    }
+
+    override suspend fun finishRegister(
+        params: RegistrationStartPayload,
+        response: RegistrationResponse,
+        challengeAsBase64Url: String,
+    ): PasskeyFinishResult = PasskeyFinishResult.Verified
+
+    override suspend fun getSignInOptions(
+        params: AuthenticationStartPayload,
+    ): ValidationResult<PublicKeyCredentialRequestOptions> {
+        throw UnsupportedOperationException("not used")
+    }
+
+    override suspend fun finishSignIn(
+        params: AuthenticationStartPayload,
+        response: AuthenticationResponse,
+        challengeAsBase64Url: String,
+    ): PasskeyFinishResult {
+        throw UnsupportedOperationException("not used")
+    }
 }
 
 private fun validRegisterOptions(): PublicKeyCredentialCreationOptions {

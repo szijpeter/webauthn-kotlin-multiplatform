@@ -110,7 +110,7 @@ internal class CliParser(
             endpointBase = options["--endpoint"] ?: "http://127.0.0.1:8080",
             rpId = options["--rp-id"] ?: "localhost",
             origin = options["--origin"] ?: "https://localhost",
-            pythonBinary = options["--python-bin"] ?: "python3",
+            pythonBinary = options["--python-bin"] ?: resolveDefaultPythonBinary(),
             pythonBridgePath = options["--python-bridge"] ?: resolveDefaultBridgePath(),
         )
     }
@@ -170,6 +170,22 @@ internal class CliParser(
         return cwd.resolve("samples/passkey-cli/scripts/fido2_bridge.py").normalize().toString()
     }
 
+    private fun resolveDefaultPythonBinary(): String {
+        var cursor: Path? = cwd
+        while (cursor != null) {
+            val repoLocalVenvPython = cursor.resolve("samples/passkey-cli/.venv/bin/python")
+            if (repoLocalVenvPython.exists() && repoLocalVenvPython.isRegularFile()) {
+                return repoLocalVenvPython.toString()
+            }
+            val moduleLocalVenvPython = cursor.resolve(".venv/bin/python")
+            if (moduleLocalVenvPython.exists() && moduleLocalVenvPython.isRegularFile()) {
+                return moduleLocalVenvPython.toString()
+            }
+            cursor = cursor.parent
+        }
+        return "python3"
+    }
+
     companion object {
         val HELP_KEYS: Set<String> = setOf("-h", "--help")
         val COMMON_KEYS: Set<String> = setOf(
@@ -200,7 +216,7 @@ internal class CliParser(
                   --endpoint <url>            Backend base URL (default: http://127.0.0.1:8080)
                   --rp-id <rpId>              Relying party ID (default: localhost)
                   --origin <origin>           WebAuthn origin (default: https://localhost)
-                  --python-bin <path>         Python executable (default: python3)
+                  --python-bin <path>         Python executable (default: auto .venv/bin/python, else python3)
                   --python-bridge <path>      Path to fido2 bridge script
                 
                 Register options:

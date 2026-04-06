@@ -10,6 +10,7 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.serialization.WebAuthnDtoMapper
+import kotlinx.coroutines.CancellationException
 
 internal class PasskeyCeremonyRunner(
     private val authenticatorAdapter: AuthenticatorAdapter,
@@ -50,6 +51,7 @@ internal class PasskeyCeremonyRunner(
     ): PublicKeyCredentialCreationOptions? {
         val result = runCatching { serverClient.getRegisterOptions(payload) }
             .getOrElse { error ->
+                if (error is CancellationException) throw error
                 stderr.appendLine("Failed to fetch registration options: ${error.message}")
                 return null
             }
@@ -67,6 +69,7 @@ internal class PasskeyCeremonyRunner(
     ): PublicKeyCredentialRequestOptions? {
         val result = runCatching { serverClient.getSignInOptions(payload) }
             .getOrElse { error ->
+                if (error is CancellationException) throw error
                 stderr.appendLine("Failed to fetch authentication options: ${error.message}")
                 return null
             }
@@ -86,6 +89,7 @@ internal class PasskeyCeremonyRunner(
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runCatching { authenticatorAdapter.createCredential(origin, optionsDto) }
             .getOrElse { error ->
+                if (error is CancellationException) throw error
                 stderr.appendLine("Native authenticator registration failed: ${error.message}")
                 return null
             }
@@ -105,6 +109,7 @@ internal class PasskeyCeremonyRunner(
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runCatching { authenticatorAdapter.getAssertion(origin, optionsDto) }
             .getOrElse { error ->
+                if (error is CancellationException) throw error
                 stderr.appendLine("Native authenticator authentication failed: ${error.message}")
                 return null
             }
@@ -130,6 +135,7 @@ internal class PasskeyCeremonyRunner(
                 challengeAsBase64Url = challenge,
             )
         }.getOrElse { error ->
+            if (error is CancellationException) throw error
             stderr.appendLine("Registration finish call failed: ${error.message}")
             return EXIT_FINISH_FAILURE
         }
@@ -159,6 +165,7 @@ internal class PasskeyCeremonyRunner(
                 challengeAsBase64Url = challenge,
             )
         }.getOrElse { error ->
+            if (error is CancellationException) throw error
             stderr.appendLine("Authentication finish call failed: ${error.message}")
             return EXIT_FINISH_FAILURE
         }

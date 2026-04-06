@@ -2,6 +2,9 @@ package dev.webauthn.samples.passkeycli
 
 import dev.webauthn.model.Base64UrlBytes
 import java.nio.file.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createTempDirectory
+import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -24,6 +27,7 @@ class CliParserTest {
         assertEquals("http://127.0.0.1:8080", invocation.common.endpointBase)
         assertEquals("localhost", invocation.common.rpId)
         assertEquals("https://localhost", invocation.common.origin)
+        assertEquals("python3", invocation.common.pythonBinary)
         assertEquals("alice", invocation.userDisplayName)
         assertEquals(
             Base64UrlBytes.fromBytes("alice".encodeToByteArray()).encoded(),
@@ -57,5 +61,28 @@ class CliParserTest {
         assertFailsWith<CliUsageException> {
             parser.parse(arrayOf("unknown-cmd"))
         }
+    }
+
+    @Test
+    fun parseRegister_prefersModuleLocalVenvPython_whenPresent() {
+        val moduleDir = createTempDirectory(prefix = "passkey-cli-module")
+        val venvPython = moduleDir
+            .resolve(".venv")
+            .resolve("bin")
+            .createDirectories()
+            .resolve("python")
+        venvPython.writeText("#!/usr/bin/env python3\n")
+        val parser = CliParser(cwd = moduleDir)
+
+        val invocation = parser.parse(
+            arrayOf(
+                "register",
+                "--user-name",
+                "alice",
+            ),
+        )
+
+        assertTrue(invocation is CliInvocation.Register)
+        assertEquals(venvPython.toString(), invocation.common.pythonBinary)
     }
 }
