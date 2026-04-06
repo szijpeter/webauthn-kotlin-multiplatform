@@ -9,8 +9,8 @@ import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
+import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.serialization.WebAuthnDtoMapper
-import kotlinx.coroutines.CancellationException
 
 internal class PasskeyCeremonyRunner(
     private val authenticatorAdapter: AuthenticatorAdapter,
@@ -49,9 +49,8 @@ internal class PasskeyCeremonyRunner(
     private suspend fun resolveRegisterOptions(
         payload: RegistrationStartPayload,
     ): PublicKeyCredentialCreationOptions? {
-        val result = runCatching { serverClient.getRegisterOptions(payload) }
+        val result = runSuspendCatching { serverClient.getRegisterOptions(payload) }
             .getOrElse { error ->
-                if (error is CancellationException) throw error
                 stderr.appendLine("Failed to fetch registration options: ${error.message}")
                 return null
             }
@@ -67,9 +66,8 @@ internal class PasskeyCeremonyRunner(
     private suspend fun resolveAuthenticationOptions(
         payload: AuthenticationStartPayload,
     ): PublicKeyCredentialRequestOptions? {
-        val result = runCatching { serverClient.getSignInOptions(payload) }
+        val result = runSuspendCatching { serverClient.getSignInOptions(payload) }
             .getOrElse { error ->
-                if (error is CancellationException) throw error
                 stderr.appendLine("Failed to fetch authentication options: ${error.message}")
                 return null
             }
@@ -87,9 +85,8 @@ internal class PasskeyCeremonyRunner(
         options: PublicKeyCredentialCreationOptions,
     ): RegistrationResponse? {
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
-        val responseDto = runCatching { authenticatorAdapter.createCredential(origin, optionsDto) }
+        val responseDto = runSuspendCatching { authenticatorAdapter.createCredential(origin, optionsDto) }
             .getOrElse { error ->
-                if (error is CancellationException) throw error
                 stderr.appendLine("Native authenticator registration failed: ${error.message}")
                 return null
             }
@@ -107,9 +104,8 @@ internal class PasskeyCeremonyRunner(
         options: PublicKeyCredentialRequestOptions,
     ): AuthenticationResponse? {
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
-        val responseDto = runCatching { authenticatorAdapter.getAssertion(origin, optionsDto) }
+        val responseDto = runSuspendCatching { authenticatorAdapter.getAssertion(origin, optionsDto) }
             .getOrElse { error ->
-                if (error is CancellationException) throw error
                 stderr.appendLine("Native authenticator authentication failed: ${error.message}")
                 return null
             }
@@ -128,14 +124,13 @@ internal class PasskeyCeremonyRunner(
         response: RegistrationResponse,
     ): Int {
         val challenge = options.challenge.value.encoded()
-        val finish = runCatching {
+        val finish = runSuspendCatching {
             serverClient.finishRegister(
                 params = payload,
                 response = response,
                 challengeAsBase64Url = challenge,
             )
         }.getOrElse { error ->
-            if (error is CancellationException) throw error
             stderr.appendLine("Registration finish call failed: ${error.message}")
             return EXIT_FINISH_FAILURE
         }
@@ -158,14 +153,13 @@ internal class PasskeyCeremonyRunner(
         response: AuthenticationResponse,
     ): Int {
         val challenge = options.challenge.value.encoded()
-        val finish = runCatching {
+        val finish = runSuspendCatching {
             serverClient.finishSignIn(
                 params = payload,
                 response = response,
                 challengeAsBase64Url = challenge,
             )
         }.getOrElse { error ->
-            if (error is CancellationException) throw error
             stderr.appendLine("Authentication finish call failed: ${error.message}")
             return EXIT_FINISH_FAILURE
         }
