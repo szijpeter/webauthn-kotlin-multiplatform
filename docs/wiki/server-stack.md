@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-04-06
 
-The server side centers on standards-first ceremony validation and JVM-focused orchestration.
+The server-side stack centers on standards-first ceremony validation and JVM-focused orchestration.
 
 ## Core Shape
 
