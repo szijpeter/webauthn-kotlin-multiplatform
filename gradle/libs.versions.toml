@@ -31,7 +31,7 @@ postgresql = "42.7.10"
 junit4 = "4.13.2"
 robolectric = "4.16.1"
 mockk = "1.14.9"
-koin = "4.2.0"
+koin = "4.2.1"
 navigation3 = "1.1.0-beta01"
 compose-multiplatform-lifecycle = "2.10.0"
 
