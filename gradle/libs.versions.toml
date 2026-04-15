@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.20"
-agp = "9.1.0"
+agp = "9.1.1"
 ktor = "3.4.2"
 serialization = "1.11.0"
 coroutines = "1.10.2"
