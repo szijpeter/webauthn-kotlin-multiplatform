@@ -24,6 +24,11 @@ flowchart LR
 - APIs are public and intended for reuse by parser modules.
 - Semantics remain strict by design (minimal-encoding rejection and overflow-safe bounds checks).
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, shared CBOR parser primitive module.

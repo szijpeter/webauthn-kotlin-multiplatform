@@ -57,6 +57,11 @@ This module provides coroutine-safe alternatives that rethrow `CancellationExcep
 - This module does not define domain error models.
 - It only standardizes coroutine/failure boundary mechanics.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, shared runtime helper module.

@@ -125,6 +125,11 @@ Usage notes:
 - No backend validation/crypto behavior.
 - Platform bridge implementation is provided by target-specific modules.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, shared orchestration layer for client passkey ceremonies.

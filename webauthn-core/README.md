@@ -99,6 +99,11 @@ val result = prfOnly.validateAuthenticationExtensions(inputs, outputs)
 - No JSON/CBOR parsing or transport DTO mapping.
 - No crypto backend execution (delegated to `webauthn-crypto-api` implementations).
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Production-leaning validation engine.

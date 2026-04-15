@@ -79,6 +79,11 @@ API notes:
 - No JSON/CBOR mapping by itself (use `webauthn-serialization-kotlinx` when needed).
 - No RP hash/signature/attestation verification logic.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Production-leaning foundational contract module.

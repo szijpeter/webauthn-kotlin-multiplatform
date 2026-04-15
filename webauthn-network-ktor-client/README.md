@@ -44,6 +44,11 @@ flowchart LR
 - Retry, timeout, auth headers, and observability remain caller-owned through the provided `HttpClient`.
 - `KtorOriginMetadataProvider` fails closed (returns empty related origins) on transport/parse failures, but coroutine cancellation is always rethrown.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Production-leaning transport helper with explicit backend contract support.

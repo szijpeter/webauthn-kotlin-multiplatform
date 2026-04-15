@@ -47,6 +47,11 @@ flowchart LR
 - On iOS 18+ runtime APIs, assertion PRF input supports shared `prf.eval` and per-credential `prf.evalByCredential`; malformed keys are rejected as invalid options.
 - `attestation` is forwarded as requested by callers; this module does not silently coerce `direct` to `none`. Apple platform behavior still determines the concrete attestation object returned at runtime.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, thin iOS bridge on top of shared client orchestration.

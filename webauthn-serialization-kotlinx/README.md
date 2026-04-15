@@ -42,6 +42,11 @@ flowchart LR
 - `allowCredentials: null` is accepted only as a compatibility decode shim and normalized to an empty list; canonical JSON should still treat `allowCredentials` as an optional sequence (not `null`).
 - Keep model and mapper versions aligned (BOM recommended).
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, strict mapper validation with CBOR/COSE handling.
