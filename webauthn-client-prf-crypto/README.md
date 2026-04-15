@@ -102,6 +102,11 @@ Important usage notes:
 - `@ExperimentalWebAuthnL3Api` applies.
 - No key rotation, secure enclave policy, or salt migration framework.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, Signum-backed PRF crypto utility layer.

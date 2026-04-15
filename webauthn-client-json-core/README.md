@@ -38,6 +38,11 @@ flowchart LR
 - JSON entrypoints use the same validated DTO mapping surface as the typed client APIs; malformed request JSON still fails as `InvalidOptions`.
 - Keep mapper and model versions aligned with BOM to avoid shape drift.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, optional JSON interop layer.

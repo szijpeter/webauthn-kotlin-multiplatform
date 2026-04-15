@@ -92,6 +92,11 @@ Usage notes:
 - Does not replace backend ceremony verification/policy decisions.
 - Does not own networking retry/session policy.
 
+## iOS targets
+
+- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+
 ## Status
 
 Beta, stable helper layer for Compose-first passkey flows.
