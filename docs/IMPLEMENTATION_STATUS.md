@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-04-15
+Last updated: 2026-04-17
 
 ## Status Legend
 
@@ -14,6 +14,7 @@ Last updated: 2026-04-15
 
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - Apple X64 target alignment update (2026-04-15): removed `iosX64()` targets across core/client/network/sample modules to align with upstream Signum 3.21.0 / Supreme 0.13.0 dropping Apple X64 variants; active iOS targets remain `iosArm64` and `iosSimulatorArm64`.
+- Roadmap synchronization update (2026-04-17): phases 1 and 5 are now explicitly tracked as completed baselines, while active execution is centered on Phase 6 discoverable credentials, `credProps`, and account lifecycle contracts/signaling guidance.
 - Conformance hardening update (2026-04-03): added RFC-style golden coverage for base64url/CBOR/authenticator data parsing, offline registration and assertion ceremony fixtures, JVM-only differential checks against WebAuthn4J and Yubico server behavior, and client JSON interop checks for Yubico-generated browser payloads; serialization now rejects trailing `authenticatorData` bytes and malformed extension CBOR deterministically before ceremony verification.
 - PR #92 review follow-up (2026-03-29): reverted low-value one-off helper extractions in client adapters, hardened `InMemoryCredentialStore` concurrency (`computeIfAbsent` + concurrent key set), and reused precomputed credential-id encoding in Exposed insert path; no public API contract change intended.
 - Vertical chaining + callable-reference style consistency pass (2026-03-29): applied readability-only formatting and `::` adoption across client/network/serialization/server/store modules and related tests, with minimal crypto-internal touch-ups; no runtime/API behavior changes intended.
@@ -64,12 +65,14 @@ Last updated: 2026-04-15
 - Extension validation hardening (2026-03-29): PRF authentication validation now only checks global `eval.second` requirement instead of incorrectly validating per-credential `evalByCredential` entries without knowing which credential was selected; this prevents false-positive validation failures when multiple credentials have different PRF requirements.
 - Client capability model simplification (2026-03-29): `PasskeyCapability` now uses two explicit variants only (`Extension`, `PlatformFeature`), `PasskeyCapabilities` stores supported values as a set with normalized key-based lookup, and duplicate capability keys now fail fast to keep integrator capability checks deterministic and unambiguous.
 
-## Plan Progress (Estimated)
+## Roadmap Phase Status (2026-04-17)
 
-- Phase 1 (Client readiness/interoperability): ~75% complete.
-- Phase 2 (Conformance/Security): ~85% complete.
-- Phase 3 (Server robustness): ~80% complete.
-- Phase 4-5 (DX/release): in progress.
+- Phase 1: Completed baseline; maintenance-only follow-up.
+- Phase 2: Active conformance/security hardening.
+- Phase 3: Active server robustness/store hardening.
+- Phase 4: Active API and documentation clarity hardening.
+- Phase 5: Completed baseline for `v0.1.0`; ongoing release discipline remains active.
+- Phase 6: Active execution (`P6-003` discoverable auth, `P6-004` `credProps`, `P6-005` account lifecycle/signaling).
 
 ## Module Maturity
 
@@ -108,8 +111,9 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 Pending high-impact coverage:
 
-- L3 extension runtime hardening (PRF computation context hooks and richer authenticator interoperability vectors)
-- broader reference-fixture matrix for additional authenticators, attestation formats, and non-ES256 algorithms
+- Discoverable credential username-less start/finish flow coverage with parity on negative-path behavior.
+- Standards-first extension expansion beyond `prf`/`largeBlob`, starting with `credProps`.
+- Account lifecycle delete/recovery/signaling coverage across store contracts and sample UX guidance.
 
 ## Current Quality Gates
 

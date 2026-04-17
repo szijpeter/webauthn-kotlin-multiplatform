@@ -1,6 +1,6 @@
 # Status And Roadmap
 
-Last reviewed: 2026-04-06
+Last reviewed: 2026-04-17
 
 This page compresses the current project maturity into a quick scan. For exact wording and deeper detail, follow the canonical source links below.
 
@@ -11,6 +11,7 @@ This page compresses the current project maturity into a quick scan. For exact w
 - Client-side shared orchestration plus Android and iOS bridges are in place and usable.
 - Publication, compatibility baselines, and Maven Central workflow are active.
 - The project is publicly released but still pre-1.0.
+- Roadmap execution focus is now Phase 6 (discoverable credentials, `credProps`, account lifecycle/signaling); earlier Phase 1 and Phase 5 baselines are treated as completed/maintenance.
 
 ## Maturity Pattern
 
@@ -20,9 +21,9 @@ This page compresses the current project maturity into a quick scan. For exact w
 
 ## Near-Term Priorities
 
-- continue attestation trust-path hardening, especially remaining matrix depth
-- keep assertion and interoperability vector coverage strong while dependencies evolve
-- keep outreach-facing and adoption-facing docs aligned with sample and release evolution
+- deliver discoverable-credential username-less flow design plus conformance and negative-path tests
+- execute standards-first extension expansion with `credProps` as the next candidate after `prf`/`largeBlob`
+- define additive account lifecycle contracts plus provider-consistency signaling guidance for delete/recovery paths
 
 ## How To Read Change Pressure
 
