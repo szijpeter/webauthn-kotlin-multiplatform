@@ -64,7 +64,7 @@ class H2StoreTestAdapter private constructor(
                         ceremony_type VARCHAR NOT NULL,
                         rp_id VARCHAR NOT NULL,
                         origin_value VARCHAR NOT NULL,
-                        user_name VARCHAR NOT NULL,
+                        user_name VARCHAR,
                         created_at_epoch_ms BIGINT NOT NULL,
                         expires_at_epoch_ms BIGINT NOT NULL,
                         user_verification VARCHAR,

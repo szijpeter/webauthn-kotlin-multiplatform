@@ -45,7 +45,7 @@ internal object ChallengeSessions : Table("challenge_sessions") {
     val ceremonyType: Column<String> = varchar("ceremony_type", 50)
     val rpId: Column<String> = varchar("rp_id", 255)
     val originValue: Column<String> = varchar("origin_value", 1024)
-    val userName: Column<String> = varchar("user_name", 255)
+    val userName: Column<String?> = varchar("user_name", 255).nullable()
     val createdAtEpochMs: Column<Long> = long("created_at_epoch_ms")
     val expiresAtEpochMs: Column<Long> = long("expires_at_epoch_ms")
     val userVerification: Column<String?> = varchar("user_verification", 50).nullable()

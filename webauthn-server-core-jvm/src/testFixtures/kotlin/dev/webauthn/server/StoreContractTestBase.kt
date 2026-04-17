@@ -307,6 +307,31 @@ abstract class StoreContractTestBase {
         }
     }
 
+    @Test
+    fun challengeStoreRoundTripsDiscoverableAuthenticationSession() = runBlocking {
+        withStoreFixture { fixture ->
+            val challenge = Challenge.fromBytes(ByteArray(32) { 0x2A })
+            val session = ChallengeSession(
+                challenge = challenge,
+                rpId = rpId,
+                origin = origin,
+                userName = null,
+                createdAtEpochMs = 1234L,
+                expiresAtEpochMs = 5678L,
+                type = CeremonyType.AUTHENTICATION,
+            )
+
+            fixture.challengeStore.put(session)
+            val consumed = fixture.challengeStore.consume(challenge, CeremonyType.AUTHENTICATION)
+
+            assertEquals(session.challenge, consumed?.challenge)
+            assertEquals(session.rpId, consumed?.rpId)
+            assertEquals(null, consumed?.userName)
+            val missing = fixture.challengeStore.consume(challenge, CeremonyType.AUTHENTICATION)
+            assertEquals(null, missing, "Session should be removed after consume")
+        }
+    }
+
     protected fun authenticationAuthenticatorDataBytes(
         rpIdHash: ByteArray,
         flags: Int,

@@ -1,19 +1,17 @@
 public final class dev/webauthn/network/AuthenticationStartPayload {
 	public static final field Companion Ldev/webauthn/network/AuthenticationStartPayload$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Ljava/lang/String;
-	public final fun component5 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/network/AuthenticationStartPayload;
-	public static synthetic fun copy$default (Ldev/webauthn/network/AuthenticationStartPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILjava/lang/Object;)Ldev/webauthn/network/AuthenticationStartPayload;
+	public final fun component4 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/network/AuthenticationStartPayload;
+	public static synthetic fun copy$default (Ldev/webauthn/network/AuthenticationStartPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILjava/lang/Object;)Ldev/webauthn/network/AuthenticationStartPayload;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getExtensions ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
 	public final fun getOrigin ()Ljava/lang/String;
 	public final fun getRpId ()Ljava/lang/String;
-	public final fun getUserHandle ()Ljava/lang/String;
 	public final fun getUserName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -73,20 +71,22 @@ public final class dev/webauthn/network/KtorPasskeyServerClient : dev/webauthn/c
 
 public final class dev/webauthn/network/RegistrationStartPayload {
 	public static final field Companion Ldev/webauthn/network/RegistrationStartPayload$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Ljava/lang/String;
-	public final fun component7 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/network/RegistrationStartPayload;
-	public static synthetic fun copy$default (Ldev/webauthn/network/RegistrationStartPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILjava/lang/Object;)Ldev/webauthn/network/RegistrationStartPayload;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;)Ldev/webauthn/network/RegistrationStartPayload;
+	public static synthetic fun copy$default (Ldev/webauthn/network/RegistrationStartPayload;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;ILjava/lang/Object;)Ldev/webauthn/network/RegistrationStartPayload;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getExtensions ()Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;
 	public final fun getOrigin ()Ljava/lang/String;
+	public final fun getResidentKey ()Ljava/lang/String;
 	public final fun getRpId ()Ljava/lang/String;
 	public final fun getRpName ()Ljava/lang/String;
 	public final fun getUserDisplayName ()Ljava/lang/String;

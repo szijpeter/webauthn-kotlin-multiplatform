@@ -39,7 +39,6 @@ internal class PasskeyCeremonyRunner(
             rpId = command.common.rpId,
             origin = command.common.origin,
             userName = command.userName,
-            userHandle = command.userHandle,
         )
 
         val options = resolveAuthenticationOptions(startPayload) ?: return EXIT_OPTIONS_FAILURE

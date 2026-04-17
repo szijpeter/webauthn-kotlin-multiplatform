@@ -15,6 +15,7 @@ Last updated: 2026-04-17
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - Apple X64 target alignment update (2026-04-15): removed `iosX64()` targets across core/client/network/sample modules to align with upstream Signum 3.21.0 / Supreme 0.13.0 dropping Apple X64 variants; active iOS targets remain `iosArm64` and `iosSimulatorArm64`.
 - Roadmap synchronization update (2026-04-17): phases 1 and 5 are now explicitly tracked as completed baselines, while active execution is centered on Phase 6 discoverable credentials, `credProps`, and account lifecycle contracts/signaling guidance.
+- P6-003 implementation update (2026-04-17): authentication start is now unified with optional `userName` across server core + Ktor route + Ktor transport, challenge/session stores support nullable authentication `userName`, and named vs discoverable finish behavior is explicitly validated (credential ownership enforced for named mode, credential-id resolution for discoverable mode). Auth-start transport payloads dropped `userHandle`; sample sign-in now defaults to discoverable start while sample registration requests `residentKey=required`.
 - Conformance hardening update (2026-04-03): added RFC-style golden coverage for base64url/CBOR/authenticator data parsing, offline registration and assertion ceremony fixtures, JVM-only differential checks against WebAuthn4J and Yubico server behavior, and client JSON interop checks for Yubico-generated browser payloads; serialization now rejects trailing `authenticatorData` bytes and malformed extension CBOR deterministically before ceremony verification.
 - PR #92 review follow-up (2026-03-29): reverted low-value one-off helper extractions in client adapters, hardened `InMemoryCredentialStore` concurrency (`computeIfAbsent` + concurrent key set), and reused precomputed credential-id encoding in Exposed insert path; no public API contract change intended.
 - Vertical chaining + callable-reference style consistency pass (2026-03-29): applied readability-only formatting and `::` adoption across client/network/serialization/server/store modules and related tests, with minimal crypto-internal touch-ups; no runtime/API behavior changes intended.
@@ -111,7 +112,7 @@ Implemented and traced in `spec-notes/webauthn-l3-validation-map.md`:
 
 Pending high-impact coverage:
 
-- Discoverable credential username-less start/finish flow coverage with parity on negative-path behavior.
+- Broader discoverable credential conformance matrix (additional fixture/differential vectors across adapters and stores).
 - Standards-first extension expansion beyond `prf`/`largeBlob`, starting with `credProps`.
 - Account lifecycle delete/recovery/signaling coverage across store contracts and sample UX guidance.
 

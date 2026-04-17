@@ -40,6 +40,9 @@ flowchart LR
 ## Pitfalls and limits
 
 - Route/path assumptions are explicit; if your backend payloads differ from the default sample contract, provide your own `PasskeyServerClient` implementation instead of trying to patch this transport.
+- `AuthenticationStartPayload.userName` is optional to support both identified and discoverable authentication starts on one endpoint.
+- Authentication-start payloads intentionally exclude `userHandle`; registration-start still carries `userHandle`.
+- `RegistrationStartPayload.residentKey` is optional and forwarded to compatible server contracts when present.
 - You still need to choose/install an engine dependency (`ktor-client-cio`, Darwin, etc.) in your app runtime.
 - Retry, timeout, auth headers, and observability remain caller-owned through the provided `HttpClient`.
 - `KtorOriginMetadataProvider` fails closed (returns empty related origins) on transport/parse failures, but coroutine cancellation is always rethrown.

@@ -176,7 +176,7 @@ class WebAuthnKtorRoutesTest {
     }
 
     @Test
-    fun authenticationStartRouteAcceptsOptionalUserHandleField() = testApplication {
+    fun authenticationStartRouteSupportsDiscoverableModeWithoutUserName() = testApplication {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
@@ -224,15 +224,60 @@ class WebAuthnKtorRoutesTest {
                 """
                 {
                   "rpId": "example.com",
-                  "origin": "https://example.com",
-                  "userName": "alice",
-                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ"
+                  "origin": "https://example.com"
                 }
                 """.trimIndent(),
             )
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @Test
+    fun registrationStartRouteRejectsInvalidResidentKey() = testApplication {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        application {
+            install(ContentNegotiation) { json() }
+            installWebAuthnRoutes(registrationService, authenticationService)
+        }
+
+        val response = client.post("/webauthn/registration/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "rpName": "Example",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "userDisplayName": "Alice",
+                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ",
+                  "residentKey": "sometimes"
+                }
+                """.trimIndent(),
+            )
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @Test

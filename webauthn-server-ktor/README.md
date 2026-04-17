@@ -36,6 +36,11 @@ flowchart LR
 ## Pitfalls and limits
 
 - Route shape is opinionated; use custom routes if your API contract differs.
+- `POST /webauthn/authentication/start` uses a single payload shape with optional `userName`:
+  - present `userName`: identified-account flow
+  - omitted/null `userName`: discoverable flow
+- Authentication-start payloads intentionally do not include `userHandle`.
+- Registration-start payloads accept optional `residentKey` (`discouraged`, `preferred`, `required`) and pass it through to server-core options assembly.
 - Security still depends on your deployment controls (TLS, auth/session, CSRF posture).
 
 ## Status

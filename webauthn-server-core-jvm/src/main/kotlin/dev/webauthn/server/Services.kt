@@ -17,6 +17,7 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
+import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
@@ -110,9 +111,11 @@ public class RegistrationService(
             is ValidationResult.Invalid -> return result
         }
 
-        val userHandle = userAccountStore.findByName(session.userName)?.id
-            ?: return failure("userName", "Unknown user")
-        val options = registrationOptionsFor(session, userHandle)
+        val sessionUser = when (val result = resolveRegistrationSessionUser(session, userAccountStore)) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
+        }
+        val options = registrationOptionsFor(session, sessionUser.userHandle, sessionUser.userName)
 
         val validation = WebAuthnCoreValidator.validateRegistration(
             RegistrationValidationInput(
@@ -166,9 +169,9 @@ public class RegistrationService(
                     rpId = session.rpId,
                     rpName = session.rpId.value,
                     origin = session.origin,
-                    userName = session.userName,
-                    userDisplayName = session.userName,
-                    userHandle = userHandle,
+                    userName = sessionUser.userName,
+                    userDisplayName = sessionUser.userName,
+                    userHandle = sessionUser.userHandle,
                 ),
             ),
         )
@@ -191,8 +194,10 @@ public class AuthenticationService(
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
 ) {
     public suspend fun start(request: AuthenticationStartRequest): ValidationResult<PublicKeyCredentialRequestOptions> {
-        val user = userAccountStore.findByName(request.userName)
-            ?: return failure("userName", "Unknown user")
+        val user = request.userName?.let { userName ->
+            userAccountStore.findByName(userName)
+                ?: return failure("userName", "Unknown user")
+        }
 
         val challenge = ChallengeGenerator.generate()
         challengeStore.put(
@@ -209,7 +214,7 @@ public class AuthenticationService(
             ),
         )
 
-        val credentials = credentialStore.findByUserId(user.id)
+        val credentials = user?.let { credentialStore.findByUserId(it.id) }.orEmpty()
 
         return ValidationResult.Valid(
             PublicKeyCredentialRequestOptions(
@@ -249,10 +254,28 @@ public class AuthenticationService(
             is ValidationResult.Invalid -> return result
         }
 
-        val storedCredential = credentialStore.findById(response.credentialId)
-            ?: return failure("credentialId", "Unknown credential")
+        val credentialContext = when (
+            val result = resolveAuthenticationCredentialContext(
+                session = session,
+                response = response,
+                credentialStore = credentialStore,
+                userAccountStore = userAccountStore,
+            )
+        ) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
+        }
+        val storedCredential = credentialContext.storedCredential
+        val allowCredentials = credentialContext.allowCredentials
 
-        val requestOptions = authenticationOptionsFor(session, storedCredential)
+        val requestOptions = authenticationOptionsFor(session, allowCredentials)
+        val allowedCredentialResult = WebAuthnCoreValidator.requireAllowedCredential(
+            response = response,
+            allowedCredentialIds = allowCredentials.map { it.id }.toSet(),
+        )
+        if (allowedCredentialResult is ValidationResult.Invalid) {
+            return allowedCredentialResult
+        }
 
         val validation = WebAuthnCoreValidator.validateAuthentication(
             AuthenticationValidationInput(
@@ -295,12 +318,9 @@ public class AuthenticationService(
 
         credentialStore.updateSignCount(response.credentialId, response.authenticatorData.signCount)
 
-        @OptIn(ExperimentalWebAuthnL3Api::class)
-        for (hook in extensionHooks) {
-            val hookResult = hook.validateAuthenticationExtensions(requestOptions.extensions, response.extensions)
-            if (hookResult is ValidationResult.Invalid) {
-                return hookResult
-            }
+        when (val extensionResult = validateAuthenticationExtensionHooks(extensionHooks, requestOptions, response)) {
+            is ValidationResult.Valid -> Unit
+            is ValidationResult.Invalid -> return extensionResult
         }
 
         return ValidationResult.Valid(response)
@@ -316,13 +336,14 @@ internal fun buildSignedAuthenticationData(response: AuthenticationResponse): By
 private fun registrationOptionsFor(
     session: ChallengeSession,
     userHandle: UserHandle,
+    userName: String,
 ): PublicKeyCredentialCreationOptions {
     return PublicKeyCredentialCreationOptions(
         rp = PublicKeyCredentialRpEntity(id = session.rpId, name = session.rpId.value),
         user = PublicKeyCredentialUserEntity(
             id = userHandle,
-            name = session.userName,
-            displayName = session.userName,
+            name = userName,
+            displayName = userName,
         ),
         challenge = session.challenge,
         pubKeyCredParams = supportedCredentialParameters(),
@@ -332,14 +353,80 @@ private fun registrationOptionsFor(
 
 private fun authenticationOptionsFor(
     session: ChallengeSession,
-    storedCredential: StoredCredential,
+    allowCredentials: List<PublicKeyCredentialDescriptor>,
 ): PublicKeyCredentialRequestOptions {
     return PublicKeyCredentialRequestOptions(
         challenge = session.challenge,
         rpId = session.rpId,
-        allowCredentials = listOf(defaultCredentialDescriptor(storedCredential)),
+        allowCredentials = allowCredentials,
         extensions = session.extensions,
     )
+}
+
+private data class RegistrationSessionUser(
+    val userName: String,
+    val userHandle: UserHandle,
+)
+
+private suspend fun resolveRegistrationSessionUser(
+    session: ChallengeSession,
+    userAccountStore: UserAccountStore,
+): ValidationResult<RegistrationSessionUser> {
+    val userName = session.userName ?: return failure("userName", "Unknown user")
+    val userHandle = userAccountStore.findByName(userName)?.id ?: return failure("userName", "Unknown user")
+    return ValidationResult.Valid(RegistrationSessionUser(userName = userName, userHandle = userHandle))
+}
+
+private data class AuthenticationCredentialContext(
+    val storedCredential: StoredCredential,
+    val allowCredentials: List<PublicKeyCredentialDescriptor>,
+)
+
+private suspend fun resolveAuthenticationCredentialContext(
+    session: ChallengeSession,
+    response: AuthenticationResponse,
+    credentialStore: CredentialStore,
+    userAccountStore: UserAccountStore,
+): ValidationResult<AuthenticationCredentialContext> {
+    val storedCredential = credentialStore.findById(response.credentialId)
+        ?: return failure("credentialId", "Unknown credential")
+    if (storedCredential.rpId != session.rpId) {
+        return failure("credentialId", "Credential rpId does not match ceremony rpId")
+    }
+
+    val userName = session.userName
+    val allowCredentials = if (userName == null) {
+        emptyList()
+    } else {
+        val user = userAccountStore.findByName(userName)
+            ?: return failure("userName", "Unknown user")
+        if (storedCredential.userId != user.id) {
+            return failure("credentialId", "Credential does not belong to authenticated user")
+        }
+        credentialStore.findByUserId(user.id).map(::defaultCredentialDescriptor)
+    }
+
+    return ValidationResult.Valid(
+        AuthenticationCredentialContext(
+            storedCredential = storedCredential,
+            allowCredentials = allowCredentials,
+        ),
+    )
+}
+
+@OptIn(ExperimentalWebAuthnL3Api::class)
+private fun validateAuthenticationExtensionHooks(
+    extensionHooks: List<WebAuthnExtensionHook>,
+    requestOptions: PublicKeyCredentialRequestOptions,
+    response: AuthenticationResponse,
+): ValidationResult<Unit> {
+    for (hook in extensionHooks) {
+        val hookResult = hook.validateAuthenticationExtensions(requestOptions.extensions, response.extensions)
+        if (hookResult is ValidationResult.Invalid) {
+            return hookResult
+        }
+    }
+    return ValidationResult.Valid(Unit)
 }
 
 private fun supportedCredentialParameters(): List<PublicKeyCredentialParameters> {

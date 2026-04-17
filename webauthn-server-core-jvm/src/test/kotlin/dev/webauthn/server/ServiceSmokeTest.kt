@@ -313,6 +313,298 @@ class ServiceSmokeTest {
     }
 
     @Test
+    fun authenticationStartIncludesAllowCredentialsWhenUserNamePresent() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpId = RpId.parseOrThrow("example.com")
+        val origin = Origin.parseOrThrow("https://example.com")
+        val userHandle = UserHandle.fromBytes(ByteArray(16) { 0x11 })
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x21 })
+
+        userStore.save(UserAccount(id = userHandle, name = "alice", displayName = "Alice"))
+        credentialStore.save(
+            StoredCredential(
+                credentialId = credentialId,
+                userId = userHandle,
+                rpId = rpId,
+                publicKeyCose = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
+                signCount = 0,
+            ),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val result = authenticationService.start(
+            AuthenticationStartRequest(
+                rpId = rpId,
+                origin = origin,
+                userName = "alice",
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(1, result.value.allowCredentials.size)
+        assertEquals(credentialId, result.value.allowCredentials.single().id)
+    }
+
+    @Test
+    fun authenticationStartKeepsAllowCredentialsEmptyWhenUserNameMissing() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpId = RpId.parseOrThrow("example.com")
+        val origin = Origin.parseOrThrow("https://example.com")
+        val userHandle = UserHandle.fromBytes(ByteArray(16) { 0x12 })
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x22 })
+
+        userStore.save(UserAccount(id = userHandle, name = "alice", displayName = "Alice"))
+        credentialStore.save(
+            StoredCredential(
+                credentialId = credentialId,
+                userId = userHandle,
+                rpId = rpId,
+                publicKeyCose = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
+                signCount = 0,
+            ),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val result = authenticationService.start(
+            AuthenticationStartRequest(
+                rpId = rpId,
+                origin = origin,
+                userName = null,
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+        assertTrue(result.value.allowCredentials.isEmpty())
+    }
+
+    @Test
+    fun authenticationFinishDiscoverableModeSucceedsForKnownCredential() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = JvmRpIdHasher()
+        val rpId = RpId.parseOrThrow("example.com")
+        val origin = Origin.parseOrThrow("https://example.com")
+        val challenge = Challenge.fromBytes(ByteArray(32) { 0x31 })
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x41 })
+
+        credentialStore.save(
+            StoredCredential(
+                credentialId = credentialId,
+                userId = UserHandle.fromBytes(ByteArray(16) { 0x51 }),
+                rpId = rpId,
+                publicKeyCose = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
+                signCount = 1,
+            ),
+        )
+        challengeStore.put(
+            ChallengeSession(
+                challenge = challenge,
+                rpId = rpId,
+                origin = origin,
+                userName = null,
+                createdAtEpochMs = 1_000,
+                expiresAtEpochMs = 61_000,
+                type = CeremonyType.AUTHENTICATION,
+            ),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = rpIdHasher,
+            nowEpochMs = { 2_000 },
+        )
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId(rpId.value),
+            flags = 0x01,
+            signCount = 2,
+        )
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = credentialId.value.encoded(),
+                    rawId = credentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = challenge,
+                    origin = origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Valid)
+    }
+
+    @Test
+    fun authenticationFinishDiscoverableModeFailsForUnknownCredential() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpId = RpId.parseOrThrow("example.com")
+        val origin = Origin.parseOrThrow("https://example.com")
+        val challenge = Challenge.fromBytes(ByteArray(32) { 0x32 })
+        val unknownCredentialId = CredentialId.fromBytes(ByteArray(16) { 0x42 })
+
+        challengeStore.put(
+            ChallengeSession(
+                challenge = challenge,
+                rpId = rpId,
+                origin = origin,
+                userName = null,
+                createdAtEpochMs = 1_000,
+                expiresAtEpochMs = 61_000,
+                type = CeremonyType.AUTHENTICATION,
+            ),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = JvmRpIdHasher(),
+            nowEpochMs = { 2_000 },
+        )
+
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = unknownCredentialId.value.encoded(),
+                    rawId = unknownCredentialId.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 1 }).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = challenge,
+                    origin = origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("credentialId", result.errors.single().field)
+    }
+
+    @Test
+    fun authenticationFinishNamedModeRejectsCredentialFromDifferentUser() = runBlocking {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+        val rpIdHasher = JvmRpIdHasher()
+        val rpId = RpId.parseOrThrow("example.com")
+        val origin = Origin.parseOrThrow("https://example.com")
+        val challenge = Challenge.fromBytes(ByteArray(32) { 0x33 })
+        val aliceHandle = UserHandle.fromBytes(ByteArray(16) { 0x61 })
+        val bobHandle = UserHandle.fromBytes(ByteArray(16) { 0x62 })
+        val aliceCredential = CredentialId.fromBytes(ByteArray(16) { 0x71 })
+        val bobCredential = CredentialId.fromBytes(ByteArray(16) { 0x72 })
+
+        userStore.save(UserAccount(id = aliceHandle, name = "alice", displayName = "Alice"))
+        userStore.save(UserAccount(id = bobHandle, name = "bob", displayName = "Bob"))
+        credentialStore.save(
+            StoredCredential(
+                credentialId = aliceCredential,
+                userId = aliceHandle,
+                rpId = rpId,
+                publicKeyCose = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
+                signCount = 1,
+            ),
+        )
+        credentialStore.save(
+            StoredCredential(
+                credentialId = bobCredential,
+                userId = bobHandle,
+                rpId = rpId,
+                publicKeyCose = CosePublicKey.fromBytes(byteArrayOf(0xA1.toByte(), 0x01, 0x02)),
+                signCount = 1,
+            ),
+        )
+        challengeStore.put(
+            ChallengeSession(
+                challenge = challenge,
+                rpId = rpId,
+                origin = origin,
+                userName = "alice",
+                createdAtEpochMs = 1_000,
+                expiresAtEpochMs = 61_000,
+                type = CeremonyType.AUTHENTICATION,
+            ),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = rpIdHasher,
+            nowEpochMs = { 2_000 },
+        )
+
+        val authData = authenticationAuthenticatorDataBytes(
+            rpIdHash = rpIdHasher.hashRpId(rpId.value),
+            flags = 0x01,
+            signCount = 2,
+        )
+        val result = authenticationService.finish(
+            AuthenticationFinishRequest(
+                responseDto = AuthenticationResponseDto(
+                    id = bobCredential.value.encoded(),
+                    rawId = bobCredential.value.encoded(),
+                    response = AuthenticationResponsePayloadDto(
+                        clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
+                        authenticatorData = Base64UrlBytes.fromBytes(authData).encoded(),
+                        signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
+                        userHandle = null,
+                    ),
+                ),
+                clientData = CollectedClientData(
+                    type = "webauthn.get",
+                    challenge = challenge,
+                    origin = origin,
+                ),
+            ),
+        )
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("credentialId", result.errors.single().field)
+        assertTrue(result.errors.single().message.contains("does not belong"))
+    }
+
+    @Test
     fun registrationFinishFailsForRpIdHashMismatch() = runBlocking {
         val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
