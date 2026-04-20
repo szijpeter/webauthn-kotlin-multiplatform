@@ -16,7 +16,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.h2)
     testImplementation(libs.kotlinx.serialization.json)
-    testImplementation("com.webauthn4j:webauthn4j-core:0.31.2.RELEASE")
+    testImplementation("com.webauthn4j:webauthn4j-core:0.31.3.RELEASE")
     testImplementation("com.yubico:webauthn-server-core:2.8.1")
     testFixturesApi(project(":webauthn-core"))
     testFixturesApi(project(":webauthn-crypto-api"))
