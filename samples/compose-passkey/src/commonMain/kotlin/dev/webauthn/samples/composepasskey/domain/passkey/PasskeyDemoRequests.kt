@@ -20,18 +20,17 @@ internal fun PasskeyDemoConfig.toRegistrationStartPayload(): RegistrationStartPa
         userName = userName,
         userDisplayName = userName,
         userHandle = stableUserHandle,
+        residentKey = "required",
     )
 }
 
 internal fun PasskeyDemoConfig.toAuthenticationStartPayload(
     prfSalt: Base64UrlBytes? = null,
 ): AuthenticationStartPayload {
-    val stableUserHandle = normalizedUserHandle(userHandle)
     return AuthenticationStartPayload(
         rpId = rpId,
         origin = origin,
-        userName = userName,
-        userHandle = stableUserHandle,
+        userName = null,
         extensions = prfSalt?.let { salt ->
             AuthenticationExtensionsClientInputsDto(
                 prf = PrfExtensionInputDto(

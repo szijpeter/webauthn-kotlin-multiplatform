@@ -8,6 +8,9 @@ Typed JVM ceremony services and store contracts for WebAuthn registration and au
 - Challenge, credential, and user-account store interfaces
 - In-memory store implementations for development/testing
 - Ceremony orchestration decoupled from web framework concerns
+- Unified authentication start semantics:
+  - `AuthenticationStartRequest.userName != null`: identified-account flow with populated `allowCredentials`
+  - `AuthenticationStartRequest.userName == null`: discoverable flow with empty `allowCredentials`
 
 ## When to use
 
@@ -63,6 +66,7 @@ flowchart LR
 - Services depend on correctly implemented store semantics (challenge expiry, credential lookup, counter updates).
 - Registration and authentication keep shared fail-fast origin/session handling internally, so callers should expect matching origin-mismatch behavior across both ceremony types.
 - `RegistrationService.finish()` now returns a typed validation error when the user disappears between start and finish instead of throwing from the user store lookup.
+- Authentication challenge sessions allow nullable `userName` for discoverable ceremonies, while named-mode finish still enforces credential ownership for the resolved account.
 - This module does not define your HTTP contract by itself.
 
 ## Status

@@ -54,7 +54,8 @@ class PasskeyDemoFlowTest {
         val authenticationPayload = config.toAuthenticationStartPayload()
 
         assertEquals(expected, registrationPayload.userHandle)
-        assertEquals(expected, authenticationPayload.userHandle)
+        assertEquals("required", registrationPayload.residentKey)
+        assertEquals(null, authenticationPayload.userName)
     }
 
     @Test
@@ -65,7 +66,8 @@ class PasskeyDemoFlowTest {
         val authenticationPayload = config.toAuthenticationStartPayload()
 
         assertEquals("AQID", registrationPayload.userHandle)
-        assertEquals("AQID", authenticationPayload.userHandle)
+        assertEquals("required", registrationPayload.residentKey)
+        assertEquals(null, authenticationPayload.userName)
     }
 
     @Test

@@ -107,7 +107,7 @@ final class dev.webauthn.core/AuthenticationValidationOutput { // dev.webauthn.c
 }
 
 final class dev.webauthn.core/ChallengeSession { // dev.webauthn.core/ChallengeSession|null[0]
-    constructor <init>(dev.webauthn.model/Challenge, dev.webauthn.model/RpId, dev.webauthn.model/Origin, kotlin/String, kotlin/Long, kotlin/Long, dev.webauthn.core/CeremonyType, dev.webauthn.model/AuthenticationExtensionsClientInputs? = ..., dev.webauthn.model/UserVerificationRequirement? = ...) // dev.webauthn.core/ChallengeSession.<init>|<init>(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;dev.webauthn.model.Origin;kotlin.String;kotlin.Long;kotlin.Long;dev.webauthn.core.CeremonyType;dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.UserVerificationRequirement?){}[0]
+    constructor <init>(dev.webauthn.model/Challenge, dev.webauthn.model/RpId, dev.webauthn.model/Origin, kotlin/String?, kotlin/Long, kotlin/Long, dev.webauthn.core/CeremonyType, dev.webauthn.model/AuthenticationExtensionsClientInputs? = ..., dev.webauthn.model/UserVerificationRequirement? = ...) // dev.webauthn.core/ChallengeSession.<init>|<init>(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;dev.webauthn.model.Origin;kotlin.String?;kotlin.Long;kotlin.Long;dev.webauthn.core.CeremonyType;dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.UserVerificationRequirement?){}[0]
 
     final val challenge // dev.webauthn.core/ChallengeSession.challenge|{}challenge[0]
         final fun <get-challenge>(): dev.webauthn.model/Challenge // dev.webauthn.core/ChallengeSession.challenge.<get-challenge>|<get-challenge>(){}[0]
@@ -124,20 +124,20 @@ final class dev.webauthn.core/ChallengeSession { // dev.webauthn.core/ChallengeS
     final val type // dev.webauthn.core/ChallengeSession.type|{}type[0]
         final fun <get-type>(): dev.webauthn.core/CeremonyType // dev.webauthn.core/ChallengeSession.type.<get-type>|<get-type>(){}[0]
     final val userName // dev.webauthn.core/ChallengeSession.userName|{}userName[0]
-        final fun <get-userName>(): kotlin/String // dev.webauthn.core/ChallengeSession.userName.<get-userName>|<get-userName>(){}[0]
+        final fun <get-userName>(): kotlin/String? // dev.webauthn.core/ChallengeSession.userName.<get-userName>|<get-userName>(){}[0]
     final val userVerification // dev.webauthn.core/ChallengeSession.userVerification|{}userVerification[0]
         final fun <get-userVerification>(): dev.webauthn.model/UserVerificationRequirement? // dev.webauthn.core/ChallengeSession.userVerification.<get-userVerification>|<get-userVerification>(){}[0]
 
     final fun component1(): dev.webauthn.model/Challenge // dev.webauthn.core/ChallengeSession.component1|component1(){}[0]
     final fun component2(): dev.webauthn.model/RpId // dev.webauthn.core/ChallengeSession.component2|component2(){}[0]
     final fun component3(): dev.webauthn.model/Origin // dev.webauthn.core/ChallengeSession.component3|component3(){}[0]
-    final fun component4(): kotlin/String // dev.webauthn.core/ChallengeSession.component4|component4(){}[0]
+    final fun component4(): kotlin/String? // dev.webauthn.core/ChallengeSession.component4|component4(){}[0]
     final fun component5(): kotlin/Long // dev.webauthn.core/ChallengeSession.component5|component5(){}[0]
     final fun component6(): kotlin/Long // dev.webauthn.core/ChallengeSession.component6|component6(){}[0]
     final fun component7(): dev.webauthn.core/CeremonyType // dev.webauthn.core/ChallengeSession.component7|component7(){}[0]
     final fun component8(): dev.webauthn.model/AuthenticationExtensionsClientInputs? // dev.webauthn.core/ChallengeSession.component8|component8(){}[0]
     final fun component9(): dev.webauthn.model/UserVerificationRequirement? // dev.webauthn.core/ChallengeSession.component9|component9(){}[0]
-    final fun copy(dev.webauthn.model/Challenge = ..., dev.webauthn.model/RpId = ..., dev.webauthn.model/Origin = ..., kotlin/String = ..., kotlin/Long = ..., kotlin/Long = ..., dev.webauthn.core/CeremonyType = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ..., dev.webauthn.model/UserVerificationRequirement? = ...): dev.webauthn.core/ChallengeSession // dev.webauthn.core/ChallengeSession.copy|copy(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;dev.webauthn.model.Origin;kotlin.String;kotlin.Long;kotlin.Long;dev.webauthn.core.CeremonyType;dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.UserVerificationRequirement?){}[0]
+    final fun copy(dev.webauthn.model/Challenge = ..., dev.webauthn.model/RpId = ..., dev.webauthn.model/Origin = ..., kotlin/String? = ..., kotlin/Long = ..., kotlin/Long = ..., dev.webauthn.core/CeremonyType = ..., dev.webauthn.model/AuthenticationExtensionsClientInputs? = ..., dev.webauthn.model/UserVerificationRequirement? = ...): dev.webauthn.core/ChallengeSession // dev.webauthn.core/ChallengeSession.copy|copy(dev.webauthn.model.Challenge;dev.webauthn.model.RpId;dev.webauthn.model.Origin;kotlin.String?;kotlin.Long;kotlin.Long;dev.webauthn.core.CeremonyType;dev.webauthn.model.AuthenticationExtensionsClientInputs?;dev.webauthn.model.UserVerificationRequirement?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.core/ChallengeSession.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.core/ChallengeSession.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.core/ChallengeSession.toString|toString(){}[0]

@@ -172,14 +172,16 @@ public data class RegistrationStartPayload(
     public val userName: String,
     public val userDisplayName: String,
     public val userHandle: String,
+    public val residentKey: String? = null,
     public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 ) {
     override fun toString(): String {
         val extensionsValue = if (extensions == null) "none" else "present"
+        val residentKeyValue = residentKey ?: "null"
         return "RegistrationStartPayload(" +
             "rpId=$rpId, rpName=$rpName, origin=$origin, " +
             "userName=<redacted>, userDisplayName=<redacted>, userHandle=<redacted>, " +
-            "extensions=$extensionsValue)"
+            "residentKey=$residentKeyValue, extensions=$extensionsValue)"
     }
 }
 
@@ -188,16 +190,15 @@ public data class RegistrationStartPayload(
 public data class AuthenticationStartPayload(
     public val rpId: String,
     public val origin: String,
-    public val userName: String,
-    public val userHandle: String? = null,
+    public val userName: String? = null,
     public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 ) {
     override fun toString(): String {
-        val userHandleValue = if (userHandle == null) "null" else "<redacted>"
+        val userNameValue = if (userName == null) "null" else "<redacted>"
         val extensionsValue = if (extensions == null) "none" else "present"
         return "AuthenticationStartPayload(" +
-            "rpId=$rpId, origin=$origin, userName=<redacted>, " +
-            "userHandle=$userHandleValue, extensions=$extensionsValue)"
+            "rpId=$rpId, origin=$origin, userName=$userNameValue, " +
+            "extensions=$extensionsValue)"
     }
 }
 

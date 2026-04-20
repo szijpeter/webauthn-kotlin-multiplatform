@@ -4,6 +4,7 @@ import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.Origin
+import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
@@ -39,6 +40,7 @@ public data class RegistrationStartPayload(
     public val userName: String,
     public val userDisplayName: String,
     public val userHandle: String,
+    public val residentKey: String? = null,
     public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
 
@@ -47,8 +49,7 @@ public data class RegistrationStartPayload(
 public data class AuthenticationStartPayload(
     public val rpId: String,
     public val origin: String,
-    public val userName: String,
-    public val userHandle: String? = null,
+    public val userName: String? = null,
     public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
 
@@ -96,6 +97,19 @@ public fun Route.webAuthnRoutes(
                 is ParsedExtensionsResult.Accepted -> parsed.value
                 ParsedExtensionsResult.Rejected -> return@post
             }
+            val residentKey = payload.residentKey?.let(::parseResidentKeyRequirement)
+            if (payload.residentKey != null && residentKey == null) {
+                call.respondValidationFailure(
+                    operation = "webauthn.registration.start",
+                    errors = listOf(
+                        WebAuthnValidationError.InvalidValue(
+                            field = "residentKey",
+                            message = "Unsupported residentKey '${payload.residentKey}'",
+                        ),
+                    ),
+                )
+                return@post
+            }
             val options = registrationService.start(
                 RegistrationStartRequest(
                     rpId = RpId.parseOrThrow(payload.rpId),
@@ -104,6 +118,7 @@ public fun Route.webAuthnRoutes(
                     userName = payload.userName,
                     userDisplayName = payload.userDisplayName,
                     userHandle = UserHandle.parse(payload.userHandle).getOrThrow(),
+                    residentKey = residentKey ?: ResidentKeyRequirement.PREFERRED,
                     extensions = extensions,
                 ),
             )
@@ -223,4 +238,13 @@ private suspend fun ApplicationCall.respondValidationFailure(
     val encodedErrors = errors.map { "${it.field}: ${it.message}" }
     application.environment.log.warn("$operation rejected: ${encodedErrors.joinToString("; ")}")
     respond(HttpStatusCode.BadRequest, mapOf("errors" to encodedErrors))
+}
+
+private fun parseResidentKeyRequirement(value: String): ResidentKeyRequirement? {
+    return when (value.trim().lowercase()) {
+        "discouraged" -> ResidentKeyRequirement.DISCOURAGED
+        "preferred" -> ResidentKeyRequirement.PREFERRED
+        "required" -> ResidentKeyRequirement.REQUIRED
+        else -> null
+    }
 }

@@ -32,6 +32,7 @@ import io.ktor.utils.io.core.readText
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
@@ -151,7 +152,6 @@ class KtorPasskeyServerClientTest {
             rpId = "example.com",
             origin = "https://example.com",
             userName = "alice",
-            userHandle = "AQID",
         )
 
         val start = serverClient.getSignInOptions(params)
@@ -167,6 +167,7 @@ class KtorPasskeyServerClientTest {
         val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
         assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
         assertEquals("alice", startBody["userName"]?.jsonPrimitive?.content)
+        assertTrue("userHandle" !in startBody)
         assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/finish")).jsonObject
@@ -245,7 +246,6 @@ class KtorPasskeyServerClientTest {
             rpId = "example.com",
             origin = "https://example.com",
             userName = "alice",
-            userHandle = "AQID",
         )
 
         assertTrue(serverClient.getRegisterOptions(registerParams) is ValidationResult.Valid)
@@ -390,7 +390,6 @@ class KtorPasskeyServerClientTest {
             rpId = "example.com",
             origin = "https://example.com",
             userName = "alice",
-            userHandle = "AQID",
         )
 
         val failure = assertFailsWith<IllegalStateException> {
@@ -418,7 +417,6 @@ class KtorPasskeyServerClientTest {
             rpId = "example.com",
             origin = "https://example.com",
             userName = "bob-sensitive",
-            userHandle = "Qk9CLXNlbnNpdGl2ZQ",
         )
 
         val registrationText = registrationPayload.toString()
@@ -428,13 +426,12 @@ class KtorPasskeyServerClientTest {
         assertTrue(registrationText.contains("userName=<redacted>"))
         assertTrue(registrationText.contains("userDisplayName=<redacted>"))
         assertTrue(registrationText.contains("userHandle=<redacted>"))
+        assertTrue(registrationText.contains("residentKey=null"))
         assertTrue(registrationText.contains("extensions=none"))
 
         val authText = authPayload.toString()
         assertTrue(!authText.contains("bob-sensitive"))
-        assertTrue(!authText.contains("Qk9CLXNlbnNpdGl2ZQ"))
         assertTrue(authText.contains("userName=<redacted>"))
-        assertTrue(authText.contains("userHandle=<redacted>"))
         assertTrue(authText.contains("extensions=none"))
 
         val extensions = AuthenticationExtensionsClientInputsDto(
@@ -450,6 +447,7 @@ class KtorPasskeyServerClientTest {
                 userName = "alice-sensitive",
                 userDisplayName = "Alice Sensitive",
                 userHandle = "AQID-sensitive",
+                residentKey = "required",
                 extensions = extensions,
             ).toString()
                 .contains("extensions=present"),
@@ -459,7 +457,6 @@ class KtorPasskeyServerClientTest {
                 rpId = "example.com",
                 origin = "https://example.com",
                 userName = "bob-sensitive",
-                userHandle = "Qk9CLXNlbnNpdGl2ZQ",
                 extensions = extensions,
             ).toString()
                 .contains("extensions=present"),
@@ -526,6 +523,7 @@ class KtorPasskeyServerClientTest {
                 userName = "alice",
                 userDisplayName = "Alice",
                 userHandle = "AQID",
+                residentKey = "required",
                 extensions = extensions,
             ),
         )
@@ -534,7 +532,6 @@ class KtorPasskeyServerClientTest {
                 rpId = "example.com",
                 origin = "https://example.com",
                 userName = "alice",
-                userHandle = "AQID",
                 extensions = extensions,
             ),
         )
@@ -557,6 +554,58 @@ class KtorPasskeyServerClientTest {
                 ?.get("first")?.jsonPrimitive
                 ?.content,
         )
+        assertEquals("required", registerStartBody["residentKey"]?.jsonPrimitive?.content)
+        assertTrue("userHandle" !in authStartBody)
+    }
+
+    @Test
+    fun authenticationStartPayload_allowsNullUserNameForDiscoverableFlow() = runTest {
+        val requestBodies = mutableMapOf<String, String>()
+        val client = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/webauthn/authentication/start" -> {
+                    requestBodies[request.url.encodedPath] = request.bodyText()
+                    respond(
+                        content =
+                            """
+                            {
+                              "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                              "rpId": "example.com",
+                              "allowCredentials": []
+                            }
+                            """.trimIndent(),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
+                    )
+                }
+
+                else -> error("Unexpected path: ${request.url.encodedPath}")
+            }
+        }
+
+        val serverClient = KtorPasskeyServerClient(
+            httpClient = client,
+            endpointBase = "https://example.test",
+            routes = KtorPasskeyRoutes(
+                registerOptionsPath = "/unused/register/start",
+                registerFinishPath = "/unused/register/finish",
+                signInOptionsPath = "/webauthn/authentication/start",
+                signInFinishPath = "/unused/auth/finish",
+            ),
+        )
+        val start = serverClient.getSignInOptions(
+            AuthenticationStartPayload(
+                rpId = "example.com",
+                origin = "https://example.com",
+                userName = null,
+            ),
+        )
+
+        assertTrue(start is ValidationResult.Valid)
+        val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
+        assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
+        assertTrue("userName" !in startBody, "userName key should be omitted for discoverable flow")
+        assertTrue("userHandle" !in startBody)
     }
 
     private fun createMockClient(

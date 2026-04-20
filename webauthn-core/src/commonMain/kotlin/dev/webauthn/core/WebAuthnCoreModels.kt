@@ -30,7 +30,7 @@ public data class ChallengeSession(
     public val challenge: Challenge,
     public val rpId: RpId,
     public val origin: Origin,
-    public val userName: String,
+    public val userName: String?,
     public val createdAtEpochMs: Long,
     public val expiresAtEpochMs: Long,
     public val type: CeremonyType,

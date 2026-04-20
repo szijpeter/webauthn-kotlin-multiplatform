@@ -93,7 +93,7 @@ public data class RegistrationFinishRequest(
 public data class AuthenticationStartRequest(
     public val rpId: RpId,
     public val origin: Origin,
-    public val userName: String,
+    public val userName: String? = null,
     public val timeoutMs: Long = 60_000,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
     public val extensions: AuthenticationExtensionsClientInputs? = null,

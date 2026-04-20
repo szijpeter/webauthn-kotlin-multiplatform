@@ -7,7 +7,7 @@
 
 // Library unique name: <io.github.szijpeter:webauthn-network-ktor-client>
 final class dev.webauthn.network/AuthenticationStartPayload { // dev.webauthn.network/AuthenticationStartPayload|null[0]
-    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/AuthenticationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/AuthenticationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
 
     final val extensions // dev.webauthn.network/AuthenticationStartPayload.extensions|{}extensions[0]
         final fun <get-extensions>(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network/AuthenticationStartPayload.extensions.<get-extensions>|<get-extensions>(){}[0]
@@ -15,17 +15,14 @@ final class dev.webauthn.network/AuthenticationStartPayload { // dev.webauthn.ne
         final fun <get-origin>(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.origin.<get-origin>|<get-origin>(){}[0]
     final val rpId // dev.webauthn.network/AuthenticationStartPayload.rpId|{}rpId[0]
         final fun <get-rpId>(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.rpId.<get-rpId>|<get-rpId>(){}[0]
-    final val userHandle // dev.webauthn.network/AuthenticationStartPayload.userHandle|{}userHandle[0]
-        final fun <get-userHandle>(): kotlin/String? // dev.webauthn.network/AuthenticationStartPayload.userHandle.<get-userHandle>|<get-userHandle>(){}[0]
     final val userName // dev.webauthn.network/AuthenticationStartPayload.userName|{}userName[0]
-        final fun <get-userName>(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.userName.<get-userName>|<get-userName>(){}[0]
+        final fun <get-userName>(): kotlin/String? // dev.webauthn.network/AuthenticationStartPayload.userName.<get-userName>|<get-userName>(){}[0]
 
     final fun component1(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.component1|component1(){}[0]
     final fun component2(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.component2|component2(){}[0]
-    final fun component3(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.component3|component3(){}[0]
-    final fun component4(): kotlin/String? // dev.webauthn.network/AuthenticationStartPayload.component4|component4(){}[0]
-    final fun component5(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network/AuthenticationStartPayload.component5|component5(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.network/AuthenticationStartPayload // dev.webauthn.network/AuthenticationStartPayload.copy|copy(kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    final fun component3(): kotlin/String? // dev.webauthn.network/AuthenticationStartPayload.component3|component3(){}[0]
+    final fun component4(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network/AuthenticationStartPayload.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.network/AuthenticationStartPayload // dev.webauthn.network/AuthenticationStartPayload.copy|copy(kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.network/AuthenticationStartPayload.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.network/AuthenticationStartPayload.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.network/AuthenticationStartPayload.toString|toString(){}[0]
@@ -82,12 +79,14 @@ final class dev.webauthn.network/KtorPasskeyServerClient : dev.webauthn.client/P
 }
 
 final class dev.webauthn.network/RegistrationStartPayload { // dev.webauthn.network/RegistrationStartPayload|null[0]
-    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/RegistrationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/RegistrationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
 
     final val extensions // dev.webauthn.network/RegistrationStartPayload.extensions|{}extensions[0]
         final fun <get-extensions>(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network/RegistrationStartPayload.extensions.<get-extensions>|<get-extensions>(){}[0]
     final val origin // dev.webauthn.network/RegistrationStartPayload.origin|{}origin[0]
         final fun <get-origin>(): kotlin/String // dev.webauthn.network/RegistrationStartPayload.origin.<get-origin>|<get-origin>(){}[0]
+    final val residentKey // dev.webauthn.network/RegistrationStartPayload.residentKey|{}residentKey[0]
+        final fun <get-residentKey>(): kotlin/String? // dev.webauthn.network/RegistrationStartPayload.residentKey.<get-residentKey>|<get-residentKey>(){}[0]
     final val rpId // dev.webauthn.network/RegistrationStartPayload.rpId|{}rpId[0]
         final fun <get-rpId>(): kotlin/String // dev.webauthn.network/RegistrationStartPayload.rpId.<get-rpId>|<get-rpId>(){}[0]
     final val rpName // dev.webauthn.network/RegistrationStartPayload.rpName|{}rpName[0]
@@ -105,8 +104,9 @@ final class dev.webauthn.network/RegistrationStartPayload { // dev.webauthn.netw
     final fun component4(): kotlin/String // dev.webauthn.network/RegistrationStartPayload.component4|component4(){}[0]
     final fun component5(): kotlin/String // dev.webauthn.network/RegistrationStartPayload.component5|component5(){}[0]
     final fun component6(): kotlin/String // dev.webauthn.network/RegistrationStartPayload.component6|component6(){}[0]
-    final fun component7(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network/RegistrationStartPayload.component7|component7(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.network/RegistrationStartPayload // dev.webauthn.network/RegistrationStartPayload.copy|copy(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    final fun component7(): kotlin/String? // dev.webauthn.network/RegistrationStartPayload.component7|component7(){}[0]
+    final fun component8(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network/RegistrationStartPayload.component8|component8(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.network/RegistrationStartPayload // dev.webauthn.network/RegistrationStartPayload.copy|copy(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.network/RegistrationStartPayload.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.network/RegistrationStartPayload.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.network/RegistrationStartPayload.toString|toString(){}[0]
