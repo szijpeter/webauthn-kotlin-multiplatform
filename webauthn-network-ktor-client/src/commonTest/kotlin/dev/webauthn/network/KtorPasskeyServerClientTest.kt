@@ -604,7 +604,7 @@ class KtorPasskeyServerClientTest {
         assertTrue(start is ValidationResult.Valid)
         val startBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/start")).jsonObject
         assertEquals("example.com", startBody["rpId"]?.jsonPrimitive?.content)
-        assertTrue(startBody["userName"]?.jsonPrimitive?.contentOrNull == null)
+        assertTrue("userName" !in startBody, "userName key should be omitted for discoverable flow")
         assertTrue("userHandle" !in startBody)
     }
 

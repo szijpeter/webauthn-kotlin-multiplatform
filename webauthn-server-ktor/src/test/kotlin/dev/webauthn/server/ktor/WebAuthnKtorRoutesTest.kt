@@ -11,6 +11,7 @@ import dev.webauthn.server.byteArraySignatureVerifier
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -18,6 +19,9 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.testApplication
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -278,6 +282,60 @@ class WebAuthnKtorRoutesTest {
         }
 
         assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun registrationStartRouteAcceptsRequiredResidentKey() = testApplication {
+        val challengeStore = InMemoryChallengeStore()
+        val credentialStore = InMemoryCredentialStore()
+        val userStore = InMemoryUserAccountStore()
+
+        val registrationService = RegistrationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            attestationVerifier = { ValidationResult.Valid(Unit) },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        val authenticationService = AuthenticationService(
+            challengeStore = challengeStore,
+            credentialStore = credentialStore,
+            userAccountStore = userStore,
+            signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
+            rpIdHasher = JvmRpIdHasher(),
+        )
+
+        application {
+            install(ContentNegotiation) { json() }
+            installWebAuthnRoutes(registrationService, authenticationService)
+        }
+
+        val response = client.post("/webauthn/registration/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """
+                {
+                  "rpId": "example.com",
+                  "rpName": "Example",
+                  "origin": "https://example.com",
+                  "userName": "alice",
+                  "userDisplayName": "Alice",
+                  "userHandle": "YWFhYWFhYWFhYWFhYWFhYQ",
+                  "residentKey": "required"
+                }
+                """.trimIndent(),
+            )
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val responseBody = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val residentKey = responseBody["authenticatorSelection"]
+            ?.jsonObject
+            ?.get("residentKey")
+            ?.jsonPrimitive
+            ?.content
+        assertEquals("required", residentKey)
     }
 
     @Test
