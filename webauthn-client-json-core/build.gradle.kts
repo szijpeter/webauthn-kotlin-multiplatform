@@ -20,7 +20,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
         jvmTest.dependencies {
-            implementation("com.yubico:webauthn-server-core:2.8.1")
+            implementation("com.yubico:webauthn-server-core:2.9.0")
         }
     }
 }

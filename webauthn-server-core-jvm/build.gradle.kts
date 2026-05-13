@@ -17,7 +17,7 @@ dependencies {
     testImplementation(libs.h2)
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation("com.webauthn4j:webauthn4j-core:0.31.5.RELEASE")
-    testImplementation("com.yubico:webauthn-server-core:2.8.1")
+    testImplementation("com.yubico:webauthn-server-core:2.9.0")
     testFixturesApi(project(":webauthn-core"))
     testFixturesApi(project(":webauthn-crypto-api"))
     testFixturesApi(project(":webauthn-serialization-kotlinx"))
