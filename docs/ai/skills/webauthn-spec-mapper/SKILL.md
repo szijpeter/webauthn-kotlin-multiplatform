@@ -9,8 +9,8 @@ description: Use when WebAuthn core/model validation logic changes and a standar
 
 Use this skill when changing validator/model semantics in:
 
-- `webauthn-core/src/commonMain/...`
-- `webauthn-model/src/commonMain/...`
+- `core/webauthn-core/src/commonMain/...`
+- `core/webauthn-model/src/commonMain/...`
 
 ## Workflow
 

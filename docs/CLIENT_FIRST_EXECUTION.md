@@ -36,7 +36,7 @@ If your backend uses the same payload semantics but different paths, pass `KtorP
 
 If your backend payloads differ from the default `/webauthn/*` contract, provide your own `PasskeyServerClient` implementation instead of trying to extend `KtorPasskeyServerClient`.
 
-## Local Backend App (`samples/backend-ktor`)
+## Local Backend App (`app/backend-ktor`)
 
 Use the in-repo sample backend app for local and ngrok-based mobile runs.
 
@@ -54,13 +54,13 @@ Implemented routes:
 Run locally:
 
 ```bash
-./gradlew :samples:backend-ktor:run
+./gradlew :app:backend-ktor:run
 ```
 
 Run with ngrok + local.properties synchronization:
 
 ```bash
-./samples/backend-ktor/start-server.sh
+./app/backend-ktor/start-server.sh
 ```
 
 Defaults:
@@ -74,22 +74,22 @@ Defaults:
 
 The helper script writes `WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, and `WEBAUTHN_DEMO_ORIGIN` to root `local.properties`.
 
-Use the committed iOS host app sample (`samples/compose-passkey-ios`) for device/simulator runs.
+Use the committed iOS host app sample (`app/compose-passkey-ios`) for device/simulator runs.
 The shared Compose module still exposes `MainViewController()` for custom host integration.
 
 ## Client Dependencies Required
 
 ### `webauthn-client-core`
 
-- `:webauthn-model`
+- `:core:webauthn-model`
 - `at.asitplus:kmmresult`
 - `kotlinx-coroutines-core`
 - Typed-only ceremony API surface (no JSON codec requirement)
 
 ### `webauthn-client-json-core` (optional)
 
-- `:webauthn-client-core`
-- `:webauthn-serialization-kotlinx`
+- `:client:webauthn-client-core`
+- `:core:webauthn-serialization-kotlinx`
 - `kotlinx-serialization-json`
 - Provides `JsonPasskeyClient`, `PasskeyJsonMapper`, and `KotlinxPasskeyJsonMapper`
 
@@ -105,24 +105,24 @@ val jsonClient = typedClient.withJsonSupport()
 
 ### `webauthn-client-android`
 
-- `:webauthn-client-core`
-- `:webauthn-client-json-core`
+- `:client:webauthn-client-core`
+- `:client:webauthn-client-json-core`
 - `androidx.credentials`
 - `androidx.credentials:credentials-play-services-auth` (required for Google Play provider integration on Android)
 - `androidx.core:core-ktx`
 
 ### `webauthn-client-ios`
 
-- `:webauthn-client-core`
-- `:webauthn-client-json-core`
+- `:client:webauthn-client-core`
+- `:client:webauthn-client-json-core`
 - `kotlinx-coroutines-core`
 
 ### `webauthn-client-compose` (optional)
 
-- `:webauthn-client-core`
+- `:client:webauthn-client-core`
 - `org.jetbrains.compose.runtime:runtime`
-- Android actual: `:webauthn-client-android`
-- iOS actual: `:webauthn-client-ios`
+- Android actual: `:client:webauthn-client-android`
+- iOS actual: `:client:webauthn-client-ios`
 
 ## Association File Requirement
 
@@ -131,4 +131,4 @@ Passkey platform APIs require associated-domain files for realistic end-to-end t
 - Android: `https://<host>/.well-known/assetlinks.json`
 - iOS: `https://<host>/.well-known/apple-app-site-association`
 
-`samples/backend-ktor` serves both endpoints for local/ngrok workflows.
+`app/backend-ktor` serves both endpoints for local/ngrok workflows.

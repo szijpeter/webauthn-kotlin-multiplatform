@@ -34,9 +34,9 @@ apiValidation {
     }
 
     ignoredProjects += listOf(
+        "app",
         "bom",
         "constraints",
-        "samples",
         "android-passkey",
         "backend-ktor",
         "compose-passkey",

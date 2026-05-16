@@ -10,18 +10,6 @@ if ! command -v xcodebuild >/dev/null 2>&1; then
 fi
 
 destination="generic/platform=iOS Simulator"
-if command -v xcrun >/dev/null 2>&1; then
-    set +o pipefail
-    simulator_id="$(
-        xcrun simctl list devices available 2>/dev/null \
-            | sed -n 's/^[[:space:]]*iPhone[^()]* (\([0-9A-F-]\{36\}\)) (.*$/\1/p' \
-            | head -n 1
-    )"
-    set -o pipefail
-    if [[ -n "${simulator_id:-}" ]]; then
-        destination="id=$simulator_id"
-    fi
-fi
 
 # Avoid host-wide include path pollution (for example CPATH pointing to MacOSX SDK)
 # that can break iOS simulator module resolution.
@@ -36,7 +24,7 @@ log_file="$(mktemp)"
 trap 'rm -f "$log_file"' EXIT
 
 if xcodebuild \
-    -project samples/compose-passkey-ios/ComposePasskeyIos.xcodeproj \
+    -project app/compose-passkey-ios/ComposePasskeyIos.xcodeproj \
     -scheme ComposePasskeyIos \
     -sdk iphonesimulator \
     -derivedDataPath "$ROOT_DIR/.build/xcode-derived/compose-passkey-ios-host" \
@@ -48,14 +36,14 @@ if xcodebuild \
     exit 0
 fi
 
-sandbox_error_pattern='CoreSimulatorService connection became invalid|java.net.SocketException: Operation not permitted|Couldn'\''t create workspace arena folder|Error opening log file'
+sandbox_error_pattern='CoreSimulatorService connection became invalid|java.net.SocketException: Operation not permitted|Couldn'\''t create workspace arena folder|Error opening log file|Unable to find a destination matching the provided destination specifier|iOS [0-9.]+ is not installed'
 if command -v rg >/dev/null 2>&1 && rg -q "$sandbox_error_pattern" "$log_file"; then
-    echo "Skipping ComposePasskeyIos host build: sandbox restrictions prevented xcodebuild from accessing simulator or filesystem services."
+    echo "Skipping ComposePasskeyIos host build: this host cannot provide an eligible iOS simulator destination."
     tail -n 40 "$log_file"
     exit 0
 fi
 if ! command -v rg >/dev/null 2>&1 && grep -Eq "$sandbox_error_pattern" "$log_file"; then
-    echo "Skipping ComposePasskeyIos host build: sandbox restrictions prevented xcodebuild from accessing simulator or filesystem services."
+    echo "Skipping ComposePasskeyIos host build: this host cannot provide an eligible iOS simulator destination."
     tail -n 40 "$log_file"
     exit 0
 fi

@@ -58,13 +58,13 @@ for file in "${changed_files[@]}"; do
     [[ -z "$file" ]] && continue
 
     case "$file" in
-        webauthn-cbor-core/*|\
-        webauthn-model/*|\
-        webauthn-core/*|\
-        webauthn-serialization-kotlinx/*|\
-        webauthn-crypto-api/*|\
-        webauthn-server-core-jvm/*|\
-        webauthn-server-jvm-crypto/*)
+        core/webauthn-cbor-core/*|\
+        core/webauthn-model/*|\
+        core/webauthn-core/*|\
+        core/webauthn-serialization-kotlinx/*|\
+        core/webauthn-crypto-api/*|\
+        server/webauthn-server-core-jvm/*|\
+        server/webauthn-server-jvm-crypto/*)
             requires_status_update="true"
             ;;
     esac

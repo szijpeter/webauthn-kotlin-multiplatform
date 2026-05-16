@@ -123,15 +123,15 @@ is_docs_file() {
 is_spec_sensitive_file() {
     local file="$1"
     case "$file" in
-        webauthn-core/src/commonMain/kotlin/dev/webauthn/core/*)
+        core/webauthn-core/src/commonMain/kotlin/dev/webauthn/core/*)
             return 0
             ;;
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Validation.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/WebAuthnValidationError.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/ProtocolModels.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Types.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlCodec.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlBytes.kt)
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Validation.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/WebAuthnValidationError.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/ProtocolModels.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Types.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlCodec.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlBytes.kt)
             return 0
             ;;
         *)
@@ -152,98 +152,102 @@ for file in "${changed_files[@]}"; do
     fi
 
     case "$file" in
-        webauthn-cbor-core/*)
-            mark_module "webauthn-cbor-core"
+        core/webauthn-cbor-core/*)
+            mark_module "core:webauthn-cbor-core"
             mark_category "core"
             ;;
-        webauthn-model/*)
-            mark_module "webauthn-model"
+        core/webauthn-model/*)
+            mark_module "core:webauthn-model"
             mark_category "core"
             ;;
-        webauthn-runtime-core/*)
-            mark_module "webauthn-runtime-core"
-            mark_category "client"
-            ;;
-        webauthn-core/*)
-            mark_module "webauthn-core"
+        core/webauthn-runtime-core/*)
+            mark_module "core:webauthn-runtime-core"
             mark_category "core"
             ;;
-        webauthn-serialization-kotlinx/*)
-            mark_module "webauthn-serialization-kotlinx"
+        core/webauthn-core/*)
+            mark_module "core:webauthn-core"
             mark_category "core"
             ;;
-        webauthn-crypto-api/*)
-            mark_module "webauthn-crypto-api"
+        core/webauthn-serialization-kotlinx/*)
+            mark_module "core:webauthn-serialization-kotlinx"
             mark_category "core"
             ;;
-        webauthn-server-core-jvm/*)
-            mark_module "webauthn-server-core-jvm"
+        core/webauthn-crypto-api/*)
+            mark_module "core:webauthn-crypto-api"
+            mark_category "core"
+            ;;
+        server/webauthn-server-core-jvm/*)
+            mark_module "server:webauthn-server-core-jvm"
             mark_category "server"
             ;;
-        webauthn-server-jvm-crypto/*)
-            mark_module "webauthn-server-jvm-crypto"
+        server/webauthn-server-jvm-crypto/*)
+            mark_module "server:webauthn-server-jvm-crypto"
             mark_category "server"
             ;;
-        webauthn-server-ktor/*)
-            mark_module "webauthn-server-ktor"
+        server/webauthn-server-ktor/*)
+            mark_module "server:webauthn-server-ktor"
             mark_category "server"
             ;;
-        webauthn-attestation-mds/*)
-            mark_module "webauthn-attestation-mds"
+        server/webauthn-server-store-exposed/*)
+            mark_module "server:webauthn-server-store-exposed"
             mark_category "server"
             ;;
-        webauthn-network-ktor-client/*)
-            mark_module "webauthn-network-ktor-client"
+        server/webauthn-attestation-mds/*)
+            mark_module "server:webauthn-attestation-mds"
+            mark_category "server"
+            ;;
+        client/webauthn-network-ktor-client/*)
+            mark_module "client:webauthn-network-ktor-client"
             mark_category "client"
             ;;
-        webauthn-client-core/*)
-            mark_module "webauthn-client-core"
+        client/webauthn-client-core/*)
+            mark_module "client:webauthn-client-core"
             mark_category "client"
             ;;
-        webauthn-client-json-core/*)
-            mark_module "webauthn-client-json-core"
+        client/webauthn-client-json-core/*)
+            mark_module "client:webauthn-client-json-core"
             mark_category "client"
             ;;
-        webauthn-client-compose/*)
-            mark_module "webauthn-client-compose"
+        client/webauthn-client-compose/*)
+            mark_module "client:webauthn-client-compose"
             mark_category "client"
             ;;
-        webauthn-client-prf-crypto/*)
-            mark_module "webauthn-client-prf-crypto"
+        client/webauthn-client-prf-crypto/*)
+            mark_module "client:webauthn-client-prf-crypto"
             mark_category "client"
             ;;
-        webauthn-client-android/*)
-            mark_module "webauthn-client-android"
+        client/webauthn-client-android/*)
+            mark_module "client:webauthn-client-android"
             mark_category "android"
             ;;
-        webauthn-client-ios/*)
-            mark_module "webauthn-client-ios"
+        client/webauthn-client-ios/*)
+            mark_module "client:webauthn-client-ios"
             mark_category "ios"
             ;;
-        samples/android-passkey/*)
-            mark_module "samples:android-passkey"
+        app/android-passkey/*)
+            mark_module "app:android-passkey"
             mark_category "android"
             ;;
-        samples/backend-ktor/*)
-            mark_module "samples:backend-ktor"
+        app/backend-ktor/*)
+            mark_module "app:backend-ktor"
             mark_category "server"
             ;;
-        samples/ios-passkey/*)
-            mark_module "samples:ios-passkey"
+        app/ios-passkey/*)
+            mark_module "app:ios-passkey"
             mark_category "ios"
             ;;
-        samples/compose-passkey/*)
-            mark_module "samples:compose-passkey"
+        app/compose-passkey/*)
+            mark_module "app:compose-passkey"
             mark_category "android"
             mark_category "ios"
             ;;
-        samples/compose-passkey-ios/*)
-            mark_module "samples:compose-passkey"
-            mark_module "samples:compose-passkey-ios-host"
+        app/compose-passkey-ios/*)
+            mark_module "app:compose-passkey"
+            mark_module "app:compose-passkey-ios-host"
             mark_category "ios"
             ;;
-        samples/compose-passkey-android/*)
-            mark_module "samples:compose-passkey-android"
+        app/compose-passkey-android/*)
+            mark_module "app:compose-passkey-android"
             mark_category "android"
             ;;
         docs/*|spec-notes/*)

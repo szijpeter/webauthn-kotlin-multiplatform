@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    if (!project.path.startsWith(":samples:")) {
+    if (!project.path.startsWith(":app:")) {
         explicitApi()
     }
 

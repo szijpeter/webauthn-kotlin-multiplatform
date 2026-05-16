@@ -31,7 +31,7 @@ Last updated: 2026-04-17
 
 1. Keep shared typed ceremony orchestration in `webauthn-client-core` and maintain optional JSON APIs in `webauthn-client-json-core`.
 2. Keep Android Credential Manager and iOS AuthenticationServices adapters as thin platform bridges.
-3. Maintain interop paths for host-provided backend contracts and the local sample backend app (`samples/backend-ktor`).
+3. Maintain interop paths for host-provided backend contracts and the local sample backend app (`app/backend-ktor`).
 4. Verify extension transport and response mapping for PRF and Large Blob semantics.
 5. Align client API ergonomics against trusted ecosystem SDKs while preserving standards-first behavior.
 
@@ -117,7 +117,7 @@ Definition of done:
    - CLI experimentation remains valid as a sample-level proving ground.
 4. Not a fit for this cycle:
    - First-class published `watch`, `auto`, or additional platform modules.
-   - Promoting `samples/passkey-cli` from POC to production-grade SDK surface.
+   - Promoting `app/passkey-cli` from POC to production-grade SDK surface.
 5. Reassess platform promotion only after concrete API maturity, test matrix feasibility, and maintainer capacity are verified.
 
 ## Fit Assessment for Current Scope
