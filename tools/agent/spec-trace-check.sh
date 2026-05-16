@@ -56,13 +56,13 @@ for file in "${changed_files[@]}"; do
     [[ -z "$file" ]] && continue
 
     case "$file" in
-        webauthn-core/src/commonMain/kotlin/dev/webauthn/core/*|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Validation.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/WebAuthnValidationError.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/ProtocolModels.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Types.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlCodec.kt|\
-        webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlBytes.kt)
+        core/webauthn-core/src/commonMain/kotlin/dev/webauthn/core/*|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Validation.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/WebAuthnValidationError.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/ProtocolModels.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Types.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlCodec.kt|\
+        core/webauthn-model/src/commonMain/kotlin/dev/webauthn/model/Base64UrlBytes.kt)
             requires_spec_update="true"
             ;;
     esac

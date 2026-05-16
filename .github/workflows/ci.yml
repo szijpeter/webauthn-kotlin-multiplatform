@@ -87,7 +87,7 @@ jobs:
       - uses: android-actions/setup-android@v4
       - uses: gradle/actions/setup-gradle@v6
       - name: Android Lint and Build
-        run: ./gradlew :webauthn-client-android:lintDebug :webauthn-client-android:assemble :samples:android-passkey:lintDebug :samples:android-passkey:assemble :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace
+        run: ./gradlew :client:webauthn-client-android:lintDebug :client:webauthn-client-android:assemble :app:android-passkey:lintDebug :app:android-passkey:assemble :app:compose-passkey-android:lintDebug :app:compose-passkey-android:assemble :app:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace
 
   ios-compile:
     runs-on: macos-26
@@ -101,9 +101,9 @@ jobs:
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v6
       - name: iOS Compile
-        run: ./gradlew :webauthn-client-ios:compileKotlinIosSimulatorArm64 :samples:ios-passkey:compileKotlinIosSimulatorArm64 :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace
+        run: ./gradlew :client:webauthn-client-ios:compileKotlinIosSimulatorArm64 :app:ios-passkey:compileKotlinIosSimulatorArm64 :app:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace
       - name: iOS Host App Compile
-        run: xcodebuild -project samples/compose-passkey-ios/ComposePasskeyIos.xcodeproj -scheme ComposePasskeyIos -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+        run: xcodebuild -project app/compose-passkey-ios/ComposePasskeyIos.xcodeproj -scheme ComposePasskeyIos -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
   release-preflight:
     runs-on: macos-latest

@@ -137,12 +137,17 @@ flowchart TB
 
 Focus modules for this documentation round:
 
-- [`webauthn-runtime-core`](./webauthn-runtime-core/README.md): shared coroutine/failure boundary helpers for adapters.
-- [`webauthn-model`](./webauthn-model/README.md): typed protocol/value contracts.
-- [`webauthn-core`](./webauthn-core/README.md): standards-first ceremony validation.
-- [`webauthn-client-core`](./webauthn-client-core/README.md): shared passkey orchestration and controller flows.
-- [`webauthn-client-compose`](./webauthn-client-compose/README.md): Compose integration helpers over client core.
-- [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md): PRF-enabled key derivation/session crypto helpers.
+- `core/` contains reusable protocol, validation, runtime, serialization, and crypto contracts.
+- `client/` contains shared client orchestration, platform bridges, Compose helpers, and client transport.
+- `server/` contains JVM server services, Ktor/store adapters, JVM crypto, and optional trust metadata.
+- `app/` contains runnable samples and demo entry points; these modules are not published.
+
+- [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md): shared coroutine/failure boundary helpers for adapters.
+- [`webauthn-model`](./core/webauthn-model/README.md): typed protocol/value contracts.
+- [`webauthn-core`](./core/webauthn-core/README.md): standards-first ceremony validation.
+- [`webauthn-client-core`](./client/webauthn-client-core/README.md): shared passkey orchestration and controller flows.
+- [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration helpers over client core.
+- [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): PRF-enabled key derivation/session crypto helpers.
 
 ## How To Read Module Docs
 
@@ -212,7 +217,7 @@ Notes:
 - Client apps do not need `webauthn-server-*` dependencies.
 - You only add `webauthn-client-android` / `webauthn-client-ios` when that target instantiates the concrete platform client.
 - If you only use the shared client abstractions, `commonMain` only needs the common modules.
-- For a complete source set example, see [`samples/compose-passkey`](./samples/compose-passkey/README.md), [`samples/compose-passkey-android`](./samples/compose-passkey-android/README.md), and [`samples/compose-passkey-ios`](./samples/compose-passkey-ios/README.md).
+- For a complete source set example, see [`app/compose-passkey`](./app/compose-passkey/README.md), [`app/compose-passkey-android`](./app/compose-passkey-android/README.md), and [`app/compose-passkey-ios`](./app/compose-passkey-ios/README.md).
 
 Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
@@ -226,34 +231,34 @@ Published to Maven Central (latest version is shown in the Maven Central badge a
 
 Use:
 
-- [`webauthn-model`](./webauthn-model/README.md)
-- [`webauthn-core`](./webauthn-core/README.md)
-- [`webauthn-crypto-api`](./webauthn-crypto-api/README.md)
-- [`webauthn-server-jvm-crypto`](./webauthn-server-jvm-crypto/README.md)
-- [`webauthn-server-core-jvm`](./webauthn-server-core-jvm/README.md)
-- [`webauthn-server-ktor`](./webauthn-server-ktor/README.md) if you want route adapters
-- [`webauthn-server-store-exposed`](./webauthn-server-store-exposed/README.md) if you want an Exposed-backed store implementation
+- [`webauthn-model`](./core/webauthn-model/README.md)
+- [`webauthn-core`](./core/webauthn-core/README.md)
+- [`webauthn-crypto-api`](./core/webauthn-crypto-api/README.md)
+- [`webauthn-server-jvm-crypto`](./server/webauthn-server-jvm-crypto/README.md)
+- [`webauthn-server-core-jvm`](./server/webauthn-server-core-jvm/README.md)
+- [`webauthn-server-ktor`](./server/webauthn-server-ktor/README.md) if you want route adapters
+- [`webauthn-server-store-exposed`](./server/webauthn-server-store-exposed/README.md) if you want an Exposed-backed store implementation
 
 ### Client-first
 
 Use:
 
-- [`webauthn-client-core`](./webauthn-client-core/README.md)
-- [`webauthn-client-json-core`](./webauthn-client-json-core/README.md) if you exchange raw JSON with a host/backend
-- [`webauthn-client-android`](./webauthn-client-android/README.md)
-- [`webauthn-client-ios`](./webauthn-client-ios/README.md)
-- [`webauthn-client-compose`](./webauthn-client-compose/README.md) for Compose helpers
-- [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
-- [`webauthn-network-ktor-client`](./webauthn-network-ktor-client/README.md) for the default backend contract (`HttpClient`-based API; add your preferred Ktor engine at app runtime)
+- [`webauthn-client-core`](./client/webauthn-client-core/README.md)
+- [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) if you exchange raw JSON with a host/backend
+- [`webauthn-client-android`](./client/webauthn-client-android/README.md)
+- [`webauthn-client-ios`](./client/webauthn-client-ios/README.md)
+- [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) for Compose helpers
+- [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
+- [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) for the default backend contract (`HttpClient`-based API; add your preferred Ktor engine at app runtime)
 
 ### End-to-end reference app
 
 Start with:
 
-- [`samples/backend-ktor`](./samples/backend-ktor/README.md)
-- [`samples/compose-passkey`](./samples/compose-passkey/README.md)
-- [`samples/compose-passkey-ios`](./samples/compose-passkey-ios/README.md)
-- [`samples/passkey-cli`](./samples/passkey-cli/README.md) for a macOS-first experimental native-authenticator CLI POC
+- [`app/backend-ktor`](./app/backend-ktor/README.md)
+- [`app/compose-passkey`](./app/compose-passkey/README.md)
+- [`app/compose-passkey-ios`](./app/compose-passkey-ios/README.md)
+- [`app/passkey-cli`](./app/passkey-cli/README.md) for a macOS-first experimental native-authenticator CLI POC
 
 Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY.md`](./docs/DESKTOP_CLI_STRATEGY.md).
 
@@ -262,24 +267,24 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | Module | Who it is for |
 |---|---|
 | [`platform:bom`](./platform/bom/README.md) | Consumers who want aligned versions across published artifacts |
-| [`webauthn-cbor-core`](./webauthn-cbor-core/README.md) | Parser/crypto modules needing strict low-level CBOR byte scanning primitives |
-| [`webauthn-model`](./webauthn-model/README.md) | Teams that want typed WebAuthn models and value wrappers |
-| [`webauthn-runtime-core`](./webauthn-runtime-core/README.md) | Shared coroutine-safe error/cancellation boundary helpers for adapter modules |
-| [`webauthn-serialization-kotlinx`](./webauthn-serialization-kotlinx/README.md) | Teams mapping JSON/CBOR DTOs to typed models |
-| [`webauthn-core`](./webauthn-core/README.md) | Teams validating ceremonies and authenticator data |
-| [`webauthn-crypto-api`](./webauthn-crypto-api/README.md) | Teams plugging crypto/attestation implementations into validation and server flows |
-| [`webauthn-server-jvm-crypto`](./webauthn-server-jvm-crypto/README.md) | JVM backends that want Signum-first hashing, signature, and attestation verification |
-| [`webauthn-server-core-jvm`](./webauthn-server-core-jvm/README.md) | JVM backends that need registration/authentication ceremony services |
-| [`webauthn-server-ktor`](./webauthn-server-ktor/README.md) | Ktor backends that want ready-made WebAuthn routes |
-| [`webauthn-server-store-exposed`](./webauthn-server-store-exposed/README.md) | JVM backends storing WebAuthn state through Exposed |
-| [`webauthn-client-core`](./webauthn-client-core/README.md) | Shared passkey orchestration and controller-driven flows |
-| [`webauthn-client-json-core`](./webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
-| [`webauthn-client-compose`](./webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
-| [`webauthn-client-android`](./webauthn-client-android/README.md) | Android apps using Credential Manager |
-| [`webauthn-client-ios`](./webauthn-client-ios/README.md) | iOS apps using AuthenticationServices |
-| [`webauthn-client-prf-crypto`](./webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
-| [`webauthn-network-ktor-client`](./webauthn-network-ktor-client/README.md) | Clients talking to a `/webauthn/*` backend contract over Ktor (`HttpClient` contract + caller-selected engine) |
-| [`webauthn-attestation-mds`](./webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |
+| [`webauthn-cbor-core`](./core/webauthn-cbor-core/README.md) | Parser/crypto modules needing strict low-level CBOR byte scanning primitives |
+| [`webauthn-model`](./core/webauthn-model/README.md) | Teams that want typed WebAuthn models and value wrappers |
+| [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md) | Shared coroutine-safe error/cancellation boundary helpers for adapter modules |
+| [`webauthn-serialization-kotlinx`](./core/webauthn-serialization-kotlinx/README.md) | Teams mapping JSON/CBOR DTOs to typed models |
+| [`webauthn-core`](./core/webauthn-core/README.md) | Teams validating ceremonies and authenticator data |
+| [`webauthn-crypto-api`](./core/webauthn-crypto-api/README.md) | Teams plugging crypto/attestation implementations into validation and server flows |
+| [`webauthn-server-jvm-crypto`](./server/webauthn-server-jvm-crypto/README.md) | JVM backends that want Signum-first hashing, signature, and attestation verification |
+| [`webauthn-server-core-jvm`](./server/webauthn-server-core-jvm/README.md) | JVM backends that need registration/authentication ceremony services |
+| [`webauthn-server-ktor`](./server/webauthn-server-ktor/README.md) | Ktor backends that want ready-made WebAuthn routes |
+| [`webauthn-server-store-exposed`](./server/webauthn-server-store-exposed/README.md) | JVM backends storing WebAuthn state through Exposed |
+| [`webauthn-client-core`](./client/webauthn-client-core/README.md) | Shared passkey orchestration and controller-driven flows |
+| [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
+| [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
+| [`webauthn-client-android`](./client/webauthn-client-android/README.md) | Android apps using Credential Manager |
+| [`webauthn-client-ios`](./client/webauthn-client-ios/README.md) | iOS apps using AuthenticationServices |
+| [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
+| [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) | Clients talking to a `/webauthn/*` backend contract over Ktor (`HttpClient` contract + caller-selected engine) |
+| [`webauthn-attestation-mds`](./server/webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |
 
 ## Status and Current Limits
 

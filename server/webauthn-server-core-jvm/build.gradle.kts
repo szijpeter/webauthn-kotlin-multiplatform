@@ -1,0 +1,31 @@
+plugins {
+    id("webauthn.kotlin.jvm")
+    id("webauthn.published-library")
+    id("java-test-fixtures")
+    alias(libs.plugins.kotlin.serialization)
+}
+
+dependencies {
+    api(project(":core:webauthn-core"))
+    api(project(":core:webauthn-serialization-kotlinx"))
+    api(project(":core:webauthn-crypto-api"))
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.coroutines.core)
+    testImplementation(project(":server:webauthn-server-jvm-crypto"))
+    testImplementation(kotlin("test"))
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.h2)
+    testImplementation(libs.kotlinx.serialization.json)
+    testImplementation("com.webauthn4j:webauthn4j-core:0.31.6.RELEASE")
+    // Yubico 2.9.0 declares open Jackson ranges; 2.22.0 is currently partially published.
+    testImplementation(enforcedPlatform(libs.jackson.bom))
+    testImplementation("com.yubico:webauthn-server-core:2.9.0")
+    testFixturesApi(project(":core:webauthn-core"))
+    testFixturesApi(project(":core:webauthn-crypto-api"))
+    testFixturesApi(project(":core:webauthn-serialization-kotlinx"))
+    testFixturesApi(libs.kotlinx.serialization.json)
+    testFixturesApi(project(":server:webauthn-server-jvm-crypto"))
+    testFixturesApi(libs.kotlinx.coroutines.core)
+    testFixturesApi(libs.junit.jupiter)
+    testFixturesApi(kotlin("test"))
+}
