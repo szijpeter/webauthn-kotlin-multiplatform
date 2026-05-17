@@ -140,7 +140,7 @@ Focus modules for this documentation round:
 - `core/` contains reusable protocol, validation, runtime, serialization, and crypto contracts.
 - `client/` contains shared client orchestration, platform bridges, Compose helpers, and client transport.
 - `server/` contains JVM server services, Ktor/store adapters, JVM crypto, and optional trust metadata.
-- `app/` contains runnable samples and demo entry points; these modules are not published.
+- `sample/` contains runnable samples and demo entry points; these modules are not published.
 
 - [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md): shared coroutine/failure boundary helpers for adapters.
 - [`webauthn-model`](./core/webauthn-model/README.md): typed protocol/value contracts.
@@ -217,7 +217,7 @@ Notes:
 - Client apps do not need `webauthn-server-*` dependencies.
 - You only add `webauthn-client-android` / `webauthn-client-ios` when that target instantiates the concrete platform client.
 - If you only use the shared client abstractions, `commonMain` only needs the common modules.
-- For a complete source set example, see [`app/compose-passkey`](./app/compose-passkey/README.md), [`app/compose-passkey-android`](./app/compose-passkey-android/README.md), and [`app/compose-passkey-ios`](./app/compose-passkey-ios/README.md).
+- For a complete source set example, see [`sample/compose-passkey`](./sample/compose-passkey/README.md), [`sample/compose-passkey-android`](./sample/compose-passkey-android/README.md), and [`sample/compose-passkey-ios`](./sample/compose-passkey-ios/README.md).
 
 Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
@@ -255,10 +255,10 @@ Use:
 
 Start with:
 
-- [`app/backend-ktor`](./app/backend-ktor/README.md)
-- [`app/compose-passkey`](./app/compose-passkey/README.md)
-- [`app/compose-passkey-ios`](./app/compose-passkey-ios/README.md)
-- [`app/passkey-cli`](./app/passkey-cli/README.md) for a macOS-first experimental native-authenticator CLI POC
+- [`sample/backend-ktor`](./sample/backend-ktor/README.md)
+- [`sample/compose-passkey`](./sample/compose-passkey/README.md)
+- [`sample/compose-passkey-ios`](./sample/compose-passkey-ios/README.md)
+- [`sample/passkey-cli`](./sample/passkey-cli/README.md) for a macOS-first experimental native-authenticator CLI POC
 
 Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY.md`](./docs/DESKTOP_CLI_STRATEGY.md).
 

@@ -88,8 +88,8 @@ V1 backend target is Kotlin/JVM. Core ceremony services are in `webauthn-server-
 
 ## Deployable Samples
 
-Sample apps and CLIs are separate deployable modules under `app/*` rather than extra targets inside published library modules.
-This keeps packaging/runtime concerns isolated from reusable API modules (for example, `app/passkey-cli` for the experimental macOS-first native CLI flow).
+Sample apps and CLIs are separate deployable modules under `sample/*` rather than extra targets inside published library modules.
+This keeps packaging/runtime concerns isolated from reusable API modules (for example, `sample/passkey-cli` for the experimental macOS-first native CLI flow).
 
 ## Framework adapters
 

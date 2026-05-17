@@ -160,23 +160,23 @@ else
             client:webauthn-client-ios)
                 run_list+=("./gradlew :client:webauthn-client-ios:detekt :client:webauthn-client-ios:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
-            app:android-passkey)
-                run_list+=("./gradlew :app:android-passkey:detekt :app:android-passkey:lintDebug :app:android-passkey:assemble --stacktrace")
+            sample:android-passkey)
+                run_list+=("./gradlew :sample:android-passkey:detekt :sample:android-passkey:lintDebug :sample:android-passkey:assemble --stacktrace")
                 ;;
-            app:backend-ktor)
-                run_list+=("./gradlew :app:backend-ktor:detekt :app:backend-ktor:test --stacktrace")
+            sample:backend-ktor)
+                run_list+=("./gradlew :sample:backend-ktor:detekt :sample:backend-ktor:test --stacktrace")
                 ;;
-            app:ios-passkey)
-                run_list+=("./gradlew :app:ios-passkey:detekt :app:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+            sample:ios-passkey)
+                run_list+=("./gradlew :sample:ios-passkey:detekt :sample:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
-            app:compose-passkey)
-                run_list+=("./gradlew :app:compose-passkey:detekt :app:compose-passkey:allTests :app:compose-passkey:compileAndroidMain :app:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+            sample:compose-passkey)
+                run_list+=("./gradlew :sample:compose-passkey:detekt :sample:compose-passkey:allTests :sample:compose-passkey:compileAndroidMain :sample:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
-            app:compose-passkey-ios-host)
+            sample:compose-passkey-ios-host)
                 run_list+=("bash tools/agent/check-compose-passkey-ios-host.sh")
                 ;;
-            app:compose-passkey-android)
-                run_list+=("./gradlew :app:compose-passkey-android:detekt :app:compose-passkey-android:lintDebug :app:compose-passkey-android:assemble :app:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
+            sample:compose-passkey-android)
+                run_list+=("./gradlew :sample:compose-passkey-android:detekt :sample:compose-passkey-android:lintDebug :sample:compose-passkey-android:assemble :sample:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
                 ;;
         esac
     done

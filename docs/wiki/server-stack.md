@@ -51,4 +51,4 @@ From the current status and roadmap docs:
 - Root server adoption section: [`README.md`](../../README.md)
 - Architecture doc: [`docs/architecture.md`](../architecture.md)
 - Dependency policy: [`docs/dependency-decisions.md`](../dependency-decisions.md)
-- Sample backend: [`app/backend-ktor/README.md`](../../app/backend-ktor/README.md)
+- Sample backend: [`sample/backend-ktor/README.md`](../../sample/backend-ktor/README.md)

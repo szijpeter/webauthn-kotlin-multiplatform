@@ -224,30 +224,30 @@ for file in "${changed_files[@]}"; do
             mark_module "client:webauthn-client-ios"
             mark_category "ios"
             ;;
-        app/android-passkey/*)
-            mark_module "app:android-passkey"
+        sample/android-passkey/*)
+            mark_module "sample:android-passkey"
             mark_category "android"
             ;;
-        app/backend-ktor/*)
-            mark_module "app:backend-ktor"
+        sample/backend-ktor/*)
+            mark_module "sample:backend-ktor"
             mark_category "server"
             ;;
-        app/ios-passkey/*)
-            mark_module "app:ios-passkey"
+        sample/ios-passkey/*)
+            mark_module "sample:ios-passkey"
             mark_category "ios"
             ;;
-        app/compose-passkey/*)
-            mark_module "app:compose-passkey"
+        sample/compose-passkey/*)
+            mark_module "sample:compose-passkey"
             mark_category "android"
             mark_category "ios"
             ;;
-        app/compose-passkey-ios/*)
-            mark_module "app:compose-passkey"
-            mark_module "app:compose-passkey-ios-host"
+        sample/compose-passkey-ios/*)
+            mark_module "sample:compose-passkey"
+            mark_module "sample:compose-passkey-ios-host"
             mark_category "ios"
             ;;
-        app/compose-passkey-android/*)
-            mark_module "app:compose-passkey-android"
+        sample/compose-passkey-android/*)
+            mark_module "sample:compose-passkey-android"
             mark_category "android"
             ;;
         docs/*|spec-notes/*)

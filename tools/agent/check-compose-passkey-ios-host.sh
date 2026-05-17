@@ -24,7 +24,7 @@ log_file="$(mktemp)"
 trap 'rm -f "$log_file"' EXIT
 
 if xcodebuild \
-    -project app/compose-passkey-ios/ComposePasskeyIos.xcodeproj \
+    -project sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj \
     -scheme ComposePasskeyIos \
     -sdk iphonesimulator \
     -derivedDataPath "$ROOT_DIR/.build/xcode-derived/compose-passkey-ios-host" \

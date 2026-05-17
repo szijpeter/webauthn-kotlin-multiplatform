@@ -1,7 +1,7 @@
 # Desktop + CLI Strategy (POC)
 
 Date: April 5, 2026  
-Scope: sample-only implementation (`app:passkey-cli`)
+Scope: sample-only implementation (`sample:passkey-cli`)
 
 ## 1. Should We Add Desktop Support?
 
@@ -32,7 +32,7 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 
 ## 4. CLI Strategy For This Repository
 
-1. Keep CLI as a separate deployable sample module (`app:passkey-cli`), not an additional JVM target inside an existing KMP module.
+1. Keep CLI as a separate deployable sample module (`sample:passkey-cli`), not an additional JVM target inside an existing KMP module.
 2. Reuse existing typed contracts for backend orchestration (`KtorPasskeyServerClient`).
 3. Keep native authenticator interaction behind a narrow adapter boundary:
 - `AuthenticatorAdapter`
@@ -49,8 +49,8 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 ## Post-Merge Next Steps
 
 1. Stabilize sample ergonomics
-- Keep `app/passkey-cli` as the integration sandbox.
-- Continue smoke-testing browser mode with `app/backend-ktor/start-server.sh` (HTTPS/ngrok path) as the default local flow.
+- Keep `sample/passkey-cli` as the integration sandbox.
+- Continue smoke-testing browser mode with `sample/backend-ktor/start-server.sh` (HTTPS/ngrok path) as the default local flow.
 - Keep CTAP mode explicitly optional/experimental.
 
 2. Validate real-world usage before API design
