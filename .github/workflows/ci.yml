@@ -90,7 +90,7 @@ jobs:
         run: ./gradlew :webauthn-client-android:lintDebug :webauthn-client-android:assemble :samples:android-passkey:lintDebug :samples:android-passkey:assemble :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace
 
   ios-compile:
-    runs-on: macos-latest
+    runs-on: macos-26
     needs: [harness]
     timeout-minutes: 25
     steps:
