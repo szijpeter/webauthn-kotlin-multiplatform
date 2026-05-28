@@ -4,6 +4,8 @@ Last reviewed: 2026-04-06
 
 The repository uses a layered module model. Core protocol and validation concerns stay separate from crypto, server services, transport adapters, and platform clients.
 
+Physical module folders mirror that model: `core/`, `client/`, `server/`, `platform/`, and `sample/` contain the reusable libraries, BOM/constraints, and runnable entry points while preserving published artifact IDs as leaf module names.
+
 ## Layer Model
 
 | Layer | Key modules | Role |
@@ -26,7 +28,7 @@ The published artifact surface is coordinated as one release train. The main pub
 Not published:
 
 - `platform:constraints`
-- `samples:*`
+- `sample:*`
 - `build-logic`
 
 ## Recommended Adoption Paths

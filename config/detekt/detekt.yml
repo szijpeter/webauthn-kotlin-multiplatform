@@ -10,7 +10,7 @@ comments:
     active: true
     searchInNestedClass: false
     excludes: &test_and_sample_excludes
-      - '**/samples/**'
+      - '**/sample/**'
       - '**/test/**'
       - '**/androidTest/**'
       - '**/commonTest/**'

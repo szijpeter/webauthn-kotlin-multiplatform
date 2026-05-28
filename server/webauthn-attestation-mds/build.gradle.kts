@@ -1,0 +1,17 @@
+plugins {
+    id("webauthn.kotlin.jvm")
+    id("webauthn.published-library")
+    alias(libs.plugins.kotlin.serialization)
+}
+
+dependencies {
+    api(project(":core:webauthn-crypto-api"))
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.kotlinx.datetime)
+    testImplementation(kotlin("test"))
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.ktor.client.mock)
+}
