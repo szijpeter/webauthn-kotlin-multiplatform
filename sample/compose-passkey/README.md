@@ -21,6 +21,7 @@ Build-time config is shared across Android and iOS (not platform-specific). Thes
 - `WEBAUTHN_DEMO_ORIGIN` (default: `https://localhost`)
 - `WEBAUTHN_DEMO_USER_ID` (default: `demo-user-1`)
 - `WEBAUTHN_DEMO_USER_NAME` (default: `demo@local`)
+- Android host only: `WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION` (default: `false`)
 
 Examples:
 
@@ -46,10 +47,19 @@ For physical devices, prefer tunnel mode:
 
 This updates root `local.properties` (`WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, `WEBAUTHN_DEMO_ORIGIN`) to match the active ngrok domain.
 
+Android 17 note: the Android host targets SDK 37, so direct private-network endpoints
+such as `10.0.2.2`, `192.168.x.x`, or `172.16-31.x.x` require the platform
+`ACCESS_LOCAL_NETWORK` runtime permission. Set
+`WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true` when building the sample
+against one of those direct local endpoints. Public HTTPS endpoints and loopback
+defaults do not need the prompt.
+
 2. Build and run sample host app:
 
 ```bash
-WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080 ./gradlew :sample:compose-passkey-android:installDebug
+WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080 \
+WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
+./gradlew :sample:compose-passkey-android:installDebug
 ```
 
 3. Optional UI smoke test (emulator/device connected):
