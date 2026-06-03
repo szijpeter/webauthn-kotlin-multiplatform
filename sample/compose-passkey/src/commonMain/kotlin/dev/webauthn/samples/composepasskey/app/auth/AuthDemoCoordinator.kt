@@ -9,15 +9,13 @@ import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.passkey.controllerTransitionEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 internal class AuthDemoCoordinator(
     private val config: PasskeyDemoConfig,
     private val debugLogs: DebugLogStore,
     private val sessionStore: AppSessionStore,
 ) {
-    private val canRegisterStateFlow = MutableStateFlow(true)
-    val canRegister: StateFlow<Boolean> = canRegisterStateFlow.asStateFlow()
+    val canRegister: StateFlow<Boolean> field = MutableStateFlow<Boolean>(true)
 
     private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
 
@@ -57,7 +55,7 @@ internal class AuthDemoCoordinator(
 
         when {
             current is PasskeyControllerState.Success && current.action == PasskeyAction.REGISTER -> {
-                canRegisterStateFlow.value = false
+                canRegister.value = false
             }
 
             current is PasskeyControllerState.Success && current.action == PasskeyAction.SIGN_IN -> {
