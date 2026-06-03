@@ -6,7 +6,6 @@ import dev.webauthn.model.ValidationResult
 import dev.webauthn.runtime.rethrowCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 
 /** Shared registration/authentication ceremony coordinator for app-facing flows. */
@@ -14,13 +13,9 @@ public class PasskeyController<RegisterParams, SignInParams>(
     private val passkeyClient: PasskeyClient,
     private val serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
 ) {
-    private val _uiState = MutableStateFlow<PasskeyControllerState>(PasskeyControllerState.Idle)
+    public val uiState: StateFlow<PasskeyControllerState> field =
+        MutableStateFlow<PasskeyControllerState>(PasskeyControllerState.Idle)
     private val ceremonyMutex = Mutex()
-
-    /**
-     * A flow of the current state of the Passkey Ceremony.
-     */
-    public val uiState: StateFlow<PasskeyControllerState> = _uiState.asStateFlow()
 
     /**
      * Triggers a full registration ceremony.
@@ -56,7 +51,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
      * Resets the controller state to [PasskeyControllerState.Idle].
      */
     public fun resetToIdle() {
-        _uiState.value = PasskeyControllerState.Idle
+        uiState.value = PasskeyControllerState.Idle
     }
 
     @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
@@ -91,7 +86,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
 
             emitProgress(action, PasskeyPhase.FINISHING)
             when (val result = finish(response, challenge)) {
-                PasskeyFinishResult.Verified -> _uiState.value = PasskeyControllerState.Success(action)
+                PasskeyFinishResult.Verified -> uiState.value = PasskeyControllerState.Success(action)
                 is PasskeyFinishResult.Rejected -> {
                     val message = result.message ?: "${action.name} verification was rejected by the server."
                     return fail(action, PasskeyClientError.Transport(message))
@@ -103,22 +98,22 @@ public class PasskeyController<RegisterParams, SignInParams>(
                 is IllegalArgumentException -> PasskeyClientError.InvalidOptions(e.message ?: "Invalid options")
                 else -> PasskeyClientError.Transport(e.message ?: "Server interaction failed", e)
             }
-            _uiState.value = PasskeyControllerState.Failure(action, error)
+            uiState.value = PasskeyControllerState.Failure(action, error)
         } finally {
-            if (_uiState.value is PasskeyControllerState.InProgress) {
+            if (uiState.value is PasskeyControllerState.InProgress) {
                 // If we exit while still in progress, it implies a CancellationException bubbled up
-                _uiState.value = PasskeyControllerState.Idle
+                uiState.value = PasskeyControllerState.Idle
             }
             ceremonyMutex.unlock()
         }
     }
 
     private fun emitProgress(action: PasskeyAction, phase: PasskeyPhase) {
-        _uiState.value = PasskeyControllerState.InProgress(action, phase)
+        uiState.value = PasskeyControllerState.InProgress(action, phase)
     }
 
     private fun fail(action: PasskeyAction, error: PasskeyClientError) {
-        _uiState.value = PasskeyControllerState.Failure(action, error)
+        uiState.value = PasskeyControllerState.Failure(action, error)
     }
 
     private fun ValidationResult.Invalid.errorMessage(): String =
