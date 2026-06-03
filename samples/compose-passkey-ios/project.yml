@@ -2,7 +2,7 @@ name: ComposePasskeyIos
 options:
   xcodeVersion: "16.0"
   deploymentTarget:
-    iOS: "26.0"
+    iOS: "16.0"
 
 settings:
   base:
