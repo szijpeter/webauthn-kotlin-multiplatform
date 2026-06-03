@@ -1,7 +1,7 @@
 # Desktop + CLI Strategy (POC)
 
 Date: April 5, 2026  
-Scope: sample-only implementation (`sample:passkey-cli`)
+Scope: sample-only implementation (`:sample:passkey-cli`)
 
 ## 1. Should We Add Desktop Support?
 
@@ -32,7 +32,7 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 
 ## 4. CLI Strategy For This Repository
 
-1. Keep CLI as a separate deployable sample module (`sample:passkey-cli`), not an additional JVM target inside an existing KMP module.
+1. Keep CLI as a separate deployable sample module (`:sample:passkey-cli`), not an additional JVM target inside an existing KMP module.
 2. Reuse existing typed contracts for backend orchestration (`KtorPasskeyServerClient`).
 3. Keep native authenticator interaction behind a narrow adapter boundary:
 - `AuthenticatorAdapter`
@@ -44,7 +44,7 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 ## POC Outcome
 
 - Added a runnable sample CLI (`doctor`, `register`, `authenticate`) with browser-orchestrated platform passkey flow (default) and optional macOS-first native CTAP integration via `python-fido2`.
-- Kept scope isolated to samples/docs with no published API changes.
+- Kept scope isolated to sample modules and docs with no published API changes.
 
 ## Post-Merge Next Steps
 
@@ -63,7 +63,7 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 - Phase B (only if justified): evaluate native desktop authenticator abstractions separately, with clear per-OS support/maintenance ownership.
 
 4. Keep CTAP native integration out of published modules for now
-- Maintain CTAP bridge in samples/spikes unless there is a funded, cross-platform support commitment.
+- Maintain CTAP bridge in sample modules or spikes unless there is a funded, cross-platform support commitment.
 - Treat Python/libfido2-based desktop authenticator access as operational tooling, not stable public SDK API.
 
 ## Go/No-Go Criteria For Full Desktop Library Support
