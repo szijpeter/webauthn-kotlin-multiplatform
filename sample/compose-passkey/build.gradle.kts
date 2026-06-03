@@ -12,7 +12,7 @@ kotlin {
 
     android {
         namespace = "dev.webauthn.samples.composepasskey"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 30
     }
 

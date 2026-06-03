@@ -8,7 +8,7 @@ plugins {
 kotlin {
     android {
         namespace = "dev.webauthn.client.compose"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 26
     }
     iosArm64()

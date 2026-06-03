@@ -7,7 +7,7 @@ plugins {
 kotlin {
     android {
         namespace = "dev.webauthn.client.prf"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 30
     }
     jvm()
