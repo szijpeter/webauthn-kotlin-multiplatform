@@ -18,7 +18,6 @@ import dev.webauthn.samples.composepasskey.domain.prf.PrfDemoResult
 import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -30,10 +29,8 @@ internal class MainViewModel(
     passkeyClient: PasskeyClient,
     serverClient: DemoPasskeyServerClient,
 ) : ViewModel() {
-    private val uiStateFlow: MutableStateFlow<MainUiState> =
-        MutableStateFlow(MainUiState(userName = config.userName))
-
-    val uiState: StateFlow<MainUiState> = uiStateFlow.asStateFlow()
+    val uiState: StateFlow<MainUiState> field =
+        MutableStateFlow<MainUiState>(MainUiState(userName = config.userName))
 
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
     private val prfDemoController = PrfCryptoDemoController(
@@ -44,7 +41,7 @@ internal class MainViewModel(
 
     init {
         observeSession()
-        uiStateFlow.update {
+        uiState.update {
             it.copy(
                 sessionState = PrfCryptoDemoSessionState.NoSession,
                 decryptedText = null,
@@ -58,13 +55,13 @@ internal class MainViewModel(
             debugLogs.i(source = "prf", message = "Sign In + PRF tapped")
             prfDemoController.signInWithPrf(
                 config = config,
-                supportsPrf = uiStateFlow.value.supportsPrf,
+                supportsPrf = uiState.value.supportsPrf,
             )
         }
     }
 
     fun onEncryptClicked() {
-        runBusyAction { prfDemoController.encrypt(uiStateFlow.value.plaintext) }
+        runBusyAction { prfDemoController.encrypt(uiState.value.plaintext) }
     }
 
     fun onDecryptClicked() {
@@ -76,7 +73,7 @@ internal class MainViewModel(
     }
 
     fun onPlaintextChanged(value: String) {
-        uiStateFlow.update { it.copy(plaintext = value) }
+        uiState.update { it.copy(plaintext = value) }
     }
 
     fun onLogoutClicked() {
@@ -86,7 +83,7 @@ internal class MainViewModel(
             }
         }
         sessionStore.signOut()
-        uiStateFlow.update {
+        uiState.update {
             it.copy(
                 decryptedText = null,
                 sessionState = PrfCryptoDemoSessionState.NoSession,
@@ -100,11 +97,11 @@ internal class MainViewModel(
             sessionStore.state.collect { state ->
                 when (state) {
                     AppSessionState.SignedOut -> {
-                        uiStateFlow.update { it.copy(userName = "") }
+                        uiState.update { it.copy(userName = "") }
                     }
 
                     is AppSessionState.SignedIn -> {
-                        uiStateFlow.update { it.copy(userName = state.userName) }
+                        uiState.update { it.copy(userName = state.userName) }
                     }
                 }
             }
@@ -116,7 +113,7 @@ internal class MainViewModel(
             debugLogs.i(source = "capabilities", message = "Loading capability hints")
             runSuspendCatching(passkeyClient::capabilities)
                 .onSuccess { loaded ->
-                    uiStateFlow.update {
+                    uiState.update {
                         it.copy(
                             capabilities = loaded,
                             supportsPrf = loaded.supports(prfCapability),
@@ -128,7 +125,7 @@ internal class MainViewModel(
                     )
                 }
                 .onFailure { throwable ->
-                    uiStateFlow.update {
+                    uiState.update {
                         it.copy(
                             capabilities = PasskeyCapabilities(),
                             supportsPrf = false,
@@ -144,7 +141,7 @@ internal class MainViewModel(
     }
 
     private fun runBusyAction(action: suspend () -> PrfDemoResult) {
-        if (uiStateFlow.value.busy) return
+        if (uiState.value.busy) return
         setBusy(true)
         viewModelScope.launch {
             try {
@@ -174,9 +171,9 @@ internal class MainViewModel(
 
     private fun updatePrfUi(
         statusMessage: String,
-        decryptedText: String? = uiStateFlow.value.decryptedText,
+        decryptedText: String? = uiState.value.decryptedText,
     ) {
-        uiStateFlow.update {
+        uiState.update {
             it.copy(
                 statusMessage = statusMessage,
                 decryptedText = decryptedText,
@@ -186,6 +183,6 @@ internal class MainViewModel(
     }
 
     private fun setBusy(value: Boolean) {
-        uiStateFlow.update { it.copy(busy = value) }
+        uiState.update { it.copy(busy = value) }
     }
 }
