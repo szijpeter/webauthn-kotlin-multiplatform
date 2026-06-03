@@ -84,6 +84,7 @@ flowchart TB
     end
 
     subgraph Layer2[Layer 2: Validation and Serialization]
+        CBOR[webauthn-cbor-core]
         C[webauthn-core]
         S[webauthn-serialization-kotlinx]
         RUNTIME[webauthn-runtime-core]
@@ -113,8 +114,10 @@ flowchart TB
 
     M --> C
     M --> S
+    CBOR --> S
     C --> API
     S --> SVC
+    CBOR --> JCRYPTO
     JCRYPTO --> API
     C --> SVC
     SVC --> KTOR
