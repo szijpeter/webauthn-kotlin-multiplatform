@@ -23,6 +23,21 @@ val client = AndroidPasskeyClient(context)
 
 Real-world scenario: your shared app logic drives ceremony flow in `PasskeyController`, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
 
+For Android automatic passkey upgrades after a successful password or other non-passkey sign-in,
+call the Android-specific create overload:
+
+```kotlin
+import dev.webauthn.client.android.AndroidPasskeyCreateOptions
+
+val result = client.createCredential(
+    options = creationOptions,
+    androidOptions = AndroidPasskeyCreateOptions.Conditional,
+)
+```
+
+This maps to Credential Manager conditional create with immediately-available credentials preferred,
+so providers can create the passkey opportunistically without blocking system UI.
+
 ## How it fits
 
 ```mermaid
@@ -41,6 +56,9 @@ flowchart LR
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
   - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
 - Keep backend contract alignment with your chosen server client implementation.
+- Conditional create is Android-specific. Use it only after a successful non-passkey sign-in or
+  sign-up where an automatic passkey upgrade is appropriate; keep explicit registration flows on
+  the default `createCredential(options)` path.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.
