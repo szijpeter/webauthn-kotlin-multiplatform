@@ -146,37 +146,37 @@ else
     for module in "${modules[@]}"; do
         [[ -z "$module" ]] && continue
         case "$module" in
-            webauthn-cbor-core|webauthn-model|webauthn-runtime-core|webauthn-core|webauthn-serialization-kotlinx|webauthn-crypto-api|webauthn-client-core|webauthn-client-json-core|webauthn-client-compose|webauthn-client-prf-crypto|webauthn-network-ktor-client)
+            core:webauthn-cbor-core|core:webauthn-model|core:webauthn-runtime-core|core:webauthn-core|core:webauthn-serialization-kotlinx|core:webauthn-crypto-api|client:webauthn-client-core|client:webauthn-client-json-core|client:webauthn-client-compose|client:webauthn-client-prf-crypto|client:webauthn-network-ktor-client)
                 run_list+=("./gradlew :$module:detekt --stacktrace")
                 run_list+=("./gradlew :$module:allTests --stacktrace")
                 ;;
-            webauthn-server-core-jvm|webauthn-server-jvm-crypto|webauthn-server-ktor|webauthn-attestation-mds)
+            server:webauthn-server-core-jvm|server:webauthn-server-jvm-crypto|server:webauthn-server-ktor|server:webauthn-server-store-exposed|server:webauthn-attestation-mds)
                 run_list+=("./gradlew :$module:detekt --stacktrace")
                 run_list+=("./gradlew :$module:test --stacktrace")
                 ;;
-            webauthn-client-android)
-                run_list+=("./gradlew :webauthn-client-android:detekt :webauthn-client-android:lintDebug :webauthn-client-android:assemble --stacktrace")
+            client:webauthn-client-android)
+                run_list+=("./gradlew :client:webauthn-client-android:detekt :client:webauthn-client-android:lintDebug :client:webauthn-client-android:assemble --stacktrace")
                 ;;
-            webauthn-client-ios)
-                run_list+=("./gradlew :webauthn-client-ios:detekt :webauthn-client-ios:compileKotlinIosSimulatorArm64 --stacktrace")
+            client:webauthn-client-ios)
+                run_list+=("./gradlew :client:webauthn-client-ios:detekt :client:webauthn-client-ios:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
-            samples:android-passkey)
-                run_list+=("./gradlew :samples:android-passkey:detekt :samples:android-passkey:lintDebug :samples:android-passkey:assemble --stacktrace")
+            sample:android-passkey)
+                run_list+=("./gradlew :sample:android-passkey:detekt :sample:android-passkey:lintDebug :sample:android-passkey:assemble --stacktrace")
                 ;;
-            samples:backend-ktor)
-                run_list+=("./gradlew :samples:backend-ktor:detekt :samples:backend-ktor:test --stacktrace")
+            sample:backend-ktor)
+                run_list+=("./gradlew :sample:backend-ktor:detekt :sample:backend-ktor:test --stacktrace")
                 ;;
-            samples:ios-passkey)
-                run_list+=("./gradlew :samples:ios-passkey:detekt :samples:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+            sample:ios-passkey)
+                run_list+=("./gradlew :sample:ios-passkey:detekt :sample:ios-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
-            samples:compose-passkey)
-                run_list+=("./gradlew :samples:compose-passkey:detekt :samples:compose-passkey:allTests :samples:compose-passkey:compileAndroidMain :samples:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
+            sample:compose-passkey)
+                run_list+=("./gradlew :sample:compose-passkey:detekt :sample:compose-passkey:allTests :sample:compose-passkey:compileAndroidMain :sample:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
-            samples:compose-passkey-ios-host)
+            sample:compose-passkey-ios-host)
                 run_list+=("bash tools/agent/check-compose-passkey-ios-host.sh")
                 ;;
-            samples:compose-passkey-android)
-                run_list+=("./gradlew :samples:compose-passkey-android:detekt :samples:compose-passkey-android:lintDebug :samples:compose-passkey-android:assemble :samples:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
+            sample:compose-passkey-android)
+                run_list+=("./gradlew :sample:compose-passkey-android:detekt :sample:compose-passkey-android:lintDebug :sample:compose-passkey-android:assemble :sample:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace")
                 ;;
         esac
     done
@@ -207,7 +207,7 @@ else
         fi
 
         if [[ "$has_core" == "true" ]]; then
-            run_list+=("./gradlew :webauthn-server-core-jvm:test :webauthn-server-ktor:test --stacktrace")
+            run_list+=("./gradlew :server:webauthn-server-core-jvm:test :server:webauthn-server-ktor:test --stacktrace")
         fi
     fi
 fi

@@ -42,7 +42,7 @@ Published:
 Not published:
 
 - `platform:constraints`
-- `samples:*`
+- `sample:*`
 - `build-logic`
 
 ## One-Time Setup

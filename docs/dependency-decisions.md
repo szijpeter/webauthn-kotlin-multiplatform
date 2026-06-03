@@ -58,7 +58,7 @@ This keeps core/server contracts stable and independent from any single crypto v
 ## Client Runtime Dependencies
 
 `webauthn-client-core` is typed-only and serializer-agnostic.
-It does not depend on `kotlinx-serialization-json` or `:webauthn-serialization-kotlinx`.
+It does not depend on `kotlinx-serialization-json` or `:core:webauthn-serialization-kotlinx`.
 
 Raw JSON API support is optional and lives in `webauthn-client-json-core`, which provides:
 - `JsonPasskeyClient`

@@ -56,7 +56,7 @@ Published:
 Not published:
 
 - `platform:constraints`
-- `samples:*`
+- `sample:*`
 - `build-logic`
 
 ## Crypto Backend Policy
@@ -97,7 +97,7 @@ Optional trust source:
 
 Reference/samples:
 
-- `samples/*`
+- `sample/*`
 - `docs/*`
 - `spec-notes/*`
 

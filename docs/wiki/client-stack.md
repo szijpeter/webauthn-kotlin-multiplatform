@@ -52,4 +52,4 @@ From the current implementation/status docs:
 - Root client adoption section: [`README.md`](../../README.md)
 - Client-first execution notes: [`docs/CLIENT_FIRST_EXECUTION.md`](../CLIENT_FIRST_EXECUTION.md)
 - Client benchmark notes: [`docs/CLIENT_API_BENCHMARKS.md`](../CLIENT_API_BENCHMARKS.md)
-- Sample Compose app: [`samples/compose-passkey/README.md`](../../samples/compose-passkey/README.md)
+- Sample Compose app: [`sample/compose-passkey/README.md`](../../sample/compose-passkey/README.md)

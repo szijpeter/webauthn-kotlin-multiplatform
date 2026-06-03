@@ -78,14 +78,18 @@ flowchart TB
 
 `webauthn-model` has no dependencies on the rest of the codebase.
 
+## Repository layout
+
+Reusable published libraries are grouped by responsibility: `core/` for shared protocol, validation, runtime, serialization, and crypto contracts; `client/` for client orchestration, platform bridges, Compose helpers, and transport; and `server/` for JVM services, adapters, crypto, stores, and trust metadata. The leaf module names remain the published artifact names.
+
 ## Backend runtime
 
 V1 backend target is Kotlin/JVM. Core ceremony services are in `webauthn-server-core-jvm` and stay framework-agnostic.
 
 ## Deployable Samples
 
-Sample apps and CLIs are separate deployable modules under `samples/*` rather than extra targets inside published library modules.
-This keeps packaging/runtime concerns isolated from reusable API modules (for example, `samples/passkey-cli` for the experimental macOS-first native CLI flow).
+Sample apps and CLIs are separate deployable modules under `sample/*` rather than extra targets inside published library modules.
+This keeps packaging/runtime concerns isolated from reusable API modules (for example, `sample/passkey-cli` for the experimental macOS-first native CLI flow).
 
 ## Framework adapters
 

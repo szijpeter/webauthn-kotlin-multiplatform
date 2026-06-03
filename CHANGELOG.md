@@ -46,4 +46,4 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 - Local `pre-push` verification is now advisory; PR CI is the blocking authority.
 - Public launch and security docs now reflect Renovate rather than Dependabot as the dependency automation source.
-- `samples:compose-passkey` now generates its demo build config through `build-logic` so full configuration-cache-enabled repo checks stay green.
+- `app:compose-passkey` now generates its demo build config through `build-logic` so full configuration-cache-enabled repo checks stay green.
