@@ -6,8 +6,10 @@ Android platform bridge for passkey operations using Credential Manager.
 
 - `AndroidPasskeyClient`
 - `AndroidRestoreCredentialClient`
+- `AndroidCredentialSignalClient`
 - Android `PasskeyClient` implementation for registration and authentication ceremonies
 - Android Restore Credentials helpers for system-managed restore keys
+- Android Credential Manager signal helpers for provider-side passkey consistency hints
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
 - Capabilities reporting via `PasskeyCapabilities.supported: Set<PasskeyCapability>` with key-based lookup
 
@@ -65,6 +67,29 @@ restoreCredentials.clearRestoreCredential()
 Create the restore credential after the user signs in, retrieve it during app-data restore or first
 launch on a new device, and clear it when the user signs out.
 
+For provider consistency after account or credential changes, use the Credential Manager Signal API
+adapter:
+
+```kotlin
+import dev.webauthn.client.android.AndroidCredentialSignalClient
+
+val signals = AndroidCredentialSignalClient(context)
+
+signals.signalUnknownCredential(
+    rpId = rpId,
+    credentialId = staleCredentialId,
+)
+
+signals.signalAllAcceptedCredentialIds(
+    rpId = rpId,
+    userId = userHandle,
+    credentialIds = currentCredentialIds,
+)
+```
+
+Signal calls do not show UI. A successful result means Credential Manager accepted and dispatched
+the signal to enabled providers; it does not guarantee a provider applied the update.
+
 ## How it fits
 
 ```mermaid
@@ -92,6 +117,8 @@ flowchart LR
   should not appear on a passkey management page.
 - Cloud backup for restore credentials is recommended. If you intentionally disable it, users who
   restore app data from cloud backup cannot use that local-only restore key for automatic sign-in.
+- Signal API calls are best-effort provider hints. Continue to enforce credential/account state on
+  the server even after a successful signal result.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.
