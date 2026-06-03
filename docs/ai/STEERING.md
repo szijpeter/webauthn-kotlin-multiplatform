@@ -187,6 +187,17 @@ Defaults:
 - PR CI: blocking authority for quality, compatibility, and release preflight.
 - Maven Central publishing: manual workflow dispatch only.
 
+## Branch and PR Naming Policy
+
+1. Use lowercase, hyphenated branch names with a type prefix: `<type>/<short-kebab-summary>`.
+2. Preferred branch types are `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, `chore`, `release`, and `security`.
+3. Use the smallest accurate type: `feat` for user-visible capability, `fix` for bug or security corrections, `docs` for documentation-only work, `ci` for workflow changes, and `chore` only when no more specific type fits.
+4. Optional issue IDs may follow the type when useful, for example `fix/1234-origin-validation` or `feat/passkey-registration-options`.
+5. Do not include tool names, agent names, personal names, timestamps, or throwaway labels in branch names or PR titles.
+6. PR titles should follow Conventional Commits style: `<type>(optional-scope): <imperative summary>`.
+7. Match the PR title type to the dominant shipped change, and mention secondary cleanup in the PR body instead of overloading the title.
+8. Keep PR summaries human-reviewable: concise, behavior-focused, and clear about public API, security, release, or documentation impact.
+
 ## Stop Conditions
 
 Stop and ask before continuing when:
