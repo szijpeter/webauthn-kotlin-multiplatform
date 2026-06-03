@@ -17,6 +17,7 @@ vanniktech-maven-publish = "0.36.0"
 # Detekt 1.x does not support Kotlin 2.x; 2.x is currently alpha-only.
 detekt = "2.0.0-alpha.3"
 junit = "6.1.0"
+jackson = "2.21.4"
 h2 = "2.4.240"
 androidx-credentials = "1.6.0"
 androidx-core = "1.18.0"
@@ -83,6 +84,7 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
