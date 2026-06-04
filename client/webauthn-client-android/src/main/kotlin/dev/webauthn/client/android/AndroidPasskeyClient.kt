@@ -26,45 +26,21 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyCreateMediation
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyJsonMapper
+import dev.webauthn.client.PasskeyPlatformFeatureKeys
 import dev.webauthn.client.PasskeyPlatformBridge
-import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.WebAuthnExtension
-import kotlin.coroutines.cancellation.CancellationException
 
 private const val RP_ID_VALIDATION_HINT =
     "Troubleshooting: verify RP ID/domain alignment, serve /.well-known/assetlinks.json over HTTPS, " +
         "and confirm your Android package name plus signing SHA-256 fingerprint match that file."
-
-/**
- * Android Credential Manager options for passkey creation requests.
- *
- * Use [Conditional] after a successful password or other non-passkey sign-in to let Credential
- * Manager create a passkey opportunistically without showing blocking system UI.
- */
-public data class AndroidPasskeyCreateOptions(
-    public val preferImmediatelyAvailableCredentials: Boolean = false,
-    public val isConditional: Boolean = false,
-) {
-    /** Predefined Credential Manager create behaviors. */
-    public companion object {
-        /** Default explicit create behavior, suitable for user-initiated registration actions. */
-        public val Default: AndroidPasskeyCreateOptions = AndroidPasskeyCreateOptions()
-
-        /**
-         * Opportunistic create behavior for automatic passkey upgrades after non-passkey sign-in.
-         */
-        public val Conditional: AndroidPasskeyCreateOptions = AndroidPasskeyCreateOptions(
-            preferImmediatelyAvailableCredentials = true,
-            isConditional = true,
-        )
-    }
-}
 
 /**
  * Android `CredentialManager` backed [PasskeyClient] implementation.
@@ -75,13 +51,12 @@ public data class AndroidPasskeyCreateOptions(
 public class AndroidPasskeyClient(
     private val contextProvider: PasskeyPromptContextProvider,
     private val credentialManagerFactory: (Context) -> CredentialManager = CredentialManager::create,
-) : PasskeyClient {
-    private val bridge: AndroidPasskeyPlatformBridge = AndroidPasskeyPlatformBridge(
+) : PasskeyClient by DefaultPasskeyClient(
+    bridge = AndroidPasskeyPlatformBridge(
         contextProvider = contextProvider,
         credentialManagerFactory = credentialManagerFactory,
-    )
-    private val defaultClient: PasskeyClient = DefaultPasskeyClient(bridge = bridge)
-
+    ),
+) {
     /**
      * Convenience constructor for apps that want default prompt-context handling.
      *
@@ -95,56 +70,6 @@ public class AndroidPasskeyClient(
         contextProvider = defaultPromptContextProvider(context),
         credentialManagerFactory = { credentialManager },
     )
-
-    override suspend fun createCredential(
-        options: PublicKeyCredentialCreationOptions,
-    ): PasskeyResult<RegistrationResponse> = defaultClient.createCredential(options)
-
-    /**
-     * Creates a passkey with Android Credential Manager-specific behavior.
-     *
-     * Pass [AndroidPasskeyCreateOptions.Conditional] for automatic passkey upgrades after a
-     * successful password or other non-passkey sign-in.
-     */
-    public suspend fun createCredential(
-        options: PublicKeyCredentialCreationOptions,
-        androidOptions: AndroidPasskeyCreateOptions,
-    ): PasskeyResult<RegistrationResponse> {
-        return runCreateOperation(options = options) {
-            bridge.createCredential(options, androidOptions)
-        }
-    }
-
-    override suspend fun getAssertion(
-        options: PublicKeyCredentialRequestOptions,
-    ): PasskeyResult<AuthenticationResponse> = defaultClient.getAssertion(options)
-
-    override suspend fun capabilities(): PasskeyCapabilities = defaultClient.capabilities()
-
-    private suspend fun runCreateOperation(
-        options: PublicKeyCredentialCreationOptions,
-        operation: suspend () -> RegistrationResponse,
-    ): PasskeyResult<RegistrationResponse> {
-        @Suppress("TooGenericExceptionCaught")
-        return try {
-            requireCreationOptions(options)
-            PasskeyResult.Success(operation())
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: IllegalArgumentException) {
-            val mapped = bridge.mapPlatformError(error)
-            val message = mapped.message.ifBlank { error.message ?: "Invalid options" }
-            PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message))
-        } catch (error: Throwable) {
-            PasskeyResult.Failure(bridge.mapPlatformError(error))
-        }
-    }
-
-    private fun requireCreationOptions(options: PublicKeyCredentialCreationOptions) {
-        if (options.pubKeyCredParams.isEmpty()) {
-            throw IllegalArgumentException("pubKeyCredParams must not be empty")
-        }
-    }
 }
 
 internal class AndroidPasskeyPlatformBridge(
@@ -157,15 +82,16 @@ internal class AndroidPasskeyPlatformBridge(
      * Maps to Android Credential Manager CreatePublicKeyCredentialRequest
      */
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
-        return createCredential(options, AndroidPasskeyCreateOptions.Default)
+        return createCredential(options, PasskeyCreateOptions.Default)
     }
 
-    suspend fun createCredential(
+    override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
-        androidOptions: AndroidPasskeyCreateOptions,
+        createOptions: PasskeyCreateOptions,
     ): RegistrationResponse {
         val context = requirePromptContext()
         val credentialManager = credentialManagerFactory(context)
+        val conditionalCreate = createOptions.mediation == PasskeyCreateMediation.Conditional
         return runTypedCeremony(
             options = options,
             encodeOptions = jsonMapper::encodeCreationOptionsOrThrowInvalid,
@@ -174,8 +100,8 @@ internal class AndroidPasskeyPlatformBridge(
                     context = context,
                     request = CreatePublicKeyCredentialRequest(
                         requestJson = requestJson,
-                        preferImmediatelyAvailableCredentials = androidOptions.preferImmediatelyAvailableCredentials,
-                        isConditional = androidOptions.isConditional,
+                        preferImmediatelyAvailableCredentials = conditionalCreate,
+                        isConditional = conditionalCreate,
                     ),
                 )
             },
@@ -227,7 +153,8 @@ internal class AndroidPasskeyPlatformBridge(
                     add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
                     add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
                 }
-                add(PasskeyCapability.PlatformFeature("securityKey"))
+                add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate))
+                add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey))
             },
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )

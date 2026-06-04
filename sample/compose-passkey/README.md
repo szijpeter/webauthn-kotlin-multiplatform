@@ -4,7 +4,7 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 
 ## What this demonstrates
 
-1. Runtime capability probing via `PasskeyCapabilities.supports(...)` (PRF extension, Large Blob extension, security key support).
+1. Runtime capability probing via `PasskeyCapabilities.supports(...)` (PRF extension, Large Blob extension, security key support, conditional create support).
 2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.

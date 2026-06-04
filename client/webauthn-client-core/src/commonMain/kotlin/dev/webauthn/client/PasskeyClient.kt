@@ -17,6 +17,22 @@ public interface PasskeyClient {
     ): PasskeyResult<RegistrationResponse>
 
     /**
+     * W3C WebAuthn L3: §5.1. Authentication Credentials Container (navigator.credentials.create)
+     * with platform mediation hints.
+     */
+    public suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): PasskeyResult<RegistrationResponse> {
+        if (createOptions == PasskeyCreateOptions.Default) {
+            return createCredential(options)
+        }
+        return PasskeyResult.Failure(
+            PasskeyClientError.Platform("Passkey create option ${createOptions.mediation} is not supported"),
+        )
+    }
+
+    /**
      * W3C WebAuthn L3: §5.1. Authentication Credentials Container (navigator.credentials.get)
      */
     public suspend fun getAssertion(
