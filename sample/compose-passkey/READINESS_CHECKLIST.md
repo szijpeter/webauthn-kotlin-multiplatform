@@ -88,6 +88,7 @@ adb logcat | rg "PasskeyDemo"
 Pass condition:
 
 - app/action/controller/http events are present and readable.
+- on Android, successful sign-in logs a `signals` entry when Credential Manager accepts or rejects the current-user-details signal.
 - in-app debug sheet opens from the explicit `Logs` header action on both screens.
 
 ## 5. Optional emulator smoke run
