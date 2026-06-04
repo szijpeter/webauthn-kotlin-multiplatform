@@ -128,6 +128,8 @@ flowchart LR
   restore app data from cloud backup cannot use that local-only restore key for automatic sign-in.
 - Signal API calls are best-effort provider hints. Continue to enforce credential/account state on
   the server even after a successful signal result.
+- Rate-limit signal calls in app orchestration. Android's Signal API documentation caps relying
+  parties at 10 calls in any 120-second window.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.
