@@ -51,6 +51,9 @@ Prerequisites:
 - build-time endpoint configured via `WEBAUTHN_DEMO_ENDPOINT` for your target
   - emulator: `http://10.0.2.2:8080`
   - physical device: `http://<laptop-lan-ip>:8080`
+- Android 17 / target SDK 37 local-network permission granted when using a
+  private-network endpoint from an emulator or physical device; build with
+  `WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true`
 
 Run:
 

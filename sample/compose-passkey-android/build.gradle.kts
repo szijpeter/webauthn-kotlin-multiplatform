@@ -32,6 +32,16 @@ val demoRpId = demoConfigValue(
     defaultValue = "localhost",
 )
 
+val demoEndpoint = demoConfigValue(
+    envName = "WEBAUTHN_DEMO_ENDPOINT",
+    defaultValue = "http://127.0.0.1:8080",
+)
+
+val requestLocalNetworkPermission = demoConfigValue(
+    envName = "WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION",
+    defaultValue = "false",
+).toBooleanStrictOrNull() ?: false
+
 android {
     namespace = "dev.webauthn.samples.composepasskey.android"
 
@@ -40,9 +50,15 @@ android {
         minSdk = 30
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["SERVER_HOST"] = demoRpId
+        val escapedDemoEndpoint = demoEndpoint
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+        buildConfigField("String", "WEBAUTHN_DEMO_ENDPOINT", "\"$escapedDemoEndpoint\"")
+        buildConfigField("Boolean", "WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION", "$requestLocalNetworkPermission")
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
