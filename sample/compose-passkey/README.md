@@ -15,6 +15,7 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 10. Android Restore Credentials demo card: create a restore key with the normal registration options, test retrieval through the normal sign-in finish path, and clear the restore key during local sign-out.
+11. Android Credential Manager signal demo: after successful sign-in, the sample sends a current-user-details signal and logs whether Credential Manager accepted it.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
@@ -110,6 +111,7 @@ The sample emits structured logs with tag `PasskeyDemo` and uses the same entrie
 - `capabilities`: probe start/success/failure
 - `action`: register/sign-in taps
 - `prf`: PRF sign-in/session/encrypt/decrypt outcomes
+- `signals`: Android Credential Manager signal outcomes
 - `controller`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
 - `http`: raw Ktor engine lines
 
@@ -144,6 +146,7 @@ AuthScreen(
 Sample-only side effects stay outside the library API surface:
 
 - `AuthDemoCoordinator` logs taps/state transitions.
+- `AuthDemoCoordinator` sends the Android current-user-details signal after successful sign-in when the platform client is available.
 - `AppSessionStore` handles local signed-in navigation state.
 
 ## Android Restore Credentials showcase
@@ -162,6 +165,19 @@ This card is a development harness for the create/get/clear API shape. A true de
 validation still needs Android backup/restore or first-launch testing on a restored device. iOS shows
 the card as unavailable because Apple passkeys sync through iCloud Keychain, but AuthenticationServices
 does not expose an app-managed Restore Credentials equivalent.
+
+## Credential signal showcase
+
+After successful sign-in, the sample can send a current-user-details signal to the platform
+credential manager and log whether the platform accepted it. This is a sample-side integration over
+the Android-only `AndroidCredentialSignalClient`; it does not replace server-side credential-state
+enforcement.
+
+The sample only exercises `SignalCurrentUserDetailsRequest` because it already has the RP ID, stable
+user handle, and display name during sign-in. `SignalAllAcceptedCredentialIdsRequest` and
+`SignalUnknownCredentialRequest` require a real server-side credential inventory or an unknown
+credential failure path, so those stay in the Android module API and docs until the sample backend
+exposes that state.
 
 ## Compose previews
 
