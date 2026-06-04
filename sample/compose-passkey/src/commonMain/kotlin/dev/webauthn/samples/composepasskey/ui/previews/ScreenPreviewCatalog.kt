@@ -68,6 +68,7 @@ private fun MainScreenPreview() {
                     supported = setOf(
                         PasskeyCapability.Extension(WebAuthnExtension.Prf),
                         PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey),
+                        PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate),
                     ),
                     platformVersionHints = listOf("android sdk=36", "play-services:available"),
                 ),

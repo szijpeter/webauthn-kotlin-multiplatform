@@ -100,7 +100,7 @@ class IosAuthorizationBridgePolicyTest {
 
     @Test
     fun rejectsConditionalCreate_whenRuntimeIsTooOld() {
-        val error = assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<UnsupportedOperationException> {
             conditionalRegistrationRequestStyleFor(
                 createOptions = PasskeyCreateOptions.Conditional,
                 iosMajorVersion = 17,
