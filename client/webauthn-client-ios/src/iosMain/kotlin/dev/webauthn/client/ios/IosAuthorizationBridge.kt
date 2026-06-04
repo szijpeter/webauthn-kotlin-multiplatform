@@ -383,8 +383,10 @@ internal fun conditionalRegistrationRequestStyleFor(
     iosMajorVersion: Int,
 ): ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle? {
     if (!isConditionalCreateRequested(createOptions)) return null
-    require(iosMajorVersion >= MIN_CONDITIONAL_CREATE_IOS_VERSION) {
-        "Conditional passkey creation requires iOS $MIN_CONDITIONAL_CREATE_IOS_VERSION+ AuthenticationServices APIs."
+    if (iosMajorVersion < MIN_CONDITIONAL_CREATE_IOS_VERSION) {
+        throw UnsupportedOperationException(
+            "Conditional passkey creation requires iOS $MIN_CONDITIONAL_CREATE_IOS_VERSION+ AuthenticationServices APIs.",
+        )
     }
     return ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle
         .ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyleConditional

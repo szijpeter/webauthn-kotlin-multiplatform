@@ -65,6 +65,9 @@ WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
 
 The `Auto Create` button on the auth screen uses the conditional-create path. It is meant for
 manual platform smoke testing after confirming the capabilities card advertises `Auto Create`.
+On Android, seeing `No credential creation option found` is a valid conditional-create outcome
+when no enabled credential provider can silently create a passkey; explicit registration remains
+the `Register` button path.
 
 3. Optional UI smoke test (emulator/device connected):
 

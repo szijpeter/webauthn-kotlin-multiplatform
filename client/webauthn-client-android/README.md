@@ -37,6 +37,10 @@ val result = client.createCredential(
 
 This maps to Credential Manager conditional create with immediately-available credentials preferred,
 so providers can create the passkey opportunistically without blocking system UI.
+If no enabled provider has an immediately available creation option, Credential Manager returns
+`CreateCredentialNoCreateOptionException`; this bridge reports that as
+`PasskeyClientError.Platform("No credential creation option found")`. Treat that as an expected
+conditional-create no-op and continue the already-successful sign-in flow.
 
 ## How it fits
 
