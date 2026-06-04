@@ -31,6 +31,7 @@ private fun AuthScreenIdlePreview() {
             canRegister = true,
             onShowLogs = {},
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }
@@ -50,6 +51,7 @@ private fun AuthScreenBusyPreview() {
             canRegister = true,
             onShowLogs = {},
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }

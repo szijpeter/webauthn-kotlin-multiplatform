@@ -129,6 +129,7 @@ public final class dev/webauthn/client/PasskeyClientError$UserCancelled : dev/we
 public final class dev/webauthn/client/PasskeyController {
 	public fun <init> (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/client/PasskeyServerClient;)V
 	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun register (Ljava/lang/Object;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun register (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun resetToIdle ()V
 	public final fun signIn (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
