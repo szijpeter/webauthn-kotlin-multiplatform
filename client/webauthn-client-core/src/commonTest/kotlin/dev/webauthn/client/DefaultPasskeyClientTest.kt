@@ -209,21 +209,21 @@ class DefaultPasskeyClientTest {
         assertTrue(capabilities.supports("prf"))
 
         mutable.clear()
-        mutable.add(PasskeyCapability.PlatformFeature("securityKey"))
+        mutable.add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey))
 
         assertTrue(capabilities.supports("prf"))
-        assertFalse(capabilities.supports("securityKey"))
+        assertFalse(capabilities.supports(PasskeyPlatformFeatureKeys.SecurityKey))
     }
 
     @Test
     fun capabilities_supports_capability_requires_variant_match() {
         val capabilities = PasskeyCapabilities(
-            supported = [PasskeyCapability.PlatformFeature("securityKey")],
+            supported = [PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey)],
         )
 
-        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("securityKey")))
-        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Custom("securityKey"))))
-        assertTrue(capabilities.supports("securityKey"))
+        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey)))
+        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Custom(PasskeyPlatformFeatureKeys.SecurityKey))))
+        assertTrue(capabilities.supports(PasskeyPlatformFeatureKeys.SecurityKey))
     }
 
     @Test
@@ -253,6 +253,41 @@ class DefaultPasskeyClientTest {
         assertNotNull(passedExtensions)
         assertNotNull(passedExtensions?.prf?.eval)
         assertContentEquals(byteArrayOf(1, 2, 3), passedExtensions?.prf?.eval?.first?.bytes())
+    }
+
+    @Test
+    fun createCredential_with_create_options_forwards_to_bridge() = runTest {
+        var passedCreateOptions: PasskeyCreateOptions? = null
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createWithOptionsAction = { _, createOptions ->
+                    passedCreateOptions = createOptions
+                    validRegistrationResponse()
+                },
+            ),
+        )
+
+        val result = client.createCredential(
+            options = validCreationOptions(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        assertTrue(result is PasskeyResult.Success)
+        assertEquals(PasskeyCreateOptions.Conditional, passedCreateOptions)
+    }
+
+    @Test
+    fun createCredential_with_unsupported_create_options_returns_platform_failure() = runTest {
+        val client = DefaultPasskeyClient(bridge = TestBridge())
+
+        val result = client.createCredential(
+            options = validCreationOptions(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        val failure = assertIs<PasskeyResult.Failure>(result)
+        assertIs<PasskeyClientError.Platform>(failure.error)
+        assertTrue(failure.error.message.contains("Conditional"))
     }
 
     @Test
@@ -356,11 +391,23 @@ class DefaultPasskeyClientTest {
 
     private class TestBridge(
         private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RegistrationResponse = { validRegistrationResponse() },
+        private val createWithOptionsAction: (suspend (
+            PublicKeyCredentialCreationOptions,
+            PasskeyCreateOptions,
+        ) -> RegistrationResponse)? = null,
         private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> AuthenticationResponse = { validAuthenticationResponse() },
         private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform", it) },
         private val capabilitiesAction: suspend () -> PasskeyCapabilities = { PasskeyCapabilities() },
     ) : PasskeyPlatformBridge {
         override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse = createAction(options)
+
+        override suspend fun createCredential(
+            options: PublicKeyCredentialCreationOptions,
+            createOptions: PasskeyCreateOptions,
+        ): RegistrationResponse {
+            return createWithOptionsAction?.invoke(options, createOptions)
+                ?: super.createCredential(options, createOptions)
+        }
 
         override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse = assertionAction(options)
 
