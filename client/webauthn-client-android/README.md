@@ -48,6 +48,14 @@ signals.signalAllAcceptedCredentialIds(
 Signal calls do not show UI. A successful result means Credential Manager accepted and dispatched
 the signal to enabled providers; it does not guarantee a provider applied the update.
 
+Apple AuthenticationServices has an analogous credential-manager sync surface in
+`ASCredentialDataManager`, including all-accepted public-key credential IDs, unknown credential, and
+public-key credential name update reports. That API is Swift-only in the current Apple SDK surface
+and is not emitted into Kotlin/Native `platform.AuthenticationServices` bindings, so this module
+keeps the library implementation Android-only instead of adding an uncallable shared abstraction.
+An iOS app can still add a native Swift shim later and adapt it behind the sample's common
+`CredentialSignalDemoClient` shape.
+
 ## How it fits
 
 ```mermaid
