@@ -98,6 +98,15 @@ val result = passkeyClient.createCredential(
 )
 ```
 
+Apps using `PasskeyController` can pass the same option through the registration ceremony:
+
+```kotlin
+controller.register(
+    params = registrationParams,
+    createOptions = PasskeyCreateOptions.Conditional,
+)
+```
+
 Platform bridges advertise support with
 `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)`. Unsupported
 bridges return `PasskeyResult.Failure(PasskeyClientError.Platform(...))` for conditional create.

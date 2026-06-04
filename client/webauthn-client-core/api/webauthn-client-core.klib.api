@@ -235,6 +235,7 @@ final class <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyContro
 
     final fun resetToIdle() // dev.webauthn.client/PasskeyController.resetToIdle|resetToIdle(){}[0]
     final suspend fun register(#A) // dev.webauthn.client/PasskeyController.register|register(1:0){}[0]
+    final suspend fun register(#A, dev.webauthn.client/PasskeyCreateOptions) // dev.webauthn.client/PasskeyController.register|register(1:0;dev.webauthn.client.PasskeyCreateOptions){}[0]
     final suspend fun signIn(#B) // dev.webauthn.client/PasskeyController.signIn|signIn(1:1){}[0]
 }
 
