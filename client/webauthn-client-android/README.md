@@ -53,8 +53,9 @@ Apple AuthenticationServices has an analogous credential-manager sync surface in
 public-key credential name update reports. That API is Swift-only in the current Apple SDK surface
 and is not emitted into Kotlin/Native `platform.AuthenticationServices` bindings, so this module
 keeps the library implementation Android-only instead of adding an uncallable shared abstraction.
-An iOS app can still add a native Swift shim later and adapt it behind the sample's common
-`CredentialSignalDemoClient` shape.
+The sample iOS host demonstrates the bridge shape an app can use instead: shared Kotlin exports an
+`IosCredentialSignalBridge` protocol, and Swift injects an `ASCredentialDataManager` implementation
+into `MainViewController(...)` for iOS 26.2+.
 
 ## How it fits
 
