@@ -149,8 +149,9 @@ exposes that state.
 
 On iOS, Apple exposes the analogous `ASCredentialDataManager` sync reports from Swift, but the
 current Kotlin/Native SDK bindings do not expose that Swift-only type under
-`platform.AuthenticationServices`. The iOS sample actual therefore remains an explicit unsupported
-client until the app adds a native Swift shim or Kotlin/Native exposes the API directly.
+`platform.AuthenticationServices`. The committed iOS host app therefore injects a tiny Swift
+`IosCredentialSignalBridge` implementation into `MainViewController(...)`; Kotlin owns the sample
+flow, while Swift owns the iOS 26.2+ AuthenticationServices call.
 
 ## Compose previews
 
