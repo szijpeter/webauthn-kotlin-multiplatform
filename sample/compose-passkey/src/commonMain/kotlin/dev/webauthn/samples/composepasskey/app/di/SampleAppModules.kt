@@ -8,6 +8,7 @@ import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.prf.InMemoryPrfSaltStore
 import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
+import dev.webauthn.samples.composepasskey.domain.signals.CredentialSignalDemoClient
 import dev.webauthn.samples.composepasskey.ui.screens.auth.AuthRoute
 import dev.webauthn.samples.composepasskey.ui.screens.main.MainRoute
 import dev.webauthn.samples.composepasskey.ui.screens.main.MainViewModel
@@ -22,6 +23,7 @@ internal fun sampleAppModules(
     config: PasskeyDemoConfig,
     debugLogs: DebugLogStore,
     passkeyClient: PasskeyClient,
+    credentialSignalClient: CredentialSignalDemoClient,
     serverClient: DemoPasskeyServerClient,
 ): List<Module> {
     return listOf(
@@ -29,6 +31,7 @@ internal fun sampleAppModules(
             single<PasskeyDemoConfig> { config }
             single<DebugLogStore> { debugLogs }
             single<PasskeyClient> { passkeyClient }
+            single<CredentialSignalDemoClient> { credentialSignalClient }
             single<DemoPasskeyServerClient> { serverClient }
             single<AppSessionStore> { AppSessionStore() }
             single<PrfSaltStore> { InMemoryPrfSaltStore() }

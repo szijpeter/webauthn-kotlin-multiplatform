@@ -18,6 +18,7 @@ import dev.webauthn.samples.composepasskey.domain.passkey.areCeremonyActionsEnab
 import dev.webauthn.samples.composepasskey.domain.passkey.toAuthenticationStartPayload
 import dev.webauthn.samples.composepasskey.domain.passkey.toDemoStatus
 import dev.webauthn.samples.composepasskey.domain.passkey.toRegistrationStartPayload
+import dev.webauthn.samples.composepasskey.domain.signals.CredentialSignalDemoClient
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -28,13 +29,15 @@ internal fun AuthRoute() {
     val debugLogs: DebugLogStore = koinInject()
     val sessionStore: AppSessionStore = koinInject()
     val passkeyClient: PasskeyClient = koinInject()
+    val credentialSignalClient: CredentialSignalDemoClient = koinInject()
     val serverClient: DemoPasskeyServerClient = koinInject()
     val scope = rememberCoroutineScope()
-    val coordinator = remember(config, debugLogs, sessionStore) {
+    val coordinator = remember(config, debugLogs, sessionStore, credentialSignalClient) {
         AuthDemoCoordinator(
             config = config,
             debugLogs = debugLogs,
             sessionStore = sessionStore,
+            credentialSignalClient = credentialSignalClient,
         )
     }
     val controller = rememberPasskeyController(

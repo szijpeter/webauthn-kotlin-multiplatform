@@ -9,6 +9,7 @@ Use this sample when you want to run the passkey demo on a connected iPhone from
 - A committed Xcode app project (`ComposePasskeyIos.xcodeproj`).
 - SwiftUI app shell that mounts Kotlin `MainViewController()` from `sample:compose-passkey`.
 - Build phase script that runs `:sample:compose-passkey:embedAndSignAppleFrameworkForXcode`.
+- Swift bridge for iOS credential signals using `ASCredentialDataManager` when running on iOS 26.2+.
 
 ## Quick run on device (free Apple account)
 
@@ -63,6 +64,19 @@ Expected result:
 - `Sign In` completes.
 - Signed-in extension demo screen is shown after successful sign-in.
 - `PasskeyDemo` logs appear in Xcode console and in the hidden in-app debug sheet (title double-tap).
+- On iOS 26.2+, the app reports the signed-in user name to AuthenticationServices through the Swift credential-signal bridge.
+
+## iOS credential signal bridge
+
+The shared Kotlin module exports `IosCredentialSignalBridge` because Kotlin/Native does not currently
+expose Swift-only `ASCredentialDataManager` bindings under `platform.AuthenticationServices`.
+`AuthenticationServicesCredentialSignalBridge` implements that protocol in Swift and is passed into
+`MainViewController(...)` by the host app.
+
+Availability expectations:
+
+- iOS 26.2+: `reportPublicKeyCredentialUpdate(...)` is called after successful sign-in.
+- Older iOS versions: the bridge reports unavailable and the sample logs that credential signals require iOS 26.2+.
 
 ## Environment variables used by the shared sample
 
