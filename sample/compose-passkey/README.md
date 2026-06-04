@@ -146,7 +146,7 @@ AuthScreen(
 Sample-only side effects stay outside the library API surface:
 
 - `AuthDemoCoordinator` logs taps/state transitions.
-- `AuthDemoCoordinator` sends the Android current-user-details signal after successful sign-in when the platform client is available.
+- `AuthDemoCoordinator` sends the platform current-user-details signal after successful sign-in when the platform client is available.
 - `AppSessionStore` handles local signed-in navigation state.
 
 ## Android Restore Credentials showcase
@@ -178,6 +178,11 @@ user handle, and display name during sign-in. `SignalAllAcceptedCredentialIdsReq
 `SignalUnknownCredentialRequest` require a real server-side credential inventory or an unknown
 credential failure path, so those stay in the Android module API and docs until the sample backend
 exposes that state.
+
+On iOS, Apple exposes the analogous `ASCredentialDataManager` sync reports from Swift, but the
+current Kotlin/Native SDK bindings do not expose that Swift-only type under
+`platform.AuthenticationServices`. The iOS sample actual therefore remains an explicit unsupported
+client until the app adds a native Swift shim or Kotlin/Native exposes the API directly.
 
 ## Compose previews
 
