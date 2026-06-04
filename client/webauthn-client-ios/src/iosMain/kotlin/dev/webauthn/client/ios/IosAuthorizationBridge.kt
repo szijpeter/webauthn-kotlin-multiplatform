@@ -2,48 +2,61 @@
 
 package dev.webauthn.client.ios
 
+import dev.webauthn.client.PasskeyCreateMediation
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.model.AttestationConveyancePreference
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.Base64UrlBytes
-import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PrfExtensionInput
+import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
+import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.AuthenticationServices.ASAuthorization
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
 import platform.AuthenticationServices.ASAuthorizationControllerPresentationContextProvidingProtocol
-import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialProvider
-import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialRegistration
-import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialAssertion
-import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialAssertionRequest
-import platform.AuthenticationServices.ASAuthorizationPublicKeyCredentialPRFAssertionInput
-import platform.AuthenticationServices.ASAuthorizationPublicKeyCredentialPRFAssertionInputValues
 import platform.AuthenticationServices.ASAuthorizationErrorDomain
 import platform.AuthenticationServices.ASAuthorizationErrorUnknown
+import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialAssertion
+import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialAssertionRequest
+import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialProvider
+import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialRegistration
+import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle
+import platform.AuthenticationServices.ASAuthorizationPublicKeyCredentialPRFAssertionInput
+import platform.AuthenticationServices.ASAuthorizationPublicKeyCredentialPRFAssertionInputValues
+import platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialAssertion
+import platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider
+import platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialRegistration
 import platform.Foundation.NSClassFromString
 import platform.Foundation.NSError
+import platform.Foundation.NSProcessInfo
 import platform.UIKit.UIWindow
 import platform.darwin.NSObject
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.useContents
-import platform.Foundation.NSProcessInfo
 
 private const val MIN_PRF_IOS_VERSION = 18
 private const val MIN_SECURITY_KEY_IOS_VERSION = 15
+private const val MIN_CONDITIONAL_CREATE_IOS_VERSION = 18
 
 internal data class PrfAssertionInputShape(
     val eval: AuthenticationExtensionsPRFValues?,
     val evalByCredential: Map<Base64UrlBytes, AuthenticationExtensionsPRFValues>?,
+)
+
+private data class RegistrationRequestPlan(
+    val usePlatform: Boolean,
+    val useSecurityKey: Boolean,
+    val requestStyle: ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle?,
 )
 
 internal class IosRegistrationPayload(
@@ -66,7 +79,11 @@ internal class IosAuthenticationPayload(
 )
 
 internal interface IosAuthorizationBridge {
-    suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload
+    suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions = PasskeyCreateOptions.Default,
+    ): IosRegistrationPayload
+
     suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): IosAuthenticationPayload
 }
 
@@ -80,71 +97,113 @@ internal class AuthenticationServicesAuthorizationBridge(
      * W3C WebAuthn L3: §5.1.3. Create a New Credential
      * Maps to Apple ASAuthorizationPlatformPublicKeyCredentialProvider createCredentialRegistrationRequestWithChallenge
      */
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): IosRegistrationPayload {
+        val plan = planRegistrationRequest(options, createOptions)
         return runAuthorizationRequest(
-            buildRequests = {
-                val requests = mutableListOf<Any>()
-
-                val attachment = options.authenticatorAttachment
-                val iosMajorVersion = currentIosMajorVersion()
-                val usePlatform = shouldIncludePlatformRegistrationRequest(attachment)
-                val useSecurityKey = shouldIncludeSecurityKeyRegistrationRequest(
-                    authenticatorAttachment = attachment,
-                    iosMajorVersion = iosMajorVersion,
-                )
-
-                if (usePlatform) {
-                    val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
-                    val request = provider.createCredentialRegistrationRequestWithChallenge(
-                        options.challenge.value.bytes().toNSData(),
-                        options.user.name,
-                        options.user.id.value.bytes().toNSData(),
-                    )
-                    request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-                    options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
-                    requests.add(request)
-                }
-
-                if (useSecurityKey) {
-                    val provider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rp.id.value)
-                    val request = provider.createCredentialRegistrationRequestWithChallenge(
-                        challenge = options.challenge.value.bytes().toNSData(),
-                        displayName = options.user.displayName,
-                        name = options.user.name,
-                        userID = options.user.id.value.bytes().toNSData(),
-                    )
-                    request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
-                    options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
-                    requests.add(request)
-                }
-
-                check(requests.isNotEmpty()) { "No ASAuthorization providers available for the requested authenticatorAttachment" }
-                requests
-            },
-            extractPayload = { credential ->
-                when (credential) {
-                    is ASAuthorizationPlatformPublicKeyCredentialRegistration -> {
-                        IosRegistrationPayload(
-                            credentialId = credential.credentialID.toByteArray(),
-                            rawId = credential.credentialID.toByteArray(),
-                            attestationObject = credential.rawAttestationObject?.toByteArray() ?: ByteArray(0),
-                            clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                            authenticatorAttachment = "platform",
-                        )
-                    }
-                    is platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialRegistration -> {
-                        IosRegistrationPayload(
-                            credentialId = credential.credentialID.toByteArray(),
-                            rawId = credential.credentialID.toByteArray(),
-                            attestationObject = credential.rawAttestationObject?.toByteArray() ?: ByteArray(0),
-                            clientDataJson = credential.rawClientDataJSON.toByteArray(),
-                            authenticatorAttachment = "cross-platform",
-                        )
-                    }
-                    else -> throw unknownAuthorizationError()
-                }
-            },
+            buildRequests = { buildRegistrationRequests(options, plan) },
+            extractPayload = ::extractRegistrationPayload,
         )
+    }
+
+    private fun planRegistrationRequest(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): RegistrationRequestPlan {
+        val attachment = options.authenticatorAttachment
+        val iosMajorVersion = currentIosMajorVersion()
+        val conditionalCreateRequested = isConditionalCreateRequested(createOptions)
+        validateConditionalCreateRequest(attachment, conditionalCreateRequested)
+        val requestStyle = conditionalRegistrationRequestStyleFor(createOptions, iosMajorVersion)
+        val usePlatform = shouldIncludePlatformRegistrationRequest(attachment)
+        val useSecurityKey = shouldIncludeSecurityKeyRegistrationRequest(
+            authenticatorAttachment = attachment,
+            iosMajorVersion = iosMajorVersion,
+            conditionalCreateRequested = conditionalCreateRequested,
+        )
+        return RegistrationRequestPlan(
+            usePlatform = usePlatform,
+            useSecurityKey = useSecurityKey,
+            requestStyle = requestStyle,
+        )
+    }
+
+    private fun buildRegistrationRequests(
+        options: PublicKeyCredentialCreationOptions,
+        plan: RegistrationRequestPlan,
+    ): List<Any> {
+        val requests = mutableListOf<Any>()
+        if (plan.usePlatform) {
+            requests.add(buildPlatformRegistrationRequest(options, plan.requestStyle))
+        }
+        if (plan.useSecurityKey) {
+            requests.add(buildSecurityKeyRegistrationRequest(options))
+        }
+        check(requests.isNotEmpty()) { "No ASAuthorization providers available for the requested authenticatorAttachment" }
+        return requests
+    }
+
+    private fun buildPlatformRegistrationRequest(
+        options: PublicKeyCredentialCreationOptions,
+        requestStyle: ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle?,
+    ): Any {
+        val provider = ASAuthorizationPlatformPublicKeyCredentialProvider(options.rp.id.value)
+        val request = if (requestStyle != null) {
+            provider.createCredentialRegistrationRequestWithChallenge(
+                challenge = options.challenge.value.bytes().toNSData(),
+                name = options.user.name,
+                userID = options.user.id.value.bytes().toNSData(),
+                requestStyle = requestStyle,
+            )
+        } else {
+            provider.createCredentialRegistrationRequestWithChallenge(
+                options.challenge.value.bytes().toNSData(),
+                options.user.name,
+                options.user.id.value.bytes().toNSData(),
+            )
+        }
+        request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+        options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
+        return request
+    }
+
+    private fun buildSecurityKeyRegistrationRequest(options: PublicKeyCredentialCreationOptions): Any {
+        val provider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(options.rp.id.value)
+        val request = provider.createCredentialRegistrationRequestWithChallenge(
+            challenge = options.challenge.value.bytes().toNSData(),
+            displayName = options.user.displayName,
+            name = options.user.name,
+            userID = options.user.id.value.bytes().toNSData(),
+        )
+        request.setUserVerificationPreference(options.userVerification.toPreferenceValue())
+        options.attestation?.let { request.setAttestationPreference(it.toPreferenceValue()) }
+        return request
+    }
+
+    private fun extractRegistrationPayload(credential: Any?): IosRegistrationPayload {
+        return when (credential) {
+            is ASAuthorizationPlatformPublicKeyCredentialRegistration -> {
+                IosRegistrationPayload(
+                    credentialId = credential.credentialID.toByteArray(),
+                    rawId = credential.credentialID.toByteArray(),
+                    attestationObject = credential.rawAttestationObject?.toByteArray() ?: ByteArray(0),
+                    clientDataJson = credential.rawClientDataJSON.toByteArray(),
+                    authenticatorAttachment = "platform",
+                )
+            }
+            is ASAuthorizationSecurityKeyPublicKeyCredentialRegistration -> {
+                IosRegistrationPayload(
+                    credentialId = credential.credentialID.toByteArray(),
+                    rawId = credential.credentialID.toByteArray(),
+                    attestationObject = credential.rawAttestationObject?.toByteArray() ?: ByteArray(0),
+                    clientDataJson = credential.rawClientDataJSON.toByteArray(),
+                    authenticatorAttachment = "cross-platform",
+                )
+            }
+            else -> throw unknownAuthorizationError()
+        }
     }
 
     /**
@@ -195,7 +254,7 @@ internal class AuthenticationServicesAuthorizationBridge(
         requests.add(platformRequest)
 
         if (shouldIncludeSecurityKeyAssertionRequest(prfRequested, currentIosMajorVersion())) {
-            val securityProvider = platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialProvider(rpId)
+            val securityProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(rpId)
             val securityRequest = securityProvider.createCredentialAssertionRequestWithChallenge(
                 options.challenge.value.bytes().toNSData(),
             )
@@ -224,7 +283,7 @@ internal class AuthenticationServicesAuthorizationBridge(
                     extensions = credential.prfExtensionsOrNull(),
                 )
             }
-            is platform.AuthenticationServices.ASAuthorizationSecurityKeyPublicKeyCredentialAssertion -> {
+            is ASAuthorizationSecurityKeyPublicKeyCredentialAssertion -> {
                 IosAuthenticationPayload(
                     credentialId = credential.credentialID.toByteArray(),
                     rawId = credential.credentialID.toByteArray(),
@@ -319,6 +378,33 @@ internal class AuthenticationServicesAuthorizationBridge(
         NSErrorException(NSError.errorWithDomain(ASAuthorizationErrorDomain, ASAuthorizationErrorUnknown, null))
 }
 
+internal fun conditionalRegistrationRequestStyleFor(
+    createOptions: PasskeyCreateOptions,
+    iosMajorVersion: Int,
+): ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle? {
+    if (!isConditionalCreateRequested(createOptions)) return null
+    require(iosMajorVersion >= MIN_CONDITIONAL_CREATE_IOS_VERSION) {
+        "Conditional passkey creation requires iOS $MIN_CONDITIONAL_CREATE_IOS_VERSION+ AuthenticationServices APIs."
+    }
+    return ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle
+        .ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyleConditional
+}
+
+internal fun isConditionalCreateRequested(createOptions: PasskeyCreateOptions): Boolean {
+    return createOptions.mediation == PasskeyCreateMediation.Conditional
+}
+
+internal fun validateConditionalCreateRequest(
+    authenticatorAttachment: AuthenticatorAttachment?,
+    conditionalCreateRequested: Boolean,
+) {
+    if (conditionalCreateRequested && authenticatorAttachment == AuthenticatorAttachment.CROSS_PLATFORM) {
+        throw IllegalArgumentException(
+            "Conditional passkey creation is only supported for platform authenticators on iOS.",
+        )
+    }
+}
+
 internal fun shouldIncludeSecurityKeyAssertionRequest(
     prfRequested: Boolean,
     iosMajorVersion: Int,
@@ -335,8 +421,10 @@ internal fun shouldIncludePlatformRegistrationRequest(
 internal fun shouldIncludeSecurityKeyRegistrationRequest(
     authenticatorAttachment: AuthenticatorAttachment?,
     iosMajorVersion: Int,
+    conditionalCreateRequested: Boolean = false,
 ): Boolean {
-    return authenticatorAttachment == AuthenticatorAttachment.CROSS_PLATFORM &&
+    return !conditionalCreateRequested &&
+        authenticatorAttachment == AuthenticatorAttachment.CROSS_PLATFORM &&
         iosMajorVersion >= MIN_SECURITY_KEY_IOS_VERSION
 }
 

@@ -6,6 +6,7 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyJsonMapper
 import dev.webauthn.client.PasskeyPlatformFeatureKeys
 import dev.webauthn.client.PasskeyPlatformBridge
@@ -53,8 +54,15 @@ internal class IosPasskeyPlatformBridge(
     }
 
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+        return createCredential(options, PasskeyCreateOptions.Default)
+    }
+
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): RegistrationResponse {
         return bridge
-            .createCredential(options)
+            .createCredential(options, createOptions)
             .toModel()
     }
 
@@ -120,6 +128,7 @@ internal class IosPasskeyPlatformBridge(
             supported = buildSet {
                 if (major >= 18) add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
                 if (major >= 17) add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
+                if (major >= 18) add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate))
                 if (major >= 15) add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey))
             },
             platformVersionHints = ["iosMajor=$major"],
