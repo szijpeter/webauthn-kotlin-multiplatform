@@ -16,6 +16,8 @@ import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoController
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
 import dev.webauthn.samples.composepasskey.domain.prf.PrfDemoResult
 import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
+import dev.webauthn.samples.composepasskey.domain.restore.RestoreCredentialDemoClient
+import dev.webauthn.samples.composepasskey.domain.restore.RestoreCredentialDemoController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -27,6 +29,7 @@ internal class MainViewModel(
     private val sessionStore: AppSessionStore,
     private val saltStore: PrfSaltStore,
     passkeyClient: PasskeyClient,
+    restoreCredentialClient: RestoreCredentialDemoClient,
     serverClient: DemoPasskeyServerClient,
 ) : ViewModel() {
     val uiState: StateFlow<MainUiState> field =
@@ -38,6 +41,17 @@ internal class MainViewModel(
         serverClient = serverClient,
         saltStore = saltStore,
     )
+    val restoreCredentialActions = RestoreCredentialUiActions(
+        config = config,
+        debugLogs = debugLogs,
+        controller = RestoreCredentialDemoController(
+            restoreCredentialClient = restoreCredentialClient,
+            serverClient = serverClient,
+        ),
+        uiState = uiState,
+        scope = viewModelScope,
+        setBusy = ::setBusy,
+    )
 
     init {
         observeSession()
@@ -45,6 +59,8 @@ internal class MainViewModel(
             it.copy(
                 sessionState = PrfCryptoDemoSessionState.NoSession,
                 decryptedText = null,
+                restoreCredentialAvailable = restoreCredentialActions.isAvailable,
+                restoreStatusMessage = restoreCredentialActions.initialStatus(),
             )
         }
         loadCapabilities(passkeyClient)
@@ -77,18 +93,27 @@ internal class MainViewModel(
     }
 
     fun onLogoutClicked() {
-        prfDemoController.clearSession().let { clearResult ->
-            if (clearResult is PrfDemoResult.Success) {
-                debugLogs.i(source = "session", message = clearResult.message)
+        if (uiState.value.busy) return
+        setBusy(true)
+        viewModelScope.launch {
+            try {
+                prfDemoController.clearSession().let { clearResult ->
+                    if (clearResult is PrfDemoResult.Success) {
+                        debugLogs.i(source = "session", message = clearResult.message)
+                    }
+                }
+                restoreCredentialActions.clearForLogout()
+                sessionStore.signOut()
+                uiState.update {
+                    it.copy(
+                        decryptedText = null,
+                        sessionState = PrfCryptoDemoSessionState.NoSession,
+                        statusMessage = "Logged out. Sign in again to re-open PRF demo.",
+                    )
+                }
+            } finally {
+                setBusy(false)
             }
-        }
-        sessionStore.signOut()
-        uiState.update {
-            it.copy(
-                decryptedText = null,
-                sessionState = PrfCryptoDemoSessionState.NoSession,
-                statusMessage = "Logged out. Sign in again to re-open PRF demo.",
-            )
         }
     }
 
