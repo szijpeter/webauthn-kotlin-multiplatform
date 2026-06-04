@@ -7,6 +7,7 @@ import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyJsonMapper
+import dev.webauthn.client.PasskeyPlatformFeatureKeys
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
 import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
@@ -119,7 +120,7 @@ internal class IosPasskeyPlatformBridge(
             supported = buildSet {
                 if (major >= 18) add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
                 if (major >= 17) add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
-                if (major >= 15) add(PasskeyCapability.PlatformFeature("securityKey"))
+                if (major >= 15) add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey))
             },
             platformVersionHints = listOf("iosMajor=$major"),
         )

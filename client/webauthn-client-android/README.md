@@ -24,14 +24,14 @@ val client = AndroidPasskeyClient(context)
 Real-world scenario: your shared app logic drives ceremony flow in `PasskeyController`, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
 
 For Android automatic passkey upgrades after a successful password or other non-passkey sign-in,
-call the Android-specific create overload:
+call the shared create overload with conditional options:
 
 ```kotlin
-import dev.webauthn.client.android.AndroidPasskeyCreateOptions
+import dev.webauthn.client.PasskeyCreateOptions
 
 val result = client.createCredential(
     options = creationOptions,
-    androidOptions = AndroidPasskeyCreateOptions.Conditional,
+    createOptions = PasskeyCreateOptions.Conditional,
 )
 ```
 
@@ -54,11 +54,12 @@ flowchart LR
 - Reported capabilities use the shared two-type model:
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
-  - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
+  - `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)` when conditional create can be requested.
+  - `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey)` when cross-platform security keys are supported.
 - Keep backend contract alignment with your chosen server client implementation.
-- Conditional create is Android-specific. Use it only after a successful non-passkey sign-in or
-  sign-up where an automatic passkey upgrade is appropriate; keep explicit registration flows on
-  the default `createCredential(options)` path.
+- Conditional create should only run after a successful non-passkey sign-in or sign-up where an
+  automatic passkey upgrade is appropriate; keep explicit registration flows on the default
+  `createCredential(options)` path.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.

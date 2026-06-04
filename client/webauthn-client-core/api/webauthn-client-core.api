@@ -1,6 +1,7 @@
 public final class dev/webauthn/client/DefaultPasskeyClient : dev/webauthn/client/PasskeyClient {
 	public fun <init> (Ldev/webauthn/client/PasskeyPlatformBridge;)V
 	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getAssertion (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -59,12 +60,14 @@ public final class dev/webauthn/client/PasskeyCapability$PlatformFeature : dev/w
 
 public abstract interface class dev/webauthn/client/PasskeyClient {
 	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getAssertion (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class dev/webauthn/client/PasskeyClient$DefaultImpls {
 	public static fun capabilities (Ldev/webauthn/client/PasskeyClient;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static fun createCredential (Ldev/webauthn/client/PasskeyClient;Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class dev/webauthn/client/PasskeyClientError {
@@ -178,6 +181,33 @@ public final class dev/webauthn/client/PasskeyControllerState$Success : dev/weba
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/webauthn/client/PasskeyCreateMediation : java/lang/Enum {
+	public static final field Conditional Ldev/webauthn/client/PasskeyCreateMediation;
+	public static final field Default Ldev/webauthn/client/PasskeyCreateMediation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/PasskeyCreateMediation;
+	public static fun values ()[Ldev/webauthn/client/PasskeyCreateMediation;
+}
+
+public final class dev/webauthn/client/PasskeyCreateOptions {
+	public static final field Companion Ldev/webauthn/client/PasskeyCreateOptions$Companion;
+	public fun <init> ()V
+	public fun <init> (Ldev/webauthn/client/PasskeyCreateMediation;)V
+	public synthetic fun <init> (Ldev/webauthn/client/PasskeyCreateMediation;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/webauthn/client/PasskeyCreateMediation;
+	public final fun copy (Ldev/webauthn/client/PasskeyCreateMediation;)Ldev/webauthn/client/PasskeyCreateOptions;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCreateOptions;Ldev/webauthn/client/PasskeyCreateMediation;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCreateOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMediation ()Ldev/webauthn/client/PasskeyCreateMediation;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyCreateOptions$Companion {
+	public final fun getConditional ()Ldev/webauthn/client/PasskeyCreateOptions;
+	public final fun getDefault ()Ldev/webauthn/client/PasskeyCreateOptions;
+}
+
 public abstract interface class dev/webauthn/client/PasskeyFinishResult {
 }
 
@@ -212,6 +242,7 @@ public final class dev/webauthn/client/PasskeyPhase : java/lang/Enum {
 
 public abstract interface class dev/webauthn/client/PasskeyPlatformBridge {
 	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun createCredential (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getAssertion (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun mapPlatformError (Ljava/lang/Throwable;)Ldev/webauthn/client/PasskeyClientError;
@@ -219,6 +250,13 @@ public abstract interface class dev/webauthn/client/PasskeyPlatformBridge {
 
 public final class dev/webauthn/client/PasskeyPlatformBridge$DefaultImpls {
 	public static fun capabilities (Ldev/webauthn/client/PasskeyPlatformBridge;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static fun createCredential (Ldev/webauthn/client/PasskeyPlatformBridge;Ldev/webauthn/model/PublicKeyCredentialCreationOptions;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class dev/webauthn/client/PasskeyPlatformFeatureKeys {
+	public static final field ConditionalCreate Ljava/lang/String;
+	public static final field INSTANCE Ldev/webauthn/client/PasskeyPlatformFeatureKeys;
+	public static final field SecurityKey Ljava/lang/String;
 }
 
 public abstract interface class dev/webauthn/client/PasskeyResult {

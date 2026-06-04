@@ -26,6 +26,7 @@ import androidx.credentials.CreatePublicKeyCredentialResponse
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.CustomCredential
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialDescriptor
 import kotlinx.coroutines.runBlocking
@@ -205,7 +206,7 @@ class AndroidPasskeyClientTest {
                 challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
                 pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)),
             ),
-            androidOptions = AndroidPasskeyCreateOptions.Conditional,
+            createOptions = PasskeyCreateOptions.Conditional,
         )
 
         assertTrue("Result should be Success but was $result", result is PasskeyResult.Success)
@@ -230,7 +231,7 @@ class AndroidPasskeyClientTest {
                 challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
                 pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)),
             ),
-            androidOptions = AndroidPasskeyCreateOptions.Conditional,
+            createOptions = PasskeyCreateOptions.Conditional,
         )
 
         assertTrue(result is PasskeyResult.Failure)
