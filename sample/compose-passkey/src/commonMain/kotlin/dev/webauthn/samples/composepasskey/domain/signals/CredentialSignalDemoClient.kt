@@ -26,7 +26,9 @@ internal class UnsupportedCredentialSignalDemoClient : CredentialSignalDemoClien
         displayName: String,
     ): PasskeyResult<Unit> {
         return PasskeyResult.Failure(
-            PasskeyClientError.Platform("Credential signals are only available in the Android sample."),
+            PasskeyClientError.Platform(
+                "Credential signals are not wired for this platform in the KMP sample.",
+            ),
         )
     }
 }
