@@ -34,7 +34,7 @@ robolectric = "4.16.1"
 mockk = "1.14.11"
 koin = "4.2.1"
 navigation3 = "1.1.1"
-compose-multiplatform-lifecycle = "2.11.0-beta01"
+compose-multiplatform-lifecycle = "2.11.0-beta02"
 
 [libraries]
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
