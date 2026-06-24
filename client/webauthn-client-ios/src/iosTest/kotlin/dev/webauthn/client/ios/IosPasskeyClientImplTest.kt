@@ -45,7 +45,7 @@ class IosPasskeyClientImplTest {
         rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
         user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
         challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-        pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
+        pubKeyCredParams = [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)]
     )
 
     private fun mockRequestOptions() = PublicKeyCredentialRequestOptions(

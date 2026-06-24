@@ -328,7 +328,7 @@ class AttestationCborParserTest {
             "attStmt" to cborMap(
                 "alg" to cborNegInt(7), // -7 = ES256
                 "sig" to cborBytes(sigBytes),
-                "x5c" to cborArray(listOf(cborBytes(certBytes))),
+                "x5c" to cborArray([cborBytes(certBytes)]),
             ),
         )
         val parsed = parseAttestationObject(bytes)
@@ -513,7 +513,7 @@ class AttestationCborParserTest {
             "attStmt" to cborMap(
                 "alg" to cborNegInt(7),
                 "sig" to cborBytes(byteArrayOf(0x0A)),
-                "x5c" to cborArray(listOf(cborBytes(cert1), cborBytes(cert2))),
+                "x5c" to cborArray([cborBytes(cert1), cborBytes(cert2)]),
             ),
         )
         val parsed = parseAttestationObject(bytes)
@@ -560,7 +560,7 @@ class AttestationCborParserTest {
     fun skipCborItemSkipsDeeplyNestedStructure() {
         // map(1) { "a": array(1) { map(1) { "b": uint(0) } } }
         val inner = cborMap("b" to cborUint(0))
-        val arr = cborArray(listOf(inner))
+        val arr = cborArray([inner])
         val outer = cborMap("a" to arr)
         val withTrailing = outer + byteArrayOf(0xFF.toByte())
         val result = skipCborItem(withTrailing, 0)

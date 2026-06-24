@@ -78,7 +78,7 @@ class PasskeyControllerTest {
         val fakeClient = FakePasskeyClient()
         val serverClient = FakePasskeyServerClient()
         serverClient.registerOptionsDeferred.complete(
-            ValidationResult.Invalid(listOf(WebAuthnValidationError.InvalidValue("field", "bad options")))
+            ValidationResult.Invalid([WebAuthnValidationError.InvalidValue("field", "bad options")])
         )
         val controller = PasskeyController(fakeClient, serverClient)
 
@@ -222,9 +222,9 @@ class PasskeyControllerTest {
                 rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
                 user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1, 2, 3)), "alice", "Alice"),
                 challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-                pubKeyCredParams = listOf(
+                pubKeyCredParams = [
                     PublicKeyCredentialParameters(type = PublicKeyCredentialType.PUBLIC_KEY, alg = -7),
-                ),
+                ],
             )
         }
 

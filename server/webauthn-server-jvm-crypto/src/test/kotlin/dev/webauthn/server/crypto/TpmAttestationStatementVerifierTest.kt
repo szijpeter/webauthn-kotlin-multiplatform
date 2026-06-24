@@ -50,7 +50,7 @@ class TpmAttestationStatementVerifierTest {
             sig = sig,
             certInfo = certInfo,
             pubArea = ByteArray(10), // arbitrary
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
 
         val verifier = TpmAttestationStatementVerifier()
@@ -70,7 +70,7 @@ class TpmAttestationStatementVerifierTest {
             sig = ByteArray(64),
             certInfo = ByteArray(10),
             pubArea = ByteArray(10),
-            x5c = listOf(ByteArray(0))
+            x5c = [ByteArray(0)]
         )
         // Should parse but fail version check
         val verifier = TpmAttestationStatementVerifier()
@@ -105,7 +105,7 @@ class TpmAttestationStatementVerifierTest {
             sig = sig,
             certInfo = certInfo,
             pubArea = ByteArray(10),
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
         val verifier = TpmAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -140,7 +140,7 @@ class TpmAttestationStatementVerifierTest {
             sig = sig,
             certInfo = certInfo,
             pubArea = ByteArray(10),
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
         val verifier = TpmAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -222,7 +222,7 @@ class TpmAttestationStatementVerifierTest {
             sig = sig,
             certInfo = certInfo,
             pubArea = ByteArray(10),
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
         val verifier = TpmAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -257,7 +257,7 @@ class TpmAttestationStatementVerifierTest {
             sig = sig,
             certInfo = certInfo,
             pubArea = ByteArray(10),
-            x5c = listOf(attCert) // Invalid cert
+            x5c = [attCert] // Invalid cert
         )
         val verifier = TpmAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -292,7 +292,7 @@ class TpmAttestationStatementVerifierTest {
             sig = sig,
             certInfo = certInfo,
             pubArea = ByteArray(10),
-            x5c = listOf(attCert) // Invalid cert
+            x5c = [attCert] // Invalid cert
         )
         val verifier = TpmAttestationStatementVerifier()
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
@@ -498,11 +498,11 @@ class TpmAttestationStatementVerifierTest {
         val certInfo = createCertInfo(magic = 0xFF544347.toInt(), type = 0x8017.toShort(), extraData = concatHash, signerName = ByteArray(10) { 0xFF.toByte() })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, certInfo)
         val attCert = generateAttestationCert(kp)
-        val attestationObject = buildTpmAttestationObject(ver = "2.0", alg = -7L, sig = sig, certInfo = certInfo, pubArea = ByteArray(10), x5c = listOf(attCert))
+        val attestationObject = buildTpmAttestationObject(ver = "2.0", alg = -7L, sig = sig, certInfo = certInfo, pubArea = ByteArray(10), x5c = [attCert])
         val input = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, attestationObject, authData)
         assertTrue(verifier.verify(input) is ValidationResult.Valid)
 
-        val wrongVerObject = buildTpmAttestationObject(ver = "1.0", alg = -7L, sig = ByteArray(64), certInfo = ByteArray(10), pubArea = ByteArray(10), x5c = listOf(ByteArray(0)))
+        val wrongVerObject = buildTpmAttestationObject(ver = "1.0", alg = -7L, sig = ByteArray(64), certInfo = ByteArray(10), pubArea = ByteArray(10), x5c = [ByteArray(0)])
         val invalidInput = sampleInput(CredentialId.fromBytes(ByteArray(16)), clientDataJson, wrongVerObject, authData)
         val invalidResult = verifier.verify(invalidInput)
         assertTrue(invalidResult is ValidationResult.Invalid)

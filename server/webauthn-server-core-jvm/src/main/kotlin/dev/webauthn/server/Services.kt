@@ -430,11 +430,11 @@ private fun validateAuthenticationExtensionHooks(
 }
 
 private fun supportedCredentialParameters(): List<PublicKeyCredentialParameters> {
-    return listOf(
+    return [
         PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.ES256.code),
         PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.RS256.code),
         PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.EdDSA.code),
-    )
+    ]
 }
 
 private suspend fun resolveAllowedOrigins(

@@ -236,7 +236,7 @@ private fun validCreationOptionsDto(): PublicKeyCredentialCreationOptionsDto {
             displayName = "Alice",
         ),
         challenge = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
-        pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+        pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
     )
 }
 

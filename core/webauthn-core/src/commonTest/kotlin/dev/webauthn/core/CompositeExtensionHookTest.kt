@@ -29,7 +29,7 @@ class CompositeExtensionHookTest {
 
     @Test
     fun singleHookErrorsAreForwarded() {
-        val composite = CompositeExtensionHook(listOf(PrfExtensionHook))
+        val composite = CompositeExtensionHook([PrfExtensionHook])
 
         val inputs = AuthenticationExtensionsClientInputs(
             prf = PrfExtensionInput(eval = AuthenticationExtensionsPRFValues(bytes(1))),
@@ -41,7 +41,7 @@ class CompositeExtensionHookTest {
 
     @Test
     fun errorsFromMultipleHooksAreAggregated() {
-        val composite = CompositeExtensionHook(listOf(PrfExtensionHook, LargeBlobExtensionHook))
+        val composite = CompositeExtensionHook([PrfExtensionHook, LargeBlobExtensionHook])
 
         // Both PRF and LargeBlob should fail
         val inputs = AuthenticationExtensionsClientInputs(
@@ -66,7 +66,7 @@ class CompositeExtensionHookTest {
 
     @Test
     fun validResultsFromAllHooksProduceValid() {
-        val composite = CompositeExtensionHook(listOf(PrfExtensionHook, LargeBlobExtensionHook))
+        val composite = CompositeExtensionHook([PrfExtensionHook, LargeBlobExtensionHook])
 
         val result = composite.validateRegistrationExtensions(
             inputs = AuthenticationExtensionsClientInputs(),
@@ -77,7 +77,7 @@ class CompositeExtensionHookTest {
 
     @Test
     fun authenticationErrorsAreAlsoAggregated() {
-        val composite = CompositeExtensionHook(listOf(PrfExtensionHook))
+        val composite = CompositeExtensionHook([PrfExtensionHook])
 
         val inputs = AuthenticationExtensionsClientInputs(
             prf = PrfExtensionInput(eval = AuthenticationExtensionsPRFValues(bytes(1), bytes(2))),
@@ -95,7 +95,7 @@ class CompositeExtensionHookTest {
 
     @Test
     fun invalidWithoutErrorsStaysInvalid() {
-        val composite = CompositeExtensionHook(listOf(EmptyInvalidHook))
+        val composite = CompositeExtensionHook([EmptyInvalidHook])
 
         val regResult = composite.validateRegistrationExtensions(
             inputs = AuthenticationExtensionsClientInputs(),

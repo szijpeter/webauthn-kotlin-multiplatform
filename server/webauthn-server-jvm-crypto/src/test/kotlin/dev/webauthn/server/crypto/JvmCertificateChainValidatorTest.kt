@@ -21,7 +21,7 @@ class JvmCertificateChainValidatorTest {
         )
 
         assertTrue(
-            validator.verify(chainDer = listOf(leafCert), trustAnchorsDer = listOf(rootCert)),
+            validator.verify(chainDer = [leafCert], trustAnchorsDer = [rootCert]),
             "Expected PKIX validation to pass with matching trust anchor",
         )
     }
@@ -40,7 +40,7 @@ class JvmCertificateChainValidatorTest {
         val wrongAnchor = TestCertificateFixtures.selfSignedRsaCertificate(otherRootKeyPair, subjectCn = "Other Root")
 
         assertFalse(
-            validator.verify(chainDer = listOf(leafCert), trustAnchorsDer = listOf(wrongAnchor)),
+            validator.verify(chainDer = [leafCert], trustAnchorsDer = [wrongAnchor]),
             "Expected PKIX validation to fail with non-matching trust anchor",
         )
     }
@@ -57,12 +57,12 @@ class JvmCertificateChainValidatorTest {
             issuerPrivateKey = rootKeyPair.private,
         )
 
-        assertTrue(validator.verifySignedByNext(listOf(leafCert, rootCert)))
+        assertTrue(validator.verifySignedByNext([leafCert, rootCert]))
 
         val unrelatedRoot = TestCertificateFixtures.selfSignedRsaCertificate(
             KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair(),
             subjectCn = "Unrelated",
         )
-        assertFalse(validator.verifySignedByNext(listOf(leafCert, unrelatedRoot)))
+        assertFalse(validator.verifySignedByNext([leafCert, unrelatedRoot]))
     }
 }

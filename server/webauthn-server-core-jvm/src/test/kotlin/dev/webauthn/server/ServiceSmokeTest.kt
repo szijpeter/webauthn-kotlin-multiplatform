@@ -149,7 +149,7 @@ class ServiceSmokeTest {
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
             attestationPolicy = AttestationPolicy.Strict,
-            extensionHooks = listOf(hook),
+            extensionHooks = [hook],
         )
 
         val startRequest = RegistrationStartRequest(
@@ -1596,7 +1596,7 @@ class ServiceSmokeTest {
 
         val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
-                return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
+                return if (primaryOrigin.value == "https://example.com") [relatedOrigin] else emptySet()
             }
         }
 
@@ -1617,7 +1617,7 @@ class ServiceSmokeTest {
             userDisplayName = "Alice",
             userHandle = UserHandle.fromBytes(ByteArray(16) { 7 }),
             extensions = AuthenticationExtensionsClientInputs(
-                relatedOrigins = listOf(relatedOrigin.value),
+                relatedOrigins = [relatedOrigin.value],
             ),
         )
         val options = registrationService.start(startRequest)
@@ -1666,7 +1666,7 @@ class ServiceSmokeTest {
 
         val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
-                return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
+                return if (primaryOrigin.value == "https://example.com") [relatedOrigin] else emptySet()
             }
         }
 
@@ -1733,7 +1733,7 @@ class ServiceSmokeTest {
 
         val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
-                return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
+                return if (primaryOrigin.value == "https://example.com") [relatedOrigin] else emptySet()
             }
         }
 
@@ -1794,7 +1794,7 @@ class ServiceSmokeTest {
                 origin = primaryOrigin,
                 userName = "alice",
                 extensions = AuthenticationExtensionsClientInputs(
-                    relatedOrigins = listOf(relatedOrigin.value),
+                    relatedOrigins = [relatedOrigin.value],
                 ),
             ),
         )
@@ -1838,7 +1838,7 @@ class ServiceSmokeTest {
 
         val metadataProvider = object : OriginMetadataProvider {
             override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> {
-                return if (primaryOrigin.value == "https://example.com") setOf(relatedOrigin) else emptySet()
+                return if (primaryOrigin.value == "https://example.com") [relatedOrigin] else emptySet()
             }
         }
 

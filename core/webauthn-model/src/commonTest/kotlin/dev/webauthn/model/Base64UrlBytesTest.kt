@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 class Base64UrlBytesTest {
     @Test
     fun fromBytesMatchesRfc4648UrlSafeGoldenCases() {
-        val cases = listOf(
+        val cases = [
             byteArrayOf() to "",
             "f".encodeToByteArray() to "Zg",
             "fo".encodeToByteArray() to "Zm8",
@@ -16,7 +16,7 @@ class Base64UrlBytesTest {
             "fooba".encodeToByteArray() to "Zm9vYmE",
             "foobar".encodeToByteArray() to "Zm9vYmFy",
             byteArrayOf(0xFB.toByte(), 0xEF.toByte(), 0xFF.toByte()) to "--__",
-        )
+        ]
 
         cases.forEach { (bytes, expectedEncoded) ->
             assertEquals(expectedEncoded, Base64UrlBytes.fromBytes(bytes).encoded())

@@ -34,7 +34,7 @@ class WebAuthnDtoMapperTest {
                 displayName = "Alice",
             ),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
@@ -51,7 +51,7 @@ class WebAuthnDtoMapperTest {
                 displayName = "Alice",
             ),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
             extensions = AuthenticationExtensionsClientInputsDto(
                 largeBlob = LargeBlobExtensionInputDto(support = "invalid"),
             ),
@@ -71,7 +71,7 @@ class WebAuthnDtoMapperTest {
                 displayName = "Alice",
             ),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
@@ -88,7 +88,7 @@ class WebAuthnDtoMapperTest {
                 displayName = "Alice",
             ),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
             authenticatorSelection = AuthenticatorSelectionCriteriaDto(),
         )
 
@@ -107,7 +107,7 @@ class WebAuthnDtoMapperTest {
                 displayName = "Alice",
             ),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
             authenticatorSelection = AuthenticatorSelectionCriteriaDto(requireResidentKey = true),
         )
 
@@ -385,10 +385,10 @@ class WebAuthnDtoMapperTest {
             rp = RpEntityDto("example.com", "Example"),
             user = UserEntityDto("YWFhYWFhYWFhYWFhYWFhYQ", "alice", "Alice"),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto("public-key", -7)),
-            excludeCredentials = listOf(
-                PublicKeyCredentialDescriptorDto("public-key", "YWFhYWFhYWFhYWFhYWFhYQ", listOf("usb", "nfc"))
-            )
+            pubKeyCredParams = [PublicKeyCredentialParametersDto("public-key", -7)],
+            excludeCredentials = [
+                PublicKeyCredentialDescriptorDto("public-key", "YWFhYWFhYWFhYWFhYWFhYQ", ["usb", "nfc"])
+            ],
         )
         val createResult = WebAuthnDtoMapper.toModel(createDto)
         assertTrue(createResult is ValidationResult.Valid)
@@ -400,9 +400,9 @@ class WebAuthnDtoMapperTest {
         val requestDto = PublicKeyCredentialRequestOptionsDto(
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
             rpId = "example.com",
-            allowCredentials = listOf(
-                PublicKeyCredentialDescriptorDto("public-key", "YWFhYWFhYWFhYWFhYWFhYQ", listOf("ble", "internal", "hybrid"))
-            )
+            allowCredentials = [
+                PublicKeyCredentialDescriptorDto("public-key", "YWFhYWFhYWFhYWFhYWFhYQ", ["ble", "internal", "hybrid"])
+            ],
         )
         val requestResult = WebAuthnDtoMapper.toModel(requestDto)
         assertTrue(requestResult is ValidationResult.Valid)
@@ -419,10 +419,10 @@ class WebAuthnDtoMapperTest {
             rp = RpEntityDto("example.com", "Example"),
             user = UserEntityDto("YWFhYWFhYWFhYWFhYWFhYQ", "alice", "Alice"),
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto("public-key", -7)),
-            excludeCredentials = listOf(
+            pubKeyCredParams = [PublicKeyCredentialParametersDto("public-key", -7)],
+            excludeCredentials = [
                 PublicKeyCredentialDescriptorDto("webauthn-passkey", "YWFhYWFhYWFhYWFhYWFhYQ"),
-            ),
+            ],
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)
@@ -441,9 +441,9 @@ class WebAuthnDtoMapperTest {
         val dto = PublicKeyCredentialRequestOptionsDto(
             challenge = "YWFhYWFhYWFhYWFhYWFhYQ",
             rpId = "example.com",
-            allowCredentials = listOf(
+            allowCredentials = [
                 PublicKeyCredentialDescriptorDto("webauthn-passkey", "YWFhYWFhYWFhYWFhYWFhYQ"),
-            ),
+            ],
         )
 
         val result = WebAuthnDtoMapper.toModel(dto)

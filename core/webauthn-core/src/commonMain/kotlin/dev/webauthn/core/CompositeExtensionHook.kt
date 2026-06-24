@@ -14,7 +14,7 @@ import dev.webauthn.model.WebAuthnValidationError
  * pipelines by composition rather than inheritance.
  *
  * ```kotlin
- * val hooks = CompositeExtensionHook(listOf(PrfExtensionHook, LargeBlobExtensionHook))
+ * val hooks = CompositeExtensionHook([PrfExtensionHook, LargeBlobExtensionHook])
  * val result = hooks.validateRegistrationExtensions(inputs, outputs)
  * ```
  */

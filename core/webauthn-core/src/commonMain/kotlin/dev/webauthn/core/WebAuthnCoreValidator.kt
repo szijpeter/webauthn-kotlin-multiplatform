@@ -62,7 +62,7 @@ public object WebAuthnCoreValidator {
 
         // W3C WebAuthn L3 §7.1 Step 10 / §7.2 Step 13: Verify that the value of
         // C.origin matches the Relying Party's origin (including related origins).
-        val validOrigins = setOf(expectedOrigin) + allowedOrigins
+        val validOrigins = [expectedOrigin] + allowedOrigins
         if (!validOrigins.contains(clientData.origin)) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.origin",

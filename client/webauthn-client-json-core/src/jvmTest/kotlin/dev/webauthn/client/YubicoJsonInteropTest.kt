@@ -36,7 +36,7 @@ class YubicoJsonInteropTest {
                     .build(),
             )
             .challenge(YubicoByteArray.fromBase64Url("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"))
-            .pubKeyCredParams(listOf(PublicKeyCredentialParameters.ES256))
+            .pubKeyCredParams([PublicKeyCredentialParameters.ES256])
             .build()
             .toJson()
 
@@ -54,12 +54,12 @@ class YubicoJsonInteropTest {
             .challenge(YubicoByteArray.fromBase64Url("AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE"))
             .rpId("example.com")
             .allowCredentials(
-                listOf(
+                [
                     PublicKeyCredentialDescriptor.builder()
                         .id(YubicoByteArray.fromBase64Url("MzMzMzMzMzMzMzMzMzMzMw"))
                         .type(PublicKeyCredentialType.PUBLIC_KEY)
                         .build(),
-                ),
+                ],
             )
             .build()
             .toCredentialsGetJson()
