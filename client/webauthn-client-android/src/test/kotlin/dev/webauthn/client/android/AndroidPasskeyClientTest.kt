@@ -74,7 +74,7 @@ class AndroidPasskeyClientTest {
             rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
             user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)]
+            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
         )
 
         val result = client.createCredential(options)
@@ -94,7 +94,7 @@ class AndroidPasskeyClientTest {
             rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
             user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)]
+            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
         )
 
         val result = client.createCredential(options)
@@ -130,9 +130,9 @@ class AndroidPasskeyClientTest {
         val options = PublicKeyCredentialRequestOptions(
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
             rpId = RpId.parseOrThrow("example.com"),
-            allowCredentials = [
+            allowCredentials = listOf(
                 PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, CredentialId.fromBytes(byteArrayOf(1)))
-            ],
+            ),
         )
 
         val result = client.getAssertion(options)
@@ -151,9 +151,9 @@ class AndroidPasskeyClientTest {
         val options = PublicKeyCredentialRequestOptions(
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
             rpId = RpId.parseOrThrow("example.com"),
-            allowCredentials = [
+            allowCredentials = listOf(
                 PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, CredentialId.fromBytes(byteArrayOf(1)))
-            ],
+            ),
         )
 
         val result = client.getAssertion(options)
@@ -182,7 +182,7 @@ class AndroidPasskeyClientTest {
             rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
             user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)]
+            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
         )
 
         val result = client.createCredential(options)
@@ -229,7 +229,7 @@ class AndroidPasskeyClientTest {
             rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
             user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)]
+            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7))
         )
 
         val result = client.createCredential(options)
@@ -305,7 +305,7 @@ class AndroidPasskeyClientTest {
             rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
             user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "name", "display"),
             challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
-            pubKeyCredParams = [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)],
+            pubKeyCredParams = listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7)),
         )
 
         val result = client.createCredential(options)

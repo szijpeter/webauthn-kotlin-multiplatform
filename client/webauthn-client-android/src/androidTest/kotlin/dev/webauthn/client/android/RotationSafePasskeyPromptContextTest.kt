@@ -60,7 +60,7 @@ class RotationSafePasskeyPromptContextTest {
                 runBlocking { activity.viewModel.register() }
 
                 assertEquals(
-                    [firstActivityId],
+                    listOf(firstActivityId),
                     activity.viewModel.registerPromptContextIdentityIds,
                 )
                 assertEquals(1, activity.viewModel.registerStartCalls)
@@ -100,7 +100,7 @@ class RotationSafePasskeyPromptContextTest {
                 runBlocking { activity.viewModel.signIn() }
 
                 assertEquals(
-                    [firstActivityId],
+                    listOf(firstActivityId),
                     activity.viewModel.signInPromptContextIdentityIds,
                 )
                 assertEquals(1, activity.viewModel.signInStartCalls)
@@ -283,12 +283,12 @@ private class RuntimeTestServerClient : PasskeyServerClient<String, String> {
                     displayName = "Demo User",
                 ),
                 challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-                pubKeyCredParams = [
+                pubKeyCredParams = listOf(
                     PublicKeyCredentialParameters(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         alg = -7,
                     ),
-                ],
+                ),
             ),
         )
     }
