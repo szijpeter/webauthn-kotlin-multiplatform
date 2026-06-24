@@ -205,24 +205,24 @@ internal class CliParser(
     }
 
     companion object {
-        val HELP_KEYS: Set<String> = setOf("-h", "--help")
-        val COMMON_KEYS: Set<String> = setOf(
+        val HELP_KEYS: Set<String> = ["-h", "--help"]
+        val COMMON_KEYS: Set<String> = [
             "--endpoint",
             "--rp-id",
             "--origin",
             "--authenticator",
             "--python-bin",
             "--python-bridge",
-        )
-        val REGISTER_KEYS: Set<String> = setOf(
+        ]
+        val REGISTER_KEYS: Set<String> = [
             "--user-name",
             "--user-display-name",
             "--user-handle",
-        )
-        val AUTHENTICATE_KEYS: Set<String> = setOf(
+        ]
+        val AUTHENTICATE_KEYS: Set<String> = [
             "--user-name",
             "--user-handle",
-        )
+        ]
 
         fun usage(): String {
             return """

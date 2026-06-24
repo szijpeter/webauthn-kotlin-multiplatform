@@ -19,14 +19,14 @@ public class TrustChainVerifier internal constructor(
     public fun verify(chainDer: List<ByteArray>, aaguid: Aaguid? = null): ValidationResult<Unit> {
         if (chainDer.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("x5c", "Certificate chain is empty")),
+                [WebAuthnValidationError.MissingValue("x5c", "Certificate chain is empty")],
             )
         }
 
         val trustAnchorsDer = trustAnchorSource.findTrustAnchors(aaguid).map { it.bytes() }
         if (trustAnchorsDer.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "No trust anchors found for this authenticator")),
+                [WebAuthnValidationError.InvalidValue("x5c", "No trust anchors found for this authenticator")],
             )
         }
 
@@ -34,7 +34,7 @@ public class TrustChainVerifier internal constructor(
             ValidationResult.Valid(Unit)
         } else {
             ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Trust chain validation failed")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Trust chain validation failed")],
             )
         }
     }
@@ -42,7 +42,7 @@ public class TrustChainVerifier internal constructor(
     public fun verifyFallbackSignedByNext(chainDer: List<ByteArray>): ValidationResult<Unit> {
         if (chainDer.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("x5c", "Certificate chain is empty")),
+                [WebAuthnValidationError.MissingValue("x5c", "Certificate chain is empty")],
             )
         }
 
@@ -50,7 +50,7 @@ public class TrustChainVerifier internal constructor(
             ValidationResult.Valid(Unit)
         } else {
             ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Certificate chain validation failed")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Certificate chain validation failed")],
             )
         }
     }

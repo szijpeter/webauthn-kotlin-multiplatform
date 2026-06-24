@@ -38,30 +38,30 @@ internal class TpmAttestationStatementVerifier(
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")),
+                [WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")],
             )
 
         if (attestationObject.fmt != "tpm") {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("fmt", "Format must be tpm")),
+                [WebAuthnValidationError.InvalidValue("fmt", "Format must be tpm")],
             )
         }
 
         if (attestationObject.ver != VERSION_2_0) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("ver", "TPM version must be 2.0")),
+                [WebAuthnValidationError.InvalidValue("ver", "TPM version must be 2.0")],
             )
         }
 
         if (attestationObject.certInfo == null || attestationObject.sig == null || attestationObject.x5c.isNullOrEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("attStmt", "certInfo, sig, and x5c are required")),
+                [WebAuthnValidationError.MissingValue("attStmt", "certInfo, sig, and x5c are required")],
             )
         }
 
         if (attestationObject.ecdaaKeyId != null) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("ecdaaKeyId", "ECDAA not supported")),
+                [WebAuthnValidationError.InvalidValue("ecdaaKeyId", "ECDAA not supported")],
             )
         }
 
@@ -78,11 +78,11 @@ internal class TpmAttestationStatementVerifier(
 
         val algId = attestationObject.alg
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("alg", "Algorithm identifier missing")),
+                [WebAuthnValidationError.MissingValue("alg", "Algorithm identifier missing")],
             )
         val coseAlg = coseAlgorithmFromCode(algId.toInt())
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: $algId")),
+                [WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: $algId")],
             )
 
         // W3C WebAuthn L3: §8.3 Step 1: Verify that sig is a valid signature over certInfo
@@ -94,7 +94,7 @@ internal class TpmAttestationStatementVerifier(
         )
         if (!signatureValid) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("sig", "Invalid signature over certInfo")),
+                [WebAuthnValidationError.InvalidValue("sig", "Invalid signature over certInfo")],
             )
         }
 
@@ -107,7 +107,7 @@ internal class TpmAttestationStatementVerifier(
             // W3C WebAuthn L3: §8.3 Step 2: Verify that certInfo is a valid TPMT_CERTIFY_INFO structure and magic is TPM_GENERATED_VALUE
             if (magic != TPM_GENERATED_VALUE) {
                 return ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("certInfo", "Invalid magic: ${Integer.toHexString(magic)}")),
+                    [WebAuthnValidationError.InvalidValue("certInfo", "Invalid magic: ${Integer.toHexString(magic)}")],
                 )
             }
 
@@ -115,7 +115,7 @@ internal class TpmAttestationStatementVerifier(
             val type = buffer.short
             if (type != TPM_ST_ATTEST_CERTIFY) {
                 return ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("certInfo", "Invalid type: ${Integer.toHexString(type.toInt() and 0xFFFF)}")),
+                    [WebAuthnValidationError.InvalidValue("certInfo", "Invalid type: ${Integer.toHexString(type.toInt() and 0xFFFF)}")],
                 )
             }
 
@@ -132,7 +132,7 @@ internal class TpmAttestationStatementVerifier(
 
             val authDataBytes = attestationObject.authDataBytes
                 ?: return ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
+                    [WebAuthnValidationError.MissingValue("authData", "authData is required")],
                 )
             val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
             
@@ -140,12 +140,12 @@ internal class TpmAttestationStatementVerifier(
             val expectedHash = SignumPrimitives.sha256(authDataBytes + clientDataHash)
             if (!Arrays.equals(extraData, expectedHash)) {
                 return ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("certInfo", "extraData mismatch")),
+                    [WebAuthnValidationError.InvalidValue("certInfo", "extraData mismatch")],
                 )
             }
         } catch (e: Exception) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("certInfo", "Failed to parse certInfo: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("certInfo", "Failed to parse certInfo: ${e.message}")],
             )
         }
 
@@ -163,48 +163,48 @@ internal class TpmAttestationStatementVerifier(
             certificateInspector.inspect(certificateDer)
         } catch (e: Exception) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")],
             )
         }
 
         if (cert.version != AIK_CERTIFICATE_VERSION) {
             return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         "x5c",
                         "AIK certificate version must be 3",
                     ),
-                ),
+                ],
             )
         }
         if (cert.subjectDistinguishedName.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate subject must not be empty")),
+                [WebAuthnValidationError.InvalidValue("x5c", "AIK certificate subject must not be empty")],
             )
         }
         if (cert.isCa) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "AIK certificate must not be a CA")),
+                [WebAuthnValidationError.InvalidValue("x5c", "AIK certificate must not be a CA")],
             )
         }
         if (!cert.extendedKeyUsageOids.contains(OID_TCG_KP_AIK_CERTIFICATE)) {
             return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         "x5c",
                         "AIK certificate missing tcg-kp-AIKCertificate EKU",
                     ),
-                ),
+                ],
             )
         }
         if (cert.criticalExtensionOids.contains("2.5.29.17")) {
             return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         "x5c",
                         "AIK certificate SAN extension must not be critical",
                     ),
-                ),
+                ],
             )
         }
 

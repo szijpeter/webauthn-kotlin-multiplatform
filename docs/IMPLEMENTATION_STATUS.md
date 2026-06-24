@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-04-17
+Last updated: 2026-06-25
 
 ## Status Legend
 
@@ -12,6 +12,7 @@ Last updated: 2026-04-17
 
 ## Overall Snapshot
 
+- Kotlin 2.4 feature-adoption pass (2026-06-25): enabled preview collection literals in shared/JVM build logic and adopted them across core, model, serialization, client, server, and sample modules where they improved clarity without changing behavior. Name-based destructuring was evaluated but intentionally not enabled because it is still preview-only and offered limited readability benefit for this public library. `sample:compose-passkey` intentionally remains on `listOf`/`setOf` at a few call sites because collection literals currently trigger a Kotlin compiler failure there.
 - Protocol model and core validation baselines are implemented with strict negative-path tests.
 - Apple X64 target alignment update (2026-04-15): removed `iosX64()` targets across core/client/network/sample modules to align with upstream Signum 3.21.0 / Supreme 0.13.0 dropping Apple X64 variants; active iOS targets remain `iosArm64` and `iosSimulatorArm64`.
 - Roadmap synchronization update (2026-04-17): phases 1 and 5 are now explicitly tracked as completed baselines, while active execution is centered on Phase 6 discoverable credentials, `credProps`, and account lifecycle contracts/signaling guidance.

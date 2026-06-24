@@ -44,7 +44,7 @@ internal class PythonFido2Adapter(
     private suspend fun invokeBridge(request: PythonBridgeRequest): JsonElement {
         val payload = json.encodeToString(PythonBridgeRequest.serializer(), request)
         val result = commandExecutor.execute(
-            command = listOf(pythonBinary, bridgeScriptPath),
+            command = [pythonBinary, bridgeScriptPath],
             stdin = payload,
         )
         val envelope = decodeEnvelopeOrNull(result.stdout)

@@ -73,7 +73,7 @@ public class FidoU2fAttestationStatementVerifier(
     }
 
     private fun failure(field: String, message: String) = ValidationResult.Invalid(
-        listOf(WebAuthnValidationError.InvalidValue("attestationObject.$field", message)),
+        [WebAuthnValidationError.InvalidValue("attestationObject.$field", message)],
     )
 
     private fun concat(vararg chunks: ByteArray): ByteArray {

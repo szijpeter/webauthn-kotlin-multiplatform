@@ -10,8 +10,8 @@ package dev.webauthn.client
  * this class.
  */
 public data class PasskeyCapabilities(
-    public val supported: Set<PasskeyCapability> = emptySet(),
-    public val platformVersionHints: List<String> = emptyList(),
+    public val supported: Set<PasskeyCapability> = [],
+    public val platformVersionHints: List<String> = [],
 ) {
     private val supportedByKey: Map<String, PasskeyCapability> =
         supported.associateBy(PasskeyCapability::key)

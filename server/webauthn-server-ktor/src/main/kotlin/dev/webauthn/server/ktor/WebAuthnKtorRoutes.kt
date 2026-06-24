@@ -101,12 +101,12 @@ public fun Route.webAuthnRoutes(
             if (payload.residentKey != null && residentKey == null) {
                 call.respondValidationFailure(
                     operation = "webauthn.registration.start",
-                    errors = listOf(
+                    errors = [
                         WebAuthnValidationError.InvalidValue(
                             field = "residentKey",
                             message = "Unsupported residentKey '${payload.residentKey}'",
                         ),
-                    ),
+                    ],
                 )
                 return@post
             }

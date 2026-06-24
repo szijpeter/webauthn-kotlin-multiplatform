@@ -38,7 +38,7 @@ public data class PublicKeyCredentialCreationOptionsDto(
     @SerialName("pubKeyCredParams") public val pubKeyCredParams: List<PublicKeyCredentialParametersDto>,
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("excludeCredentials")
-    public val excludeCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
+    public val excludeCredentials: List<PublicKeyCredentialDescriptorDto> = [],
     @SerialName("authenticatorSelection") public val authenticatorSelection: AuthenticatorSelectionCriteriaDto? = null,
     @SerialName("attestation") public val attestation: String? = null,
     @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
@@ -51,7 +51,7 @@ public data class PublicKeyCredentialRequestOptionsDto(
     @SerialName("timeout") public val timeoutMs: Long? = null,
     @SerialName("allowCredentials")
     @Serializable(with = NullAsEmptyCredentialDescriptorListSerializer::class)
-    public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = emptyList(),
+    public val allowCredentials: List<PublicKeyCredentialDescriptorDto> = [],
     @SerialName("userVerification") public val userVerification: String = "preferred",
     @SerialName("extensions") public val extensions: AuthenticationExtensionsClientInputsDto? = null,
 )
@@ -171,6 +171,6 @@ internal object NullAsEmptyCredentialDescriptorListSerializer :
         ListSerializer(PublicKeyCredentialDescriptorDto.serializer()),
     ) {
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        return if (element is JsonNull) JsonArray(emptyList()) else element
+        return if (element is JsonNull) JsonArray([]) else element
     }
 }

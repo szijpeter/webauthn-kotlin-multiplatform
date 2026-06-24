@@ -26,7 +26,7 @@ internal object AaguidMismatchVerifier {
             if (innerBytes.size == 16) {
                 if (!Arrays.equals(innerBytes, aaguidBytes)) {
                     return ValidationResult.Invalid(
-                        listOf(WebAuthnValidationError.InvalidValue("x5c", "AAGUID in certificate does not match authenticator AAGUID")),
+                        [WebAuthnValidationError.InvalidValue("x5c", "AAGUID in certificate does not match authenticator AAGUID")],
                     )
                 }
                 return ValidationResult.Valid(Unit)
@@ -38,7 +38,7 @@ internal object AaguidMismatchVerifier {
                 if (doubleInner.size == 16) {
                     if (!Arrays.equals(doubleInner, aaguidBytes)) {
                         return ValidationResult.Invalid(
-                            listOf(WebAuthnValidationError.InvalidValue("x5c", "AAGUID in certificate does not match authenticator AAGUID")),
+                            [WebAuthnValidationError.InvalidValue("x5c", "AAGUID in certificate does not match authenticator AAGUID")],
                         )
                     }
                     return ValidationResult.Valid(Unit)
@@ -48,11 +48,11 @@ internal object AaguidMismatchVerifier {
             }
 
             ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Invalid AAGUID extension length: ${innerBytes.size}")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Invalid AAGUID extension length: ${innerBytes.size}")],
             )
         } catch (e: Exception) {
             ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse AAGUID extension: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Failed to parse AAGUID extension: ${e.message}")],
             )
         }
     }

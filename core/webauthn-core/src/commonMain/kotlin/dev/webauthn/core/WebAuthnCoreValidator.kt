@@ -38,7 +38,7 @@ public object WebAuthnCoreValidator {
         expectedType: WebAuthnClientDataType,
         expectedChallenge: Challenge,
         expectedOrigin: Origin,
-        allowedOrigins: Set<Origin> = emptySet(),
+        allowedOrigins: Set<Origin> = [],
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
@@ -236,12 +236,12 @@ public object WebAuthnCoreValidator {
             ValidationResult.Valid(Unit)
         } else {
             ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = "credentialId",
                         message = "Credential ID is not part of allowCredentials",
                     ),
-                ),
+                ],
             )
         }
     }

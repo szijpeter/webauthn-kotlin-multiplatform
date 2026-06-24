@@ -121,7 +121,7 @@ internal class IosPasskeyPlatformBridge(
                 if (major >= 17) add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
                 if (major >= 15) add(PasskeyCapability.PlatformFeature("securityKey"))
             },
-            platformVersionHints = listOf("iosMajor=$major"),
+            platformVersionHints = ["iosMajor=$major"],
         )
     }
 }

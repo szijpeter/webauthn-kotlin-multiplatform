@@ -15,11 +15,11 @@ public class ResourceTrustAnchorSource : TrustAnchorSource {
         val factory = CertificateFactory.getInstance("X.509")
         val certs = mutableListOf<Base64UrlBytes>()
 
-        val filenames = listOf(
+        val filenames = [
             "Apple_WebAuthn_Root_CA.pem",
             "Google_Hardware_Attestation_Root_1.pem",
             "Google_Hardware_Attestation_Root_2.pem"
-        )
+        ]
 
         for (filename in filenames) {
             val path = "dev/webauthn/server/crypto/roots/$filename"

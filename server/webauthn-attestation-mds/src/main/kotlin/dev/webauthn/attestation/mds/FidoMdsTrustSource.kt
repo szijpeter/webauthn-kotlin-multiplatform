@@ -32,7 +32,7 @@ public data class MdsMetadataBlob(
 @Serializable
 public data class MdsEntry(
     @SerialName("aaguid") public val aaguid: String? = null,
-    @SerialName("attestationRootCertificates") public val attestationRootCertificates: List<String> = emptyList(),
+    @SerialName("attestationRootCertificates") public val attestationRootCertificates: List<String> = [],
 )
 
 /** Pull-based FIDO MDS trust source that maps AAGUIDs to attestation roots. */
@@ -45,7 +45,7 @@ public class FidoMdsTrustSource(
     private var cache: CachedBlob? = null
 
     override fun findTrustAnchors(aaguid: Aaguid?): List<Base64UrlBytes> {
-        val snapshot = cache ?: return emptyList()
+        val snapshot = cache ?: return []
         val lookupAaguid = aaguid
             ?.bytes()
             ?.joinToString(separator = "") { byte -> "%02x".format(byte) }

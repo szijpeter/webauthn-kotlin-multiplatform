@@ -23,7 +23,7 @@ public data class PublicKeyCredentialParameters(
 public data class PublicKeyCredentialDescriptor(
     public val type: PublicKeyCredentialType,
     public val id: CredentialId,
-    public val transports: List<AuthenticatorTransport> = emptyList(),
+    public val transports: List<AuthenticatorTransport> = [],
 )
 
 /** W3C WebAuthn L3: §9.1. WebAuthn Extensions */
@@ -84,7 +84,7 @@ public data class PublicKeyCredentialCreationOptions(
     public val challenge: Challenge,
     public val pubKeyCredParams: List<PublicKeyCredentialParameters>,
     public val timeoutMs: Long? = null,
-    public val excludeCredentials: List<PublicKeyCredentialDescriptor> = emptyList(),
+    public val excludeCredentials: List<PublicKeyCredentialDescriptor> = [],
     public val authenticatorAttachment: AuthenticatorAttachment? = null,
     public val residentKey: ResidentKeyRequirement = ResidentKeyRequirement.PREFERRED,
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
@@ -101,7 +101,7 @@ public data class PublicKeyCredentialRequestOptions(
      */
     public val rpId: RpId? = null,
     public val timeoutMs: Long? = null,
-    public val allowCredentials: List<PublicKeyCredentialDescriptor> = emptyList(),
+    public val allowCredentials: List<PublicKeyCredentialDescriptor> = [],
     public val userVerification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
     public val extensions: AuthenticationExtensionsClientInputs? = null,
 )

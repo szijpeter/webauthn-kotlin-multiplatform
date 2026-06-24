@@ -4,6 +4,7 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Trace updates
 
+- 2026-06-25: Kotlin 2.4 collection-literal adoption touched validator/model implementation files for readability only. The pass does not change any mapped validation rule, parser behavior, or error semantics; `sample:compose-passkey` was intentionally excluded at a few call sites because collection literals currently trigger a Kotlin compiler failure there.
 - 2026-04-17: Authentication start/finish semantics were aligned to unified WebAuthn L3 option handling for identified and discoverable flows: `AuthenticationStartRequest.userName` is now optional, challenge sessions persist nullable `userName`, named mode assembles a non-empty `allowCredentials` set and enforces credential ownership, and discoverable mode leaves `allowCredentials` empty while resolving credentials by ID at finish.
 - 2026-04-03: `webauthn-serialization-kotlinx` authenticator-data parsing now rejects trailing bytes and malformed extension CBOR deterministically, and the repo adds offline ceremony fixtures plus JVM-side WebAuthn4J and Yubico differential checks to exercise the same registration/assertion outcomes against captured payloads. Client JSON interop coverage now also checks Yubico-generated browser option payloads and Yubico parsing of normalized credential response JSON.
 - 2026-03-29: `Base64UrlBytes` received a readability-only style pass (chaining/layout and selective `::` adoption) with no parser, validation, or error-semantic behavior changes.

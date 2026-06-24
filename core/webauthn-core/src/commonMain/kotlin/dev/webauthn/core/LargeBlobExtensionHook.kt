@@ -33,13 +33,13 @@ public object LargeBlobExtensionHook : TargetedExtensionHook {
             val supported = outputs?.largeBlob?.supported ?: false
             if (!supported) {
                 return ValidationResult.Invalid(
-                    listOf(
+                    [
                         WebAuthnValidationError.InvalidValue(
                             field = "extensions.largeBlob",
                             message = "LargeBlob support is required but not provided " +
                                 "or supported by the authenticator",
                         ),
-                    ),
+                    ],
                 )
             }
         }
