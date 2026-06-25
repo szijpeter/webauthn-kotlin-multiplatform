@@ -175,7 +175,7 @@ class PasskeyControllerTest {
         // State should remain SIGN_IN STARTING without throwing exception out of runCeremony, but the register loop silently aborted.
         assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
 
-        serverClient.signInOptionsDeferred.complete(ValidationResult.Invalid(emptyList()))
+        serverClient.signInOptionsDeferred.complete(ValidationResult.Invalid([]))
         firstJob.join()
     }
 
