@@ -11,6 +11,8 @@ import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
 import dev.webauthn.samples.composepasskey.data.network.normalizedEndpoint
 import dev.webauthn.samples.composepasskey.data.network.rememberPlatformHttpClient
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.signals.CredentialSignalDemoClient
+import dev.webauthn.samples.composepasskey.domain.signals.rememberCredentialSignalDemoClient
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
 import org.koin.core.logger.Level
@@ -18,6 +20,13 @@ import org.koin.dsl.koinConfiguration
 
 @Composable
 fun App() {
+    App(credentialSignalClient = rememberCredentialSignalDemoClient())
+}
+
+@Composable
+internal fun App(
+    credentialSignalClient: CredentialSignalDemoClient,
+) {
     val scope = rememberCoroutineScope()
     val debugLogs = remember { DebugLogStore() }
     val httpLogSink: (String) -> Unit = remember(scope, debugLogs) {
@@ -33,11 +42,12 @@ fun App() {
         )
     }
 
-    val modules = remember(config, debugLogs, passkeyClient, serverClient) {
+    val modules = remember(config, debugLogs, passkeyClient, credentialSignalClient, serverClient) {
         sampleAppModules(
             config = config,
             debugLogs = debugLogs,
             passkeyClient = passkeyClient,
+            credentialSignalClient = credentialSignalClient,
             serverClient = serverClient,
         )
     }
