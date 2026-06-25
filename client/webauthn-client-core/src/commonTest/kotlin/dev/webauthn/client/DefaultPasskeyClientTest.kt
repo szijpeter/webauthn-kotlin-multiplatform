@@ -47,7 +47,7 @@ class DefaultPasskeyClientTest {
                 rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
                 user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1)), "alice", "Alice"),
                 challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-                pubKeyCredParams = emptyList(),
+                pubKeyCredParams = [],
             ),
         )
 
