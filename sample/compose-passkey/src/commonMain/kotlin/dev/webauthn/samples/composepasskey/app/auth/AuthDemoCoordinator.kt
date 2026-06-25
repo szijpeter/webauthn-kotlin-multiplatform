@@ -35,6 +35,14 @@ internal class AuthDemoCoordinator(
         )
     }
 
+    fun onAutoCreateClicked() {
+        debugLogs.i(
+            source = "action",
+            message = "Auto Create tapped endpoint=${config.endpointBase} " +
+                "rpId=${config.rpId}",
+        )
+    }
+
     fun onSignInClicked() {
         debugLogs.i(
             source = "action",

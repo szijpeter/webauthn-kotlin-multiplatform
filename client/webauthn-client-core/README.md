@@ -78,11 +78,46 @@ suspend fun runSignIn(controller: PasskeyController<String, String>, userId: Str
 }
 ```
 
+### Create options
+
+Use the default create path for explicit, user-initiated passkey registration:
+
+```kotlin
+val result = passkeyClient.createCredential(creationOptions)
+```
+
+Use `PasskeyCreateOptions.Conditional` after a successful password or other non-passkey sign-in
+when the platform supports automatic passkey upgrades:
+
+```kotlin
+import dev.webauthn.client.PasskeyCreateOptions
+
+val result = passkeyClient.createCredential(
+    options = creationOptions,
+    createOptions = PasskeyCreateOptions.Conditional,
+)
+```
+
+Apps using `PasskeyController` can pass the same option through the registration ceremony:
+
+```kotlin
+controller.register(
+    params = registrationParams,
+    createOptions = PasskeyCreateOptions.Conditional,
+)
+```
+
+Platform bridges advertise support with
+`PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)`. Unsupported
+bridges return `PasskeyResult.Failure(PasskeyClientError.Platform(...))` for conditional create.
+
 ### Capabilities API
 
 Query platform support for extensions and features:
 
 ```kotlin
+import dev.webauthn.client.PasskeyPlatformFeatureKeys
+
 suspend fun inspectCapabilities(client: PasskeyClient) {
     val capabilities = client.capabilities()
     if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {
@@ -91,13 +126,17 @@ suspend fun inspectCapabilities(client: PasskeyClient) {
     if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))) {
         // Platform supports largeBlob extension.
     }
+    if (capabilities.supports(PasskeyPlatformFeatureKeys.ConditionalCreate)) {
+        // Platform supports automatic passkey upgrade requests.
+    }
 }
 ```
 
 Available capabilities:
 - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` - HMAC secret extension (W3C prf)
 - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` - Large blob storage extension
-- `PasskeyCapability.PlatformFeature("securityKey")` - Cross-platform authenticator support
+- `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)` - automatic passkey upgrade create support
+- `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey)` - Cross-platform authenticator support
 - `PasskeyCapability.Extension(WebAuthnExtension.Custom("example"))` - proprietary/draft extension identifier
 
 `PasskeyCapabilities.supports(key)` is key-based; `supports(capability)` requires an exact capability match for that key (same variant/value). Duplicate keys are rejected at construction time.
