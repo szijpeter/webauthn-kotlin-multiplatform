@@ -18,5 +18,5 @@ public interface OriginMetadataProvider {
  */
 public object NoOpOriginMetadataProvider : OriginMetadataProvider {
     /** Returns no related origins, limiting acceptance to the explicitly configured origin set. */
-    override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> = emptySet()
+    override suspend fun getRelatedOrigins(primaryOrigin: Origin): Set<Origin> = []
 }

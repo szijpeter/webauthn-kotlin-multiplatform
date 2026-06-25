@@ -147,9 +147,9 @@ internal fun challengeExpirationEpochMs(clock: () -> Long, timeoutMs: Long): Lon
 
 internal fun failure(field: String, message: String): ValidationResult.Invalid {
     return ValidationResult.Invalid(
-        listOf(
+        [
             WebAuthnValidationError.InvalidValue(field = field, message = message),
-        ),
+        ],
     )
 }
 

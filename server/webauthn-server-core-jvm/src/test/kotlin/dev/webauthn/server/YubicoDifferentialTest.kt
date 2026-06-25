@@ -268,7 +268,7 @@ class YubicoDifferentialTest {
                     .build(),
             )
             .credentialRepository(repository)
-            .origins(setOf(fixture.origin))
+            .origins([fixture.origin])
             .allowUntrustedAttestation(true)
             .build()
     }
@@ -292,7 +292,7 @@ class YubicoDifferentialTest {
                     .build(),
             )
             .challenge(challenge)
-            .pubKeyCredParams(listOf(PublicKeyCredentialParameters.ES256))
+            .pubKeyCredParams([PublicKeyCredentialParameters.ES256])
             .build()
     }
 
@@ -306,12 +306,12 @@ class YubicoDifferentialTest {
                     .challenge(challenge)
                     .rpId(fixture.relyingParty.rpId)
                     .allowCredentials(
-                        listOf(
+                        [
                             PublicKeyCredentialDescriptor.builder()
                                 .id(YubicoByteArray.fromBase64Url(fixture.credential.credentialId))
                                 .type(com.yubico.webauthn.data.PublicKeyCredentialType.PUBLIC_KEY)
                                 .build(),
-                        ),
+                        ],
                     )
                     .build(),
             )
@@ -336,12 +336,12 @@ class YubicoDifferentialTest {
     ) : CredentialRepository {
         override fun getCredentialIdsForUsername(username: String): Set<PublicKeyCredentialDescriptor> {
             if (username != userName || credential == null) return emptySet()
-            return setOf(
+            return [
                 PublicKeyCredentialDescriptor.builder()
                     .id(credential.credentialId)
                     .type(com.yubico.webauthn.data.PublicKeyCredentialType.PUBLIC_KEY)
                     .build(),
-            )
+            ]
         }
 
         override fun getUserHandleForUsername(username: String): java.util.Optional<YubicoByteArray> {
@@ -372,7 +372,7 @@ class YubicoDifferentialTest {
         }
 
         override fun lookupAll(credentialId: YubicoByteArray): Set<RegisteredCredential> {
-            return if (credential?.credentialId == credentialId) setOf(credential) else emptySet()
+            return if (credential?.credentialId == credentialId) [credential] else emptySet()
         }
     }
 }

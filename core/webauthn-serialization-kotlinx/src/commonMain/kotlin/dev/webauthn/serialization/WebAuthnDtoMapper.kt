@@ -355,12 +355,12 @@ public object WebAuthnDtoMapper {
                 val authDataBytes = extractAuthDataFromAttestationObject((attestation as ValidationResult.Valid).value.bytes())
                 if (authDataBytes == null) {
                     return ValidationResult.Invalid(
-                        listOf(
+                        [
                             WebAuthnValidationError.InvalidFormat(
                                 field = "attestationObject",
                                 message = "Attestation object does not contain a valid authData field",
                             ),
-                        ),
+                        ],
                     )
                 }
                 val parsedAuthData = parseAuthenticatorData(authDataBytes, field = "attestationObject.authData")
@@ -370,21 +370,21 @@ public object WebAuthnDtoMapper {
                 val parsedAuthDataValue = (parsedAuthData as ValidationResult.Valid).value
                 val attestedCredentialData = parsedAuthDataValue.attestedCredentialData
                     ?: return ValidationResult.Invalid(
-                        listOf(
+                        [
                             WebAuthnValidationError.InvalidFormat(
                                 field = "attestationObject.authData",
                                 message = "Attested credential data flag is not set or is malformed",
                             ),
-                        ),
+                        ],
                     )
                 if (attestedCredentialData.credentialId != credentialId.value) {
                     return ValidationResult.Invalid(
-                        listOf(
+                        [
                             WebAuthnValidationError.InvalidFormat(
                                 field = "id/rawId",
                                 message = "id/rawId must match attested credential ID",
                             ),
-                        ),
+                        ],
                     )
                 }
                 val extensions = value.clientExtensionResults?.let {
@@ -395,12 +395,12 @@ public object WebAuthnDtoMapper {
                 }
                 if (value.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
                     return ValidationResult.Invalid(
-                        listOf(
+                        [
                             WebAuthnValidationError.InvalidValue(
                                 field = "type",
                                 message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
                             ),
-                        ),
+                        ],
                     )
                 }
                 val authenticatorAttachment = value.authenticatorAttachment?.let { encodedAttachment ->
@@ -489,12 +489,12 @@ public object WebAuthnDtoMapper {
                 }
                 if (value.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
                     return ValidationResult.Invalid(
-                        listOf(
+                        [
                             WebAuthnValidationError.InvalidValue(
                                 field = "type",
                                 message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
                             ),
-                        ),
+                        ],
                     )
                 }
                 val authenticatorAttachment = value.authenticatorAttachment?.let { encodedAttachment ->
@@ -592,12 +592,12 @@ public object WebAuthnDtoMapper {
             ValidationResult.Valid(parsed)
         } else {
             ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = field,
                         message = "Unknown authenticatorAttachment value: $value",
                     ),
-                ),
+                ],
             )
         }
     }
@@ -611,12 +611,12 @@ public object WebAuthnDtoMapper {
             ValidationResult.Valid(parsed)
         } else {
             ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = field,
                         message = "Unknown attestation value: $value",
                     ),
-                ),
+                ],
             )
         }
     }
@@ -639,12 +639,12 @@ public object WebAuthnDtoMapper {
             ValidationResult.Valid(parsed)
         } else {
             ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = field,
                         message = "Unknown authenticator transport: $value",
                     ),
-                ),
+                ],
             )
         }
     }
@@ -668,12 +668,12 @@ private fun parseMatchingCredentialId(id: String, rawId: String): ValidationResu
         ValidationResult.Valid(idValue)
     } else {
         ValidationResult.Invalid(
-            listOf(
+            [
                 WebAuthnValidationError.InvalidFormat(
                     field = "id/rawId",
                     message = "id and rawId must match",
                 ),
-            ),
+            ],
         )
     }
 }

@@ -44,9 +44,9 @@ class PythonFido2AdapterTest {
                 displayName = "Alice",
             ),
             challenge = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
-            pubKeyCredParams = listOf(
+            pubKeyCredParams = [
                 PublicKeyCredentialParametersDto(type = "public-key", alg = -7),
-            ),
+            ],
         )
 
         val actual = adapter.createCredential(
@@ -55,7 +55,7 @@ class PythonFido2AdapterTest {
         )
 
         assertEquals(expectedResponse.id, actual.id)
-        assertEquals(listOf("python3", "bridge.py"), fakeExecutor.lastCommand)
+        assertEquals(["python3", "bridge.py"], fakeExecutor.lastCommand)
         val request = json.decodeFromString(PythonBridgeRequest.serializer(), fakeExecutor.lastStdin.orEmpty())
         assertEquals("register", request.command)
         assertEquals("https://localhost", request.origin)
@@ -80,7 +80,7 @@ class PythonFido2AdapterTest {
             rp = RpEntityDto(id = "localhost", name = "localhost"),
             user = UserEntityDto(id = "AQID", name = "alice", displayName = "Alice"),
             challenge = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
         )
 
         val error = assertFailsWith<IllegalStateException> {
@@ -113,7 +113,7 @@ class PythonFido2AdapterTest {
             rp = RpEntityDto(id = "localhost", name = "localhost"),
             user = UserEntityDto(id = "AQID", name = "alice", displayName = "Alice"),
             challenge = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
-            pubKeyCredParams = listOf(PublicKeyCredentialParametersDto(type = "public-key", alg = -7)),
+            pubKeyCredParams = [PublicKeyCredentialParametersDto(type = "public-key", alg = -7)],
         )
 
         val error = assertFailsWith<IllegalStateException> {

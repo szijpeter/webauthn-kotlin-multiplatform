@@ -268,12 +268,12 @@ class KtorPasskeyServerClientTest {
         )
 
         assertContentEquals(
-            listOf(
+            [
                 "/custom/register/start",
                 "/custom/register/finish",
                 "/custom/auth/start",
                 "/custom/auth/finish",
-            ),
+            ],
             seenPaths,
         )
     }

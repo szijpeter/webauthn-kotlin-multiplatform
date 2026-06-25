@@ -38,7 +38,7 @@ public object WebAuthnCoreValidator {
         expectedType: WebAuthnClientDataType,
         expectedChallenge: Challenge,
         expectedOrigin: Origin,
-        allowedOrigins: Set<Origin> = emptySet(),
+        allowedOrigins: Set<Origin> = [],
     ): ValidationResult<Unit> {
         val errors = mutableListOf<WebAuthnValidationError>()
 
@@ -62,7 +62,7 @@ public object WebAuthnCoreValidator {
 
         // W3C WebAuthn L3 §7.1 Step 10 / §7.2 Step 13: Verify that the value of
         // C.origin matches the Relying Party's origin (including related origins).
-        val validOrigins = setOf(expectedOrigin) + allowedOrigins
+        val validOrigins = [expectedOrigin] + allowedOrigins
         if (!validOrigins.contains(clientData.origin)) {
             errors += WebAuthnValidationError.InvalidValue(
                 field = "clientData.origin",
@@ -236,12 +236,12 @@ public object WebAuthnCoreValidator {
             ValidationResult.Valid(Unit)
         } else {
             ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = "credentialId",
                         message = "Credential ID is not part of allowCredentials",
                     ),
-                ),
+                ],
             )
         }
     }

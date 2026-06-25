@@ -35,7 +35,7 @@ class NoneAttestationStatementVerifierTest {
     fun verifyFailsForNoneFmtWithNonEmptyAttStmt() {
         val attestationObject = attestationObjectCbor(
             fmt = "none",
-            attStmtEntries = listOf("sig" to cborBytes(byteArrayOf(1, 2, 3))),
+            attStmtEntries = ["sig" to cborBytes(byteArrayOf(1, 2, 3))],
         )
         val input = sampleInput(attestationObject)
 

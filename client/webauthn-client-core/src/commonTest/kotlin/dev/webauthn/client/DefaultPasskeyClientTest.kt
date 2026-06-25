@@ -68,12 +68,12 @@ class DefaultPasskeyClientTest {
             PublicKeyCredentialRequestOptions(
                 challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
                 rpId = RpId.parseOrThrow("example.com"),
-                allowCredentials = listOf(
+                allowCredentials = [
                     PublicKeyCredentialDescriptor(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         id = CredentialId.fromBytes(byteArrayOf(1)),
                     ),
-                ),
+                ],
             ),
         )
 
@@ -95,12 +95,12 @@ class DefaultPasskeyClientTest {
             PublicKeyCredentialRequestOptions(
                 challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
                 rpId = RpId.parseOrThrow("example.com"),
-                allowCredentials = listOf(
+                allowCredentials = [
                     PublicKeyCredentialDescriptor(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         id = CredentialId.fromBytes(byteArrayOf(1)),
                     ),
-                ),
+                ],
             ),
         )
 
@@ -163,8 +163,8 @@ class DefaultPasskeyClientTest {
             bridge = TestBridge(
                 capabilitiesAction = {
                     PasskeyCapabilities(
-                        supported = setOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
-                        platformVersionHints = listOf("test"),
+                        supported = [PasskeyCapability.Extension(WebAuthnExtension.Prf)],
+                        platformVersionHints = ["test"],
                     )
                 },
             ),
@@ -172,13 +172,13 @@ class DefaultPasskeyClientTest {
 
         val capabilities = client.capabilities()
         assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
-        assertEquals(listOf("test"), capabilities.platformVersionHints)
+        assertEquals(["test"], capabilities.platformVersionHints)
     }
 
     @Test
     fun capabilities_supports_lookup_is_key_based_for_string_and_exact_for_capability() {
         val capabilities = PasskeyCapabilities(
-            supported = setOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
+            supported = [PasskeyCapability.Extension(WebAuthnExtension.Prf)],
         )
 
         assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
@@ -191,10 +191,10 @@ class DefaultPasskeyClientTest {
     fun capabilities_reject_duplicate_keys() {
         assertFailsWith<IllegalArgumentException> {
             PasskeyCapabilities(
-                supported = setOf(
+                supported = [
                     PasskeyCapability.Extension(WebAuthnExtension.Custom("same")),
                     PasskeyCapability.PlatformFeature("same"),
-                ),
+                ],
             )
         }
     }
@@ -218,7 +218,7 @@ class DefaultPasskeyClientTest {
     @Test
     fun capabilities_supports_capability_requires_variant_match() {
         val capabilities = PasskeyCapabilities(
-            supported = setOf(PasskeyCapability.PlatformFeature("securityKey")),
+            supported = [PasskeyCapability.PlatformFeature("securityKey")],
         )
 
         assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("securityKey")))
@@ -276,12 +276,12 @@ class DefaultPasskeyClientTest {
             PublicKeyCredentialRequestOptions(
                 challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
                 rpId = RpId.parseOrThrow("example.com"),
-                allowCredentials = listOf(
+                allowCredentials = [
                     PublicKeyCredentialDescriptor(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         id = CredentialId.fromBytes(byteArrayOf(1)),
                     ),
-                ),
+                ],
             ),
         )
 
@@ -319,12 +319,12 @@ class DefaultPasskeyClientTest {
                 PublicKeyCredentialRequestOptions(
                     challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
                     rpId = RpId.parseOrThrow("example.com"),
-                    allowCredentials = listOf(
+                    allowCredentials = [
                         PublicKeyCredentialDescriptor(
                             type = PublicKeyCredentialType.PUBLIC_KEY,
                             id = CredentialId.fromBytes(byteArrayOf(1)),
                         ),
-                    ),
+                    ],
                 ),
             )
         }
@@ -375,12 +375,12 @@ class DefaultPasskeyClientTest {
                 rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "Example"),
                 user = PublicKeyCredentialUserEntity(UserHandle.fromBytes(byteArrayOf(1, 2, 3)), "alice", "Alice"),
                 challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-                pubKeyCredParams = listOf(
+                pubKeyCredParams = [
                     PublicKeyCredentialParameters(
                         type = PublicKeyCredentialType.PUBLIC_KEY,
                         alg = -7,
                     ),
-                ),
+                ],
             )
         }
 

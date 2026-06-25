@@ -67,12 +67,12 @@ internal fun parseCollectedClientDataJson(
         bytes.decodeToString(throwOnInvalidSequence = true)
     }.getOrElse {
         return ValidationResult.Invalid(
-            listOf(
+            [
                 WebAuthnValidationError.InvalidFormat(
                     field = field,
                     message = "clientDataJSON must be valid UTF-8 JSON",
                 ),
-            ),
+            ],
         )
     }
 
@@ -80,12 +80,12 @@ internal fun parseCollectedClientDataJson(
         clientDataJsonParser.parseToJsonElement(text).jsonObject
     }.getOrElse {
         return ValidationResult.Invalid(
-            listOf(
+            [
                 WebAuthnValidationError.InvalidFormat(
                     field = field,
                     message = "clientDataJSON must be a valid JSON object",
                 ),
-            ),
+            ],
         )
     }
 
@@ -103,12 +103,12 @@ internal fun parseCollectedClientDataJson(
         clientDataJsonParser.decodeFromString<CollectedClientDataJsonDto>(text)
     }.getOrElse {
         return ValidationResult.Invalid(
-            listOf(
+            [
                 WebAuthnValidationError.InvalidFormat(
                     field = field,
                     message = "clientDataJSON must use valid JSON field types",
                 ),
-            ),
+            ],
         )
     }
 
@@ -251,23 +251,23 @@ internal fun extractAuthDataFromAttestationObject(attestationObject: ByteArray):
 
 private fun <T> missingField(field: String, label: String): ValidationResult<T> {
     return ValidationResult.Invalid(
-        listOf(
+        [
             WebAuthnValidationError.MissingValue(
                 field = field,
                 message = "clientDataJSON is missing $label",
             ),
-        ),
+        ],
     )
 }
 
 private fun <T> invalidFormat(field: String, message: String): ValidationResult<T> {
     return ValidationResult.Invalid(
-        listOf(
+        [
             WebAuthnValidationError.InvalidFormat(
                 field = field,
                 message = message,
             ),
-        ),
+        ],
     )
 }
 

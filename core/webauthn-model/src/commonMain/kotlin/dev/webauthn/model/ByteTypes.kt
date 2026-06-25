@@ -2,7 +2,7 @@ package dev.webauthn.model
 
 private fun invalidFixedLengthValue(field: String, label: String, length: Int): ValidationResult.Invalid =
     ValidationResult.Invalid(
-        listOf(WebAuthnValidationError.InvalidValue(field, "$label must be $length bytes")),
+        [WebAuthnValidationError.InvalidValue(field, "$label must be $length bytes")],
     )
 
 private inline fun <T> parseFixedLengthValue(

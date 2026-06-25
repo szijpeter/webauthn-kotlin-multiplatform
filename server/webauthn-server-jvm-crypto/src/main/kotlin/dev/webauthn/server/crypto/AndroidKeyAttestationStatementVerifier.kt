@@ -45,18 +45,18 @@ internal class AndroidKeyAttestationStatementVerifier(
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")),
+                [WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")],
             )
 
         if (attestationObject.fmt != "android-key") {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("fmt", "Format must be android-key")),
+                [WebAuthnValidationError.InvalidValue("fmt", "Format must be android-key")],
             )
         }
 
         if (attestationObject.alg == null || attestationObject.sig == null || attestationObject.x5c.isNullOrEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("attStmt", "alg, sig, and x5c are required")),
+                [WebAuthnValidationError.MissingValue("attStmt", "alg, sig, and x5c are required")],
             )
         }
 
@@ -64,7 +64,7 @@ internal class AndroidKeyAttestationStatementVerifier(
         val leafCertDer = certsDer.first()
         val authData = attestationObject.authDataBytes
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
+                [WebAuthnValidationError.MissingValue("authData", "authData is required")],
             )
 
         val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
@@ -73,7 +73,7 @@ internal class AndroidKeyAttestationStatementVerifier(
         val signedData = authData + clientDataHash
         val coseAlgorithm = coseAlgorithmFromCode(attestationObject.alg.toInt())
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: ${attestationObject.alg}")),
+                [WebAuthnValidationError.InvalidValue("alg", "Unsupported algorithm: ${attestationObject.alg}")],
             )
 
         val signatureValid = SignumPrimitives.verifyWithCertificate(
@@ -84,7 +84,7 @@ internal class AndroidKeyAttestationStatementVerifier(
         )
         if (!signatureValid) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("sig", "Invalid signature")),
+                [WebAuthnValidationError.InvalidValue("sig", "Invalid signature")],
             )
         }
 
@@ -97,7 +97,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             }
         } else if (!certificateChainValidator.verifySignedByNext(certsDer)) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Certificate chain validation failed")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Certificate chain validation failed")],
             )
         }
 
@@ -107,12 +107,12 @@ internal class AndroidKeyAttestationStatementVerifier(
         } catch (_: Exception) {
             null
         } ?: return ValidationResult.Invalid(
-            listOf(WebAuthnValidationError.MissingValue("x5c", "Android Key Attestation extension missing")),
+            [WebAuthnValidationError.MissingValue("x5c", "Android Key Attestation extension missing")],
         )
 
         val metadata = SignumPrimitives.decodeCoseMaterial(input.response.attestedCredentialData.cosePublicKey)
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("coseKey", "Failed to parse COSE key")),
+                [WebAuthnValidationError.InvalidValue("coseKey", "Failed to parse COSE key")],
             )
 
         val allTags = try {
@@ -131,7 +131,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             // W3C WebAuthn L3: §8.4 Step 5.2: Verify that the attestationChallenge field in the attestation certificate extension data is identical to clientDataHash
             if (!Arrays.equals(challenge, clientDataHash)) {
                 return ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("attestationChallenge", "Challenge mismatch in attestation certificate")),
+                    [WebAuthnValidationError.InvalidValue("attestationChallenge", "Challenge mismatch in attestation certificate")],
                 )
             }
 
@@ -144,7 +144,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             swTags + teeTags
         } catch (e: Exception) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse Android Key Attestation extension: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Failed to parse Android Key Attestation extension: ${e.message}")],
             )
         }
 
@@ -153,7 +153,7 @@ internal class AndroidKeyAttestationStatementVerifier(
             checkKeyRequirements(allTags, metadata)
         } catch (e: IllegalArgumentException) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", e.message ?: "Android Key requirements not satisfied")),
+                [WebAuthnValidationError.InvalidValue("x5c", e.message ?: "Android Key requirements not satisfied")],
             )
         }
 

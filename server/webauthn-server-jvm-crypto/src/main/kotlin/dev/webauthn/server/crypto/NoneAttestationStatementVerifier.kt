@@ -15,44 +15,44 @@ public class NoneAttestationStatementVerifier : AttestationVerifier {
         val attestationBytes = input.response.attestationObject.bytes()
         if (attestationBytes.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = "attestationObject",
                         message = "Attestation object must be present",
                     ),
-                ),
+                ],
             )
         }
 
         val parsed = parseAttestationObject(attestationBytes)
             ?: return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidFormat(
                         field = "attestationObject",
                         message = "Attestation object is not valid CBOR",
                     ),
-                ),
+                ],
             )
 
         if (parsed.fmt != "none") {
             return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = "attestationObject.fmt",
                         message = "Unsupported attestation format: ${parsed.fmt}",
                     ),
-                ),
+                ],
             )
         }
 
         if (parsed.attStmtEntryCount != 0) {
             return ValidationResult.Invalid(
-                listOf(
+                [
                     WebAuthnValidationError.InvalidValue(
                         field = "attestationObject.attStmt",
                         message = "attStmt must be empty for fmt \"none\"",
                     ),
-                ),
+                ],
             )
         }
 

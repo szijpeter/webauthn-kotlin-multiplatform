@@ -120,7 +120,7 @@ internal class DoctorCommandRunner(
     private suspend fun checkPython(pythonBinary: String): Boolean {
         val pythonVersion = runCatching {
             commandExecutor.execute(
-                command = listOf(pythonBinary, "--version"),
+                command = [pythonBinary, "--version"],
             )
         }.getOrElse { error ->
             stderr.appendLine(
@@ -144,11 +144,11 @@ internal class DoctorCommandRunner(
     private suspend fun checkPythonFido2(pythonBinary: String): Boolean {
         val fido2Import = runCatching {
             commandExecutor.execute(
-                command = listOf(
+                command = [
                     pythonBinary,
                     "-c",
                     "import fido2; print('python-fido2 import ok')",
-                ),
+                ],
             )
         }.getOrElse { error ->
             stderr.appendLine(
@@ -168,11 +168,11 @@ internal class DoctorCommandRunner(
     private suspend fun probeDevices(pythonBinary: String) {
         val deviceProbe = runCatching {
             commandExecutor.execute(
-                command = listOf(
+                command = [
                     pythonBinary,
                     "-c",
                     "from fido2.hid import CtapHidDevice; print(len(list(CtapHidDevice.list_devices())))",
-                ),
+                ],
             )
         }.getOrElse { error ->
             stderr.appendLine(

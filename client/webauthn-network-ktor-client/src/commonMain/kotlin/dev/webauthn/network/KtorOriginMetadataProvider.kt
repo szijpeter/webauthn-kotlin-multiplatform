@@ -27,11 +27,11 @@ public class KtorOriginMetadataProvider(
                     .mapNotNull(::parseOriginOrNull)
                     .toSet()
             } else {
-                emptySet()
+                []
             }
         }.getOrElse {
             // Fail closed on fetch/parse errors by treating related origins as unavailable.
-            emptySet()
+            []
         }
     }
 }

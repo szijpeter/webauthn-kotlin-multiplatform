@@ -78,7 +78,7 @@ public fun Application.installSampleBackend(
             call.application.environment.log.error("Unhandled backend error", cause)
             call.respond(
                 status = io.ktor.http.HttpStatusCode.InternalServerError,
-                message = mapOf("errors" to listOf("internal: $message")),
+                message = mapOf("errors" to ["internal: $message"]),
             )
         }
     }
@@ -89,26 +89,26 @@ public fun Application.installSampleBackend(
         }
         get("/.well-known/assetlinks.json") {
             call.respond(
-                listOf(
+                [
                     AssetLinksStatement(
-                        relation = listOf(
+                        relation = [
                             "delegate_permission/common.handle_all_urls",
                             "delegate_permission/common.get_login_creds",
-                        ),
+                        ],
                         target = AssetLinksTarget(
                             namespace = "android_app",
                             packageName = config.androidPackageName,
-                            sha256CertFingerprints = listOf(config.androidSha256),
+                            sha256CertFingerprints = [config.androidSha256],
                         ),
                     ),
-                ),
+                ],
             )
         }
         get("/.well-known/apple-app-site-association") {
             call.respond(
                 AppleAppSiteAssociation(
                     applinks = emptyMap(),
-                    webcredentials = AppleWebCredentials(apps = listOf(config.iosAppId)),
+                    webcredentials = AppleWebCredentials(apps = [config.iosAppId]),
                     appclips = emptyMap(),
                 ),
             )
@@ -117,7 +117,7 @@ public fun Application.installSampleBackend(
             call.respond(
                 AppleAppSiteAssociation(
                     applinks = emptyMap(),
-                    webcredentials = AppleWebCredentials(apps = listOf(config.iosAppId)),
+                    webcredentials = AppleWebCredentials(apps = [config.iosAppId]),
                     appclips = emptyMap(),
                 ),
             )

@@ -52,18 +52,18 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")),
+                [WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")],
             )
 
         if (attestationObject.fmt != "android-safetynet") {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("fmt", "Format must be android-safetynet")),
+                [WebAuthnValidationError.InvalidValue("fmt", "Format must be android-safetynet")],
             )
         }
 
         val responseBytes = attestationObject.response
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("attStmt", "response is required")),
+                [WebAuthnValidationError.MissingValue("attStmt", "response is required")],
             )
 
         // W3C WebAuthn L3: §8.5 Step 1: Verify that response is a valid SafetyNet response of version ver by following the steps indicated by the verifier
@@ -71,17 +71,17 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             .deserialize(responseBytes.decodeToString())
             .getOrNull()
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "Invalid JWS format")),
+                [WebAuthnValidationError.InvalidValue("response", "Invalid JWS format")],
             )
 
         val certificateChain = parsedJws.header.certificateChain
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("x5c", "x5c missing in JWS header")),
+                [WebAuthnValidationError.MissingValue("x5c", "x5c missing in JWS header")],
             )
 
         if (certificateChain.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("x5c", "No certificates in JWS header")),
+                [WebAuthnValidationError.MissingValue("x5c", "No certificates in JWS header")],
             )
         }
 
@@ -92,14 +92,14 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             certificateInspector.inspect(leafCertDer)
         } catch (e: Exception) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Failed to parse certificate: ${e.message}")],
             )
         }
 
         val subjectDn = leafCertificate.subjectDistinguishedName.lowercase()
         if (!subjectDn.contains(SAFETYNET_ATTESTATION_SUBJECT)) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "SafetyNet attestation certificate subject is invalid")),
+                [WebAuthnValidationError.InvalidValue("x5c", "SafetyNet attestation certificate subject is invalid")],
             )
         }
 
@@ -113,25 +113,25 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
         val algorithm = parsedJws.header.algorithm
         if (algorithm !is JwsAlgorithm.Signature.RSA || algorithm != JwsAlgorithm.Signature.RS256) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "Unsupported JWS algorithm: ${algorithm.identifier}")),
+                [WebAuthnValidationError.InvalidValue("response", "Unsupported JWS algorithm: ${algorithm.identifier}")],
             )
         }
 
         val publicKey = parsedJws.header.publicKey
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "No public key found in JWS header")),
+                [WebAuthnValidationError.InvalidValue("response", "No public key found in JWS header")],
             )
 
         val verifier = algorithm
             .verifierFor(publicKey)
             .getOrNull()
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "JWS verifier initialization failed")),
+                [WebAuthnValidationError.InvalidValue("response", "JWS verifier initialization failed")],
             )
 
         if (verifier.verify(parsedJws.plainSignatureInput, parsedJws.signature).isFailure) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "JWS signature verification failed")),
+                [WebAuthnValidationError.InvalidValue("response", "JWS signature verification failed")],
             )
         }
 
@@ -144,13 +144,13 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
             )
         } catch (e: Exception) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("response", "Failed to parse JWS payload: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("response", "Failed to parse JWS payload: ${e.message}")],
             )
         }
 
         val authData = attestationObject.authDataBytes
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
+                [WebAuthnValidationError.MissingValue("authData", "authData is required")],
             )
         val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
 
@@ -164,14 +164,14 @@ internal class AndroidSafetyNetAttestationStatementVerifier(
         }
         if (!jwsNonceBytes.contentEquals(expectedNonce)) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("nonce", "Nonce mismatch")),
+                [WebAuthnValidationError.InvalidValue("nonce", "Nonce mismatch")],
             )
         }
 
         // W3C WebAuthn L3: §8.5 Step 3: Verify that the SafetyNet response actually verified that the device is healthy
         if (payload.ctsProfileMatch != true) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("ctsProfileMatch", "Device not compatible (ctsProfileMatch false)")),
+                [WebAuthnValidationError.InvalidValue("ctsProfileMatch", "Device not compatible (ctsProfileMatch false)")],
             )
         }
 

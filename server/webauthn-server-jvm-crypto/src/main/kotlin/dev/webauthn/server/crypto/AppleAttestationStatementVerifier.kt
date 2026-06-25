@@ -33,18 +33,18 @@ internal class AppleAttestationStatementVerifier(
     override fun verify(input: RegistrationValidationInput): ValidationResult<Unit> {
         val attestationObject = parseAttestationObject(input.response.attestationObject.bytes())
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")),
+                [WebAuthnValidationError.InvalidValue("attestationObject", "Malformed CBOR")],
             )
 
         if (attestationObject.fmt != "apple") {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("fmt", "Format must be apple")),
+                [WebAuthnValidationError.InvalidValue("fmt", "Format must be apple")],
             )
         }
 
         if (attestationObject.x5c.isNullOrEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("attStmt", "x5c is required")),
+                [WebAuthnValidationError.MissingValue("attStmt", "x5c is required")],
             )
         }
 
@@ -61,7 +61,7 @@ internal class AppleAttestationStatementVerifier(
 
         val authDataBytes = attestationObject.authDataBytes
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("authData", "authData is required")),
+                [WebAuthnValidationError.MissingValue("authData", "authData is required")],
             )
         val clientDataHash = SignumPrimitives.sha256(input.response.clientDataJson.bytes())
         
@@ -75,7 +75,7 @@ internal class AppleAttestationStatementVerifier(
         }
         if (extensionValue == null) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("x5c", "Apple extension not found")),
+                [WebAuthnValidationError.MissingValue("x5c", "Apple extension not found")],
             )
         }
 
@@ -86,12 +86,12 @@ internal class AppleAttestationStatementVerifier(
             val extensionNonce = innerParser.readOctetString()
             if (!Arrays.equals(extensionNonce, nonce)) {
                 return ValidationResult.Invalid(
-                    listOf(WebAuthnValidationError.InvalidValue("x5c", "Certificate nonce mismatch")),
+                    [WebAuthnValidationError.InvalidValue("x5c", "Certificate nonce mismatch")],
                 )
             }
         } catch (e: Exception) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidValue("x5c", "Failed to parse Apple extension: ${e.message}")),
+                [WebAuthnValidationError.InvalidValue("x5c", "Failed to parse Apple extension: ${e.message}")],
             )
         }
 
@@ -105,18 +105,18 @@ internal class AppleAttestationStatementVerifier(
                     certificateInspector.inspect(leafCertDer)
                 } catch (e: Exception) {
                     return ValidationResult.Invalid(
-                        listOf(
+                        [
                             WebAuthnValidationError.InvalidValue(
                                 "x5c",
                                 "Failed to inspect certificate: ${e.message}",
                             ),
-                        ),
+                        ],
                     )
                 }
                 if (certMetadata.ecPublicKeyX != null && certMetadata.ecPublicKeyY != null) {
                     if (!matchesEcKey(metadata.x, metadata.y, certMetadata.ecPublicKeyX, certMetadata.ecPublicKeyY)) {
                         return ValidationResult.Invalid(
-                            listOf(WebAuthnValidationError.InvalidValue("pubKey", "Public key mismatch")),
+                            [WebAuthnValidationError.InvalidValue("pubKey", "Public key mismatch")],
                         )
                     }
                 }

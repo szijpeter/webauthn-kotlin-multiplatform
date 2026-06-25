@@ -38,7 +38,7 @@ public class RegistrationService(
     private val rpIdHasher: RpIdHasher,
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
     @OptIn(ExperimentalWebAuthnL3Api::class)
-    private val extensionHooks: List<WebAuthnExtensionHook> = emptyList(),
+    private val extensionHooks: List<WebAuthnExtensionHook> = [],
     private val originMetadataProvider: OriginMetadataProvider =
         NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
@@ -188,7 +188,7 @@ public class AuthenticationService(
     private val signatureVerifier: SignatureVerifier,
     private val rpIdHasher: RpIdHasher,
     @OptIn(ExperimentalWebAuthnL3Api::class)
-    private val extensionHooks: List<WebAuthnExtensionHook> = emptyList(),
+    private val extensionHooks: List<WebAuthnExtensionHook> = [],
     private val originMetadataProvider: OriginMetadataProvider =
         NoOpOriginMetadataProvider,
     private val nowEpochMs: () -> Long = { System.currentTimeMillis() },
@@ -430,11 +430,11 @@ private fun validateAuthenticationExtensionHooks(
 }
 
 private fun supportedCredentialParameters(): List<PublicKeyCredentialParameters> {
-    return listOf(
+    return [
         PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.ES256.code),
         PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.RS256.code),
         PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, CoseAlgorithm.EdDSA.code),
-    )
+    ]
 }
 
 private suspend fun resolveAllowedOrigins(

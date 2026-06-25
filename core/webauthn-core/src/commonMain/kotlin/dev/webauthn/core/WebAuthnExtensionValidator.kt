@@ -15,7 +15,7 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
  */
 @ExperimentalWebAuthnL3Api
 public object WebAuthnExtensionValidator : WebAuthnExtensionHook by CompositeExtensionHook(
-    listOf(
+    [
         LargeBlobExtensionHook,
         PrfExtensionHook,
         // NOTE: Implement and add hooks for remaining standard extensions:
@@ -24,5 +24,5 @@ public object WebAuthnExtensionValidator : WebAuthnExtensionHook by CompositeExt
         //  - UvmExtensionHook
         //  - AppIdExcludeExtensionHook
         //  - AppIdExtensionHook
-    ),
+    ],
 )

@@ -132,7 +132,7 @@ class AndroidPasskeyClientTest {
             rpId = RpId.parseOrThrow("example.com"),
             allowCredentials = listOf(
                 PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, CredentialId.fromBytes(byteArrayOf(1)))
-            )
+            ),
         )
 
         val result = client.getAssertion(options)
@@ -153,7 +153,7 @@ class AndroidPasskeyClientTest {
             rpId = RpId.parseOrThrow("example.com"),
             allowCredentials = listOf(
                 PublicKeyCredentialDescriptor(PublicKeyCredentialType.PUBLIC_KEY, CredentialId.fromBytes(byteArrayOf(1)))
-            )
+            ),
         )
 
         val result = client.getAssertion(options)

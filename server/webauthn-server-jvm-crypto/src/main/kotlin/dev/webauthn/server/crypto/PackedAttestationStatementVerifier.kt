@@ -181,7 +181,7 @@ public class PackedAttestationStatementVerifier internal constructor(
 
     private fun invalid(field: String, message: String): ValidationResult<Unit> {
         return ValidationResult.Invalid(
-            listOf(WebAuthnValidationError.InvalidValue(field = field, message = message)),
+            [WebAuthnValidationError.InvalidValue(field = field, message = message)],
         )
     }
 

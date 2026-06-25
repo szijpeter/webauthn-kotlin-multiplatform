@@ -71,7 +71,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             authData = authData,
             alg = -7, // ES256
             sig = sig,
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = AndroidKeyAttestationStatementVerifier()
@@ -116,7 +116,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             authData = authData,
             alg = -7,
             sig = sig,
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = AndroidKeyAttestationStatementVerifier(trustChainVerifier = TrustChainVerifier(trustSource))
@@ -164,7 +164,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             authData = authData,
             alg = -7,
             sig = sig,
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = AndroidKeyAttestationStatementVerifier()
@@ -208,7 +208,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -252,7 +252,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -277,7 +277,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             "attStmt" to cborMap(
                 "alg" to cborInt(-7),
                 "sig" to cborBytes(ByteArray(64)),
-                "x5c" to cborArray(listOf(cborBytes(ByteArray(0))))
+                "x5c" to cborArray([cborBytes(ByteArray(0))])
             )
         )
 
@@ -303,7 +303,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -338,7 +338,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         // Use garbage signature
         val sig = ByteArray(64) { 0xFF.toByte() }
 
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -357,7 +357,7 @@ class AndroidKeyAttestationStatementVerifierTest {
             "attStmt" to cborMap(
                 // "alg" missing
                 "sig" to cborBytes(ByteArray(64)),
-                "x5c" to cborArray(listOf(cborBytes(ByteArray(0))))
+                "x5c" to cborArray([cborBytes(ByteArray(0))])
             )
         )
         val verifier = AndroidKeyAttestationStatementVerifier()
@@ -413,7 +413,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -447,7 +447,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -481,7 +481,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -515,7 +515,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -547,7 +547,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -579,7 +579,7 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, derOctetString(extensionValueSeq))
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, authData + clientDataHash)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
 
         val verifier = AndroidKeyAttestationStatementVerifier()
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
@@ -614,12 +614,12 @@ class AndroidKeyAttestationStatementVerifierTest {
         val attCert = generateAttestationCert(kp, extensionValue)
         val signatureBase = authData + clientDataHash
         val sig = signES256(kp.private as java.security.interfaces.ECPrivateKey, signatureBase)
-        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, listOf(attCert))
+        val attestationObject = buildAndroidKeyAttestationObject(authData, -7, sig, [attCert])
         val credentialId = CredentialId.fromBytes(ByteArray(16) { 0x11 })
         val input = sampleInput(credentialId, clientDataJson, attestationObject, authData)
         assertTrue(verifier.verify(input) is ValidationResult.Valid)
 
-        val badSigAttestation = buildAndroidKeyAttestationObject(authData, -7, ByteArray(64) { 0x00 }, listOf(attCert))
+        val badSigAttestation = buildAndroidKeyAttestationObject(authData, -7, ByteArray(64) { 0x00 }, [attCert])
         val invalidInput = sampleInput(credentialId, clientDataJson, badSigAttestation, authData)
         val invalidResult = verifier.verify(invalidInput)
         assertTrue(invalidResult is ValidationResult.Invalid)

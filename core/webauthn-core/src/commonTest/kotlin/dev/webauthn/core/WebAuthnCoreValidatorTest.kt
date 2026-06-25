@@ -105,7 +105,7 @@ class WebAuthnCoreValidatorTest {
             expectedType = WebAuthnClientDataType.GET,
             expectedChallenge = challenge,
             expectedOrigin = sampleOrigin(),
-            allowedOrigins = setOf(Origin.parseOrThrow("https://other.example.com")),
+            allowedOrigins = [Origin.parseOrThrow("https://other.example.com")],
         )
 
         assertTrue(result is ValidationResult.Valid)
@@ -122,7 +122,7 @@ class WebAuthnCoreValidatorTest {
             expectedType = WebAuthnClientDataType.GET,
             expectedChallenge = sampleChallenge(11),
             expectedOrigin = sampleOrigin(),
-            allowedOrigins = setOf(Origin.parseOrThrow("https://other.example.com")),
+            allowedOrigins = [Origin.parseOrThrow("https://other.example.com")],
         )
 
         assertTrue(result is ValidationResult.Invalid)
@@ -274,7 +274,7 @@ class WebAuthnCoreValidatorTest {
     fun requireAllowedCredentialFailsForCredentialOutsideAllowList() {
         val result = WebAuthnCoreValidator.requireAllowedCredential(
             response = sampleAuthenticationResponse(sampleCredentialId(2)),
-            allowedCredentialIds = setOf(sampleCredentialId(3)),
+            allowedCredentialIds = [sampleCredentialId(3)],
         )
         assertTrue(result is ValidationResult.Invalid)
     }
@@ -284,7 +284,7 @@ class WebAuthnCoreValidatorTest {
         val credential = sampleCredentialId(4)
         val result = WebAuthnCoreValidator.requireAllowedCredential(
             response = sampleAuthenticationResponse(credential),
-            allowedCredentialIds = setOf(credential),
+            allowedCredentialIds = [credential],
         )
         assertTrue(result is ValidationResult.Valid)
     }
@@ -392,12 +392,12 @@ class WebAuthnCoreValidatorTest {
                 displayName = "Alice",
             ),
             challenge = challenge,
-            pubKeyCredParams = listOf(
+            pubKeyCredParams = [
                 PublicKeyCredentialParameters(
                     type = PublicKeyCredentialType.PUBLIC_KEY,
                     alg = -7,
                 ),
-            ),
+            ],
         )
     }
 

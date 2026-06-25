@@ -25,7 +25,7 @@ class TrustChainVerifierTest {
         val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
-        val result = verifier.verify(listOf(leafCert), null)
+        val result = verifier.verify([leafCert], null)
         assertTrue(result is ValidationResult.Valid, "Expected Valid, got $result")
     }
 
@@ -56,7 +56,7 @@ class TrustChainVerifierTest {
         val trustSource = TrustAnchorSource { _ -> emptyList() }
         val verifier = TrustChainVerifier(trustSource, validator)
 
-        val result = verifier.verify(listOf(leafCert), null)
+        val result = verifier.verify([leafCert], null)
         assertTrue(result is ValidationResult.Invalid, "Expected Invalid when no trust anchors found, got $result")
     }
 
@@ -76,7 +76,7 @@ class TrustChainVerifierTest {
         val trustSource = TrustAnchorSource { _ -> base64UrlList(wrongAnchor) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
-        val result = verifier.verify(listOf(leafCert), null)
+        val result = verifier.verify([leafCert], null)
         assertTrue(result is ValidationResult.Invalid, "Expected Invalid for wrong trust anchor, got $result")
     }
 
@@ -95,7 +95,7 @@ class TrustChainVerifierTest {
         val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
-        val result = verifier.verifyFallbackSignedByNext(listOf(leafCert, rootCert))
+        val result = verifier.verifyFallbackSignedByNext([leafCert, rootCert])
         assertTrue(result is ValidationResult.Valid, "Expected Valid for signed-by-next fallback, got $result")
     }
 
@@ -118,7 +118,7 @@ class TrustChainVerifierTest {
         val trustSource = TrustAnchorSource { _ -> base64UrlList(rootCert) }
         val verifier = TrustChainVerifier(trustSource, validator)
 
-        val result = verifier.verifyFallbackSignedByNext(listOf(leafCert, unrelatedRoot))
+        val result = verifier.verifyFallbackSignedByNext([leafCert, unrelatedRoot])
         assertTrue(result is ValidationResult.Invalid, "Expected Invalid for broken chain, got $result")
     }
 }

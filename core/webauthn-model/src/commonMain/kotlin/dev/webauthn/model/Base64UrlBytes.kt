@@ -16,12 +16,12 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
         public fun parse(value: String, field: String = "base64url"): ValidationResult<Base64UrlBytes> {
             if (value.contains('=')) {
                 return ValidationResult.Invalid(
-                    listOf(
+                    [
                         WebAuthnValidationError.InvalidFormat(
                             field = field,
                             message = "Padding is not allowed in base64url values",
                         ),
-                    ),
+                    ],
                 )
             }
 
@@ -30,12 +30,12 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
                 base64UrlNoPadding.decode(value)
             } catch (_: IllegalArgumentException) {
                 return ValidationResult.Invalid(
-                    listOf(
+                    [
                         WebAuthnValidationError.InvalidFormat(
                             field = field,
                             message = "Invalid base64url encoding",
                         ),
-                    ),
+                    ],
                 )
             }
 

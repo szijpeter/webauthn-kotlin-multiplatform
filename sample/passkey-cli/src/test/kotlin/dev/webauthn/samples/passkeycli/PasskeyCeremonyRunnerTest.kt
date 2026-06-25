@@ -250,12 +250,12 @@ private fun validRegisterOptions(): PublicKeyCredentialCreationOptions {
             displayName = "Alice",
         ),
         challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-        pubKeyCredParams = listOf(
+        pubKeyCredParams = [
             PublicKeyCredentialParameters(
                 type = PublicKeyCredentialType.PUBLIC_KEY,
                 alg = -7,
             ),
-        ),
+        ],
     )
 }
 

@@ -40,7 +40,7 @@ class AppleAttestationStatementVerifierTest {
 
         val attestationObject = buildAppleAttestationObject(
             authData = authData,
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
 
         val verifier = AppleAttestationStatementVerifier(
@@ -63,7 +63,7 @@ class AppleAttestationStatementVerifierTest {
         val attCert = generateAppleAttestationCert(kp, ByteArray(32) { 0xBB.toByte() })
         val attestationObject = buildAppleAttestationObject(
             authData = authData,
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
 
         val verifier = AppleAttestationStatementVerifier(
@@ -103,7 +103,7 @@ class AppleAttestationStatementVerifierTest {
 
         val attestationObject = buildAppleAttestationObject(
             authData = authData,
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
 
         val verifier = AppleAttestationStatementVerifier(trustChainVerifier = null)
@@ -127,7 +127,7 @@ class AppleAttestationStatementVerifierTest {
         val clientDataHash = sha256(clientDataJson)
         val nonce = sha256(authData + clientDataHash)
         val attCert = generateAppleAttestationCert(kp, nonce)
-        val attestationObject = buildAppleAttestationObject(authData = authData, x5c = listOf(attCert))
+        val attestationObject = buildAppleAttestationObject(authData = authData, x5c = [attCert])
         val input = sampleInput(clientDataJson, attestationObject, authData)
         assertTrue(verifier.verify(input) is ValidationResult.Valid)
 
@@ -152,7 +152,7 @@ class AppleAttestationStatementVerifierTest {
 
         val attestationObject = buildAppleAttestationObject(
             authData = authData,
-            x5c = listOf(attCert)
+            x5c = [attCert]
         )
 
         val verifier = AppleAttestationStatementVerifier(

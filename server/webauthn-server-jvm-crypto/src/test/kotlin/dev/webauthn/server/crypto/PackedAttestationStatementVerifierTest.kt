@@ -126,7 +126,7 @@ class PackedAttestationStatementVerifierTest {
             authData = authData,
             alg = CoseAlgorithm.ES256.code.toLong(),
             sig = sig,
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = PackedAttestationStatementVerifier(
@@ -153,7 +153,7 @@ class PackedAttestationStatementVerifierTest {
             authData = authData,
             alg = CoseAlgorithm.ES256.code.toLong(),
             sig = ByteArray(64) { 0xFF.toByte() }, // invalid sig
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = PackedAttestationStatementVerifier(
@@ -183,7 +183,7 @@ class PackedAttestationStatementVerifierTest {
             authData = authData,
             alg = CoseAlgorithm.ES256.code.toLong(),
             sig = sig,
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = PackedAttestationStatementVerifier(
@@ -542,7 +542,7 @@ class PackedAttestationStatementVerifierTest {
             authData = authData,
             alg = CoseAlgorithm.ES256.code.toLong(),
             sig = sig,
-            x5c = listOf(attCert),
+            x5c = [attCert],
         )
 
         val verifier = PackedAttestationStatementVerifier(

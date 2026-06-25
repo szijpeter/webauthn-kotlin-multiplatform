@@ -74,7 +74,7 @@ class FidoU2fAttestationStatementVerifierTest {
             "authData" to cborBytes(authData),
             "attStmt" to cborMap(
                 "sig" to cborBytes(sig),
-                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+                "x5c" to cborArray([cborBytes(loadAttestationCertificate())]),
             ),
         )
 
@@ -115,7 +115,7 @@ class FidoU2fAttestationStatementVerifierTest {
         val attestationObject = cborMap(
             "fmt" to cborText("fido-u2f"),
             "authData" to cborBytes(ByteArray(37)),
-            "attStmt" to cborMap("x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate())))),
+            "attStmt" to cborMap("x5c" to cborArray([cborBytes(loadAttestationCertificate())])),
         )
 
         val result = FidoU2fAttestationStatementVerifier().verify(
@@ -162,7 +162,7 @@ class FidoU2fAttestationStatementVerifierTest {
             "authData" to cborBytes(authData),
             "attStmt" to cborMap(
                 "sig" to cborBytes(wrongSig),
-                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+                "x5c" to cborArray([cborBytes(loadAttestationCertificate())]),
             ),
         )
 
@@ -188,7 +188,7 @@ class FidoU2fAttestationStatementVerifierTest {
             "authData" to cborBytes(ByteArray(37)),
             "attStmt" to cborMap(
                 "sig" to cborBytes(byteArrayOf(1, 2, 3, 4)),
-                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+                "x5c" to cborArray([cborBytes(loadAttestationCertificate())]),
             ),
         )
 
@@ -257,7 +257,7 @@ class FidoU2fAttestationStatementVerifierTest {
             "authData" to cborBytes(authData),
             "attStmt" to cborMap(
                 "sig" to cborBytes(sig),
-                "x5c" to cborArray(listOf(cborBytes(loadAttestationCertificate()))),
+                "x5c" to cborArray([cborBytes(loadAttestationCertificate())]),
             ),
         )
         val input = sampleInput(credentialId, clientDataJson, attestationObject, coseKey, rpIdHash)

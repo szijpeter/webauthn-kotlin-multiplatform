@@ -48,7 +48,7 @@ class WebAuthn4jDifferentialTest {
             ),
             RegistrationParameters(
                 fixture.serverProperty(),
-                listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256)),
+                [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256)],
                 false,
                 false,
             ),
@@ -94,7 +94,7 @@ class WebAuthn4jDifferentialTest {
             AuthenticationParameters(
                 authenticationFixture.serverProperty(),
                 credentialRecord,
-                listOf(base64Url(authenticationFixture.credential.credentialId)),
+                [base64Url(authenticationFixture.credential.credentialId)],
                 false,
                 false,
             ),
@@ -146,7 +146,7 @@ class WebAuthn4jDifferentialTest {
                         DefaultChallenge(ByteArray(32) { 0x55 }),
                     ),
                     credentialRecord,
-                    listOf(base64Url(fixture.credential.credentialId)),
+                    [base64Url(fixture.credential.credentialId)],
                     false,
                     false,
                 ),
@@ -165,7 +165,7 @@ class WebAuthn4jDifferentialTest {
             ),
             RegistrationParameters(
                 fixture.serverProperty(),
-                listOf(PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256)),
+                [PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, COSEAlgorithmIdentifier.ES256)],
                 false,
                 false,
             ),

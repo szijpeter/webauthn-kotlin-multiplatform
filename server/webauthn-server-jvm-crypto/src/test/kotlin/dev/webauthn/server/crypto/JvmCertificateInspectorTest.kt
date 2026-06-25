@@ -37,7 +37,7 @@ class JvmCertificateInspectorTest {
         }.generateKeyPair()
         val cert = TestCertificateFixtures.selfSignedEcCertificate(
             keyPair = keyPair,
-            extensions = listOf(TestCertificateFixtures.aaguidExtension(aaguid)),
+            extensions = [TestCertificateFixtures.aaguidExtension(aaguid)],
         )
 
         val rawExtension = inspector.extensionValue(cert, "1.3.6.1.4.1.45724.1.1.4")

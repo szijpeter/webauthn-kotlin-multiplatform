@@ -58,34 +58,34 @@ public class CompositeAttestationVerifier internal constructor(
         val attestationBytes = input.response.attestationObject.bytes()
         if (attestationBytes.isEmpty()) {
             return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.MissingValue("attestationObject", "Attestation object is missing")),
+                [WebAuthnValidationError.MissingValue("attestationObject", "Attestation object is missing")],
             )
         }
 
         val parsed = parseAttestationObject(attestationBytes)
             ?: return ValidationResult.Invalid(
-                listOf(WebAuthnValidationError.InvalidFormat("attestationObject", "Malformed CBOR")),
+                [WebAuthnValidationError.InvalidFormat("attestationObject", "Malformed CBOR")],
             )
 
         return when (parsed.fmt) {
             "packed" -> packedVerifier?.verify(input)
                 ?: ValidationResult.Invalid(
-                    listOf(
+                    [
                         WebAuthnValidationError.InvalidValue(
                             "attestationObject.fmt",
                             "Packed attestation not supported: no SignatureVerifier configured",
                         ),
-                    ),
+                    ],
                 )
 
             else -> verifiers[parsed.fmt]?.verify(input)
                 ?: ValidationResult.Invalid(
-                    listOf(
+                    [
                         WebAuthnValidationError.InvalidValue(
                             "attestationObject.fmt",
                             "Unsupported attestation format: ${parsed.fmt}",
                         ),
-                    ),
+                    ],
                 )
         }
     }

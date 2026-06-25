@@ -64,12 +64,12 @@ public value class Origin private constructor(public val value: String) {
         public fun parse(value: String): ValidationResult<Origin> {
             if (!value.startsWith("https://") && !value.startsWith("android:apk-key-hash:")) {
                 return ValidationResult.Invalid(
-                    listOf(
+                    [
                         WebAuthnValidationError.InvalidFormat(
                             field = "origin",
                             message = "Origin must be https:// or android:apk-key-hash:",
                         ),
-                    ),
+                    ],
                 )
             }
             return ValidationResult.Valid(Origin(value))
@@ -96,12 +96,12 @@ public value class Challenge private constructor(public val value: Base64UrlByte
                     val size = baseResult.value.bytes().size
                     if (size < MIN_BYTES) {
                         ValidationResult.Invalid(
-                            listOf(
+                            [
                                 WebAuthnValidationError.InvalidValue(
                                     field = "challenge",
                                     message = "Challenge must be at least $MIN_BYTES bytes",
                                 ),
-                            ),
+                            ],
                         )
                     } else {
                         ValidationResult.Valid(Challenge(baseResult.value))

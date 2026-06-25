@@ -140,6 +140,8 @@ Reference/samples:
 2. Prefer imports for all type references.
 3. Resolve naming conflicts with import aliases first; use local `typealias` only when import aliasing is not sufficiently clear.
 4. Keep aliases explicit and domain-prefixed for readability (for example `ModelXxx`, `DtoXxx`).
+5. When a module enables Kotlin collection literals, prefer bracket collection literals over `listOf(...)` and `setOf(...)` where the active toolchain accepts the rewrite cleanly and behavior stays unchanged.
+6. Keep explicit `listOf(...)` / `setOf(...)` only for documented carveouts such as compiler/toolchain failures, Java-interop limitations, or call sites where the literal form materially harms clarity.
 
 ## Documentation Trace Policy
 
