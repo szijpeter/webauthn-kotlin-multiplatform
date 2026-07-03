@@ -16,7 +16,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.h2)
     testImplementation(libs.kotlinx.serialization.json)
-    testImplementation("com.webauthn4j:webauthn4j-core:0.31.7.RELEASE")
+    testImplementation("com.webauthn4j:webauthn4j-core:0.31.8.RELEASE")
     // Yubico 2.9.0 declares open Jackson ranges; 2.22.0 is currently partially published.
     testImplementation(enforcedPlatform(libs.jackson.bom))
     testImplementation("com.yubico:webauthn-server-core:2.9.0")
