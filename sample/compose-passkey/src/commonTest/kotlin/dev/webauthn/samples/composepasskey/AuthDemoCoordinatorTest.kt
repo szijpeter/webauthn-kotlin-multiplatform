@@ -70,6 +70,22 @@ class AuthDemoCoordinatorTest {
         assertEquals("ZGVtby11c2VyLTE", credentialSignalClient.lastUserId?.value?.encoded())
         assertTrue(debugLogs.entries.any { it.source == "signals" && it.message.contains("accepted") })
     }
+
+    @Test
+    fun auto_create_action_logs_distinct_manual_conditional_create_path() {
+        val debugLogs = DebugLogStore()
+        val sessionStore = AppSessionStore()
+        val coordinator = AuthDemoCoordinator(
+            config = testDemoConfig(),
+            debugLogs = debugLogs,
+            sessionStore = sessionStore,
+            credentialSignalClient = FakeCredentialSignalDemoClient(),
+        )
+
+        coordinator.onAutoCreateClicked()
+
+        assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Auto Create tapped") })
+    }
 }
 
 private class FakeCredentialSignalDemoClient : CredentialSignalDemoClient {
@@ -89,21 +105,6 @@ private class FakeCredentialSignalDemoClient : CredentialSignalDemoClient {
         lastRpId = rpId
         lastUserId = userId
         return PasskeyResult.Success(Unit)
-    }
-
-    @Test
-    fun auto_create_action_logs_distinct_manual_conditional_create_path() {
-        val debugLogs = DebugLogStore()
-        val sessionStore = AppSessionStore()
-        val coordinator = AuthDemoCoordinator(
-            config = testDemoConfig(),
-            debugLogs = debugLogs,
-            sessionStore = sessionStore,
-        )
-
-        coordinator.onAutoCreateClicked()
-
-        assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Auto Create tapped") })
     }
 }
 
