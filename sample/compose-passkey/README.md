@@ -14,6 +14,7 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 7. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
 8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
+10. Android Restore Credentials demo card: create a restore key with the normal registration options, test retrieval through the normal sign-in finish path, and clear the restore key during local sign-out.
 
 Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
 
@@ -144,6 +145,23 @@ Sample-only side effects stay outside the library API surface:
 
 - `AuthDemoCoordinator` logs taps/state transitions.
 - `AppSessionStore` handles local signed-in navigation state.
+
+## Android Restore Credentials showcase
+
+The signed-in demo screen includes an Android-only Restore Credentials card. It uses the published
+`webauthn-client-android` restore client directly from the sample app so the platform API added by
+the Android module is exercised by a visible flow, not only by unit tests.
+
+The flow intentionally mirrors Android's recommended lifecycle:
+
+- `Create` requests registration options from `sample/backend-ktor`, creates an Android restore key, and sends the registration response back through the same server finish path used by passkeys.
+- `Test` requests authentication options, asks Credential Manager for the restore credential, and sends the assertion back through the same sign-in finish path used by passkeys.
+- `Clear Restore Key` calls the platform clear operation, and local logout also clears the restore key when the Android client is available.
+
+This card is a development harness for the create/get/clear API shape. A true device-transfer
+validation still needs Android backup/restore or first-launch testing on a restored device. iOS shows
+the card as unavailable because Apple passkeys sync through iCloud Keychain, but AuthenticationServices
+does not expose an app-managed Restore Credentials equivalent.
 
 ## Compose previews
 
