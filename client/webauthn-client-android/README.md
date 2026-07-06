@@ -6,8 +6,10 @@ Android platform bridge for passkey operations using Credential Manager.
 
 - `AndroidPasskeyClient`
 - `AndroidRestoreCredentialClient`
+- `AndroidCredentialSignalClient`
 - Android `PasskeyClient` implementation for registration and authentication ceremonies
 - Android Restore Credentials helpers for system-managed restore keys
+- Android Credential Manager signal helpers for provider-side passkey consistency hints
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
 - Capabilities reporting via `PasskeyCapabilities.supported: Set<PasskeyCapability>` with key-based lookup
 
@@ -65,6 +67,38 @@ restoreCredentials.clearRestoreCredential()
 Create the restore credential after the user signs in, retrieve it during app-data restore or first
 launch on a new device, and clear it when the user signs out.
 
+For provider consistency after account or credential changes, use the Credential Manager Signal API
+adapter:
+
+```kotlin
+import dev.webauthn.client.android.AndroidCredentialSignalClient
+
+val signals = AndroidCredentialSignalClient(context)
+
+signals.signalUnknownCredential(
+    rpId = rpId,
+    credentialId = staleCredentialId,
+)
+
+signals.signalAllAcceptedCredentialIds(
+    rpId = rpId,
+    userId = userHandle,
+    credentialIds = currentCredentialIds,
+)
+```
+
+Signal calls do not show UI. A successful result means Credential Manager accepted and dispatched
+the signal to enabled providers; it does not guarantee a provider applied the update.
+
+Apple AuthenticationServices has an analogous credential-manager sync surface in
+`ASCredentialDataManager`, including all-accepted public-key credential IDs, unknown credential, and
+public-key credential name update reports. That API is Swift-only in the current Apple SDK surface
+and is not emitted into Kotlin/Native `platform.AuthenticationServices` bindings, so this module
+keeps the library implementation Android-only instead of adding an uncallable shared abstraction.
+The sample iOS host demonstrates the bridge shape an app can use instead: shared Kotlin exports an
+`IosCredentialSignalBridge` protocol, and Swift injects an `ASCredentialDataManager` implementation
+into `MainViewController(...)` for iOS 26.2+.
+
 ## How it fits
 
 ```mermaid
@@ -92,6 +126,10 @@ flowchart LR
   should not appear on a passkey management page.
 - Cloud backup for restore credentials is recommended. If you intentionally disable it, users who
   restore app data from cloud backup cannot use that local-only restore key for automatic sign-in.
+- Signal API calls are best-effort provider hints. Continue to enforce credential/account state on
+  the server even after a successful signal result.
+- Rate-limit signal calls in app orchestration. Android's Signal API documentation caps relying
+  parties at 10 calls in any 120-second window.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.
