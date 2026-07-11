@@ -17,7 +17,7 @@ vanniktech-maven-publish = "0.37.0"
 # Detekt 1.x does not support Kotlin 2.x; 2.x is currently alpha-only.
 detekt = "2.0.0-alpha.5"
 junit = "6.1.1"
-jackson = "2.22.0"
+jackson = "2.22.1"
 h2 = "2.4.240"
 androidx-credentials = "1.6.0"
 androidx-core = "1.19.0"
