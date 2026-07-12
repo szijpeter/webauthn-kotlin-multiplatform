@@ -1,0 +1,37 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+direction: down
+
+model: {
+  label: "Protocol model"
+  shape: package
+  webauthn_model: "webauthn-model"
+}
+
+foundation: {
+  label: "Core foundation"
+  shape: package
+  cbor: "webauthn-cbor-core"
+  core: "webauthn-core"
+  serialization: "webauthn-serialization-kotlinx"
+  runtime: "webauthn-runtime-core"
+}
+
+crypto: {
+  label: "Crypto boundary"
+  shape: package
+  crypto_api: "webauthn-crypto-api"
+  jvm_crypto: "webauthn-server-jvm-crypto"
+}
+
+model.webauthn_model -> foundation.core
+model.webauthn_model -> foundation.serialization
+foundation.cbor -> foundation.serialization
+foundation.core -> crypto.crypto_api
+foundation.cbor -> crypto.jvm_crypto
+crypto.jvm_crypto -> crypto.crypto_api
