@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- kUML SVG · theme: Elegant · engine: elk.layered -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 739.33 854"
+     width="739.33"
+     height="854">
+  <defs>
+  <style>
+    .kuml-class { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-interface { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-enum { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-component { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-state { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-usecase { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-system { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 1.25; }
+.kuml-container { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-c4component { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-instance { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-comment { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-comment-fold { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-title { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 15.0px; font-weight: 500; fill: #1C1814; }
+.kuml-title-abstract { font-style: italic; }
+.kuml-subtitle { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 12.0px; font-weight: 400; fill: #1C1814; }
+.kuml-body { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 11.0px; fill: #1C1814; }
+.kuml-small { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #8B7A66; }
+.kuml-small-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-edge-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #8B7A66; }
+.kuml-edge-label-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-stereotype { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 10.0px; font-style: italic; fill: #8B7A66; }
+.kuml-stereotype-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 10.0px; font-style: italic; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-tagged-value { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-edge { stroke: #3D2418; stroke-width: 0.75; fill: none; }
+.kuml-seq-arrow-filled { stroke: #3D2418; stroke-width: 0.75; fill: #3D2418; }
+.kuml-edge-dashed { stroke: #B5A38B; stroke-width: 0.75; fill: none; stroke-dasharray: 8 4; }
+.kuml-divider { stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-actor { stroke: #1C1814; stroke-width: 0.75; fill: none; }
+.kuml-frame { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-collaboration { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-port { fill: #1C1814; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-port-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-port-label-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: none; stroke: #F4EDDD; stroke-width: 3.5px; stroke-linejoin: round; }
+.kuml-connector { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-connector-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-action { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-decision { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-fork-bar { fill: #1C1814; stroke: #1C1814; stroke-width: 0.75; }
+.kuml-pseudostate { fill: #1C1814; stroke: #1C1814; stroke-width: 0.75; }
+.kuml-final-outer { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node-top { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node-side { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-artifact { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-artifact-ear { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-stereotype-box { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-timing-frame { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-timing-line { stroke: #3D2418; stroke-width: 0.75; fill: none; }
+.kuml-erm-entity { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-entity-inner { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-erm-view { fill: #F4EDDD; stroke: #8B7A66; stroke-width: 0.75; stroke-dasharray: 6 3; }
+.kuml-erm-view-query { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-marker { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-weight: bold; fill: #8B7A66; }
+.kuml-erm-default { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-index { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-pk-underline { stroke: #1C1814; stroke-width: 0.5; }
+.kuml-erm-crowfoot { fill: none; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-optional-marker { fill: #F4EDDD; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-mandatory-marker { stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-bachman-arrow { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-bachman-mandatory { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-chen-attribute { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-chen-relationship { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-chen-relationship-inner { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-erm-idef1x-dot { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-idef1x-diamond { fill: #F4EDDD; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-idef1x-card { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-erm-idef1x-category { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-idef1x-completeness { stroke: #4A2F22; stroke-width: 0.75; }
+
+  </style>
+  </defs>
+  <rect x="0" y="0" width="739.33" height="854" fill="#F4EDDD"/>
+  <g id="nodes">
+    <g id="PasskeyController state lifecycle" transform="translate(44,44)">
+      <rect width="679.33" height="794" rx="8" ry="8" class="kuml-frame"/>
+      <text class="kuml-small" x="8" y="16">
+        stateMachine
+      </text>
+      <text class="kuml-title" x="339.67" y="46" text-anchor="middle">
+        PasskeyController state lifecycle
+      </text>
+    </g>
+    <g id="PasskeyController state lifecycle::initial">
+      <circle cx="342" cy="592" r="9.60" class="kuml-class" fill="currentColor"/>
+    </g>
+    <g id="PasskeyController state lifecycle::Idle" transform="translate(278,734)">
+      <rect width="160" height="80" rx="12" ry="12" class="kuml-state"/>
+      <text class="kuml-body" x="80" y="44" text-anchor="middle">
+        Idle
+      </text>
+    </g>
+    <g id="PasskeyController state lifecycle::InProgress: starting" transform="translate(277.33,314)">
+      <rect width="160" height="80" rx="12" ry="12" class="kuml-state"/>
+      <text class="kuml-body" x="80" y="44" text-anchor="middle">
+        InProgress: starting
+      </text>
+    </g>
+    <g id="PasskeyController state lifecycle::InProgress: finishing" transform="translate(73.33,104)">
+      <rect width="160" height="80" rx="12" ry="12" class="kuml-state"/>
+      <text class="kuml-body" x="80" y="44" text-anchor="middle">
+        InProgress: finishing
+      </text>
+    </g>
+    <g id="PasskeyController state lifecycle::Success" transform="translate(547.33,314)">
+      <rect width="160" height="80" rx="12" ry="12" class="kuml-state"/>
+      <text class="kuml-body" x="80" y="44" text-anchor="middle">
+        Success
+      </text>
+    </g>
+    <g id="PasskeyController state lifecycle::Failure" transform="translate(60,524)">
+      <rect width="160" height="80" rx="12" ry="12" class="kuml-state"/>
+      <text class="kuml-body" x="80" y="44" text-anchor="middle">
+        Failure
+      </text>
+    </g>
+  </g>
+  <g id="edges">
+    <line x1="342" y1="604" x2="342" y2="734" class="kuml-edge"/>
+    <path d="M 337,722 L 342,734 L 347,722" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <path d="M 374 734 L 374 634 L 384 634 L 384 394" class="kuml-edge"/>
+    <path d="M 389,406 L 384,394 L 379,406" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="302.80" y="692" width="142.40" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="374" y="702" text-anchor="middle">
+      register() or signIn()
+    </text>
+    <path d="M 357.33 314 L 357.33 224 L 153.33 224 L 153.33 184" class="kuml-edge"/>
+    <path d="M 158.33,196 L 153.33,184 L 148.33,196" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="270.63" y="273.28" width="173.40" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="357.33" y="283.28" text-anchor="middle">
+      options + platform response
+    </text>
+    <path d="M 193.33 184 L 193.33 214 L 627.33 214 L 627.33 314" class="kuml-edge"/>
+    <path d="M 622.33,302 L 627.33,314 L 632.33,302" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="320.53" y="222" width="179.60" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="410.33" y="232" text-anchor="middle">
+      PasskeyFinishResult.Verified
+    </text>
+    <path d="M 330.67 394 L 330.67 424 L 166.67 424 L 166.67 524" class="kuml-edge"/>
+    <path d="M 161.67,512 L 166.67,524 L 171.67,512" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="168.17" y="410" width="161" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="248.67" y="420" text-anchor="middle">
+      start or platform failure
+    </text>
+    <line x1="113.33" y1="184" x2="113.33" y2="524" class="kuml-edge"/>
+    <path d="M 108.33,512 L 113.33,524 L 118.33,512" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="66.93" y="340" width="92.80" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="113.33" y="350" text-anchor="middle">
+      finish failure
+    </text>
+    <path d="M 627.33 394 L 627.33 634 L 406 634 L 406 734" class="kuml-edge"/>
+    <path d="M 401,722 L 406,734 L 411,722" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="602.63" y="500" width="49.40" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="627.33" y="510" text-anchor="middle">
+      reset()
+    </text>
+    <path d="M 140 604 L 140 634 L 310 634 L 310 734" class="kuml-edge"/>
+    <path d="M 305,722 L 310,734 L 315,722" style="stroke:#3D2418;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <rect x="150.70" y="620" width="148.60" height="12" fill="white" stroke="none"/>
+    <text class="kuml-body" x="225" y="630" text-anchor="middle">
+      reset() or cancellation
+    </text>
+  </g>
+</svg>
