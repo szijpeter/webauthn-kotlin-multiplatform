@@ -13,5 +13,7 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         freeCompilerArgs.add("-Xcollection-literals")
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+        freeCompilerArgs.add("-Xwarning-level=RETURN_VALUE_NOT_USED:error")
     }
 }

@@ -1,3 +1,5 @@
+@file:MustUseReturnValues
+
 package dev.webauthn.crypto
 
 import dev.webauthn.core.RegistrationValidationInput

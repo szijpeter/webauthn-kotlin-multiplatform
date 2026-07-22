@@ -143,6 +143,14 @@ Reference/samples:
 5. When a module enables Kotlin collection literals, prefer bracket collection literals over `listOf(...)` and `setOf(...)` where the active toolchain accepts the rewrite cleanly and behavior stays unchanged.
 6. Keep explicit `listOf(...)` / `setOf(...)` only for documented carveouts such as compiler/toolchain failures, Java-interop limitations, or call sites where the literal form materially harms clarity.
 
+## Return Value Safety Policy
+
+1. Enable Kotlin's unused return value checker in `check` mode for KMP, JVM, and Android compilations.
+2. Treat `RETURN_VALUE_NOT_USED` as an error so ignored marked results fail local and CI compilation.
+3. Mark cohesive security-critical validation, parsing, conversion, crypto, and trust API scopes with `@MustUseReturnValues`.
+4. Express intentional discards locally with `val _ = ...`; do not suppress the diagnostic broadly.
+5. Keep `full` mode exploratory until its side-effect and third-party diagnostics can be adopted without noise.
+
 ## Documentation Trace Policy
 
 1. If a BCV-covered published module API baseline changes (for example `<module>/api/*` deltas), update that module's `README.md` in the same change.

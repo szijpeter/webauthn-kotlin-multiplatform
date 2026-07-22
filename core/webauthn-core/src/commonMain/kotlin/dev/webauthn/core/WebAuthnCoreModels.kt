@@ -75,6 +75,7 @@ public data class AuthenticationValidationOutput(
 
 /** Extension validation hook for optional WebAuthn Level 3 client extension processing. */
 @ExperimentalWebAuthnL3Api
+@MustUseReturnValues
 public interface WebAuthnExtensionHook {
     /** Validates extension input/output consistency for registration ceremonies. */
     public fun validateRegistrationExtensions(

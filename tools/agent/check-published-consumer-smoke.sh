@@ -70,8 +70,17 @@ repositories {
 
 dependencies {
     implementation(platform("io.github.szijpeter:webauthn-bom:$VERSION_NAME"))
+    implementation("io.github.szijpeter:webauthn-core")
+    implementation("io.github.szijpeter:webauthn-crypto-api")
     implementation("io.github.szijpeter:webauthn-client-json-core")
     implementation("io.github.szijpeter:webauthn-network-ktor-client")
+}
+
+kotlin {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+    }
 }
 
 EOF
@@ -99,4 +108,52 @@ fun main() {
 EOF
 
 "$ROOT_DIR/gradlew" --project-dir "$tmp_dir" --no-daemon compileKotlin --stacktrace
+
+cat > "$tmp_dir/src/main/kotlin/smoke/MustUseProbe.kt" <<'EOF'
+package smoke
+
+import dev.webauthn.core.RegistrationValidationInput
+import dev.webauthn.core.WebAuthnCoreValidator
+import dev.webauthn.crypto.CoseAlgorithm
+import dev.webauthn.crypto.SignatureVerifier
+import dev.webauthn.model.CosePublicKey
+
+fun ignoreSecurityResults(
+    input: RegistrationValidationInput,
+    signatureVerifier: SignatureVerifier,
+    algorithm: CoseAlgorithm,
+    publicKey: CosePublicKey,
+    data: ByteArray,
+    signature: ByteArray,
+) {
+    WebAuthnCoreValidator.validateRegistration(input)
+    signatureVerifier.verify(algorithm, publicKey, data, signature)
+}
+EOF
+
+set +e
+probe_output="$(
+    "$ROOT_DIR/gradlew" \
+        --project-dir "$tmp_dir" \
+        --no-daemon \
+        --rerun-tasks \
+        compileKotlin \
+        --stacktrace 2>&1
+)"
+probe_exit_code="$?"
+set -e
+
+if [[ "$probe_exit_code" -eq 0 ]]; then
+    echo "Must-use consumer probe unexpectedly compiled ignored security results" >&2
+    exit 1
+fi
+
+for function_name in validateRegistration verify; do
+    if ! grep -Fq "Unused return value of '$function_name'." <<< "$probe_output"; then
+        echo "Must-use consumer probe did not report ignored '$function_name' result" >&2
+        echo "$probe_output" >&2
+        exit 1
+    fi
+done
+
 echo "Published consumer smoke check: PASS"

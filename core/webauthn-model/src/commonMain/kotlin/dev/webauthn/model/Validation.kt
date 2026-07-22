@@ -1,3 +1,5 @@
+@file:MustUseReturnValues
+
 package dev.webauthn.model
 
 /** Typed validation result used by WebAuthn model parsing and ceremony validation flows. */

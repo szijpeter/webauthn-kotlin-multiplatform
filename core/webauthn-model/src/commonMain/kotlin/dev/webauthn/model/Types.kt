@@ -1,3 +1,5 @@
+@file:MustUseReturnValues
+
 package dev.webauthn.model
 
 /** W3C WebAuthn L3: §4 Terminology and RP ID handling rules used by the ceremonies. */

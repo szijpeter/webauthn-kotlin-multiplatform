@@ -22,6 +22,7 @@ public enum class WebAuthnClientDataType(public val wireValue: String) {
     GET("webauthn.get"),
 }
 /** Core validator implementing the WebAuthn L3 ceremony checks shared by server adapters. */
+@MustUseReturnValues
 public object WebAuthnCoreValidator {
     /**
      * Validates `CollectedClientData` for either registration or authentication finish flows.

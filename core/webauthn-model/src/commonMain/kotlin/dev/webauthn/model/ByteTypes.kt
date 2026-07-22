@@ -1,3 +1,5 @@
+@file:MustUseReturnValues
+
 package dev.webauthn.model
 
 private fun invalidFixedLengthValue(field: String, label: String, length: Int): ValidationResult.Invalid =
