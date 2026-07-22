@@ -1,3 +1,5 @@
+@file:MustUseReturnValues
+
 package dev.webauthn.model
 
 import kotlin.io.encoding.Base64
@@ -27,7 +29,7 @@ public value class Base64UrlBytes private constructor(private val encodedValue: 
 
             try {
                 // Verify the string can actually be decoded according to Base64Url specs without padding.
-                base64UrlNoPadding.decode(value)
+                val _ = base64UrlNoPadding.decode(value)
             } catch (_: IllegalArgumentException) {
                 return ValidationResult.Invalid(
                     [

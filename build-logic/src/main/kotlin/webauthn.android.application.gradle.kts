@@ -2,6 +2,13 @@ plugins {
     id("com.android.application")
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+        freeCompilerArgs.add("-Xwarning-level=RETURN_VALUE_NOT_USED:error")
+    }
+}
+
 android {
     compileSdk = 37
 

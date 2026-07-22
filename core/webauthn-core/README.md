@@ -72,6 +72,7 @@ Important API behavior:
 - `previousSignCount` must come from server-trusted credential state.
 - `ChallengeSession.userName` is nullable so discoverable (username-less) authentication ceremonies can be represented without synthetic identity fields.
 - `CompositeExtensionHook` preserves invalid outcomes even when a hook returns `ValidationResult.Invalid(emptyList())`.
+- Kotlin consumers that enable `-Xreturn-value-checker=check` are warned when core validation or extension-hook results are ignored.
 - This module does not verify signatures or attestation statements.
 
 ## Composable extension hooks
