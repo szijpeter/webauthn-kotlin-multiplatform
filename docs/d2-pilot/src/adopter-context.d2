@@ -1,0 +1,43 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+direction: right
+
+user: {
+  label: "Passkey user"
+  shape: person
+}
+
+app: {
+  label: "Host application"
+  shape: hexagon
+  tooltip: "Android, iOS, Compose, or a Kotlin host application"
+}
+
+library: {
+  label: "WebAuthn Kotlin\nMultiplatform"
+  shape: package
+  core: "Typed model + validation"
+  client: "Client orchestration"
+  server: "Server ceremony services"
+}
+
+authenticator: {
+  label: "Platform authenticator"
+  shape: hexagon
+  tooltip: "Credential Manager, AuthenticationServices, or browser WebAuthn"
+}
+
+backend: {
+  label: "Relying party backend"
+  shape: hexagon
+}
+
+user -> app: "uses"
+app -> library.client: "integrates"
+library.client -> authenticator: "create / get"
+library.server -> backend: "start / finish"

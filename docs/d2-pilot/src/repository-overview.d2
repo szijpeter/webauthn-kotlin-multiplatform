@@ -1,0 +1,58 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+direction: right
+
+model: {
+  label: "1. Protocol model"
+  shape: package
+  webauthn_model: "webauthn-model\nTyped protocol contracts"
+}
+
+foundation: {
+  label: "2. Core foundation"
+  shape: package
+  webauthn_core: "webauthn-core\nValidation rules"
+  serialization: "webauthn-serialization-kotlinx\nWire mapping"
+  cbor: "webauthn-cbor-core\nCBOR support"
+  runtime: "webauthn-runtime-core\nShared runtime utilities"
+}
+
+crypto: {
+  label: "3. Crypto boundary"
+  shape: package
+  crypto_api: "webauthn-crypto-api\nVendor-neutral contracts"
+  jvm_crypto: "webauthn-server-jvm-crypto\nJVM implementation"
+}
+
+server: {
+  label: "4. JVM server"
+  shape: package
+  server_core: "webauthn-server-core-jvm\nCeremony services"
+  ktor: "webauthn-server-ktor\nHTTP adapter"
+  store: "webauthn-server-store-exposed\nPersistence adapter"
+  mds: "webauthn-attestation-mds\nTrust metadata"
+}
+
+client: {
+  label: "5. Client stack"
+  shape: package
+  client_core: "webauthn-client-core\nShared orchestration"
+  platform: "Android · iOS · Compose\nPlatform/UI bridges"
+  transport: "JSON · Ktor · PRF\nOptional client adapters"
+}
+
+model -> foundation: "typed inputs"
+foundation -> crypto: "validation contracts"
+foundation -> server: "validated ceremonies"
+model -> client: "shared protocol"
+foundation.runtime -> client.client_core: "runtime helpers"
+client.client_core -> client.platform: "passkey operations"
+client.client_core -> client.transport: "options and responses"
+server.server_core -> server.ktor: "HTTP routes"
+server.server_core -> server.store: "credential state"
+server.mds -> crypto.crypto_api: "trust anchors"
