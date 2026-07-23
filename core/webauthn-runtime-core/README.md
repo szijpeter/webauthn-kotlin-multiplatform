@@ -24,21 +24,25 @@ Use this module in internal/runtime-facing adapters where suspend boundaries map
 
 ## How to use
 
+<!-- doc-example: id=core-webauthn-runtime-core-readme-kotlin-1; owner=source; verify=unit; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/RuntimeExample.kt#runtime-cancellation -->
 ```kotlin
-import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.runtime.mapSuspendCatching
+import dev.webauthn.runtime.runSuspendCatching
 
-// Instead of runCatching in suspend contexts:
-val result = runSuspendCatching {
-    dependency.call()
-}.getOrElse { error ->
-    // CancellationException is already rethrown.
-    return mapFailure(error)
+suspend fun loadAndTransform(
+    fetchData: suspend () -> String,
+    transform: suspend (String) -> Int,
+    mapFailure: (Throwable) -> Int,
+): Int {
+    val result = runSuspendCatching { fetchData() }.getOrElse { error ->
+        // CancellationException is already rethrown.
+        return mapFailure(error)
+    }
+
+    return Result.success(result)
+        .mapSuspendCatching { transform(it) }
+        .getOrThrow()
 }
-
-// Instead of result.mapCatching in suspend contexts:
-val mapped = runSuspendCatching { fetchData() }
-    .mapSuspendCatching { transform(it) }
 ```
 
 ## Background

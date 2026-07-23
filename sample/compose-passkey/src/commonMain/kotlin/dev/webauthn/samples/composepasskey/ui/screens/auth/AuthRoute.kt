@@ -37,6 +37,7 @@ internal fun AuthRoute() {
             sessionStore = sessionStore,
         )
     }
+    // docs-region compose-sample-auth-route
     val controller = rememberPasskeyController(
         serverClient = serverClient,
         passkeyClient = passkeyClient,
@@ -44,6 +45,7 @@ internal fun AuthRoute() {
     val controllerState by controller.uiState.collectAsState()
     val canRegister by coordinator.canRegister.collectAsState()
     val actionsEnabled = areCeremonyActionsEnabled(controllerState)
+    // docs-endregion compose-sample-auth-route
 
     LaunchedEffect(controllerState) {
         coordinator.onControllerStateChanged(controllerState)

@@ -22,6 +22,7 @@ This directory stores local references to standards used by this repository.
 
 Run:
 
+<!-- doc-example: id=spec-cache-readme-bash-1; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 tools/spec-cache/update-webauthn-cache.sh
 ```

@@ -46,6 +46,7 @@ WebAuthn has two ceremony pairs:
 
 Each pair has a server start step and a server finish step, with the platform authenticator in the middle.
 
+<!-- doc-example: id=readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 sequenceDiagram
     autonumber
@@ -77,6 +78,7 @@ Validation and trust decisions are server responsibilities: challenge/origin/typ
 
 The repository follows a layered model that keeps protocol and validation concerns separate from transport and platform adapters.
 
+<!-- doc-example: id=readme-mermaid-2; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TB
     subgraph Layer1[Layer 1: Protocol Model]
@@ -171,34 +173,35 @@ Recommended adoption paths:
 
 ## Install
 
-The coordinated release train uses one version for the full published surface plus a BOM.
+The coordinated release train uses one version for the full published surface. JVM and Android dependency
+configurations can use the BOM; Kotlin Multiplatform common and Native source sets should put that same
+version on each artifact because Java Platform constraints are not available to Native variants.
 
+<!-- doc-example: id=readme-kotlin-1; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/settings.gradle.kts#consumer-repositories -->
 ```kotlin
-repositories {
-    google()
-    mavenCentral()
-}
+        mavenCentral()
+        google()
 ```
 
 Use only the modules your app actually wires in. In Kotlin Multiplatform projects, shared modules belong in `commonMain`, while concrete platform bridges belong in the matching platform source set.
 
 Client-side KMP example:
 
+<!-- doc-example: id=readme-kotlin-2; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies -->
 ```kotlin
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))
-            implementation("io.github.szijpeter:webauthn-client-core")
-            implementation("io.github.szijpeter:webauthn-network-ktor-client") // optional default backend transport
+            implementation("io.github.szijpeter:webauthn-client-core:<version>")
+            implementation("io.github.szijpeter:webauthn-network-ktor-client:<version>")
         }
 
         androidMain.dependencies {
-            implementation("io.github.szijpeter:webauthn-client-android") // only if you use AndroidPasskeyClient
+            implementation("io.github.szijpeter:webauthn-client-android:<version>")
         }
 
         iosMain.dependencies {
-            implementation("io.github.szijpeter:webauthn-client-ios") // only if you use IosPasskeyClient
+            implementation("io.github.szijpeter:webauthn-client-ios:<version>")
         }
     }
 }
@@ -206,12 +209,13 @@ kotlin {
 
 JVM/Ktor server example:
 
+<!-- doc-example: id=readme-kotlin-3; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies -->
 ```kotlin
 dependencies {
     implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))
     implementation("io.github.szijpeter:webauthn-server-core-jvm")
     implementation("io.github.szijpeter:webauthn-server-jvm-crypto")
-    implementation("io.github.szijpeter:webauthn-server-ktor") // optional route adapter
+    implementation("io.github.szijpeter:webauthn-server-ktor")
 }
 ```
 
@@ -220,10 +224,12 @@ Notes:
 - Client apps do not need `webauthn-server-*` dependencies.
 - You only add `webauthn-client-android` / `webauthn-client-ios` when that target instantiates the concrete platform client.
 - If you only use the shared client abstractions, `commonMain` only needs the common modules.
+- Keep the explicit KMP artifact versions identical; JVM server builds can use the BOM shown below to align them.
 - For a complete source set example, see [`sample/compose-passkey`](./sample/compose-passkey/README.md), [`sample/compose-passkey-android`](./sample/compose-passkey-android/README.md), and [`sample/compose-passkey-ios`](./sample/compose-passkey-ios/README.md).
 
 Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
+<!-- doc-example: id=readme-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
 ```
@@ -310,6 +316,7 @@ Current state:
 
 ## Maintainer Workflow
 
+<!-- doc-example: id=readme-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 tools/agent/setup-hooks.sh
 tools/agent/quality-gate.sh --mode fast --scope changed --block false

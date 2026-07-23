@@ -16,6 +16,7 @@ Both modes were evaluated with the repository's Kotlin 2.4.10 toolchain. The aud
 
 The one-off `full` audit used:
 
+<!-- doc-example: id=docs-unused-return-value-checker-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew --console=plain --warning-mode=all --rerun-tasks \
   compileKotlinMetadata compileKotlinJvm compileKotlin \

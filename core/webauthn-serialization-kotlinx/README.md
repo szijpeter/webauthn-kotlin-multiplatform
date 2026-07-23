@@ -14,17 +14,31 @@ Use this when your boundary is JSON/CBOR but your application code should stay t
 
 ## How to use
 
+<!-- doc-example: id=core-webauthn-serialization-kotlinx-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/SerializationExample.kt#serialization-mapper -->
 ```kotlin
+import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.ValidationResult
+import dev.webauthn.serialization.PublicKeyCredentialRequestOptionsDto
 import dev.webauthn.serialization.WebAuthnDtoMapper
 
-val model = WebAuthnDtoMapper.toModel(dto)
-val dto = WebAuthnDtoMapper.fromModel(model)
+fun decodeRequestOptions(
+    dto: PublicKeyCredentialRequestOptionsDto,
+): ValidationResult<PublicKeyCredentialRequestOptions> {
+    return WebAuthnDtoMapper.toModel(dto)
+}
+
+fun encodeRequestOptions(
+    model: PublicKeyCredentialRequestOptions,
+): PublicKeyCredentialRequestOptionsDto {
+    return WebAuthnDtoMapper.fromModel(model)
+}
 ```
 
 Real-world scenario: parse backend JSON into typed model objects, run validation/business logic, then map back to DTOs for responses.
 
 ## How it fits
 
+<!-- doc-example: id=core-webauthn-serialization-kotlinx-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     WIRE["Wire DTOs (JSON or CBOR)"] --> MAPPER["WebAuthnDtoMapper"]

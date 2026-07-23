@@ -14,10 +14,15 @@ Use this when your backend wants attestation trust rooted in FIDO MDS metadata i
 
 ## How to use
 
+<!-- doc-example: id=server-webauthn-attestation-mds-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/MdsExample.kt#mds-trust-source -->
 ```kotlin
 import dev.webauthn.attestation.mds.FidoMdsTrustSource
+import io.ktor.client.HttpClient
 
-suspend fun buildTrustSource(): FidoMdsTrustSource {
+suspend fun buildTrustSource(
+    httpClient: HttpClient,
+    metadataUrl: String,
+): FidoMdsTrustSource {
     val trustSource = FidoMdsTrustSource(
         httpClient = httpClient,
         metadataUrl = metadataUrl,
@@ -34,6 +39,7 @@ Real-world scenario: regulated environments can enforce attestation policy from 
 
 ## How it fits
 
+<!-- doc-example: id=server-webauthn-attestation-mds-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     MDS["FIDO MDS endpoint"] --> SOURCE["FidoMdsTrustSource cache"]

@@ -72,6 +72,7 @@ eval "$(bash tools/agent/changed-modules.sh --scope "$scope" --format shell)"
 tmp_changed_files="$(mktemp)"
 trap 'rm -f "$tmp_changed_files"' EXIT
 bash tools/agent/changed-modules.sh --scope "$scope" --print-files > "$tmp_changed_files"
+export GRADLE_USER_HOME="${GRADLE_USER_HOME:-$ROOT_DIR/.gradle-local}"
 
 if [[ "$CHANGED_COUNT" -eq 0 ]]; then
     if [[ "$format" == "json" ]]; then
@@ -83,20 +84,35 @@ if [[ "$CHANGED_COUNT" -eq 0 ]]; then
 fi
 
 if [[ "$scope" == "changed" && "$DOCS_ONLY" == "true" ]]; then
+    docs_only_failed="false"
+    if ! ./gradlew docsCatalogCheck --stacktrace >/dev/null; then
+        docs_only_failed="true"
+    fi
     if [[ "$mode" == "strict" ]]; then
-        bash tools/agent/spec-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
-        bash tools/agent/docs-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
-        bash tools/agent/mermaid-trace-check.sh --changed-files "$tmp_changed_files" --strict >/dev/null
+        for trace_check in spec-trace-check.sh docs-trace-check.sh mermaid-trace-check.sh; do
+            if ! bash "tools/agent/$trace_check" --changed-files "$tmp_changed_files" --strict >/dev/null; then
+                docs_only_failed="true"
+            fi
+        done
+    fi
+    if [[ "$docs_only_failed" == "true" ]]; then
+        if [[ "$format" == "json" ]]; then
+            echo '{"status":"failed","message":"Docs-only documentation verification failed."}'
+        else
+            echo "Quality gate: FAIL - docs-only documentation verification failed." >&2
+        fi
+        if [[ "$block" == "true" ]]; then
+            exit 1
+        fi
+        exit 0
     fi
     if [[ "$format" == "json" ]]; then
-        echo '{"status":"ok","message":"Docs-only change; skipping compile/test gates."}'
+        echo '{"status":"ok","message":"Docs-only change; documentation catalog verification passed."}'
     else
-        echo "Quality gate: docs-only change, skipping compile/test gates."
+        echo "Quality gate: docs-only documentation catalog verification passed."
     fi
     exit 0
 fi
-
-export GRADLE_USER_HOME="${GRADLE_USER_HOME:-$ROOT_DIR/.gradle-local}"
 
 run_cmd() {
     local cmd="$1"
@@ -115,6 +131,7 @@ message="All checks passed."
 run_list=()
 
 if [[ "$scope" == "full" ]]; then
+    run_list+=("./gradlew docsCheck --stacktrace")
     run_list+=("./gradlew check --stacktrace")
     run_list+=("./gradlew detekt :build-logic:detekt --stacktrace")
 else
@@ -124,6 +141,7 @@ else
     has_ci="false"
     has_harness="false"
     has_core="false"
+    has_documentation="false"
 
     for category in "${categories[@]}"; do
         [[ -z "$category" ]] && continue
@@ -140,8 +158,17 @@ else
             core)
                 has_core="true"
                 ;;
+            documentation)
+                has_documentation="true"
+                ;;
         esac
     done
+
+    run_list+=("./gradlew docsCatalogCheck --stacktrace")
+
+    if [[ "$has_documentation" == "true" ]]; then
+        run_list+=("./gradlew docsCheck --stacktrace")
+    fi
 
     for module in "${modules[@]}"; do
         [[ -z "$module" ]] && continue

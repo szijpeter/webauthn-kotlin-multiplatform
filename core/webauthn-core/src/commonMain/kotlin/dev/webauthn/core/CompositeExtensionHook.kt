@@ -13,9 +13,12 @@ import dev.webauthn.model.WebAuthnValidationError
  * This follows the Composite pattern to let consumers assemble extension validation
  * pipelines by composition rather than inheritance.
  *
+ * <!-- doc-example:
+ * id=composite-extension-hook-kdoc; owner=source; verify=consumer-compile; audience=consumer;
+ * source=documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension-kdoc
+ * -->
  * ```kotlin
- * val hooks = CompositeExtensionHook([PrfExtensionHook, LargeBlobExtensionHook])
- * val result = hooks.validateRegistrationExtensions(inputs, outputs)
+ *     val hooks = CompositeExtensionHook([PrfExtensionHook, LargeBlobExtensionHook])
  * ```
  */
 @ExperimentalWebAuthnL3Api

@@ -9,6 +9,7 @@ Audience: teams that need typed WebAuthn values and protocol models as the share
 - Shared `ValidationResult` + `WebAuthnValidationError` contracts used across client/server orchestration.
 - L3 extension model types (`prf`, `largeBlob`, related origins).
 
+<!-- doc-example: id=core-webauthn-model-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     Wire["Untrusted input<br/>HTTP JSON / mobile payload"] --> Parse["parse(...) boundary<br/>RpId / Origin / CredentialId / Base64UrlBytes"]
@@ -28,6 +29,7 @@ Use model parsing at every trust boundary (HTTP request body, local storage rest
 
 This example shows a sign-in options builder that validates untrusted RP input and only creates typed protocol options on success.
 
+<!-- doc-example: id=core-webauthn-model-readme-kotlin-1; owner=source; verify=unit; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ModelExample.kt#model-request-options -->
 ```kotlin
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
@@ -52,12 +54,12 @@ fun buildSignInOptions(
     val options = PublicKeyCredentialRequestOptions(
         challenge = Challenge.fromBytes(challengeBytes),
         rpId = (rpId as ValidationResult.Valid).value,
-        allowCredentials = listOf(
+        allowCredentials = [
             PublicKeyCredentialDescriptor(
                 type = PublicKeyCredentialType.PUBLIC_KEY,
                 id = (credentialId as ValidationResult.Valid).value,
             ),
-        ),
+        ],
         userVerification = UserVerificationRequirement.PREFERRED,
     )
     return ValidationResult.Valid(options)
