@@ -16,6 +16,7 @@ This path verifies the app is runnable on a real phone without a paid Apple Deve
 
 1. Open Xcode project:
 
+<!-- doc-example: id=sample-compose-passkey-ios-readme-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 open sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj
 ```
@@ -41,6 +42,7 @@ Use this path when your signing setup supports Associated Domains and you want r
 
 1. Start backend with tunnel helper:
 
+<!-- doc-example: id=sample-compose-passkey-ios-readme-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 IOS_TEAM_ID=<TEAM_ID> \
 IOS_BUNDLE_ID=<BUNDLE_ID> \
@@ -96,6 +98,7 @@ Backend iOS association identity:
 
 If `project.yml` changes, regenerate the Xcode project:
 
+<!-- doc-example: id=sample-compose-passkey-ios-readme-bash-3; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 xcodegen generate --spec sample/compose-passkey-ios/project.yml
 ```

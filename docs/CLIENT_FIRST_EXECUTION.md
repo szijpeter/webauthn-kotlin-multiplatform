@@ -23,11 +23,17 @@ Use `KtorPasskeyServerClient` with its default routes and call:
 
 Example:
 
+<!-- doc-example: id=docs-client-first-execution-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
-val serverClient = KtorPasskeyServerClient(
-    httpClient = client,
-    endpointBase = "https://your-host",
-)
+import dev.webauthn.network.KtorPasskeyServerClient
+import io.ktor.client.HttpClient
+
+fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
+    return KtorPasskeyServerClient(
+        httpClient = httpClient,
+        endpointBase = "https://example.com",
+    )
+}
 ```
 
 If your backend uses the same payload semantics but different paths, pass `KtorPasskeyRoutes(...)` to `KtorPasskeyServerClient`.
@@ -53,12 +59,14 @@ Implemented routes:
 
 Run locally:
 
+<!-- doc-example: id=docs-client-first-execution-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:backend-ktor:run
 ```
 
 Run with ngrok + local.properties synchronization:
 
+<!-- doc-example: id=docs-client-first-execution-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./sample/backend-ktor/start-server.sh
 ```
@@ -95,12 +103,17 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 
 JSON interop wrapper example for a typed client:
 
+<!-- doc-example: id=docs-client-first-execution-kotlin-2; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidJsonClientExample.kt#android-json-client -->
 ```kotlin
-import dev.webauthn.client.withJsonSupport
+import android.content.Context
+import dev.webauthn.client.JsonPasskeyClient
 import dev.webauthn.client.android.AndroidPasskeyClient
+import dev.webauthn.client.withJsonSupport
 
-val typedClient = AndroidPasskeyClient(context)
-val jsonClient = typedClient.withJsonSupport()
+fun androidJsonClient(context: Context): JsonPasskeyClient {
+    val typedClient = AndroidPasskeyClient(context)
+    return typedClient.withJsonSupport()
+}
 ```
 
 ### `webauthn-client-android`

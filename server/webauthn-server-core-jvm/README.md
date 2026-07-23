@@ -18,6 +18,7 @@ Use this when you want to implement WebAuthn server flows in JVM/Kotlin, with or
 
 ## How to use
 
+<!-- doc-example: id=server-webauthn-server-core-jvm-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ServerCoreExample.kt#server-core-services -->
 ```kotlin
 import dev.webauthn.server.AuthenticationService
 import dev.webauthn.server.InMemoryChallengeStore
@@ -27,32 +28,44 @@ import dev.webauthn.server.RegistrationService
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
+import dev.webauthn.model.ExperimentalWebAuthnL3Api
 
-val challengeStore = InMemoryChallengeStore()
-val credentialStore = InMemoryCredentialStore()
-val userStore = InMemoryUserAccountStore()
-
-val registrationService = RegistrationService(
-    challengeStore = challengeStore,
-    credentialStore = credentialStore,
-    userAccountStore = userStore,
-    attestationVerifier = StrictAttestationVerifier(),
-    rpIdHasher = JvmRpIdHasher(),
+/** Registration and authentication services sharing the same stores. */
+data class PasskeyServices(
+    val registration: RegistrationService,
+    val authentication: AuthenticationService,
 )
 
-val authenticationService = AuthenticationService(
-    challengeStore = challengeStore,
-    credentialStore = credentialStore,
-    userAccountStore = userStore,
-    signatureVerifier = JvmSignatureVerifier(),
-    rpIdHasher = JvmRpIdHasher(),
-)
+@OptIn(ExperimentalWebAuthnL3Api::class)
+fun passkeyServices(): PasskeyServices {
+    val challengeStore = InMemoryChallengeStore()
+    val credentialStore = InMemoryCredentialStore()
+    val userStore = InMemoryUserAccountStore()
+
+    val registrationService = RegistrationService(
+        challengeStore = challengeStore,
+        credentialStore = credentialStore,
+        userAccountStore = userStore,
+        attestationVerifier = StrictAttestationVerifier(),
+        rpIdHasher = JvmRpIdHasher(),
+    )
+
+    val authenticationService = AuthenticationService(
+        challengeStore = challengeStore,
+        credentialStore = credentialStore,
+        userAccountStore = userStore,
+        signatureVerifier = JvmSignatureVerifier(),
+        rpIdHasher = JvmRpIdHasher(),
+    )
+    return PasskeyServices(registrationService, authenticationService)
+}
 ```
 
 Real-world scenario: run start/finish ceremonies in your backend service layer, then expose them via Ktor routes or your own HTTP transport.
 
 ## How it fits
 
+<!-- doc-example: id=server-webauthn-server-core-jvm-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     CORE["webauthn-core"] --> SVC["webauthn-server-core-jvm"]

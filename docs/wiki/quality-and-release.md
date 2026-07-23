@@ -8,6 +8,7 @@ The repo treats public release posture as active. Even small changes should be c
 
 Run the smallest matching checks first:
 
+<!-- doc-example: id=docs-wiki-quality-and-release-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 tools/agent/quality-gate.sh --mode fast --scope changed --block false
 tools/agent/quality-gate.sh --mode strict --scope changed --block false

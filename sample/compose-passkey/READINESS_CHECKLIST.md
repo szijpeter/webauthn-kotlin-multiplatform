@@ -6,6 +6,7 @@ Use this checklist before declaring the sample ready.
 
 Run:
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:compose-passkey:allTests \
   :sample:compose-passkey:compileAndroidMain \
@@ -26,12 +27,14 @@ Pass condition:
 
 Run:
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:backend-ktor:run
 ```
 
 or for ngrok-based physical-device runs:
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-3; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./sample/backend-ktor/start-server.sh
 ```
@@ -57,6 +60,7 @@ Prerequisites:
 
 Run:
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-4; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:compose-passkey-android:installDebug
 adb shell am start -n dev.webauthn.samples.composepasskey.android/.MainActivity
@@ -73,6 +77,7 @@ Pass criteria:
 
 Suggested crash check:
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-5; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 adb logcat -d | rg "FATAL EXCEPTION|AndroidRuntime"
 ```
@@ -81,6 +86,7 @@ adb logcat -d | rg "FATAL EXCEPTION|AndroidRuntime"
 
 Run:
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-6; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 adb logcat | rg "PasskeyDemo"
 ```
@@ -94,6 +100,7 @@ Pass condition:
 
 Run (with emulator/device connected):
 
+<!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-7; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:compose-passkey-android:connectedDebugAndroidTest --stacktrace
 ```

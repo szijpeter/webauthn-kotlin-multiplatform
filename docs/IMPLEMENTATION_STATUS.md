@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 
 ## Status Legend
 
@@ -12,6 +12,11 @@ Last updated: 2026-07-22
 
 ## Overall Snapshot
 
+- Repository-wide documentation verification (2026-07-24): all 103 user-facing Markdown and KDoc code
+  blocks have generated ownership and verification metadata. Source-backed Kotlin examples compile through
+  JVM, Android, and iOS project targets; behavior-sensitive examples have deterministic tests; dependency
+  snippets are exercised by a Maven-local external consumer; and `docsCheck` is blocking CI. This is
+  documentation/build tooling only and does not change runtime behavior or public API.
 - Kotlin 2.4 feature-adoption pass (2026-06-25): enabled preview collection literals in shared/JVM build logic and adopted them across core, model, serialization, client, server, and sample modules where they improved clarity without changing behavior. Name-based destructuring was re-reviewed but intentionally not enabled because the low-risk `only-syntax` mode is more verbose than the existing code, while the concise `complete` mode would widen preview semantics across 26 existing destructuring sites for only slight readability gain in this public library. Compiler-proven collection-literal carveouts remain in `webauthn-client-android` and `sample:compose-passkey`, where the active toolchain still rejects specific rewrites.
 - Kotlin unused-return-value safety (2026-07-22): enabled `check` mode across KMP, JVM, and Android builds, elevated ignored marked results to compilation errors, and marked security-critical model parsing, core validation, extension validation, crypto, and trust API scopes as must-use. A published-consumer probe verifies that the annotations survive publication metadata and protect downstream Kotlin callers; `full` mode remains audit-only because intentional parser and persistence side effects still produce noise.
 - Exhaustive collection-literal follow-up (2026-06-25): completed a branch-wide second pass over remaining `listOf`/`setOf` candidates in touched Kotlin sources and converted every compiler-safe site we could confirm. Nineteen call sites intentionally remain on `listOf`/`setOf`: two Android bridge calls in `webauthn-client-android` main sources, ten `webauthn-client-android` unit/androidTest source-set calls, and seven `sample:compose-passkey` commonMain/commonTest sites. Those carveouts currently fail compilation or trigger a Kotlin compiler analysis error when rewritten as collection literals under the active toolchain.

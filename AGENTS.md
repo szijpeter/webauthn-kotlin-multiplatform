@@ -14,24 +14,28 @@ Canonical policy lives in `docs/ai/STEERING.md`.
 
 Fast advisory:
 
+<!-- doc-example: id=agents-bash-1; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 tools/agent/quality-gate.sh --mode fast --scope changed --block false
 ```
 
 Strict advisory before PR update:
 
+<!-- doc-example: id=agents-bash-2; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 tools/agent/quality-gate.sh --mode strict --scope changed --block false
 ```
 
 API compatibility:
 
+<!-- doc-example: id=agents-bash-3; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 ./gradlew apiCheck --stacktrace
 ```
 
 Publishing preflight:
 
+<!-- doc-example: id=agents-bash-4; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
 ```

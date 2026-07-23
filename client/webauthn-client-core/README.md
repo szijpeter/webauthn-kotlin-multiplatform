@@ -10,6 +10,7 @@ Audience: teams building shared passkey client orchestration across Android/iOS 
 - Shared result/error contracts (`PasskeyResult`, `PasskeyClientError`, `PasskeyFinishResult`).
 - `PasskeyCapabilities` API for querying platform support for extensions and features.
 
+<!-- doc-example: id=client-webauthn-client-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TD
     Action["UI/User action"] --> Start["PasskeyController.start step<br/>serverClient.get*Options"]
@@ -27,6 +28,7 @@ Use this module when you want one shared ceremony flow and typed error/state han
 
 A common setup wires `PasskeyController` in a shared ViewModel/service and reacts to `uiState` transitions.
 
+<!-- doc-example: id=client-webauthn-client-core-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCoreExample.kt#client-core-controller -->
 ```kotlin
 import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
@@ -38,8 +40,11 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ValidationResult
 
+/** Example backend adapter for the shared ceremony controller. */
 class AccountServerClient : PasskeyServerClient<String, String> {
-    override suspend fun getRegisterOptions(params: String): ValidationResult<PublicKeyCredentialCreationOptions> {
+    override suspend fun getRegisterOptions(
+        params: String,
+    ): ValidationResult<PublicKeyCredentialCreationOptions> {
         TODO("Call backend /registration/start")
     }
 
@@ -51,7 +56,9 @@ class AccountServerClient : PasskeyServerClient<String, String> {
         TODO("Call backend /registration/finish")
     }
 
-    override suspend fun getSignInOptions(params: String): ValidationResult<PublicKeyCredentialRequestOptions> {
+    override suspend fun getSignInOptions(
+        params: String,
+    ): ValidationResult<PublicKeyCredentialRequestOptions> {
         TODO("Call backend /authentication/start")
     }
 
@@ -82,7 +89,12 @@ suspend fun runSignIn(controller: PasskeyController<String, String>, userId: Str
 
 Query platform support for extensions and features:
 
+<!-- doc-example: id=client-webauthn-client-core-readme-kotlin-2; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCapabilitiesExample.kt#client-capabilities -->
 ```kotlin
+import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.PasskeyClient
+import dev.webauthn.model.WebAuthnExtension
+
 suspend fun inspectCapabilities(client: PasskeyClient) {
     val capabilities = client.capabilities()
     if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {

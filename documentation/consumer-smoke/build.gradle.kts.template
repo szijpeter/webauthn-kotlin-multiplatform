@@ -1,0 +1,5 @@
+plugins {
+    kotlin("multiplatform") version "<kotlin-version>" apply false
+    kotlin("jvm") version "<kotlin-version>" apply false
+    id("com.android.kotlin.multiplatform.library") version "<agp-version>" apply false
+}

@@ -8,6 +8,7 @@ Audience: Compose applications that want lifecycle-safe passkey orchestration wi
 - `rememberPasskeyController(...)` to retain a `PasskeyController` bound to your server client.
 - A small Compose-first bridge over `webauthn-client-core`.
 
+<!-- doc-example: id=client-webauthn-client-compose-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     UI["Compose screen"] --> Controller["rememberPasskeyController(...)"]
@@ -27,6 +28,7 @@ Pick this module when your app UI is Compose and you want one shared way to driv
 
 A realistic screen keeps `serverClient` stable, triggers controller actions from click handlers, and renders state transitions explicitly.
 
+<!-- doc-example: id=client-webauthn-client-compose-readme-kotlin-1; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/platformMain/kotlin/dev/webauthn/documentation/examples/ComposeClientExample.kt#compose-client -->
 ```kotlin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

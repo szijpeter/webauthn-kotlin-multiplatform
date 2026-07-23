@@ -17,19 +17,24 @@ Use this when your backend follows the default `/webauthn/*` contract and your a
 
 ## How to use
 
+<!-- doc-example: id=client-webauthn-network-ktor-client-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
 import dev.webauthn.network.KtorPasskeyServerClient
+import io.ktor.client.HttpClient
 
-val serverClient = KtorPasskeyServerClient(
-    httpClient = httpClient,
-    endpointBase = "https://example.com",
-)
+fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
+    return KtorPasskeyServerClient(
+        httpClient = httpClient,
+        endpointBase = "https://example.com",
+    )
+}
 ```
 
 Real-world scenario: a mobile app uses `PasskeyController` for platform ceremonies, then delegates start/finish HTTP calls to this client.
 
 ## How it fits
 
+<!-- doc-example: id=client-webauthn-network-ktor-client-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     UI["App UI"] --> CORE["webauthn-client-core controller"]

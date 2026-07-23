@@ -13,6 +13,7 @@ Use this module when a parser/validator needs low-level strict CBOR traversal ut
 
 ## How it fits in the system
 
+<!-- doc-example: id=core-webauthn-cbor-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     CBOR["webauthn-cbor-core"] --> SERIAL["webauthn-serialization-kotlinx"]

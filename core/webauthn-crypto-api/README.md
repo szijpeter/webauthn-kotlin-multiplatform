@@ -16,15 +16,16 @@ Contract layer for cryptographic and trust operations used by validation and cer
 
 ## How to use
 
+<!-- doc-example: id=core-webauthn-crypto-api-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/CryptoExample.kt#crypto-rp-id-hasher -->
 ```kotlin
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.model.RpIdHash
 
-// Example wiring only.
-// Production implementations must SHA-256 hash the RP ID bytes first.
-val hasher = RpIdHasher { rpId ->
-    val rpIdSha256 = sha256(rpId.encodeToByteArray())
-    RpIdHash.fromBytes(rpIdSha256)
+fun rpIdHasher(sha256: (ByteArray) -> ByteArray): RpIdHasher {
+    return RpIdHasher { rpId ->
+        val rpIdSha256 = sha256(rpId.encodeToByteArray())
+        RpIdHash.fromBytes(rpIdSha256)
+    }
 }
 ```
 
@@ -32,6 +33,7 @@ Real-world scenario: multi-tenant backends can swap verifier and trust-anchor st
 
 ## How it fits
 
+<!-- doc-example: id=core-webauthn-crypto-api-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     CORE["webauthn-core"] --> API["webauthn-crypto-api contracts"]

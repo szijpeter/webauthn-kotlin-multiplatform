@@ -47,4 +47,6 @@ include(
     ":sample:passkey-cli",
     ":sample:compose-passkey",
     ":sample:compose-passkey-android",
+    ":documentation:examples",
+    ":documentation:tooling",
 )

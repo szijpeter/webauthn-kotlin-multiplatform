@@ -4,6 +4,9 @@ This document maps currently implemented validation behavior to normative requir
 
 ## Trace updates
 
+- 2026-07-24: repository-wide documentation verification now source-synchronizes and compiles the
+  `CompositeExtensionHook` KDoc example. This KDoc-only core file change does not alter extension validation,
+  any mapped normative rule, runtime outcome, or error semantic.
 - 2026-07-22: Kotlin unused-return-value enforcement marks published parsing, validator, extension-validation, crypto, and trust results as must-use and rejects ignored marked results at compile time. This adds a caller-safety guard around the mapped validation rules but does not change any runtime validation condition, parser outcome, or domain error semantic listed below.
 - 2026-06-25: Kotlin 2.4 collection-literal adoption touched validator/model implementation files for readability only. The pass does not change any mapped validation rule, parser behavior, or error semantics; a small set of `webauthn-client-android` and `sample:compose-passkey` call sites was intentionally excluded because collection literals currently trigger Kotlin compiler failures there.
 - 2026-06-25: Exhaustive follow-up on remaining collection-literal candidates touched `WebAuthnCoreValidator`, `CompositeExtensionHook`, `Services`, and related tests again, but the additional accepted rewrites are still refactor-only. Validator/model/server semantics and mapped normative requirements remain unchanged; the remaining Android bridge, Android test-source-set, and `sample:compose-passkey` carveouts are toolchain limitations rather than spec-behavior exceptions.

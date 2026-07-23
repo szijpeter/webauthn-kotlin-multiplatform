@@ -14,10 +14,17 @@ Use this when your backend is Ktor-based and you want ready-made WebAuthn routes
 
 ## How to use
 
+<!-- doc-example: id=server-webauthn-server-ktor-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/KtorServerExample.kt#ktor-routes -->
 ```kotlin
+import dev.webauthn.server.AuthenticationService
+import dev.webauthn.server.RegistrationService
 import dev.webauthn.server.ktor.installWebAuthnRoutes
+import io.ktor.server.application.Application
 
-fun Application.module() {
+fun Application.installPasskeyRoutes(
+    registrationService: RegistrationService,
+    authenticationService: AuthenticationService,
+) {
     installWebAuthnRoutes(registrationService, authenticationService)
 }
 ```
@@ -26,6 +33,7 @@ Real-world scenario: ship passkey backend endpoints quickly, while keeping polic
 
 ## How it fits
 
+<!-- doc-example: id=server-webauthn-server-ktor-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     CLIENT["Mobile/Web client"] --> ROUTES["webauthn-server-ktor routes"]

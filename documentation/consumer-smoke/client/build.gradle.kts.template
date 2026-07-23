@@ -1,0 +1,41 @@
+plugins {
+    kotlin("multiplatform")
+    id("com.android.kotlin.multiplatform.library")
+}
+
+kotlin {
+    jvmToolchain(21)
+    jvm()
+
+    android {
+        namespace = "smoke.client"
+        compileSdk = 37
+        minSdk = 26
+    }
+
+    iosSimulatorArm64()
+
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+    }
+}
+
+// docs-region consumer-client-kmp-dependencies
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-core:<version>")
+            implementation("io.github.szijpeter:webauthn-network-ktor-client:<version>")
+        }
+
+        androidMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-android:<version>")
+        }
+
+        iosMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-ios:<version>")
+        }
+    }
+}
+// docs-endregion consumer-client-kmp-dependencies
