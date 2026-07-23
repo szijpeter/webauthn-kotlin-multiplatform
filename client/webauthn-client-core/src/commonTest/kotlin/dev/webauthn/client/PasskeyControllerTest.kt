@@ -74,6 +74,22 @@ class PasskeyControllerTest {
     }
 
     @Test
+    fun register_forwards_conditional_create_options_to_passkey_client() = runTest(UnconfinedTestDispatcher()) {
+        val fakeClient = FakePasskeyClient(
+            createResult = PasskeyResult.Success(validRegistrationResponse()),
+        )
+        val serverClient = FakePasskeyServerClient()
+        serverClient.registerOptionsDeferred.complete(ValidationResult.Valid(validCreationOptions()))
+        serverClient.finishRegisterDeferred.complete(PasskeyFinishResult.Verified)
+        val controller = PasskeyController(passkeyClient = fakeClient, serverClient = serverClient)
+
+        controller.register(Unit, PasskeyCreateOptions.Conditional)
+
+        assertEquals(PasskeyCreateOptions.Conditional, fakeClient.lastCreateOptions)
+        assertEquals(PasskeyControllerState.Success(PasskeyAction.REGISTER), controller.uiState.value)
+    }
+
+    @Test
     fun options_validation_failure_transitions_to_error() = runTest(UnconfinedTestDispatcher()) {
         val fakeClient = FakePasskeyClient()
         val serverClient = FakePasskeyServerClient()
@@ -159,7 +175,7 @@ class PasskeyControllerTest {
         // State should remain SIGN_IN STARTING without throwing exception out of runCeremony, but the register loop silently aborted.
         assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
 
-        serverClient.signInOptionsDeferred.complete(ValidationResult.Invalid(emptyList()))
+        serverClient.signInOptionsDeferred.complete(ValidationResult.Invalid([]))
         firstJob.join()
     }
 
@@ -212,7 +228,17 @@ class PasskeyControllerTest {
         private val createResult: PasskeyResult<RegistrationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
         private val assertionResult: PasskeyResult<AuthenticationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
     ) : PasskeyClient {
+        var lastCreateOptions: PasskeyCreateOptions? = null
+
         override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> = createResult
+        override suspend fun createCredential(
+            options: PublicKeyCredentialCreationOptions,
+            createOptions: PasskeyCreateOptions,
+        ): PasskeyResult<RegistrationResponse> {
+            lastCreateOptions = createOptions
+            return createResult
+        }
+
         override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> = assertionResult
     }
 
