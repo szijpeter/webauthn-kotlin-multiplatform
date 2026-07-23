@@ -12,6 +12,7 @@ Validation sequence:
 
 Commands:
 
+<!-- doc-example: id=kiro-steering-10-quality-gates-bash-1; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 tools/agent/quality-gate.sh --mode fast --scope changed --block false
 tools/agent/quality-gate.sh --mode strict --scope changed --block false

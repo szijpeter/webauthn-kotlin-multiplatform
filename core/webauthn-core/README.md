@@ -11,6 +11,7 @@ Audience: teams validating WebAuthn ceremonies before crypto verification and pe
 - Composable per-extension validation hooks (`PrfExtensionHook`, `LargeBlobExtensionHook`).
 - `CompositeExtensionHook` for mix-and-match extension validation pipelines.
 
+<!-- doc-example: id=core-webauthn-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TD
     Start["Typed finish input<br/>RegistrationValidationInput / AuthenticationValidationInput"] --> ClientData["validateClientData"]
@@ -30,14 +31,17 @@ Use `webauthn-core` in server finish endpoints after parsing transport payloads 
 
 A practical authentication finish path usually chains core validation, allow-list checks, extension checks, then crypto verification and persistence.
 
+<!-- doc-example: id=core-webauthn-core-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/CoreValidationExample.kt#core-validation -->
 ```kotlin
 import dev.webauthn.core.AuthenticationValidationInput
 import dev.webauthn.core.WebAuthnCoreValidator
 import dev.webauthn.core.WebAuthnExtensionHook
 import dev.webauthn.core.WebAuthnExtensionValidator
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
 
+@OptIn(ExperimentalWebAuthnL3Api::class)
 suspend fun validateAssertionForFinish(
     input: AuthenticationValidationInput,
     allowedCredentialIds: Set<CredentialId>,
@@ -86,13 +90,22 @@ Each L3 extension ships as a standalone `WebAuthnExtensionHook` implementation:
 
 `WebAuthnExtensionValidator` includes both by default. For custom pipelines, use `CompositeExtensionHook`:
 
+<!-- doc-example: id=core-webauthn-core-readme-kotlin-2; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension -->
 ```kotlin
 import dev.webauthn.core.CompositeExtensionHook
 import dev.webauthn.core.PrfExtensionHook
+import dev.webauthn.model.AuthenticationExtensionsClientInputs
+import dev.webauthn.model.AuthenticationExtensionsClientOutputs
+import dev.webauthn.model.ValidationResult
 
-// Only validate PRF, skip LargeBlob
-val prfOnly = CompositeExtensionHook(listOf(PrfExtensionHook))
-val result = prfOnly.validateAuthenticationExtensions(inputs, outputs)
+@OptIn(ExperimentalWebAuthnL3Api::class)
+fun validatePrfOnly(
+    inputs: AuthenticationExtensionsClientInputs?,
+    outputs: AuthenticationExtensionsClientOutputs?,
+): ValidationResult<Unit> {
+    val prfOnly = CompositeExtensionHook([PrfExtensionHook])
+    return prfOnly.validateAuthenticationExtensions(inputs, outputs)
+}
 ```
 
 ## Pitfalls and limits

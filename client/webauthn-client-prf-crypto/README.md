@@ -10,6 +10,7 @@ Audience: teams implementing client-side encryption flows derived from WebAuthn 
 - AES-GCM encrypt/decrypt helpers and zeroizable `PrfCryptoSession`.
 - `PrfCryptoClient.authenticateWithPrf(...)` for assertion + session derivation in one call.
 
+<!-- doc-example: id=client-webauthn-client-prf-crypto-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TD
     Salt["Caller-owned persisted salt"] --> Start["PublicKeyCredentialRequestOptions"]
@@ -31,6 +32,7 @@ Use this module when app data must be encrypted with a key derived from a succes
 
 This flow checks PRF capability, authenticates with PRF, encrypts payload data, and returns the full AEAD payload for later decryption.
 
+<!-- doc-example: id=client-webauthn-client-prf-crypto-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PrfCryptoExample.kt#prf-crypto -->
 ```kotlin
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
@@ -52,7 +54,9 @@ suspend fun authenticateAndEncrypt(
     plaintext: String,
 ): PasskeyResult<PrfCiphertext> {
     if (!passkeyClient.capabilities().supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {
-        return PasskeyResult.Failure(PasskeyClientError.InvalidOptions("PRF is not supported on this platform/authenticator"))
+        return PasskeyResult.Failure(
+            PasskeyClientError.InvalidOptions("PRF is not supported on this platform/authenticator"),
+        )
     }
 
     val prfClient = PrfCryptoClient(passkeyClient)

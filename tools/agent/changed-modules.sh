@@ -253,6 +253,9 @@ for file in "${changed_files[@]}"; do
         docs/*|spec-notes/*)
             mark_category "docs"
             ;;
+        documentation/*)
+            mark_category "documentation"
+            ;;
         tools/agent/*|.githooks/*|AGENTS.md|CLAUDE.md|.cursor/*|.gemini/*)
             mark_category "harness"
             ;;

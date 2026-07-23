@@ -15,23 +15,39 @@ Use this when your JVM backend already uses Exposed/JDBC and you want persistent
 
 ## How to use
 
+<!-- doc-example: id=server-webauthn-server-store-exposed-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ExposedStoreExample.kt#exposed-stores -->
 ```kotlin
+import dev.webauthn.server.ChallengeStore
+import dev.webauthn.server.CredentialStore
+import dev.webauthn.server.UserAccountStore
 import dev.webauthn.server.store.exposed.ExposedChallengeStore
 import dev.webauthn.server.store.exposed.ExposedCredentialStore
 import dev.webauthn.server.store.exposed.ExposedUserAccountStore
 import dev.webauthn.server.store.exposed.initializeWebAuthnSchema
+import org.jetbrains.exposed.v1.jdbc.Database
 
-initializeWebAuthnSchema(database)
+/** Stores required by the server ceremony services. */
+data class PasskeyStores(
+    val challenges: ChallengeStore,
+    val credentials: CredentialStore,
+    val users: UserAccountStore,
+)
 
-val challengeStore = ExposedChallengeStore(database)
-val credentialStore = ExposedCredentialStore(database)
-val userStore = ExposedUserAccountStore(database)
+fun passkeyStores(database: Database): PasskeyStores {
+    initializeWebAuthnSchema(database)
+    return PasskeyStores(
+        challenges = ExposedChallengeStore(database),
+        credentials = ExposedCredentialStore(database),
+        users = ExposedUserAccountStore(database),
+    )
+}
 ```
 
 Real-world scenario: replace in-memory stores in production so ceremonies survive process restarts and can scale horizontally.
 
 ## How it fits
 
+<!-- doc-example: id=server-webauthn-server-store-exposed-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     SVC["webauthn-server-core-jvm"] --> CONTRACTS["Store contracts"]

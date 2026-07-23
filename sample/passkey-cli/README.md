@@ -20,6 +20,7 @@ This sample is intentionally scoped as a **POC**:
 
 Recommended self-contained setup (sample-local virtualenv):
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:passkey-cli:bootstrapVenv
 ```
@@ -31,6 +32,7 @@ When this venv exists, the CLI auto-selects `sample/passkey-cli/.venv/bin/python
 
 Run with Gradle:
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:passkey-cli:run --args="<command and options>"
 ```
@@ -54,30 +56,35 @@ Common options:
 
 1. Start backend + HTTPS tunnel helper (writes `WEBAUTHN_DEMO_*` to `local.properties`):
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-3; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./sample/backend-ktor/start-server.sh
 ```
 
 2. Verify CLI environment (defaults resolve from `local.properties`):
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-4; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:passkey-cli:run --args="doctor"
 ```
 
 3. Register with browser/platform passkey flow:
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-5; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:passkey-cli:run --args="register --user-name alice --user-display-name Alice"
 ```
 
 4. Authenticate with browser/platform passkey flow:
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-6; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:passkey-cli:run --args="authenticate --user-name alice"
 ```
 
 5. Optional CTAP security-key mode:
 
+<!-- doc-example: id=sample-passkey-cli-readme-bash-7; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:passkey-cli:run --args="register --authenticator ctap --user-name alice --user-display-name Alice"
 ```

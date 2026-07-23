@@ -43,6 +43,8 @@ apiValidation {
         "compose-passkey-android",
         "ios-passkey",
         "passkey-cli",
+        "examples",
+        "tooling",
     )
 }
 
@@ -95,4 +97,31 @@ subprojects {
             )
         }
     }
+}
+
+val docsCatalogCheck = tasks.register("docsCatalogCheck") {
+    group = "verification"
+    description = "Verifies documentation example ownership, syntax, inventory, and source synchronization."
+    dependsOn(":documentation:tooling:checkDocumentation")
+}
+
+tasks.register("docsUpdate") {
+    group = "documentation"
+    description = "Updates source-backed documentation examples and the generated example inventory."
+    dependsOn(":documentation:tooling:updateDocumentation")
+}
+
+tasks.register("docsCheck") {
+    group = "verification"
+    description = "Runs the repository-wide documentation example verification system."
+    dependsOn(
+        docsCatalogCheck,
+        ":documentation:tooling:test",
+        ":documentation:examples:jvmTest",
+        ":documentation:examples:compileAndroidMain",
+        ":documentation:examples:compileKotlinIosSimulatorArm64",
+        ":sample:compose-passkey:allTests",
+        ":sample:compose-passkey:compileAndroidMain",
+        ":sample:compose-passkey:compileKotlinIosSimulatorArm64",
+    )
 }

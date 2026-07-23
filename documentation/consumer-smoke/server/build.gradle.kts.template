@@ -1,0 +1,20 @@
+plugins {
+    kotlin("jvm")
+}
+
+// docs-region consumer-server-dependencies
+dependencies {
+    implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))
+    implementation("io.github.szijpeter:webauthn-server-core-jvm")
+    implementation("io.github.szijpeter:webauthn-server-jvm-crypto")
+    implementation("io.github.szijpeter:webauthn-server-ktor")
+}
+// docs-endregion consumer-server-dependencies
+
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+    }
+}
