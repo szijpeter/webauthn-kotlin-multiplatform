@@ -1,0 +1,106 @@
+specification {
+  element layer {
+    style {
+      shape rectangle
+      color blue
+    }
+  }
+  element module {
+    style {
+      shape component
+      color gray
+    }
+  }
+  element actor {
+    style {
+      shape person
+      color green
+    }
+  }
+  element external {
+    style {
+      shape browser
+      color amber
+    }
+  }
+}
+
+model {
+  protocol = layer '1. Protocol model' {
+    model = module 'webauthn-model' 'Typed WebAuthn protocol contracts'
+  }
+
+  foundation = layer '2. Core foundation' {
+    core = module 'webauthn-core' 'Validation rules'
+    serialization = module 'webauthn-serialization-kotlinx' 'Wire mapping'
+    cbor = module 'webauthn-cbor-core' 'CBOR support'
+    runtime = module 'webauthn-runtime-core' 'Shared runtime utilities'
+  }
+
+  crypto = layer '3. Crypto boundary' {
+    api = module 'webauthn-crypto-api' 'Vendor-neutral crypto contracts'
+    jvm = module 'webauthn-server-jvm-crypto' 'JVM implementation'
+  }
+
+  server = layer '4. JVM server' {
+    core = module 'webauthn-server-core-jvm' 'Ceremony services'
+    ktor = module 'webauthn-server-ktor' 'HTTP adapter'
+    store = module 'webauthn-server-store-exposed' 'Persistence adapter'
+    mds = module 'webauthn-attestation-mds' 'Trust metadata'
+  }
+
+  client = layer '5. Client stack' {
+    core = module 'webauthn-client-core' 'Shared orchestration'
+    platform = module 'Android, iOS, Compose' 'Platform/UI bridges'
+    transport = module 'JSON, Ktor, PRF' 'Optional client adapters'
+  }
+
+  protocol.model -> foundation.core 'typed inputs'
+  protocol.model -> foundation.serialization 'protocol DTOs'
+  foundation.cbor -> foundation.serialization
+  foundation.core -> crypto.api 'validation contracts'
+  foundation.cbor -> crypto.jvm
+  crypto.jvm -> crypto.api
+  foundation.core -> server.core 'validated ceremonies'
+  foundation.serialization -> server.core
+  server.core -> server.ktor 'HTTP routes'
+  server.core -> server.store 'credential state'
+  server.mds -> crypto.api 'trust anchors'
+  protocol.model -> client.core 'shared protocol'
+  foundation.runtime -> client.core 'runtime helpers'
+  client.core -> client.platform 'passkey operations'
+  client.core -> client.transport 'options and responses'
+
+  user = actor 'Passkey user'
+  app = external 'Host application' 'Android, iOS, Compose, or Kotlin host'
+  authenticator = external 'Platform authenticator' 'Credential Manager, AuthenticationServices, or browser WebAuthn'
+  backend = external 'Relying party backend' 'Account and policy owner'
+
+  user -> app 'uses'
+  app -> client.core 'integrates'
+  client.platform -> authenticator 'create/get credentials'
+  server.ktor -> backend 'start/finish ceremonies'
+}
+
+views {
+  view repository_overview {
+    title 'Repository architecture overview'
+    description 'A readable five-layer orientation view; use focused views for exact dependencies.'
+    include protocol, foundation, crypto, server, client
+    autoLayout LeftRight 120 100
+  }
+
+  view core_dependencies {
+    title 'Core dependency view'
+    include protocol.model
+    include foundation.*
+    include crypto.*
+    autoLayout TopBottom 100 100
+  }
+
+  view adopter_context {
+    title 'Adopter integration context'
+    include user, app, client, server, authenticator, backend
+    autoLayout LeftRight 110 100
+  }
+}
