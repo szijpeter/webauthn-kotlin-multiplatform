@@ -83,6 +83,10 @@ public fun Application.installSampleBackend(
         }
     }
     installWebAuthnRoutes(registrationService, authenticationService)
+    installCommunityConformanceRoutes(
+        registrationService = registrationService,
+        config = config.communityConformanceConfig(),
+    )
     routing {
         get("/health") {
             call.respond(HttpStatusPayload(status = "ok"))
@@ -135,6 +139,8 @@ public fun Application.installSampleBackend(
                     appendLine("PORT=${config.port}")
                     appendLine("ANDROID_PACKAGE_NAME=${config.androidPackageName}")
                     appendLine("IOS_APP_ID=${config.iosAppId}")
+                    appendLine("WEBAUTHN_CONFORMANCE_RP_ID=${config.conformanceRpId}")
+                    appendLine("WEBAUTHN_CONFORMANCE_ORIGIN=${config.conformanceOrigin}")
                     appendLine("AttestationPolicy=${config.attestationPolicy}")
                     config.iosAppIdWarning?.let { warning ->
                         appendLine("WARNING=$warning")
@@ -145,6 +151,8 @@ public fun Application.installSampleBackend(
                     appendLine("POST /webauthn/registration/finish")
                     appendLine("POST /webauthn/authentication/start")
                     appendLine("POST /webauthn/authentication/finish")
+                    appendLine("POST /attestation/options")
+                    appendLine("POST /attestation/result")
                     appendLine("GET  /health")
                     appendLine("GET  /.well-known/assetlinks.json")
                     appendLine("GET  /.well-known/apple-app-site-association")
@@ -164,7 +172,16 @@ public data class SampleBackendConfig(
     val iosAppId: String = DEFAULT_IOS_APP_ID,
     val iosAppIdWarning: String? = null,
     val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
+    val conformanceRpId: String = "localhost",
+    val conformanceOrigin: String = "http://localhost:$DEFAULT_PORT",
 ) {
+    public fun communityConformanceConfig(): CommunityConformanceConfig =
+        CommunityConformanceConfig(
+            rpId = conformanceRpId,
+            rpName = conformanceRpId,
+            origin = conformanceOrigin,
+        )
+
     public companion object {
         public fun fromEnvironment(
             environment: Map<String, String> = System.getenv()
@@ -187,6 +204,9 @@ public data class SampleBackendConfig(
                 iosAppId = configuredIosAppId.appId,
                 iosAppIdWarning = configuredIosAppId.warning,
                 attestationPolicy = attestationPolicy,
+                conformanceRpId = environment["WEBAUTHN_CONFORMANCE_RP_ID"].orIfBlank("localhost"),
+                conformanceOrigin = environment["WEBAUTHN_CONFORMANCE_ORIGIN"]
+                    .orIfBlank("http://localhost:$configuredPort"),
             )
         }
 
