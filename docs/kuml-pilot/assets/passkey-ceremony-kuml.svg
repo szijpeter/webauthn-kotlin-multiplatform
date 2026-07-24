@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- kUML SVG · theme: Elegant · engine: elk.layered -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 716 704"
+     width="716"
+     height="704">
+  <defs>
+  <style>
+    .kuml-class { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-interface { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-enum { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-component { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-state { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-usecase { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-system { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 1.25; }
+.kuml-container { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-c4component { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-instance { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-comment { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-comment-fold { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-title { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 15.0px; font-weight: 500; fill: #1C1814; }
+.kuml-title-abstract { font-style: italic; }
+.kuml-subtitle { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 12.0px; font-weight: 400; fill: #1C1814; }
+.kuml-body { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 11.0px; fill: #1C1814; }
+.kuml-small { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #8B7A66; }
+.kuml-small-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-edge-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #8B7A66; }
+.kuml-edge-label-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-stereotype { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 10.0px; font-style: italic; fill: #8B7A66; }
+.kuml-stereotype-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 10.0px; font-style: italic; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-tagged-value { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-edge { stroke: #3D2418; stroke-width: 0.75; fill: none; }
+.kuml-seq-arrow-filled { stroke: #3D2418; stroke-width: 0.75; fill: #3D2418; }
+.kuml-edge-dashed { stroke: #B5A38B; stroke-width: 0.75; fill: none; stroke-dasharray: 8 4; }
+.kuml-divider { stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-actor { stroke: #1C1814; stroke-width: 0.75; fill: none; }
+.kuml-frame { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-collaboration { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-port { fill: #1C1814; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-port-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-port-label-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: none; stroke: #F4EDDD; stroke-width: 3.5px; stroke-linejoin: round; }
+.kuml-connector { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-connector-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-action { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-decision { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-fork-bar { fill: #1C1814; stroke: #1C1814; stroke-width: 0.75; }
+.kuml-pseudostate { fill: #1C1814; stroke: #1C1814; stroke-width: 0.75; }
+.kuml-final-outer { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node-top { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node-side { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-artifact { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-artifact-ear { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-stereotype-box { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-timing-frame { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-timing-line { stroke: #3D2418; stroke-width: 0.75; fill: none; }
+.kuml-erm-entity { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-entity-inner { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-erm-view { fill: #F4EDDD; stroke: #8B7A66; stroke-width: 0.75; stroke-dasharray: 6 3; }
+.kuml-erm-view-query { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-marker { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-weight: bold; fill: #8B7A66; }
+.kuml-erm-default { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-index { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-pk-underline { stroke: #1C1814; stroke-width: 0.5; }
+.kuml-erm-crowfoot { fill: none; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-optional-marker { fill: #F4EDDD; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-mandatory-marker { stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-bachman-arrow { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-bachman-mandatory { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-chen-attribute { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-chen-relationship { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-chen-relationship-inner { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-erm-idef1x-dot { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-idef1x-diamond { fill: #F4EDDD; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-idef1x-card { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-erm-idef1x-category { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-idef1x-completeness { stroke: #4A2F22; stroke-width: 0.75; }
+
+  </style>
+  </defs>
+  <rect x="0" y="0" width="716" height="704" fill="#F4EDDD"/>
+  <g id="nodes">
+    <g id="kuml-diagram-frame">
+      <rect x="2" y="2" width="712" height="700" rx="6" ry="6" class="kuml-frame"/>
+      <text class="kuml-small" x="8" y="13">
+        sequence: Passkey registration and sign-in
+      </text>
+    </g>
+    <g id="Passkey registration and sign-in::frag::1">
+      <rect x="32" y="115" width="668" height="485" class="kuml-class" fill="none" stroke-dasharray="6 4"/>
+      <polygon points="32,115 82,115 82,127 76,133 32,133" class="kuml-class" fill="white"/>
+      <text class="kuml-stereotype" x="57" y="128" text-anchor="middle">
+        ALT
+      </text>
+      <rect x="83" y="117" width="97" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="86" y="128">
+        [registration]
+      </text>
+      <line x1="32" y1="364" x2="700" y2="364" class="kuml-divider" stroke-dasharray="6 4"/>
+      <rect x="33" y="365" width="110" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="36" y="376">
+        [authentication]
+      </text>
+    </g>
+    <g id="Passkey registration and sign-in::ll::User" transform="translate(56,56)">
+      <rect width="140" height="40" class="kuml-class"/>
+      <text class="kuml-stereotype" x="70" y="14" text-anchor="middle">
+        «actor»
+      </text>
+      <text class="kuml-title" x="70" y="30" text-anchor="middle">
+        User
+      </text>
+      <line x1="70" y1="40" x2="70" y2="608" class="kuml-divider" stroke-dasharray="4 4"/>
+    </g>
+    <g id="Passkey registration and sign-in::ll::Client app" transform="translate(216,56)">
+      <rect width="140" height="40" class="kuml-class"/>
+      <text class="kuml-stereotype" x="70" y="14" text-anchor="middle">
+        «lifeline»
+      </text>
+      <text class="kuml-title" x="70" y="30" text-anchor="middle">
+        Client app
+      </text>
+      <line x1="70" y1="40" x2="70" y2="608" class="kuml-divider" stroke-dasharray="4 4"/>
+    </g>
+    <g id="Passkey registration and sign-in::ll::Platform authenticator" transform="translate(376,56)">
+      <rect width="140" height="40" class="kuml-class"/>
+      <text class="kuml-stereotype" x="70" y="14" text-anchor="middle">
+        «lifeline»
+      </text>
+      <text class="kuml-title" x="70" y="30" text-anchor="middle">
+        Platform authenticator
+      </text>
+      <line x1="70" y1="40" x2="70" y2="608" class="kuml-divider" stroke-dasharray="4 4"/>
+    </g>
+    <g id="Passkey registration and sign-in::ll::Relying party server" transform="translate(536,56)">
+      <rect width="140" height="40" class="kuml-class"/>
+      <text class="kuml-stereotype" x="70" y="14" text-anchor="middle">
+        «lifeline»
+      </text>
+      <text class="kuml-title" x="70" y="30" text-anchor="middle">
+        Relying party server
+      </text>
+      <line x1="70" y1="40" x2="70" y2="608" class="kuml-divider" stroke-dasharray="4 4"/>
+    </g>
+  </g>
+  <g id="edges">
+    <g id="Passkey registration and sign-in::msg::1">
+      <line x1="126" y1="152" x2="286" y2="152" class="kuml-edge"/>
+      <rect x="144.500" y="137" width="123" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="206" y="148" text-anchor="middle">
+        start registration
+      </text>
+      <polygon points="286,152 278,148 278,156" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::2">
+      <line x1="286" y1="184" x2="606" y2="184" class="kuml-edge"/>
+      <rect x="384.500" y="169" width="123" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="180" text-anchor="middle">
+        registration/start
+      </text>
+      <polygon points="606,184 598,180 598,188" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::3">
+      <line x1="606" y1="216" x2="286" y2="216" class="kuml-edge-dashed"/>
+      <rect x="381.250" y="201" width="129.500" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="212" text-anchor="middle">
+        challenge + options
+      </text>
+      <path d="M 294 212 L 286 216 L 294 220" class="kuml-edge" fill="none"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::4">
+      <line x1="286" y1="248" x2="446" y2="248" class="kuml-edge"/>
+      <rect x="307.750" y="233" width="116.500" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="366" y="244" text-anchor="middle">
+        create credential
+      </text>
+      <polygon points="446,248 438,244 438,252" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::5">
+      <line x1="446" y1="280" x2="286" y2="280" class="kuml-edge-dashed"/>
+      <rect x="298" y="265" width="136" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="366" y="276" text-anchor="middle">
+        RegistrationResponse
+      </text>
+      <path d="M 294 276 L 286 280 L 294 284" class="kuml-edge" fill="none"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::6">
+      <line x1="286" y1="312" x2="606" y2="312" class="kuml-edge"/>
+      <rect x="319.500" y="297" width="253" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="308" text-anchor="middle">
+        registration/finish + echoed challenge
+      </text>
+      <polygon points="606,312 598,308 598,316" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::7">
+      <line x1="606" y1="344" x2="286" y2="344" class="kuml-edge-dashed"/>
+      <rect x="374.750" y="329" width="142.500" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="340" text-anchor="middle">
+        verified registration
+      </text>
+      <path d="M 294 340 L 286 344 L 294 348" class="kuml-edge" fill="none"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::8">
+      <line x1="126" y1="400" x2="286" y2="400" class="kuml-edge"/>
+      <rect x="160.750" y="385" width="90.500" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="206" y="396" text-anchor="middle">
+        start sign-in
+      </text>
+      <polygon points="286,400 278,396 278,404" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::9">
+      <line x1="286" y1="432" x2="606" y2="432" class="kuml-edge"/>
+      <rect x="378" y="417" width="136" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="428" text-anchor="middle">
+        authentication/start
+      </text>
+      <polygon points="606,432 598,428 598,436" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::10">
+      <line x1="606" y1="464" x2="286" y2="464" class="kuml-edge-dashed"/>
+      <rect x="381.250" y="449" width="129.500" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="460" text-anchor="middle">
+        challenge + options
+      </text>
+      <path d="M 294 460 L 286 464 L 294 468" class="kuml-edge" fill="none"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::11">
+      <line x1="286" y1="496" x2="446" y2="496" class="kuml-edge"/>
+      <rect x="320.750" y="481" width="90.500" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="366" y="492" text-anchor="middle">
+        get assertion
+      </text>
+      <polygon points="446,496 438,492 438,500" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::12">
+      <line x1="446" y1="528" x2="286" y2="528" class="kuml-edge-dashed"/>
+      <rect x="291.500" y="513" width="149" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="366" y="524" text-anchor="middle">
+        AuthenticationResponse
+      </text>
+      <path d="M 294 524 L 286 528 L 294 532" class="kuml-edge" fill="none"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::13">
+      <line x1="286" y1="560" x2="606" y2="560" class="kuml-edge"/>
+      <rect x="313" y="545" width="266" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="556" text-anchor="middle">
+        authentication/finish + echoed challenge
+      </text>
+      <polygon points="606,560 598,556 598,564" class="kuml-seq-arrow-filled"/>
+    </g>
+    <g id="Passkey registration and sign-in::msg::14">
+      <line x1="606" y1="592" x2="286" y2="592" class="kuml-edge-dashed"/>
+      <rect x="391" y="577" width="110" height="14" fill="white" stroke="none"/>
+      <text class="kuml-body" x="446" y="588" text-anchor="middle">
+        verified sign-in
+      </text>
+      <path d="M 294 588 L 286 592 L 294 596" class="kuml-edge" fill="none"/>
+    </g>
+  </g>
+</svg>

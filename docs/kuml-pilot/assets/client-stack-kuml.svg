@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- kUML SVG · theme: Elegant · engine: elk.layered -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 269 238"
+     width="269"
+     height="238">
+  <defs>
+  <style>
+    .kuml-class { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-interface { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-enum { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-component { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-state { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-usecase { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-system { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 1.25; }
+.kuml-container { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-c4component { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-instance { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-comment { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-comment-fold { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-title { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 15.0px; font-weight: 500; fill: #1C1814; }
+.kuml-title-abstract { font-style: italic; }
+.kuml-subtitle { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 12.0px; font-weight: 400; fill: #1C1814; }
+.kuml-body { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 11.0px; fill: #1C1814; }
+.kuml-small { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #8B7A66; }
+.kuml-small-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-edge-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #8B7A66; }
+.kuml-edge-label-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-stereotype { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 10.0px; font-style: italic; fill: #8B7A66; }
+.kuml-stereotype-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 10.0px; font-style: italic; fill: #F4EDDD; stroke: #F4EDDD; stroke-width: 3px; stroke-linejoin: round; }
+.kuml-tagged-value { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-edge { stroke: #3D2418; stroke-width: 0.75; fill: none; }
+.kuml-seq-arrow-filled { stroke: #3D2418; stroke-width: 0.75; fill: #3D2418; }
+.kuml-edge-dashed { stroke: #B5A38B; stroke-width: 0.75; fill: none; stroke-dasharray: 8 4; }
+.kuml-divider { stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-actor { stroke: #1C1814; stroke-width: 0.75; fill: none; }
+.kuml-frame { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-collaboration { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-port { fill: #1C1814; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-port-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-port-label-halo { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: none; stroke: #F4EDDD; stroke-width: 3.5px; stroke-linejoin: round; }
+.kuml-connector { fill: none; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-connector-label { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-action { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-decision { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-fork-bar { fill: #1C1814; stroke: #1C1814; stroke-width: 0.75; }
+.kuml-pseudostate { fill: #1C1814; stroke: #1C1814; stroke-width: 0.75; }
+.kuml-final-outer { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node-top { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-node-side { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-artifact { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-artifact-ear { fill: #8B7A66; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-stereotype-box { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-timing-frame { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-timing-line { stroke: #3D2418; stroke-width: 0.75; fill: none; }
+.kuml-erm-entity { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-entity-inner { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-erm-view { fill: #F4EDDD; stroke: #8B7A66; stroke-width: 0.75; stroke-dasharray: 6 3; }
+.kuml-erm-view-query { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-marker { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-weight: bold; fill: #8B7A66; }
+.kuml-erm-default { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-index { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; font-style: italic; fill: #8B7A66; }
+.kuml-erm-pk-underline { stroke: #1C1814; stroke-width: 0.5; }
+.kuml-erm-crowfoot { fill: none; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-optional-marker { fill: #F4EDDD; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-mandatory-marker { stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-bachman-arrow { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-bachman-mandatory { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-chen-attribute { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-chen-relationship { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-chen-relationship-inner { fill: none; stroke: #4A2F22; stroke-width: 0.5; }
+.kuml-erm-idef1x-dot { fill: #3D2418; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-idef1x-diamond { fill: #F4EDDD; stroke: #3D2418; stroke-width: 0.75; }
+.kuml-erm-idef1x-card { font-family: EB Garamond, Cormorant Garamond, Garamond, Cambria, Georgia, serif; font-size: 9.0px; fill: #1C1814; }
+.kuml-erm-idef1x-category { fill: #F4EDDD; stroke: #4A2F22; stroke-width: 0.75; }
+.kuml-erm-idef1x-completeness { stroke: #4A2F22; stroke-width: 0.75; }
+
+  </style>
+  </defs>
+  <rect x="0" y="0" width="269" height="238" fill="#F4EDDD"/>
+  <g id="nodes">
+    <g id="kuml-diagram-frame">
+      <rect x="2" y="2" width="265" height="234" rx="6" ry="6" class="kuml-frame"/>
+      <text class="kuml-small" x="8" y="13">
+        package: Client integration stack
+      </text>
+    </g>
+    <g id="package-webauthn-model" transform="translate(133,222)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-model
+      </text>
+    </g>
+    <g id="package-webauthn-core" transform="translate(32,132)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-core
+      </text>
+    </g>
+    <g id="package-webauthn-serialization-kotlinx" transform="translate(72,132)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-serialization-kotlinx
+      </text>
+    </g>
+    <g id="package-webauthn-runtime-core" transform="translate(253,222)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-runtime-core
+      </text>
+    </g>
+    <g id="package-webauthn-client-core" transform="translate(133,132)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-client-core
+      </text>
+    </g>
+    <g id="package-webauthn-client-json-core" transform="translate(93,32)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-client-json-core
+      </text>
+    </g>
+    <g id="package-webauthn-client-android" transform="translate(133,32)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-client-android
+      </text>
+    </g>
+    <g id="package-webauthn-client-ios" transform="translate(173,32)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-client-ios
+      </text>
+    </g>
+    <g id="package-webauthn-client-compose" transform="translate(213,32)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-client-compose
+      </text>
+    </g>
+    <g id="package-webauthn-client-prf-crypto" transform="translate(253,32)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-client-prf-crypto
+      </text>
+    </g>
+    <g id="package-webauthn-network-ktor-client" transform="translate(32,32)">
+      <rect x="0" y="0" width="-4" height="18" class="kuml-system"/>
+      <rect x="0" y="18" width="0" height="-18" class="kuml-system"/>
+      <text class="kuml-title" x="-2" y="13" text-anchor="middle">
+        webauthn-network-ktor-client
+      </text>
+    </g>
+  </g>
+  <g id="edges">
+    <line x1="133" y1="132" x2="133" y2="240" class="kuml-edge-dashed"/>
+    <path d="M 128,228 L 133,240 L 138,228" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="133" y="182" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="133" y="182" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="133" y1="141" x2="253" y2="231" class="kuml-edge-dashed"/>
+    <path d="M 240.40,227.80 L 253,231 L 246.40,219.80" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="193" y="182" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="193" y="182" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="93" y1="32" x2="133" y2="150" class="kuml-edge-dashed"/>
+    <path d="M 124.41,140.24 L 133,150 L 133.88,137.03" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="113" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="113" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="133" y1="32" x2="133" y2="150" class="kuml-edge-dashed"/>
+    <path d="M 128,138 L 133,150 L 138,138" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="133" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="133" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="173" y1="32" x2="133" y2="150" class="kuml-edge-dashed"/>
+    <path d="M 132.12,137.03 L 133,150 L 141.59,140.24" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="153" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="153" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="213" y1="32" x2="133" y2="150" class="kuml-edge-dashed"/>
+    <path d="M 135.60,137.26 L 133,150 L 143.87,142.87" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="173" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="173" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="253" y1="41" x2="133" y2="141" class="kuml-edge-dashed"/>
+    <path d="M 139.02,129.48 L 133,141 L 145.42,137.16" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="193" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="193" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="253" y1="32" x2="253" y2="240" class="kuml-edge-dashed"/>
+    <path d="M 248,228 L 253,240 L 258,228" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="253" y="132" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="253" y="132" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="32" y1="41" x2="133" y2="141" class="kuml-edge-dashed"/>
+    <path d="M 120.95,136.11 L 133,141 L 127.99,129.00" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="82.50" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="82.50" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="32" y1="41" x2="253" y2="231" class="kuml-edge-dashed"/>
+    <path d="M 240.64,226.97 L 253,231 L 247.16,219.39" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="142.50" y="132" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="142.50" y="132" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="32" y1="32" x2="32" y2="150" class="kuml-edge-dashed"/>
+    <path d="M 27,138 L 32,150 L 37,138" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="32" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="32" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <line x1="32" y1="32" x2="72" y2="150" class="kuml-edge-dashed"/>
+    <path d="M 63.41,140.24 L 72,150 L 72.88,137.03" style="stroke:#B5A38B;stroke-width:1.5;fill:none;stroke-linejoin:round;"/>
+    <text class="kuml-edge-label-halo" x="52" y="87" text-anchor="middle">
+      «import»
+    </text>
+    <text class="kuml-edge-label" x="52" y="87" text-anchor="middle">
+      «import»
+    </text>
+  </g>
+</svg>
