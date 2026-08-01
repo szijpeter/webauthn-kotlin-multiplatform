@@ -93,6 +93,7 @@ internal data class DocumentationBlock(
 @Suppress("TooManyFunctions")
 internal class DocumentationVerifier(private val root: Path) {
     private val scanner = DocumentationScanner(root)
+    private val realRoot = root.toRealPath()
 
     fun check() {
         val blocks = scanner.scan()
@@ -112,9 +113,9 @@ internal class DocumentationVerifier(private val root: Path) {
 
     fun update() {
         var blocks = scanner.scan()
-        validateStructure(blocks)
+        val sourceReferences = validateStructure(blocks)
         validatePublicationIsolation()
-        updateSourceBackedBlocks(blocks)
+        updateSourceBackedBlocks(blocks, sourceReferences)
 
         blocks = scanner.scan()
         validate(blocks)
@@ -125,15 +126,15 @@ internal class DocumentationVerifier(private val root: Path) {
     }
 
     private fun validate(blocks: List<DocumentationBlock>) {
-        validateStructure(blocks)
+        val sourceReferences = validateStructure(blocks)
         validatePublicationIsolation()
         blocks.forEach { block ->
-            validateSourceSynchronization(block)
+            validateSourceSynchronization(block, sourceReferences[block.directive.id])
             validateSyntax(block)
         }
     }
 
-    private fun validateStructure(blocks: List<DocumentationBlock>) {
+    private fun validateStructure(blocks: List<DocumentationBlock>): Map<String, SourceReference> {
         check(blocks.isNotEmpty()) { "No managed documentation blocks found" }
 
         val duplicateIds = blocks.groupBy { it.directive.id }.filterValues { it.size > 1 }
@@ -141,6 +142,7 @@ internal class DocumentationVerifier(private val root: Path) {
             "Duplicate documentation example ids: ${duplicateIds.keys.sorted().joinToString()}"
         }
 
+        val sourceReferences = mutableMapOf<String, SourceReference>()
         blocks.forEach { block ->
             val directive = block.directive
             check(ID_PATTERN.matches(directive.id)) {
@@ -180,26 +182,26 @@ internal class DocumentationVerifier(private val root: Path) {
                     "${block.location()}: Kotlin examples must be backed by compiled source or configuration"
                 }
             }
-            validateOwnershipAndVerification(block)
+            validateOwnershipAndVerification(block)?.let { sourceReferences[directive.id] = it }
         }
+        return sourceReferences
     }
 
-    private fun validateOwnershipAndVerification(block: DocumentationBlock) {
+    private fun validateOwnershipAndVerification(block: DocumentationBlock): SourceReference? {
         val directive = block.directive
+        val source = when (directive.owner) {
+            "configuration" -> requireSourceUnder(block, CONSUMER_FIXTURE_SOURCE_ROOT)
+            "sample" -> requireSourceUnder(block, BUILT_SAMPLE_SOURCE_ROOT)
+            "source" -> requireSourceUnder(block, DOCUMENTATION_SOURCE_ROOT)
+            else -> null
+        }
         val allowed = when (directive.owner) {
             "markdown" -> setOf("syntax")
             "illustrative" -> setOf("illustrative")
-            "configuration" -> {
-                requireSourceUnder(block, CONSUMER_FIXTURE_SOURCE_ROOT)
-                setOf("consumer-compile")
-            }
-            "sample" -> {
-                requireSourceUnder(block, BUILT_SAMPLE_SOURCE_ROOT)
-                setOf("sample-build")
-            }
+            "configuration" -> setOf("consumer-compile")
+            "sample" -> setOf("sample-build")
             "source" -> {
-                requireSourceUnder(block, DOCUMENTATION_SOURCE_ROOT)
-                if (isPlatformSource(block)) {
+                if (isPlatformSource(requireNotNull(source))) {
                     setOf("platform-compile")
                 } else {
                     setOf("compile", "unit")
@@ -216,20 +218,31 @@ internal class DocumentationVerifier(private val root: Path) {
                 "${block.location()}: unit verification must match its allow-listed source region"
             }
         }
+        return source
     }
 
-    private fun requireSourceUnder(block: DocumentationBlock, allowedRoot: String) {
-        val resolvedSource = parseSource(block).path
-        val resolvedAllowedRoot = root.resolve(allowedRoot).normalize()
-        check(resolvedSource.startsWith(resolvedAllowedRoot)) {
+    private fun requireSourceUnder(block: DocumentationBlock, allowedRoot: String): SourceReference {
+        val source = parseSource(block)
+        val lexicalAllowedRoot = root.resolve(allowedRoot).normalize()
+        check(source.path.startsWith(lexicalAllowedRoot)) {
             "${block.location()}: ${block.directive.owner} source must be under $allowedRoot"
         }
+
+        if (Files.exists(source.path)) {
+            val realSource = source.path.toRealPath()
+            val realAllowedRoot = lexicalAllowedRoot.toRealPath()
+            check(realSource.startsWith(realAllowedRoot)) {
+                "${block.location()}: ${block.directive.owner} source must resolve under $allowedRoot"
+            }
+            return source.copy(path = realSource)
+        }
+        return source
     }
 
-    private fun isPlatformSource(block: DocumentationBlock): Boolean {
-        val sourcePath = parseSource(block).path
-        if (!sourcePath.startsWith(root)) return false
-        val relative = root.relativize(sourcePath).invariantSeparatorsPathString
+    private fun isPlatformSource(source: SourceReference): Boolean {
+        val sourcePath = source.path
+        if (!sourcePath.startsWith(realRoot)) return false
+        val relative = realRoot.relativize(sourcePath).invariantSeparatorsPathString
         return relative.contains("/src/androidMain/") ||
             relative.contains("/src/iosMain/") ||
             relative.contains("/src/platformMain/") ||
@@ -267,13 +280,16 @@ internal class DocumentationVerifier(private val root: Path) {
         }
     }
 
-    private fun updateSourceBackedBlocks(blocks: List<DocumentationBlock>) {
+    private fun updateSourceBackedBlocks(
+        blocks: List<DocumentationBlock>,
+        sourceReferences: Map<String, SourceReference>,
+    ) {
         blocks.filter { it.directive.source != null }.groupBy { it.file }.forEach { (file, fileBlocks) ->
             val lines = Files.readAllLines(file).toMutableList()
             fileBlocks
                 .sortedByDescending { it.bodyStartIndex }
                 .forEach { block ->
-                    val source = extractSource(block)
+                    val source = extractSource(block, requireNotNull(sourceReferences[block.directive.id]))
                     val replacement = source.lines().map { line ->
                         if (block.prefix.isEmpty()) line else block.prefix + line
                     }
@@ -284,17 +300,16 @@ internal class DocumentationVerifier(private val root: Path) {
         }
     }
 
-    private fun validateSourceSynchronization(block: DocumentationBlock) {
+    private fun validateSourceSynchronization(block: DocumentationBlock, source: SourceReference?) {
         if (block.directive.source == null) return
-        val expected = extractSource(block)
+        val expected = extractSource(block, requireNotNull(source))
         check(block.content == expected) {
             "${block.location()}: source-backed block is stale; run ./gradlew docsUpdate"
         }
     }
 
-    private fun extractSource(block: DocumentationBlock): String {
-        val source = parseSource(block)
-        check(source.path.startsWith(root) && Files.isRegularFile(source.path)) {
+    private fun extractSource(block: DocumentationBlock, source: SourceReference): String {
+        check(source.path.startsWith(realRoot) && Files.isRegularFile(source.path)) {
             "${block.location()}: source file does not exist inside the repository: ${source.pathText}"
         }
 

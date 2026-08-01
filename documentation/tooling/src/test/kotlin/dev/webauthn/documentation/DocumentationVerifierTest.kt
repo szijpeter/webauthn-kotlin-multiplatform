@@ -398,6 +398,25 @@ class DocumentationVerifierTest {
         error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
         assertContains(error.message.orEmpty(), "source must be under documentation/consumer-smoke")
 
+        val symlink = root.resolve("documentation/examples/src/External.kt")
+        val symlinkCreated = runCatching {
+            Files.createSymbolicLink(symlink, symlink.parent.relativize(elsewhere))
+        }.isSuccess
+        if (symlinkCreated) {
+            root.resolve("README.md").write(
+                """
+                # Symlinked source
+
+                <!-- doc-example: id=symlinked-source; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/External.kt#source -->
+                ```kotlin
+                println("example")
+                ```
+                """,
+            )
+            error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
+            assertContains(error.message.orEmpty(), "source must resolve under documentation/examples/src")
+        }
+
         root.resolve("documentation/examples/src/commonMain/source.kt").write(
             """
             // docs-endregion source
