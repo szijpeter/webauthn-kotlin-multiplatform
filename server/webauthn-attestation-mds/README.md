@@ -14,7 +14,7 @@ Use this when your backend wants attestation trust rooted in FIDO MDS metadata i
 
 ## How to use
 
-<!-- doc-example: id=server-webauthn-attestation-mds-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/MdsExample.kt#mds-trust-source -->
+<!-- doc-example: id=server-webauthn-attestation-mds-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/MdsExample.kt#mds-trust-source -->
 ```kotlin
 import dev.webauthn.attestation.mds.FidoMdsTrustSource
 import io.ktor.client.HttpClient

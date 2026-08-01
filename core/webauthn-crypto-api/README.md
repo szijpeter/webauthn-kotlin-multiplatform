@@ -16,7 +16,7 @@ Contract layer for cryptographic and trust operations used by validation and cer
 
 ## How to use
 
-<!-- doc-example: id=core-webauthn-crypto-api-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/CryptoExample.kt#crypto-rp-id-hasher -->
+<!-- doc-example: id=core-webauthn-crypto-api-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/CryptoExample.kt#crypto-rp-id-hasher -->
 ```kotlin
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.model.RpIdHash

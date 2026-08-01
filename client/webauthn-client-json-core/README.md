@@ -14,7 +14,7 @@ Use this when your host/backend boundary exchanges raw WebAuthn JSON payloads an
 
 ## How to use
 
-<!-- doc-example: id=client-webauthn-client-json-core-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/JsonClientExample.kt#json-client -->
+<!-- doc-example: id=client-webauthn-client-json-core-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/JsonClientExample.kt#json-client -->
 ```kotlin
 import dev.webauthn.client.JsonPasskeyClient
 import dev.webauthn.client.KotlinxPasskeyJsonMapper

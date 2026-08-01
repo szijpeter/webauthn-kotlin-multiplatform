@@ -14,7 +14,7 @@ Use this when your backend is Ktor-based and you want ready-made WebAuthn routes
 
 ## How to use
 
-<!-- doc-example: id=server-webauthn-server-ktor-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/KtorServerExample.kt#ktor-routes -->
+<!-- doc-example: id=server-webauthn-server-ktor-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/KtorServerExample.kt#ktor-routes -->
 ```kotlin
 import dev.webauthn.server.AuthenticationService
 import dev.webauthn.server.RegistrationService

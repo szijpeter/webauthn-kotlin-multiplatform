@@ -14,7 +14,7 @@ Use this when your boundary is JSON/CBOR but your application code should stay t
 
 ## How to use
 
-<!-- doc-example: id=core-webauthn-serialization-kotlinx-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/SerializationExample.kt#serialization-mapper -->
+<!-- doc-example: id=core-webauthn-serialization-kotlinx-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/SerializationExample.kt#serialization-mapper -->
 ```kotlin
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.ValidationResult

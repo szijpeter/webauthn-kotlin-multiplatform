@@ -2,6 +2,8 @@ plugins {
     kotlin("jvm")
 }
 
+apply(from = "../repositories.gradle.kts")
+
 // docs-region consumer-server-dependencies
 dependencies {
     implementation(platform("io.github.szijpeter:webauthn-bom:<version>"))

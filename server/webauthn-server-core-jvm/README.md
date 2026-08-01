@@ -18,7 +18,7 @@ Use this when you want to implement WebAuthn server flows in JVM/Kotlin, with or
 
 ## How to use
 
-<!-- doc-example: id=server-webauthn-server-core-jvm-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ServerCoreExample.kt#server-core-services -->
+<!-- doc-example: id=server-webauthn-server-core-jvm-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ServerCoreExample.kt#server-core-services -->
 ```kotlin
 import dev.webauthn.server.AuthenticationService
 import dev.webauthn.server.InMemoryChallengeStore

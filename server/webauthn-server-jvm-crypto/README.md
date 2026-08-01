@@ -15,7 +15,7 @@ Use this when you want production-leaning JVM defaults instead of implementing `
 
 ## How to use
 
-<!-- doc-example: id=server-webauthn-server-jvm-crypto-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ServerCryptoExample.kt#server-jvm-crypto -->
+<!-- doc-example: id=server-webauthn-server-jvm-crypto-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ServerCryptoExample.kt#server-jvm-crypto -->
 ```kotlin
 import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.RpIdHasher

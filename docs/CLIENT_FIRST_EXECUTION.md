@@ -23,7 +23,7 @@ Use `KtorPasskeyServerClient` with its default routes and call:
 
 Example:
 
-<!-- doc-example: id=docs-client-first-execution-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
+<!-- doc-example: id=docs-client-first-execution-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
 import dev.webauthn.network.KtorPasskeyServerClient
 import io.ktor.client.HttpClient

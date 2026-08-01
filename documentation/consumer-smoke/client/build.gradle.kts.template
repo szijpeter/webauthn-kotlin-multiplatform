@@ -3,6 +3,8 @@ plugins {
     id("com.android.kotlin.multiplatform.library")
 }
 
+apply(from = "../repositories.gradle.kts")
+
 kotlin {
     jvmToolchain(21)
     jvm()

@@ -63,6 +63,11 @@ Every user-facing fenced block and Kotlin KDoc example is managed. Before adding
 verification model. Edit canonical source regions instead of generated Markdown bodies, run
 `./gradlew docsUpdate`, and verify the result with `./gradlew docsCheck`.
 
+For source-, sample-, and configuration-owned examples, edit the canonical `docs-region` in the referenced
+source file and run `./gradlew docsUpdate`. For markdown-owned shell examples, edit the fenced block directly
+in Markdown. Illustrative blocks are edited directly in Markdown and must include a concise reason explaining
+why executable verification is not applicable. Run `./gradlew docsCheck` after either path.
+
 The generated [`documentation/example-inventory.md`](documentation/example-inventory.md) records complete
 repository coverage and must not be edited manually.
 

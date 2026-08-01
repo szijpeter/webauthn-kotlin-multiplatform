@@ -31,9 +31,10 @@ Use `webauthn-core` in server finish endpoints after parsing transport payloads 
 
 A practical authentication finish path usually chains core validation, allow-list checks, extension checks, then crypto verification and persistence.
 
-<!-- doc-example: id=core-webauthn-core-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/CoreValidationExample.kt#core-validation -->
+<!-- doc-example: id=core-webauthn-core-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/CoreValidationExample.kt#core-validation -->
 ```kotlin
 import dev.webauthn.core.AuthenticationValidationInput
+import dev.webauthn.core.AuthenticationValidationOutput
 import dev.webauthn.core.WebAuthnCoreValidator
 import dev.webauthn.core.WebAuthnExtensionHook
 import dev.webauthn.core.WebAuthnExtensionValidator
@@ -41,10 +42,19 @@ import dev.webauthn.model.CredentialId
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
 
+/**
+ * Chains core authentication checks, then requires cryptographic signature
+ * verification before returning a successful finish result.
+ *
+ * Core validation alone is not enough to accept an assertion. Callers must
+ * supply a [verifySignature] implementation (for example JVM crypto) that
+ * succeeds before [ValidationResult.Valid] is returned.
+ */
 @OptIn(ExperimentalWebAuthnL3Api::class)
 suspend fun validateAssertionForFinish(
     input: AuthenticationValidationInput,
     allowedCredentialIds: Set<CredentialId>,
+    verifySignature: suspend (AuthenticationValidationOutput) -> ValidationResult<Unit>,
     extensionHook: WebAuthnExtensionHook = WebAuthnExtensionValidator,
 ): ValidationResult<Long> {
     val core = WebAuthnCoreValidator.validateAuthentication(input)
@@ -64,7 +74,10 @@ suspend fun validateAssertionForFinish(
     )
     if (ext is ValidationResult.Invalid) return ext
 
-    // Continue with crypto signature verification and then persist output.signCount.
+    val signature = verifySignature(output)
+    if (signature is ValidationResult.Invalid) return signature
+
+    // Persist output.signCount only after signature verification succeeds.
     return ValidationResult.Valid(output.signCount)
 }
 ```
@@ -90,7 +103,7 @@ Each L3 extension ships as a standalone `WebAuthnExtensionHook` implementation:
 
 `WebAuthnExtensionValidator` includes both by default. For custom pipelines, use `CompositeExtensionHook`:
 
-<!-- doc-example: id=core-webauthn-core-readme-kotlin-2; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension -->
+<!-- doc-example: id=core-webauthn-core-readme-kotlin-2; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension -->
 ```kotlin
 import dev.webauthn.core.CompositeExtensionHook
 import dev.webauthn.core.PrfExtensionHook

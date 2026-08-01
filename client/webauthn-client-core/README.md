@@ -28,7 +28,7 @@ Use this module when you want one shared ceremony flow and typed error/state han
 
 A common setup wires `PasskeyController` in a shared ViewModel/service and reacts to `uiState` transitions.
 
-<!-- doc-example: id=client-webauthn-client-core-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCoreExample.kt#client-core-controller -->
+<!-- doc-example: id=client-webauthn-client-core-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCoreExample.kt#client-core-controller -->
 ```kotlin
 import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
@@ -89,7 +89,7 @@ suspend fun runSignIn(controller: PasskeyController<String, String>, userId: Str
 
 Query platform support for extensions and features:
 
-<!-- doc-example: id=client-webauthn-client-core-readme-kotlin-2; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCapabilitiesExample.kt#client-capabilities -->
+<!-- doc-example: id=client-webauthn-client-core-readme-kotlin-2; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCapabilitiesExample.kt#client-capabilities -->
 ```kotlin
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient

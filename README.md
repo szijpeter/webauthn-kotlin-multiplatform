@@ -177,10 +177,12 @@ The coordinated release train uses one version for the full published surface. J
 configurations can use the BOM; Kotlin Multiplatform common and Native source sets should put that same
 version on each artifact because Java Platform constraints are not available to Native variants.
 
-<!-- doc-example: id=readme-kotlin-1; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/settings.gradle.kts#consumer-repositories -->
+<!-- doc-example: id=readme-kotlin-1; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories -->
 ```kotlin
-        mavenCentral()
-        google()
+repositories {
+    google()
+    mavenCentral()
+}
 ```
 
 Use only the modules your app actually wires in. In Kotlin Multiplatform projects, shared modules belong in `commonMain`, while concrete platform bridges belong in the matching platform source set.
@@ -229,7 +231,7 @@ Notes:
 
 Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
-<!-- doc-example: id=readme-bash-1; owner=markdown; verify=syntax; audience=consumer -->
+<!-- doc-example: id=readme-bash-1; owner=markdown; verify=syntax; audience=maintainer -->
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
 ```
@@ -316,7 +318,7 @@ Current state:
 
 ## Maintainer Workflow
 
-<!-- doc-example: id=readme-bash-2; owner=markdown; verify=syntax; audience=consumer -->
+<!-- doc-example: id=readme-bash-2; owner=markdown; verify=syntax; audience=maintainer -->
 ```bash
 tools/agent/setup-hooks.sh
 tools/agent/quality-gate.sh --mode fast --scope changed --block false

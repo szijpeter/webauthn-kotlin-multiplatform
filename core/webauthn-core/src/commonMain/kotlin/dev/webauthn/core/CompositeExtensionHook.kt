@@ -14,7 +14,7 @@ import dev.webauthn.model.WebAuthnValidationError
  * pipelines by composition rather than inheritance.
  *
  * <!-- doc-example:
- * id=composite-extension-hook-kdoc; owner=source; verify=consumer-compile; audience=consumer;
+ * id=composite-extension-hook-kdoc; owner=source; verify=compile; audience=consumer;
  * source=documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension-kdoc
  * -->
  * ```kotlin

@@ -63,7 +63,7 @@ Not published:
 
 Before a release or any publishing change:
 
-<!-- doc-example: id=docs-maven-central-bash-1; owner=markdown; verify=syntax; audience=consumer -->
+<!-- doc-example: id=docs-maven-central-bash-1; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 tools/agent/quality-gate.sh --mode strict --scope full --block true
 ./gradlew apiCheck --stacktrace

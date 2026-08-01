@@ -15,7 +15,7 @@ Use this when your JVM backend already uses Exposed/JDBC and you want persistent
 
 ## How to use
 
-<!-- doc-example: id=server-webauthn-server-store-exposed-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ExposedStoreExample.kt#exposed-stores -->
+<!-- doc-example: id=server-webauthn-server-store-exposed-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ExposedStoreExample.kt#exposed-stores -->
 ```kotlin
 import dev.webauthn.server.ChallengeStore
 import dev.webauthn.server.CredentialStore

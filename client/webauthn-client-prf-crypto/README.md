@@ -32,7 +32,7 @@ Use this module when app data must be encrypted with a key derived from a succes
 
 This flow checks PRF capability, authenticates with PRF, encrypts payload data, and returns the full AEAD payload for later decryption.
 
-<!-- doc-example: id=client-webauthn-client-prf-crypto-readme-kotlin-1; owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PrfCryptoExample.kt#prf-crypto -->
+<!-- doc-example: id=client-webauthn-client-prf-crypto-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PrfCryptoExample.kt#prf-crypto -->
 ```kotlin
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
