@@ -26,12 +26,13 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 ```
 
 4. Let PR CI remain the blocking authority.
-5. If core/model validation behavior changed, update `spec-notes/webauthn-l3-validation-map.md`.
-6. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
-7. When a published module implementation/build contract changes, update the matching module `README.md` in the same change.
-8. When module relationships or integration paths change, update both root `README.md` and `docs/architecture.md` in the same change.
-9. Add Mermaid diagrams for any new or updated architecture or flow diagrams in docs.
-10. If public API changed in a BCV-covered published module, run:
+5. CI checkout steps must disable persisted credentials before executing repository code.
+6. If core/model validation behavior changed, update `spec-notes/webauthn-l3-validation-map.md`.
+7. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
+8. When a published module implementation/build contract changes, update the matching module `README.md` in the same change.
+9. When module relationships or integration paths change, update both root `README.md` and `docs/architecture.md` in the same change.
+10. Add Mermaid diagrams for any new or updated architecture or flow diagrams in docs.
+11. If public API changed in a BCV-covered published module, run:
 
 <!-- doc-example: id=docs-ai-workflows-bash-4; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
@@ -45,7 +46,7 @@ Only when the API change is intentional, regenerate baselines and re-check:
 ./gradlew apiDump apiCheck --stacktrace
 ```
 
-11. If publishing/build metadata changed, run:
+12. If publishing/build metadata changed, run:
 
 <!-- doc-example: id=docs-ai-workflows-bash-6; owner=markdown; verify=syntax; audience=contributor -->
 ```bash

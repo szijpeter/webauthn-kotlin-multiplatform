@@ -5,7 +5,8 @@ Use this checklist when moving from private to public operation.
 ## In-Repo Baseline
 
 1. Security policy file exists and is current: `SECURITY.md`.
-2. CI workflows use least-privilege `permissions` and explicit versioned action references.
+2. CI workflows use least-privilege `permissions`, explicit versioned action references, and
+   `persist-credentials: false` on every checkout before repository code executes.
    - `Publish` workflow requires `contents:write` only to create the release tag in `publish-and-release` mode.
 3. Dependency automation exists and is current: `.github/renovate.json`.
 4. Local/sensitive files are ignored (`.env*`, `local.properties`, build outputs, IDE state).

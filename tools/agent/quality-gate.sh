@@ -164,10 +164,10 @@ else
         esac
     done
 
-    run_list+=("./gradlew docsCatalogCheck --stacktrace")
-
     if [[ "$has_documentation" == "true" ]]; then
         run_list+=("./gradlew docsCheck --stacktrace")
+    else
+        run_list+=("./gradlew docsCatalogCheck --stacktrace")
     fi
 
     for module in "${modules[@]}"; do
