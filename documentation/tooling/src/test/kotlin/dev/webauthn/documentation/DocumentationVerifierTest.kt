@@ -364,30 +364,39 @@ class DocumentationVerifierTest {
         var error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
         assertContains(error.message.orEmpty(), "does not exist inside the repository")
 
-        val outside = root.parent.resolve("${root.fileName}-outside.kt")
-        outside.write(
+        val elsewhere = root.resolve("other/Example.kt")
+        elsewhere.write(
             """
             // docs-region source
-            println("outside")
+            println("elsewhere")
             // docs-endregion source
             """,
         )
-        try {
-            root.resolve("README.md").write(
-                """
-                # Escaping source
+        root.resolve("README.md").write(
+            """
+            # Escaping source
 
-                <!-- doc-example: id=escaping-source; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/../../../../${outside.fileName}#source -->
-                ```kotlin
-                println("example")
-                ```
-                """,
-            )
-            error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
-            assertContains(error.message.orEmpty(), "does not exist inside the repository")
-        } finally {
-            Files.deleteIfExists(outside)
-        }
+            <!-- doc-example: id=escaping-source; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/../../../other/Example.kt#source -->
+            ```kotlin
+            println("example")
+            ```
+            """,
+        )
+        error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
+        assertContains(error.message.orEmpty(), "source must be under documentation/examples/src")
+
+        root.resolve("README.md").write(
+            """
+            # Escaping configuration source
+
+            <!-- doc-example: id=escaping-configuration; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/../../other/Example.kt#source -->
+            ```kotlin
+            println("example")
+            ```
+            """,
+        )
+        error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
+        assertContains(error.message.orEmpty(), "source must be under documentation/consumer-smoke")
 
         root.resolve("documentation/examples/src/commonMain/source.kt").write(
             """

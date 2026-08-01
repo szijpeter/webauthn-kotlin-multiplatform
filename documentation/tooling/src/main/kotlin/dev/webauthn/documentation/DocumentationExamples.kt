@@ -22,9 +22,9 @@ private val SOURCE_REGION_PATTERN = Regex("^\\s*//\\s*docs-region\\s+([a-z0-9][a
 private val SOURCE_END_PATTERN = Regex("^\\s*//\\s*docs-endregion\\s+([a-z0-9][a-z0-9-]*)\\s*$")
 private val REQUIRED_DIRECTIVE_FIELDS = setOf("id", "owner", "verify", "audience")
 private val KNOWN_DIRECTIVE_FIELDS = REQUIRED_DIRECTIVE_FIELDS + setOf("source", "reason")
-private const val DOCUMENTATION_SOURCE_PREFIX = "documentation/examples/src/"
-private const val CONSUMER_FIXTURE_SOURCE_PREFIX = "documentation/consumer-smoke/"
-private const val BUILT_SAMPLE_SOURCE_PREFIX = "sample/compose-passkey/"
+private const val DOCUMENTATION_SOURCE_ROOT = "documentation/examples/src"
+private const val CONSUMER_FIXTURE_SOURCE_ROOT = "documentation/consumer-smoke"
+private const val BUILT_SAMPLE_SOURCE_ROOT = "sample/compose-passkey"
 private const val MODEL_UNIT_SOURCE =
     "documentation/examples/src/commonMain/kotlin/" +
         "dev/webauthn/documentation/examples/ModelExample.kt#model-request-options"
@@ -190,16 +190,16 @@ internal class DocumentationVerifier(private val root: Path) {
             "markdown" -> setOf("syntax")
             "illustrative" -> setOf("illustrative")
             "configuration" -> {
-                requireSourcePrefix(block, CONSUMER_FIXTURE_SOURCE_PREFIX)
+                requireSourceUnder(block, CONSUMER_FIXTURE_SOURCE_ROOT)
                 setOf("consumer-compile")
             }
             "sample" -> {
-                requireSourcePrefix(block, BUILT_SAMPLE_SOURCE_PREFIX)
+                requireSourceUnder(block, BUILT_SAMPLE_SOURCE_ROOT)
                 setOf("sample-build")
             }
             "source" -> {
-                requireSourcePrefix(block, DOCUMENTATION_SOURCE_PREFIX)
-                if (isPlatformSource(directive.source)) {
+                requireSourceUnder(block, DOCUMENTATION_SOURCE_ROOT)
+                if (isPlatformSource(block)) {
                     setOf("platform-compile")
                 } else {
                     setOf("compile", "unit")
@@ -218,21 +218,23 @@ internal class DocumentationVerifier(private val root: Path) {
         }
     }
 
-    private fun requireSourcePrefix(block: DocumentationBlock, prefix: String) {
-        val source = requireNotNull(block.directive.source)
-        check(source.startsWith(prefix)) {
-            "${block.location()}: ${block.directive.owner} source must be under $prefix"
+    private fun requireSourceUnder(block: DocumentationBlock, allowedRoot: String) {
+        val resolvedSource = parseSource(block).path
+        val resolvedAllowedRoot = root.resolve(allowedRoot).normalize()
+        check(resolvedSource.startsWith(resolvedAllowedRoot)) {
+            "${block.location()}: ${block.directive.owner} source must be under $allowedRoot"
         }
     }
 
-    private fun isPlatformSource(source: String?): Boolean {
-        return source?.let { value ->
-            value.contains("src/androidMain/") ||
-                value.contains("src/iosMain/") ||
-                value.contains("src/platformMain/") ||
-                value.contains("src/androidTest/") ||
-                value.contains("src/iosTest/")
-        } == true
+    private fun isPlatformSource(block: DocumentationBlock): Boolean {
+        val sourcePath = parseSource(block).path
+        if (!sourcePath.startsWith(root)) return false
+        val relative = root.relativize(sourcePath).invariantSeparatorsPathString
+        return relative.contains("/src/androidMain/") ||
+            relative.contains("/src/iosMain/") ||
+            relative.contains("/src/platformMain/") ||
+            relative.contains("/src/androidTest/") ||
+            relative.contains("/src/iosTest/")
     }
 
     private fun validatePublicationIsolation() {
@@ -291,6 +293,37 @@ internal class DocumentationVerifier(private val root: Path) {
     }
 
     private fun extractSource(block: DocumentationBlock): String {
+        val source = parseSource(block)
+        check(source.path.startsWith(root) && Files.isRegularFile(source.path)) {
+            "${block.location()}: source file does not exist inside the repository: ${source.pathText}"
+        }
+
+        val lines = Files.readAllLines(source.path)
+        val starts = lines.mapIndexedNotNull { index, line ->
+            SOURCE_REGION_PATTERN.matchEntire(line)?.takeIf { it.groupValues[1] == source.regionId }?.let { index }
+        }
+        val ends = lines.mapIndexedNotNull { index, line ->
+            SOURCE_END_PATTERN.matchEntire(line)?.takeIf { it.groupValues[1] == source.regionId }?.let { index }
+        }
+        check(starts.size == 1 && ends.size == 1 && starts.single() < ends.single()) {
+            "${block.location()}: expected one ordered source region '${source.regionId}' in ${source.pathText}"
+        }
+        val content = lines.subList(starts.single() + 1, ends.single())
+            .joinToString("\n")
+            .trimEnd()
+        check(content.isNotBlank()) {
+            "${block.location()}: source region '${source.regionId}' in ${source.pathText} must not be empty"
+        }
+        return content
+    }
+
+    private data class SourceReference(
+        val pathText: String,
+        val regionId: String,
+        val path: Path,
+    )
+
+    private fun parseSource(block: DocumentationBlock): SourceReference {
         val sourceSpec = requireNotNull(block.directive.source)
         val pathText = sourceSpec.substringBefore('#')
         val regionId = sourceSpec.substringAfter('#', missingDelimiterValue = "")
@@ -300,29 +333,7 @@ internal class DocumentationVerifier(private val root: Path) {
         check(ID_PATTERN.matches(regionId)) {
             "${block.location()}: invalid source region '$regionId'"
         }
-
-        val sourcePath = root.resolve(pathText).normalize()
-        check(sourcePath.startsWith(root) && Files.isRegularFile(sourcePath)) {
-            "${block.location()}: source file does not exist inside the repository: $pathText"
-        }
-
-        val lines = Files.readAllLines(sourcePath)
-        val starts = lines.mapIndexedNotNull { index, line ->
-            SOURCE_REGION_PATTERN.matchEntire(line)?.takeIf { it.groupValues[1] == regionId }?.let { index }
-        }
-        val ends = lines.mapIndexedNotNull { index, line ->
-            SOURCE_END_PATTERN.matchEntire(line)?.takeIf { it.groupValues[1] == regionId }?.let { index }
-        }
-        check(starts.size == 1 && ends.size == 1 && starts.single() < ends.single()) {
-            "${block.location()}: expected one ordered source region '$regionId' in $pathText"
-        }
-        val content = lines.subList(starts.single() + 1, ends.single())
-            .joinToString("\n")
-            .trimEnd()
-        check(content.isNotBlank()) {
-            "${block.location()}: source region '$regionId' in $pathText must not be empty"
-        }
-        return content
+        return SourceReference(pathText, regionId, root.resolve(pathText).normalize())
     }
 
     private fun validateSyntax(block: DocumentationBlock) {
