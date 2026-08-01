@@ -15,16 +15,22 @@ Use this in Android apps that need real platform passkey prompts and credentials
 
 ## How to use
 
+<!-- doc-example: id=client-webauthn-client-android-readme-kotlin-1; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client -->
 ```kotlin
+import android.content.Context
+import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.android.AndroidPasskeyClient
 
-val client = AndroidPasskeyClient(context)
+fun androidPasskeyClient(context: Context): PasskeyClient {
+    return AndroidPasskeyClient(context)
+}
 ```
 
 Real-world scenario: your shared app logic drives ceremony flow in `PasskeyController`, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
 
 ## How it fits
 
+<!-- doc-example: id=client-webauthn-client-android-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     UI["Android UI"] --> CORE["webauthn-client-core controller"]

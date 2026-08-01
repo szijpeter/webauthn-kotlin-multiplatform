@@ -157,6 +157,9 @@ Reference/samples:
 2. If public integration paths change (for example published module graph/adoption wiring, root/BOM dependency surface), update both `README.md` (root) and `docs/architecture.md` in the same change.
 3. New or updated architecture/flow diagrams in docs must use Mermaid for GitHub-native rendering and reviewable diffs.
 4. Keep module READMEs implementation-oriented: what it provides, when to use, correct usage patterns, system fit, pitfalls/limits, and status.
+5. Every user-facing fenced block and Kotlin KDoc example must have a `doc-example` directive with one owner and verification level.
+6. Edit source-, sample-, and configuration-owned examples at their declared source region, then run `./gradlew docsUpdate`; do not edit their rendered Markdown bodies.
+7. Run `./gradlew docsCheck` for documentation-example or tooling changes. The generated `documentation/example-inventory.md` must stay current.
 
 ## Done Criteria
 

@@ -12,6 +12,7 @@
 
 ## Layering
 
+<!-- doc-example: id=docs-architecture-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TB
     subgraph L1[Layer 1: Protocol Model]

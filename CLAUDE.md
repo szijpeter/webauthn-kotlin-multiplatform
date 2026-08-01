@@ -17,6 +17,7 @@ Canonical policy lives in `docs/ai/STEERING.md`.
 
 ## Commands
 
+<!-- doc-example: id=claude-bash-1; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 tools/agent/quality-gate.sh --mode fast --scope changed --block false
 tools/agent/quality-gate.sh --mode strict --scope changed --block false

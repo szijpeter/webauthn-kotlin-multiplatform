@@ -15,16 +15,21 @@ Use this in iOS apps that need native passkey flows through AuthenticationServic
 
 ## How to use
 
+<!-- doc-example: id=client-webauthn-client-ios-readme-kotlin-1; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/IosClientExample.kt#ios-client -->
 ```kotlin
+import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.ios.IosPasskeyClient
 
-val client = IosPasskeyClient()
+fun iosPasskeyClient(): PasskeyClient {
+    return IosPasskeyClient()
+}
 ```
 
 Real-world scenario: shared business logic drives start/finish and state management, while this module owns platform credential prompts.
 
 ## How it fits
 
+<!-- doc-example: id=client-webauthn-client-ios-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     UI["iOS UI"] --> CORE["webauthn-client-core controller"]

@@ -35,12 +35,14 @@ Android requirement: API level 30+ (`minSdk 30`) for the PRF crypto sample flow.
 
 1. Start sample backend:
 
+<!-- doc-example: id=sample-compose-passkey-readme-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:backend-ktor:run
 ```
 
 For physical devices, prefer tunnel mode:
 
+<!-- doc-example: id=sample-compose-passkey-readme-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./sample/backend-ktor/start-server.sh
 ```
@@ -56,6 +58,7 @@ defaults do not need the prompt.
 
 2. Build and run sample host app:
 
+<!-- doc-example: id=sample-compose-passkey-readme-bash-3; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080 \
 WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
@@ -64,6 +67,7 @@ WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
 
 3. Optional UI smoke test (emulator/device connected):
 
+<!-- doc-example: id=sample-compose-passkey-readme-bash-4; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:compose-passkey-android:connectedDebugAndroidTest
 ```
@@ -115,22 +119,15 @@ To inspect logs:
 
 The auth screen is intentionally the cleanest API example in the repo:
 
+<!-- doc-example: id=sample-compose-passkey-readme-kotlin-1; owner=sample; verify=sample-build; audience=consumer; source=sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route -->
 ```kotlin
-val controller = rememberPasskeyController(
-    serverClient = serverClient,
-    passkeyClient = passkeyClient,
-)
-val controllerState by controller.uiState.collectAsState()
-
-AuthScreen(
-    status = controllerState.toDemoStatus(),
-    actionsEnabled = areCeremonyActionsEnabled(controllerState),
-    canRegister = authState.canRegister,
-    runtimeHint = authState.runtimeHint,
-    onShowLogs = showDebugLogs,
-    onRegister = { scope.launch { controller.register(config.toRegistrationStartPayload()) } },
-    onSignIn = { scope.launch { controller.signIn(config.toAuthenticationStartPayload()) } },
-)
+    val controller = rememberPasskeyController(
+        serverClient = serverClient,
+        passkeyClient = passkeyClient,
+    )
+    val controllerState by controller.uiState.collectAsState()
+    val canRegister by coordinator.canRegister.collectAsState()
+    val actionsEnabled = areCeremonyActionsEnabled(controllerState)
 ```
 
 Sample-only side effects stay outside the library API surface:

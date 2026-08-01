@@ -6,6 +6,7 @@ cd "$ROOT_DIR"
 
 VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)"
 KOTLIN_VERSION="$(sed -n 's/^kotlin = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
+AGP_VERSION="$(sed -n 's/^agp = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
 
 if [[ -z "$VERSION_NAME" ]]; then
   echo "Unable to resolve VERSION_NAME from gradle.properties" >&2
@@ -17,119 +18,43 @@ if [[ -z "$KOTLIN_VERSION" ]]; then
   exit 1
 fi
 
+if [[ -z "$AGP_VERSION" ]]; then
+  echo "Unable to resolve Android Gradle Plugin version from gradle/libs.versions.toml" >&2
+  exit 1
+fi
+
 tmp_dir="$(mktemp -d)"
 cleanup() {
   rm -rf "$tmp_dir"
 }
 trap cleanup EXIT
 
-cat > "$tmp_dir/settings.gradle.kts" <<EOF
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-        google()
-    }
-}
+cp -R "$ROOT_DIR/documentation/consumer-smoke/." "$tmp_dir/"
 
-dependencyResolutionManagement {
-    repositories {
-        exclusiveContent {
-            forRepository {
-                mavenLocal()
-            }
-            filter {
-                includeGroup("io.github.szijpeter")
-            }
-        }
-        mavenCentral()
-        google()
-    }
-}
+for template in \
+  "$tmp_dir/build.gradle.kts.template" \
+  "$tmp_dir/client/build.gradle.kts.template" \
+  "$tmp_dir/server/build.gradle.kts.template"; do
+  output="${template%.template}"
+  sed \
+    -e "s/<version>/$VERSION_NAME/g" \
+    -e "s/<kotlin-version>/$KOTLIN_VERSION/g" \
+    -e "s/<agp-version>/$AGP_VERSION/g" \
+    "$template" > "$output"
+done
 
-rootProject.name = "webauthn-published-consumer-smoke"
-EOF
+"$ROOT_DIR/gradlew" \
+  --project-dir "$tmp_dir" \
+  --no-daemon \
+  :client:compileKotlinJvm \
+  :client:compileAndroidMain \
+  :client:compileKotlinIosSimulatorArm64 \
+  :server:compileKotlin \
+  --stacktrace
 
-cat > "$tmp_dir/build.gradle.kts" <<EOF
-plugins {
-    kotlin("jvm") version "$KOTLIN_VERSION"
-}
-
-repositories {
-    exclusiveContent {
-        forRepository {
-            mavenLocal()
-        }
-        filter {
-            includeGroup("io.github.szijpeter")
-        }
-    }
-    mavenCentral()
-    google()
-}
-
-dependencies {
-    implementation(platform("io.github.szijpeter:webauthn-bom:$VERSION_NAME"))
-    implementation("io.github.szijpeter:webauthn-core")
-    implementation("io.github.szijpeter:webauthn-crypto-api")
-    implementation("io.github.szijpeter:webauthn-client-json-core")
-    implementation("io.github.szijpeter:webauthn-network-ktor-client")
-}
-
-kotlin {
-    compilerOptions {
-        allWarningsAsErrors.set(true)
-        freeCompilerArgs.add("-Xreturn-value-checker=check")
-    }
-}
-
-EOF
-
-mkdir -p "$tmp_dir/src/main/kotlin/smoke"
-cat > "$tmp_dir/src/main/kotlin/smoke/Smoke.kt" <<'EOF'
-package smoke
-
-import dev.webauthn.client.KotlinxPasskeyJsonMapper
-import dev.webauthn.network.KtorPasskeyServerClient
-import io.ktor.client.HttpClient
-
-fun smoke(mapper: KotlinxPasskeyJsonMapper, client: KtorPasskeyServerClient): String {
-    return "${mapper::class.simpleName}:${client::class.simpleName}"
-}
-
-fun main() {
-    val mapper = KotlinxPasskeyJsonMapper()
-    val client = KtorPasskeyServerClient(
-        httpClient = HttpClient(),
-        endpointBase = "https://example.com",
-    )
-    check(smoke(mapper, client).isNotBlank())
-}
-EOF
-
-"$ROOT_DIR/gradlew" --project-dir "$tmp_dir" --no-daemon compileKotlin --stacktrace
-
-cat > "$tmp_dir/src/main/kotlin/smoke/MustUseProbe.kt" <<'EOF'
-package smoke
-
-import dev.webauthn.core.RegistrationValidationInput
-import dev.webauthn.core.WebAuthnCoreValidator
-import dev.webauthn.crypto.CoseAlgorithm
-import dev.webauthn.crypto.SignatureVerifier
-import dev.webauthn.model.CosePublicKey
-
-fun ignoreSecurityResults(
-    input: RegistrationValidationInput,
-    signatureVerifier: SignatureVerifier,
-    algorithm: CoseAlgorithm,
-    publicKey: CosePublicKey,
-    data: ByteArray,
-    signature: ByteArray,
-) {
-    WebAuthnCoreValidator.validateRegistration(input)
-    signatureVerifier.verify(algorithm, publicKey, data, signature)
-}
-EOF
+cp \
+  "$tmp_dir/probes/MustUseProbe.kt" \
+  "$tmp_dir/server/src/main/kotlin/smoke/server/MustUseProbe.kt"
 
 set +e
 probe_output="$(
@@ -137,7 +62,7 @@ probe_output="$(
         --project-dir "$tmp_dir" \
         --no-daemon \
         --rerun-tasks \
-        compileKotlin \
+        :server:compileKotlin \
         --stacktrace 2>&1
 )"
 probe_exit_code="$?"

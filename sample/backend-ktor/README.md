@@ -16,6 +16,7 @@ Ktor sample backend for local/mobile passkey end-to-end flows.
 
 ## Run
 
+<!-- doc-example: id=sample-backend-ktor-readme-bash-1; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./gradlew :sample:backend-ktor:run
 ```
@@ -40,6 +41,7 @@ Environment variables:
 
 For physical-device flows with associated domains:
 
+<!-- doc-example: id=sample-backend-ktor-readme-bash-2; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
 ./sample/backend-ktor/start-server.sh
 ```
