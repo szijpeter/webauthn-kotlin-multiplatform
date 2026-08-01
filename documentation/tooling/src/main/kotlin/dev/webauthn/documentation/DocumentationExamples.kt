@@ -15,10 +15,23 @@ import kotlin.io.path.writeText
 private const val INVENTORY_PATH = "documentation/example-inventory.md"
 private const val DIRECTIVE_PREFIX = "<!-- doc-example:"
 private const val DIRECTIVE_SUFFIX = "-->"
+private const val MIN_FENCE_LENGTH = 3
 private val ID_PATTERN = Regex("[a-z0-9][a-z0-9-]*")
-private val OPEN_FENCE_PATTERN = Regex("^```([A-Za-z0-9_+-]*)\\s*$")
+private val FENCE_PATTERN = Regex("^([`~]{3,})([A-Za-z0-9_+-]*)\\s*$")
 private val SOURCE_REGION_PATTERN = Regex("^\\s*//\\s*docs-region\\s+([a-z0-9][a-z0-9-]*)\\s*$")
 private val SOURCE_END_PATTERN = Regex("^\\s*//\\s*docs-endregion\\s+([a-z0-9][a-z0-9-]*)\\s*$")
+private val REQUIRED_DIRECTIVE_FIELDS = setOf("id", "owner", "verify", "audience")
+private val KNOWN_DIRECTIVE_FIELDS = REQUIRED_DIRECTIVE_FIELDS + setOf("source", "reason")
+private val UNIT_VERIFIED_IDS = setOf(
+    "core-webauthn-model-readme-kotlin-1",
+    "core-webauthn-runtime-core-readme-kotlin-1",
+)
+
+private data class Fence(
+    val marker: Char,
+    val length: Int,
+    val language: String,
+)
 
 /** Command-line entry point for documentation catalog verification and regeneration. */
 public object DocumentationExamples {
@@ -68,6 +81,7 @@ internal data class DocumentationBlock(
     val content: String,
 )
 
+@Suppress("TooManyFunctions")
 internal class DocumentationVerifier(private val root: Path) {
     private val scanner = DocumentationScanner(root)
 
@@ -132,10 +146,8 @@ internal class DocumentationVerifier(private val root: Path) {
                     "compile",
                     "consumer-compile",
                     "unit",
-                    "integration",
                     "platform-compile",
                     "sample-build",
-                    "device-manual",
                     "illustrative",
                 ),
             ) {
@@ -149,9 +161,9 @@ internal class DocumentationVerifier(private val root: Path) {
             check(sourceBacked == (directive.source != null)) {
                 "${block.location()}: ${directive.owner} ownership requires exactly one source"
             }
-            if (directive.owner == "illustrative" || directive.verification in setOf("device-manual", "illustrative")) {
+            if (directive.owner == "illustrative" || directive.verification == "illustrative") {
                 check(!directive.reason.isNullOrBlank()) {
-                    "${block.location()}: illustrative/manual examples require a reason"
+                    "${block.location()}: illustrative examples require a reason"
                 }
             }
             if (block.language == "kotlin") {
@@ -159,7 +171,43 @@ internal class DocumentationVerifier(private val root: Path) {
                     "${block.location()}: Kotlin examples must be backed by compiled source or configuration"
                 }
             }
+            validateOwnershipAndVerification(block)
         }
+    }
+
+    private fun validateOwnershipAndVerification(block: DocumentationBlock) {
+        val directive = block.directive
+        val allowed = when (directive.owner) {
+            "markdown" -> setOf("syntax")
+            "illustrative" -> setOf("illustrative")
+            "configuration" -> setOf("consumer-compile")
+            "sample" -> setOf("sample-build")
+            "source" -> if (isPlatformSource(directive.source)) {
+                setOf("platform-compile")
+            } else {
+                setOf("compile", "unit")
+            }
+            else -> emptySet()
+        }
+        check(directive.verification in allowed) {
+            "${block.location()}: owner '${directive.owner}' cannot claim verification " +
+                "'${directive.verification}'; expected one of ${allowed.sorted().joinToString()}"
+        }
+        if (directive.verification == "unit") {
+            check(directive.id in UNIT_VERIFIED_IDS) {
+                "${block.location()}: only explicitly allow-listed examples may claim unit verification"
+            }
+        }
+    }
+
+    private fun isPlatformSource(source: String?): Boolean {
+        return source?.let { value ->
+            value.contains("src/androidMain/") ||
+                value.contains("src/iosMain/") ||
+                value.contains("src/platformMain/") ||
+                value.contains("src/androidTest/") ||
+                value.contains("src/iosTest/")
+        } == true
     }
 
     private fun validatePublicationIsolation() {
@@ -243,9 +291,13 @@ internal class DocumentationVerifier(private val root: Path) {
         check(starts.size == 1 && ends.size == 1 && starts.single() < ends.single()) {
             "${block.location()}: expected one ordered source region '$regionId' in $pathText"
         }
-        return lines.subList(starts.single() + 1, ends.single())
+        val content = lines.subList(starts.single() + 1, ends.single())
             .joinToString("\n")
             .trimEnd()
+        check(content.isNotBlank()) {
+            "${block.location()}: source region '$regionId' in $pathText must not be empty"
+        }
+        return content
     }
 
     private fun validateSyntax(block: DocumentationBlock) {
@@ -275,12 +327,12 @@ internal class DocumentationVerifier(private val root: Path) {
             # Documentation example inventory
 
             This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
-            example, its single source of truth, and its strongest automated or explicitly manual verification level.
+            example, its single source of truth, and its strongest automated or illustrative verification level.
 
             Managed blocks: **${blocks.size}**
 
-            | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Migration | Exception |
-            | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+            | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
+            | --- | --- | --- | --- | --- | --- | --- | --- | --- |
         """.trimIndent()
 
         val rows = blocks.sortedWith(compareBy({ it.relativeFile }, { it.openingLine })).joinToString("\n") { block ->
@@ -299,7 +351,6 @@ internal class DocumentationVerifier(private val root: Path) {
                 directive.owner,
                 source,
                 directive.verification,
-                "complete",
                 directive.reason.orEmpty(),
             ).joinToString(" | ", prefix = "| ", postfix = " |") { escapeTable(it) }
         }
@@ -367,14 +418,20 @@ internal class DocumentationScanner(private val root: Path) {
                 heading = normalized.trimStart('#').trim().ifBlank { heading }
             }
 
-            readDirective(lines, index, isKotlin)?.let { (directive, nextIndex) ->
+            readDirective(lines, index, isKotlin, relative)?.let { (directive, nextIndex) ->
                 pendingDirective = index to directive
                 index = nextIndex
                 return@let
             } ?: run {
                 if (pendingDirective?.first == index) return@run
-                val fence = OPEN_FENCE_PATTERN.matchEntire(normalized)
+                val fence = parseFence(normalized)
                 if (fence == null || isKotlin && !looksLikeKDocLine(lines[index])) {
+                    if (fenceCandidate(normalized)) {
+                        check(false) {
+                            "$relative:${index + 1}: unsupported fenced block style; " +
+                                "use matching backtick or tilde fences"
+                        }
+                    }
                     if (normalized.isNotBlank()) {
                         pendingDirective = null
                     }
@@ -383,12 +440,13 @@ internal class DocumentationScanner(private val root: Path) {
                 }
 
                 val openingIndex = index
-                val prefix = lines[index].substringBefore("```")
+                val markerText = fence.marker.toString().repeat(fence.length)
+                val prefix = lines[index].substringBefore(markerText)
                 index += 1
                 val bodyStart = index
                 while (
                     index < lines.size &&
-                    OPEN_FENCE_PATTERN.matchEntire(normalize(lines[index], isKotlin)) == null
+                    !isClosingFence(parseFence(normalize(lines[index], isKotlin)), fence)
                 ) {
                     index += 1
                 }
@@ -408,7 +466,7 @@ internal class DocumentationScanner(private val root: Path) {
                     bodyStartIndex = bodyStart,
                     bodyEndIndex = bodyEnd,
                     prefix = prefix,
-                    language = fence.groupValues[1].lowercase(),
+                    language = fence.language.lowercase(),
                     purpose = heading,
                     directive = directive,
                     content = content,
@@ -424,6 +482,7 @@ internal class DocumentationScanner(private val root: Path) {
         lines: List<String>,
         startIndex: Int,
         isKotlin: Boolean,
+        relative: String,
     ): Pair<Directive, Int>? {
         if (!normalize(lines[startIndex], isKotlin).startsWith(DIRECTIVE_PREFIX)) return null
 
@@ -434,30 +493,41 @@ internal class DocumentationScanner(private val root: Path) {
         ) {
             endIndex += 1
         }
-        check(endIndex < lines.size) { "Unclosed doc-example directive at line ${startIndex + 1}" }
+        check(endIndex < lines.size) { "$relative:${startIndex + 1}: unclosed doc-example directive" }
         val text = lines.subList(startIndex, endIndex + 1)
             .joinToString(" ") { normalize(it, isKotlin) }
-        return requireNotNull(parseDirective(text)) to endIndex + 1
+        return requireNotNull(parseDirective(text, "$relative:${startIndex + 1}")) to endIndex + 1
     }
 
-    private fun parseDirective(line: String): Directive? {
+    private fun parseDirective(line: String, location: String): Directive? {
         if (!line.startsWith(DIRECTIVE_PREFIX) || !line.endsWith(DIRECTIVE_SUFFIX)) return null
-        val fields = line.removePrefix(DIRECTIVE_PREFIX)
+        val entries = line.removePrefix(DIRECTIVE_PREFIX)
             .removeSuffix(DIRECTIVE_SUFFIX)
             .trim()
             .split(';')
             .map { it.trim() }
             .filter { it.isNotEmpty() }
-            .associate { field ->
+            .map { field ->
                 val key = field.substringBefore('=').trim()
                 val value = field.substringAfter('=', missingDelimiterValue = "").trim()
-                check(key.isNotBlank() && value.isNotBlank()) { "Invalid doc-example directive field '$field'" }
+                check(key.isNotBlank() && value.isNotBlank()) {
+                    "$location: invalid doc-example directive field '$field'"
+                }
                 key to value
             }
 
-        val known = setOf("id", "owner", "verify", "audience", "source", "reason")
-        check(fields.keys.all { it in known }) {
-            "Unknown doc-example directive fields: ${(fields.keys - known).sorted().joinToString()}"
+        val duplicateKeys = entries.groupBy { it.first }.filterValues { it.size > 1 }.keys
+        check(duplicateKeys.isEmpty()) {
+            "$location: duplicate doc-example directive fields: ${duplicateKeys.sorted().joinToString()}"
+        }
+        val fields = entries.toMap()
+        check(fields.keys.all { it in KNOWN_DIRECTIVE_FIELDS }) {
+            "$location: unknown doc-example directive fields: " +
+                "${(fields.keys - KNOWN_DIRECTIVE_FIELDS).sorted().joinToString()}"
+        }
+        val missingFields = REQUIRED_DIRECTIVE_FIELDS - fields.keys
+        check(missingFields.isEmpty()) {
+            "$location: missing required doc-example fields: ${missingFields.sorted().joinToString()}"
         }
         return Directive(
             id = fields.getValue("id"),
@@ -467,6 +537,26 @@ internal class DocumentationScanner(private val root: Path) {
             source = fields["source"],
             reason = fields["reason"],
         )
+    }
+
+    private fun parseFence(line: String): Fence? {
+        val match = FENCE_PATTERN.matchEntire(line) ?: return null
+        val markerText = match.groupValues[1]
+        if (markerText.any { it != markerText.first() }) return null
+        return Fence(markerText.first(), markerText.length, match.groupValues[2])
+    }
+
+    private fun isClosingFence(candidate: Fence?, opening: Fence): Boolean {
+        return candidate != null &&
+            candidate.marker == opening.marker &&
+            candidate.length >= opening.length &&
+            candidate.language.isBlank()
+    }
+
+    private fun fenceCandidate(line: String): Boolean {
+        val trimmed = line.trimStart()
+        val markerRun = trimmed.takeWhile { it == '`' || it == '~' }
+        return markerRun.length >= MIN_FENCE_LENGTH
     }
 
     private fun isExcluded(path: Path): Boolean {
