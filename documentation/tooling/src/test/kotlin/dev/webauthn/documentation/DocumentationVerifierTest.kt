@@ -14,7 +14,7 @@ import kotlin.test.assertFailsWith
 class DocumentationVerifierTest {
     @Test
     fun `update synchronizes source blocks and writes deterministic inventory`() = withRepository { root ->
-        root.resolve("examples/Sample.kt").write(
+        root.resolve("documentation/examples/src/commonMain/Sample.kt").write(
             """
             package examples
 
@@ -27,7 +27,7 @@ class DocumentationVerifierTest {
             """
             # Greeting
 
-            <!-- doc-example: id=greeting; owner=source; verify=compile; audience=consumer; source=examples/Sample.kt#greeting -->
+            <!-- doc-example: id=greeting; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/Sample.kt#greeting -->
             ```kotlin
             fun greeting(): String = "stale"
             ```
@@ -41,7 +41,7 @@ class DocumentationVerifierTest {
         assertContains(root.resolve("README.md").readText(), "fun greeting(): String = \"hello\"")
         val inventory = root.resolve("documentation/example-inventory.md").readText()
         assertContains(inventory, "Managed blocks: **1**")
-        assertContains(inventory, "examples/Sample.kt#greeting")
+        assertContains(inventory, "documentation/examples/src/commonMain/Sample.kt#greeting")
         assertContains(inventory, "| compile |")
     }
 
@@ -84,7 +84,7 @@ class DocumentationVerifierTest {
 
     @Test
     fun `KDoc fences retain comment prefixes when updated`() = withRepository { root ->
-        root.resolve("examples/Sample.kt").write(
+        root.resolve("documentation/examples/src/commonMain/Sample.kt").write(
             """
             package examples
 
@@ -101,7 +101,7 @@ class DocumentationVerifierTest {
              * Example:
              * <!-- doc-example:
              * id=kdoc-expression; owner=source; verify=compile; audience=consumer;
-             * source=examples/Sample.kt#expression
+             * source=documentation/examples/src/commonMain/Sample.kt#expression
              * -->
              * ```kotlin
              * check(false)
@@ -278,11 +278,19 @@ class DocumentationVerifierTest {
         val validCases = listOf(
             Triple("markdown", "syntax", null),
             Triple("illustrative", "illustrative", null),
-            Triple("configuration", "consumer-compile", "fixture.gradle.kts#fixture"),
-            Triple("sample", "sample-build", "sample.kt#sample"),
-            Triple("source", "compile", "source.kt#source"),
-            Triple("source", "unit", "source.kt#source"),
-            Triple("source", "platform-compile", "src/androidMain/Android.kt#android"),
+            Triple("configuration", "consumer-compile", "documentation/consumer-smoke/fixture.gradle.kts#fixture"),
+            Triple("sample", "sample-build", "sample/compose-passkey/src/sample.kt#sample"),
+            Triple("source", "compile", "documentation/examples/src/commonMain/source.kt#source"),
+            Triple(
+                "source",
+                "unit",
+                "documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ModelExample.kt#model-request-options",
+            ),
+            Triple(
+                "source",
+                "platform-compile",
+                "documentation/examples/src/androidMain/Android.kt#android",
+            ),
         )
         validCases.forEachIndexed { index, (owner, verification, source) ->
             withRepository { root ->
@@ -313,12 +321,12 @@ class DocumentationVerifierTest {
 
         val invalidCases = listOf(
             "owner=illustrative; verify=unit; audience=consumer; reason=No runtime" to "owner 'illustrative'",
-            "owner=source; verify=consumer-compile; audience=consumer; source=source.kt#source" to "owner 'source'",
+            "owner=source; verify=consumer-compile; audience=consumer; source=documentation/examples/src/commonMain/source.kt#source" to "owner 'source'",
             "owner=markdown; verify=compile; audience=consumer" to "Kotlin examples must be backed by compiled source",
         )
         invalidCases.forEachIndexed { index, (fields, expected) ->
             withRepository { root ->
-                root.resolve("source.kt").write(
+                root.resolve("documentation/examples/src/commonMain/source.kt").write(
                     """
                     // docs-region source
                     println("example")
@@ -347,7 +355,7 @@ class DocumentationVerifierTest {
             """
             # Missing source
 
-            <!-- doc-example: id=missing-source; owner=source; verify=compile; audience=consumer; source=missing.kt#source -->
+            <!-- doc-example: id=missing-source; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/missing.kt#source -->
             ```kotlin
             println("example")
             ```
@@ -356,20 +364,32 @@ class DocumentationVerifierTest {
         var error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
         assertContains(error.message.orEmpty(), "does not exist inside the repository")
 
-        root.resolve("README.md").write(
+        val outside = root.parent.resolve("${root.fileName}-outside.kt")
+        outside.write(
             """
-            # Escaping source
-
-            <!-- doc-example: id=escaping-source; owner=source; verify=compile; audience=consumer; source=../outside.kt#source -->
-            ```kotlin
-            println("example")
-            ```
+            // docs-region source
+            println("outside")
+            // docs-endregion source
             """,
         )
-        error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
-        assertContains(error.message.orEmpty(), "does not exist inside the repository")
+        try {
+            root.resolve("README.md").write(
+                """
+                # Escaping source
 
-        root.resolve("source.kt").write(
+                <!-- doc-example: id=escaping-source; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/../../../../${outside.fileName}#source -->
+                ```kotlin
+                println("example")
+                ```
+                """,
+            )
+            error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
+            assertContains(error.message.orEmpty(), "does not exist inside the repository")
+        } finally {
+            Files.deleteIfExists(outside)
+        }
+
+        root.resolve("documentation/examples/src/commonMain/source.kt").write(
             """
             // docs-endregion source
             // docs-region source
@@ -381,7 +401,7 @@ class DocumentationVerifierTest {
             """
             # Malformed source
 
-            <!-- doc-example: id=malformed-source; owner=source; verify=compile; audience=consumer; source=source.kt#source -->
+            <!-- doc-example: id=malformed-source; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/source.kt#source -->
             ```kotlin
             println("example")
             ```
@@ -390,7 +410,7 @@ class DocumentationVerifierTest {
         error = assertFailsWith<IllegalStateException> { DocumentationVerifier(root).update() }
         assertContains(error.message.orEmpty(), "expected one ordered source region")
 
-        root.resolve("source.kt").write(
+        root.resolve("documentation/examples/src/commonMain/source.kt").write(
             """
             // docs-region source
             // docs-endregion source
@@ -490,12 +510,12 @@ class DocumentationVerifierTest {
             """, "expected one ordered source region"),
         )
         cases.forEach { (name, source, expected) ->
-            root.resolve("source.kt").write(source)
+            root.resolve("documentation/examples/src/commonMain/source.kt").write(source)
             root.resolve("README.md").write(
                 """
                 # Source $name
 
-                <!-- doc-example: id=$name; owner=source; verify=compile; audience=consumer; source=source.kt#source -->
+                <!-- doc-example: id=$name; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/source.kt#source -->
                 ```kotlin
                 println("example")
                 ```
@@ -508,7 +528,7 @@ class DocumentationVerifierTest {
 
     @Test
     fun `stale markdown source content fails check until regenerated`() = withRepository { root ->
-        root.resolve("source.kt").write(
+        root.resolve("documentation/examples/src/commonMain/source.kt").write(
             """
             // docs-region source
             println("fresh")
@@ -519,7 +539,7 @@ class DocumentationVerifierTest {
             """
             # Stale
 
-            <!-- doc-example: id=stale; owner=source; verify=compile; audience=consumer; source=source.kt#source -->
+            <!-- doc-example: id=stale; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/source.kt#source -->
             ```kotlin
             println("old")
             ```
@@ -541,7 +561,7 @@ class DocumentationVerifierTest {
 
             /**
              * First section
-             * <!-- doc-example: id=kdoc-one; owner=source; verify=compile; audience=consumer; source=source.kt#one -->
+             * <!-- doc-example: id=kdoc-one; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/source.kt#one -->
              * ```kotlin
              * println("one")
              * ```
@@ -550,7 +570,7 @@ class DocumentationVerifierTest {
 
             /**
              * Second section
-             * <!-- doc-example: id=kdoc-two; owner=source; verify=compile; audience=consumer; source=source.kt#two -->
+             * <!-- doc-example: id=kdoc-two; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/source.kt#two -->
              * ```kotlin
              * println("two")
              * ```
@@ -558,7 +578,7 @@ class DocumentationVerifierTest {
             fun two() = Unit
             """,
         )
-        root.resolve("source.kt").write(
+        root.resolve("documentation/examples/src/commonMain/source.kt").write(
             """
             // docs-region one
             println("one")

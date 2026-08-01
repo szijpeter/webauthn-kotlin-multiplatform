@@ -22,9 +22,18 @@ private val SOURCE_REGION_PATTERN = Regex("^\\s*//\\s*docs-region\\s+([a-z0-9][a
 private val SOURCE_END_PATTERN = Regex("^\\s*//\\s*docs-endregion\\s+([a-z0-9][a-z0-9-]*)\\s*$")
 private val REQUIRED_DIRECTIVE_FIELDS = setOf("id", "owner", "verify", "audience")
 private val KNOWN_DIRECTIVE_FIELDS = REQUIRED_DIRECTIVE_FIELDS + setOf("source", "reason")
-private val UNIT_VERIFIED_IDS = setOf(
-    "core-webauthn-model-readme-kotlin-1",
-    "core-webauthn-runtime-core-readme-kotlin-1",
+private const val DOCUMENTATION_SOURCE_PREFIX = "documentation/examples/src/"
+private const val CONSUMER_FIXTURE_SOURCE_PREFIX = "documentation/consumer-smoke/"
+private const val BUILT_SAMPLE_SOURCE_PREFIX = "sample/compose-passkey/"
+private const val MODEL_UNIT_SOURCE =
+    "documentation/examples/src/commonMain/kotlin/" +
+        "dev/webauthn/documentation/examples/ModelExample.kt#model-request-options"
+private const val RUNTIME_UNIT_SOURCE =
+    "documentation/examples/src/commonMain/kotlin/" +
+        "dev/webauthn/documentation/examples/RuntimeExample.kt#runtime-cancellation"
+private val UNIT_VERIFIED_SOURCES = mapOf(
+    "core-webauthn-model-readme-kotlin-1" to MODEL_UNIT_SOURCE,
+    "core-webauthn-runtime-core-readme-kotlin-1" to RUNTIME_UNIT_SOURCE,
 )
 
 private data class Fence(
@@ -180,12 +189,21 @@ internal class DocumentationVerifier(private val root: Path) {
         val allowed = when (directive.owner) {
             "markdown" -> setOf("syntax")
             "illustrative" -> setOf("illustrative")
-            "configuration" -> setOf("consumer-compile")
-            "sample" -> setOf("sample-build")
-            "source" -> if (isPlatformSource(directive.source)) {
-                setOf("platform-compile")
-            } else {
-                setOf("compile", "unit")
+            "configuration" -> {
+                requireSourcePrefix(block, CONSUMER_FIXTURE_SOURCE_PREFIX)
+                setOf("consumer-compile")
+            }
+            "sample" -> {
+                requireSourcePrefix(block, BUILT_SAMPLE_SOURCE_PREFIX)
+                setOf("sample-build")
+            }
+            "source" -> {
+                requireSourcePrefix(block, DOCUMENTATION_SOURCE_PREFIX)
+                if (isPlatformSource(directive.source)) {
+                    setOf("platform-compile")
+                } else {
+                    setOf("compile", "unit")
+                }
             }
             else -> emptySet()
         }
@@ -194,9 +212,16 @@ internal class DocumentationVerifier(private val root: Path) {
                 "'${directive.verification}'; expected one of ${allowed.sorted().joinToString()}"
         }
         if (directive.verification == "unit") {
-            check(directive.id in UNIT_VERIFIED_IDS) {
-                "${block.location()}: only explicitly allow-listed examples may claim unit verification"
+            check(UNIT_VERIFIED_SOURCES[directive.id] == directive.source) {
+                "${block.location()}: unit verification must match its allow-listed source region"
             }
+        }
+    }
+
+    private fun requireSourcePrefix(block: DocumentationBlock, prefix: String) {
+        val source = requireNotNull(block.directive.source)
+        check(source.startsWith(prefix)) {
+            "${block.location()}: ${block.directive.owner} source must be under $prefix"
         }
     }
 

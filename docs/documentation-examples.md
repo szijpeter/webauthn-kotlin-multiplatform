@@ -26,7 +26,7 @@ is not applicable. Do not edit the generated inventory directly.
 
 ## Verification
 
-`./gradlew docsCheck` is the aggregate check. It rejects unmanaged or duplicate blocks, stale generated
+`./gradlew docsCheck` is the aggregate check. It rejects unmanaged or duplicate identifiers, stale generated
 content, invalid directives, missing regions, and invalid shell syntax. It also runs the extractor tests,
 compiles and behavior-tests public API examples on JVM, compiles Android and iOS examples, builds the
 canonical Compose sample targets, and confirms that documentation projects are absent from publication

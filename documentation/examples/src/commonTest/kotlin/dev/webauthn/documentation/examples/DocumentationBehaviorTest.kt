@@ -99,10 +99,14 @@ class DocumentationBehaviorTest {
             previousSignCount = 3,
         )
 
+        var verificationCalls = 0
         val result = validateAssertionForFinish(
             input = input,
             allowedCredentialIds = setOf(credential),
-            verifySignature = {
+            verifySignature = { verifiedInput, verifiedOutput ->
+                verificationCalls += 1
+                assertEquals(input.response.signature, verifiedInput.response.signature)
+                assertEquals(input.response.authenticatorData.signCount, verifiedOutput.signCount)
                 ValidationResult.Invalid(
                     listOf(
                         WebAuthnValidationError.InvalidValue(
@@ -115,6 +119,7 @@ class DocumentationBehaviorTest {
         )
 
         assertIs<ValidationResult.Invalid>(result)
+        assertEquals(1, verificationCalls)
     }
 
     @Test
@@ -149,12 +154,19 @@ class DocumentationBehaviorTest {
             previousSignCount = 3,
         )
 
+        var verificationCalls = 0
         val result = validateAssertionForFinish(
             input = input,
             allowedCredentialIds = setOf(credential),
-            verifySignature = { ValidationResult.Valid(Unit) },
+            verifySignature = { verifiedInput, verifiedOutput ->
+                verificationCalls += 1
+                assertEquals(input.response.signature, verifiedInput.response.signature)
+                assertEquals(signCount, verifiedOutput.signCount)
+                ValidationResult.Valid(Unit)
+            },
         )
 
         assertEquals(signCount, assertIs<ValidationResult.Valid<Long>>(result).value)
+        assertEquals(1, verificationCalls)
     }
 }

@@ -85,6 +85,10 @@ fi
 
 if [[ "$scope" == "changed" && "$DOCS_ONLY" == "true" ]]; then
     docs_only_failed="false"
+    consumer_smoke_changed="false"
+    if rg -q '^documentation/consumer-smoke/' "$tmp_changed_files"; then
+        consumer_smoke_changed="true"
+    fi
     if ! ./gradlew docsCatalogCheck --stacktrace >/dev/null; then
         docs_only_failed="true"
     fi
@@ -94,6 +98,14 @@ if [[ "$scope" == "changed" && "$DOCS_ONLY" == "true" ]]; then
                 docs_only_failed="true"
             fi
         done
+    fi
+    if [[ "$mode" == "strict" && "$consumer_smoke_changed" == "true" ]]; then
+        if ! ./gradlew publishToMavenLocal -PsignAllPublications=false --stacktrace >/dev/null; then
+            docs_only_failed="true"
+        fi
+        if ! bash tools/agent/check-published-consumer-smoke.sh >/dev/null; then
+            docs_only_failed="true"
+        fi
     fi
     if [[ "$docs_only_failed" == "true" ]]; then
         if [[ "$format" == "json" ]]; then

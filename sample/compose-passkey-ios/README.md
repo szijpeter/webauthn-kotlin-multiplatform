@@ -98,7 +98,7 @@ Backend iOS association identity:
 
 If `project.yml` changes, regenerate the Xcode project:
 
-<!-- doc-example: id=sample-compose-passkey-ios-readme-bash-3; owner=markdown; verify=syntax; audience=consumer -->
+<!-- doc-example: id=sample-compose-passkey-ios-readme-bash-3; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
 xcodegen generate --spec sample/compose-passkey-ios/project.yml
 ```

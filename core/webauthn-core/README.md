@@ -48,13 +48,18 @@ import dev.webauthn.model.ValidationResult
  *
  * Core validation alone is not enough to accept an assertion. Callers must
  * supply a [verifySignature] implementation (for example JVM crypto) that
- * succeeds before [ValidationResult.Valid] is returned.
+ * receives the assertion input and validated output, constructs the signed
+ * bytes from [AuthenticationValidationInput.response], and succeeds before
+ * [ValidationResult.Valid] is returned.
  */
 @OptIn(ExperimentalWebAuthnL3Api::class)
 suspend fun validateAssertionForFinish(
     input: AuthenticationValidationInput,
     allowedCredentialIds: Set<CredentialId>,
-    verifySignature: suspend (AuthenticationValidationOutput) -> ValidationResult<Unit>,
+    verifySignature: suspend (
+        AuthenticationValidationInput,
+        AuthenticationValidationOutput,
+    ) -> ValidationResult<Unit>,
     extensionHook: WebAuthnExtensionHook = WebAuthnExtensionValidator,
 ): ValidationResult<Long> {
     val core = WebAuthnCoreValidator.validateAuthentication(input)
@@ -74,7 +79,7 @@ suspend fun validateAssertionForFinish(
     )
     if (ext is ValidationResult.Invalid) return ext
 
-    val signature = verifySignature(output)
+    val signature = verifySignature(input, output)
     if (signature is ValidationResult.Invalid) return signature
 
     // Persist output.signCount only after signature verification succeeds.

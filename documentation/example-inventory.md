@@ -46,7 +46,7 @@ Managed blocks: **103**
 | core-webauthn-cbor-core-readme-mermaid-1 | core/webauthn-cbor-core/README.md:17 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-core-readme-mermaid-1 | core/webauthn-core/README.md:15 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-core-readme-kotlin-1 | core/webauthn-core/README.md:35 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/CoreValidationExample.kt#core-validation | compile |  |
-| core-webauthn-core-readme-kotlin-2 | core/webauthn-core/README.md:107 | Composable extension hooks | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension | compile |  |
+| core-webauthn-core-readme-kotlin-2 | core/webauthn-core/README.md:112 | Composable extension hooks | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension | compile |  |
 | composite-extension-hook-kdoc | core/webauthn-core/src/commonMain/kotlin/dev/webauthn/core/CompositeExtensionHook.kt:20 | KDoc example | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/examples/Composite.kt#composite-extension-kdoc | compile |  |
 | core-webauthn-crypto-api-readme-kotlin-1 | core/webauthn-crypto-api/README.md:20 | How to use | kotlin | consumer | source | documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/CryptoExample.kt#crypto-rp-id-hasher | compile |  |
 | core-webauthn-crypto-api-readme-mermaid-1 | core/webauthn-crypto-api/README.md:37 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
@@ -80,7 +80,7 @@ Managed blocks: **103**
 | sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:45 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-1 | sample/compose-passkey-ios/README.md:20 | Quick run on device (free Apple account) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-2 | sample/compose-passkey-ios/README.md:46 | Full passkey E2E path (Associated Domains capable setup) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-ios-readme-bash-3 | sample/compose-passkey-ios/README.md:102 | Maintaining this project | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-ios-readme-bash-3 | sample/compose-passkey-ios/README.md:102 | Maintaining this project | bash | contributor | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-1 | sample/compose-passkey/READINESS_CHECKLIST.md:10 | 1. Build and automated checks | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-2 | sample/compose-passkey/READINESS_CHECKLIST.md:31 | 2. Local sample backend | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-3 | sample/compose-passkey/READINESS_CHECKLIST.md:38 | 2. Local sample backend | bash | consumer | markdown | Markdown block | syntax |  |
