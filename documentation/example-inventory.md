@@ -63,14 +63,14 @@ Managed blocks: **103**
 | docs-ai-workflows-bash-1 | docs/ai/WORKFLOWS.md:10 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-2 | docs/ai/WORKFLOWS.md:17 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-3 | docs/ai/WORKFLOWS.md:24 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-4 | docs/ai/WORKFLOWS.md:37 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-5 | docs/ai/WORKFLOWS.md:44 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-6 | docs/ai/WORKFLOWS.md:51 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-7 | docs/ai/WORKFLOWS.md:64 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-8 | docs/ai/WORKFLOWS.md:71 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-9 | docs/ai/WORKFLOWS.md:78 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-10 | docs/ai/WORKFLOWS.md:90 | Full Validation Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-11 | docs/ai/WORKFLOWS.md:100 | Release-Prep Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-4 | docs/ai/WORKFLOWS.md:38 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-5 | docs/ai/WORKFLOWS.md:45 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-6 | docs/ai/WORKFLOWS.md:52 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-7 | docs/ai/WORKFLOWS.md:65 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-8 | docs/ai/WORKFLOWS.md:72 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-9 | docs/ai/WORKFLOWS.md:79 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-10 | docs/ai/WORKFLOWS.md:91 | Full Validation Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-11 | docs/ai/WORKFLOWS.md:101 | Release-Prep Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-architecture-mermaid-1 | docs/architecture.md:16 | Layering | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-unused-return-value-checker-bash-1 | docs/unused-return-value-checker.md:20 | Audit coverage | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-wiki-quality-and-release-bash-1 | docs/wiki/quality-and-release.md:12 | Default Quality Gates | bash | contributor | markdown | Markdown block | syntax |  |
