@@ -40,10 +40,16 @@ flowchart LR
 - Reported capabilities use the shared two-type model:
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` on iOS 18+ runtimes.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
-  - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
+  - `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)` on iOS 18+ runtimes.
+  - `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey)` when cross-platform security keys are supported.
 - Registration request selection is explicit:
   - `authenticatorAttachment = null` or `platform` requests platform registration.
   - `authenticatorAttachment = cross-platform` requests security-key registration on iOS 15+.
+- Apple AuthenticationServices supports conditional platform credential registration for automatic
+  passkey upgrades via `ASAuthorizationPlatformPublicKeyCredentialRegistrationRequest.RequestStyle.conditional`.
+  This bridge maps `PasskeyCreateOptions.Conditional` to that request style on platform registration
+  requests on iOS 18+ runtimes. Conditional create with `authenticatorAttachment = cross-platform`
+  is rejected as invalid options because security-key registration remains an explicit create flow.
 - On iOS 18+ runtime APIs, assertion PRF input supports shared `prf.eval` and per-credential `prf.evalByCredential`; malformed keys are rejected as invalid options.
 - `attestation` is forwarded as requested by callers; this module does not silently coerce `direct` to `none`. Apple platform behavior still determines the concrete attestation object returned at runtime.
 

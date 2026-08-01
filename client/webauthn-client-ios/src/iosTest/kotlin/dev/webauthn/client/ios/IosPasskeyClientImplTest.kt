@@ -1,6 +1,7 @@
 package dev.webauthn.client.ios
 
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
@@ -32,7 +33,13 @@ class IosPasskeyClientImplTest {
         var createResult: Result<IosRegistrationPayload>? = null,
         var getResult: Result<IosAuthenticationPayload>? = null,
     ) : IosAuthorizationBridge {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+        var lastCreateOptions: PasskeyCreateOptions? = null
+
+        override suspend fun createCredential(
+            options: PublicKeyCredentialCreationOptions,
+            createOptions: PasskeyCreateOptions,
+        ): IosRegistrationPayload {
+            lastCreateOptions = createOptions
             return createResult?.getOrThrow() ?: throw IllegalStateException("Not configured")
         }
 
@@ -75,6 +82,19 @@ class IosPasskeyClientImplTest {
         val result = delegate.createCredential(mockOptions())
         assertTrue(result is PasskeyResult.Success)
         assertEquals("MzMzMzMzMzMzMzMzMzMzMw", result.value.credentialId.value.encoded())
+    }
+
+    @Test
+    fun createCredential_forwards_conditional_create_options_to_bridge() = runBlocking {
+        val bridge = FakeAuthorizationBridge(
+            createResult = Result.failure(IllegalArgumentException("stop after forwarding")),
+        )
+        val delegate = IosPasskeyClientImpl(bridge)
+
+        val result = delegate.createCredential(mockOptions(), PasskeyCreateOptions.Conditional)
+
+        assertTrue(result is PasskeyResult.Failure)
+        assertEquals(PasskeyCreateOptions.Conditional, bridge.lastCreateOptions)
     }
 
     @Test
@@ -214,7 +234,10 @@ class IosPasskeyClientImplTest {
     @Test
     fun getAssertion_returns_InvalidOptions_when_rp_id_is_missing() = runBlocking {
         val bridge = object : IosAuthorizationBridge {
-            override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+            override suspend fun createCredential(
+                options: PublicKeyCredentialCreationOptions,
+                createOptions: PasskeyCreateOptions,
+            ): IosRegistrationPayload {
                 throw IllegalStateException("unused")
             }
 

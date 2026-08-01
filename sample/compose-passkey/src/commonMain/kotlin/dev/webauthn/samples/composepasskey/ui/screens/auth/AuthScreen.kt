@@ -24,6 +24,7 @@ internal fun AuthScreen(
     canRegister: Boolean,
     onShowLogs: () -> Unit,
     onRegister: () -> Unit,
+    onAutoCreate: () -> Unit,
     onSignIn: () -> Unit,
 ) {
     Column(
@@ -50,6 +51,7 @@ internal fun AuthScreen(
             actionsEnabled = actionsEnabled,
             showRegister = canRegister,
             onRegister = onRegister,
+            onAutoCreate = onAutoCreate,
             onSignIn = onSignIn,
         )
 

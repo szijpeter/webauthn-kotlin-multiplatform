@@ -15,10 +15,17 @@ public class DefaultPasskeyClient(
     override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
     ): PasskeyResult<RegistrationResponse> {
+        return createCredential(options, PasskeyCreateOptions.Default)
+    }
+
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): PasskeyResult<RegistrationResponse> {
         return runOperation(
             options = options,
             validate = ::requireCreationOptions,
-            operation = bridge::createCredential,
+            operation = { bridge.createCredential(it, createOptions) },
         )
     }
 

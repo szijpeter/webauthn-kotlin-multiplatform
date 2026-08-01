@@ -11,5 +11,6 @@ final class dev.webauthn.client.ios/IosPasskeyClient : dev.webauthn.client/Passk
 
     final suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client.ios/IosPasskeyClient.capabilities|capabilities(){}[0]
     final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client.ios/IosPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions, dev.webauthn.client/PasskeyCreateOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client.ios/IosPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.client.PasskeyCreateOptions){}[0]
     final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.client.ios/IosPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.PasskeyPlatformFeatureKeys
 import dev.webauthn.model.WebAuthnExtension
 
 @Composable
@@ -34,7 +35,10 @@ fun CapabilitiesCard(
 ) {
     val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }
     val largeBlobCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) }
-    val securityKeyCapability = remember { PasskeyCapability.PlatformFeature("securityKey") }
+    val securityKeyCapability = remember { PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey) }
+    val conditionalCreateCapability = remember {
+        PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)
+    }
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -57,6 +61,7 @@ fun CapabilitiesCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 CapabilityChip("Security Key", capabilities.supports(securityKeyCapability))
+                CapabilityChip("Auto Create", capabilities.supports(conditionalCreateCapability))
             }
             Text(
                 text = if (capabilities.platformVersionHints.isEmpty()) {

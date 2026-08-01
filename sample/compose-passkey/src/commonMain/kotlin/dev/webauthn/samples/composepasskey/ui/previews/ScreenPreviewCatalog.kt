@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.PasskeyPlatformFeatureKeys
 import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.domain.model.StatusTone
@@ -30,6 +31,7 @@ private fun AuthScreenIdlePreview() {
             canRegister = true,
             onShowLogs = {},
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }
@@ -49,6 +51,7 @@ private fun AuthScreenBusyPreview() {
             canRegister = true,
             onShowLogs = {},
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }
@@ -64,7 +67,8 @@ private fun MainScreenPreview() {
                 capabilities = PasskeyCapabilities(
                     supported = setOf(
                         PasskeyCapability.Extension(WebAuthnExtension.Prf),
-                        PasskeyCapability.PlatformFeature("securityKey"),
+                        PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey),
+                        PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate),
                     ),
                     platformVersionHints = listOf("android sdk=36", "play-services:available"),
                 ),

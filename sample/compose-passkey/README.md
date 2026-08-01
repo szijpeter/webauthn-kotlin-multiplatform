@@ -4,8 +4,9 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 
 ## What this demonstrates
 
-1. Runtime capability probing via `PasskeyCapabilities.supports(...)` (PRF extension, Large Blob extension, security key support).
-2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
+1. Runtime capability probing via `PasskeyCapabilities.supports(...)` (PRF extension, Large Blob extension, security key support, conditional create support).
+2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`,
+   including an `Auto Create` action that exercises conditional passkey creation via `PasskeyCreateOptions.Conditional`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.
 5. Compose-first auth wiring via `rememberPasskeyController(...)`, with `PasskeyControllerState` driving UI status and action enablement.
@@ -61,6 +62,12 @@ WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080 \
 WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
 ./gradlew :sample:compose-passkey-android:installDebug
 ```
+
+The `Auto Create` button on the auth screen uses the conditional-create path. It is meant for
+manual platform smoke testing after confirming the capabilities card advertises `Auto Create`.
+On Android, seeing `No credential creation option found` is a valid conditional-create outcome
+when no enabled credential provider can silently create a passkey; explicit registration remains
+the `Register` button path.
 
 3. Optional UI smoke test (emulator/device connected):
 

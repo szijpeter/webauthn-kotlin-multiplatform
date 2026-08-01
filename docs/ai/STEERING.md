@@ -101,6 +101,14 @@ Reference/samples:
 - `docs/*`
 - `spec-notes/*`
 
+## Client Platform Feature Policy
+
+1. Put a feature in `webauthn-client-core` only when the app-facing passkey semantic is meaningfully cross-platform, even if each OS maps it through different native APIs.
+2. Keep OS-native capabilities without a stable shared passkey contract in the owning platform module, for example `webauthn-client-android`.
+3. Use `PasskeyCapabilities` and stable `PasskeyPlatformFeatureKeys` for shared feature discovery; avoid string literals at call sites once a shared key exists.
+4. Sample apps may use internal common interfaces with platform `actual` implementations to keep one demo flow, but those sample adapters must not become public library contracts by accident.
+5. Unsupported platform paths must be explicit through absent capabilities, documented platform limits, or typed `PasskeyResult.Failure` values; do not silently no-op platform-limited features.
+
 ## Error Handling Policy
 
 1. Prefer `KmmResult` (`at.asitplus.catching`, `.transform`, `.fold`) for internal sequential pipelines where failures are singular.

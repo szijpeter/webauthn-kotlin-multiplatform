@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.webauthn.client.PasskeyClient
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.compose.rememberPasskeyController
 import dev.webauthn.samples.composepasskey.app.LocalShowDebugLogs
 import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
@@ -59,6 +60,17 @@ internal fun AuthRoute() {
                 coordinator.onRegisterClicked()
                 scope.launch {
                     controller.register(config.toRegistrationStartPayload())
+                }
+            }
+        },
+        onAutoCreate = {
+            if (actionsEnabled && canRegister) {
+                coordinator.onAutoCreateClicked()
+                scope.launch {
+                    controller.register(
+                        params = config.toRegistrationStartPayload(),
+                        createOptions = PasskeyCreateOptions.Conditional,
+                    )
                 }
             }
         },

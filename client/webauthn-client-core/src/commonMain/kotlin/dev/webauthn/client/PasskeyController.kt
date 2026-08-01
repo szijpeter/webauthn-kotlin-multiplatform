@@ -23,11 +23,21 @@ public class PasskeyController<RegisterParams, SignInParams>(
      * @param params Client-specific parameters needed by the server to start/finish registration.
      */
     public suspend fun register(params: RegisterParams) {
+        register(params, PasskeyCreateOptions.Default)
+    }
+
+    /**
+     * Triggers a full registration ceremony with platform mediation hints.
+     *
+     * @param params Client-specific parameters needed by the server to start/finish registration.
+     * @param createOptions Platform mediation hints for the create request.
+     */
+    public suspend fun register(params: RegisterParams, createOptions: PasskeyCreateOptions) {
         runCeremony(
             action = PasskeyAction.REGISTER,
             getOptions = { serverClient.getRegisterOptions(params) },
             extractChallenge = { options -> options.challenge.value.encoded() },
-            interactWithPlatform = passkeyClient::createCredential,
+            interactWithPlatform = { options -> passkeyClient.createCredential(options, createOptions) },
             finish = { response, challenge -> serverClient.finishRegister(params, response, challenge) },
         )
     }

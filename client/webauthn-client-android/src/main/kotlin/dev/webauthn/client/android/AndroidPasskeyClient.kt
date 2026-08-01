@@ -14,6 +14,7 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialNoCreateOptionException
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
@@ -25,7 +26,10 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyCreateMediation
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyJsonMapper
+import dev.webauthn.client.PasskeyPlatformFeatureKeys
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.model.AuthenticationResponse
@@ -78,15 +82,27 @@ internal class AndroidPasskeyPlatformBridge(
      * Maps to Android Credential Manager CreatePublicKeyCredentialRequest
      */
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+        return createCredential(options, PasskeyCreateOptions.Default)
+    }
+
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): RegistrationResponse {
         val context = requirePromptContext()
         val credentialManager = credentialManagerFactory(context)
+        val conditionalCreate = createOptions.mediation == PasskeyCreateMediation.Conditional
         return runTypedCeremony(
             options = options,
             encodeOptions = jsonMapper::encodeCreationOptionsOrThrowInvalid,
             executeRequest = { requestJson ->
                 credentialManager.createCredential(
                     context = context,
-                    request = CreatePublicKeyCredentialRequest(requestJson),
+                    request = CreatePublicKeyCredentialRequest(
+                        requestJson = requestJson,
+                        preferImmediatelyAvailableCredentials = conditionalCreate,
+                        isConditional = conditionalCreate,
+                    ),
                 )
             },
             extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
@@ -118,6 +134,7 @@ internal class AndroidPasskeyPlatformBridge(
     override fun mapPlatformError(throwable: Throwable): PasskeyClientError = when (throwable) {
         is CreateCredentialCancellationException,
         is GetCredentialCancellationException -> PasskeyClientError.UserCancelled()
+        is CreateCredentialNoCreateOptionException -> PasskeyClientError.Platform("No credential creation option found")
         is NoCredentialException -> PasskeyClientError.Platform("No credentials found")
         is IllegalArgumentException -> PasskeyClientError.InvalidOptions(
             enrichRpIdValidationMessage(throwable.message ?: "Invalid options"),
@@ -136,7 +153,8 @@ internal class AndroidPasskeyPlatformBridge(
                     add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
                     add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
                 }
-                add(PasskeyCapability.PlatformFeature("securityKey"))
+                add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate))
+                add(PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey))
             },
             platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )

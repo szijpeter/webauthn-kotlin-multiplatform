@@ -11,6 +11,16 @@ import dev.webauthn.model.RegistrationResponse
 public interface PasskeyPlatformBridge {
     public suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse
 
+    public suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): RegistrationResponse {
+        if (createOptions == PasskeyCreateOptions.Default) {
+            return createCredential(options)
+        }
+        throw UnsupportedOperationException("Passkey create option ${createOptions.mediation} is not supported")
+    }
+
     public suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse
 
     public fun mapPlatformError(throwable: Throwable): PasskeyClientError

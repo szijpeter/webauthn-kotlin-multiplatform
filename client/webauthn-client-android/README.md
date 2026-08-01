@@ -23,6 +23,25 @@ val client = AndroidPasskeyClient(context)
 
 Real-world scenario: your shared app logic drives ceremony flow in `PasskeyController`, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
 
+For Android automatic passkey upgrades after a successful password or other non-passkey sign-in,
+call the shared create overload with conditional options:
+
+```kotlin
+import dev.webauthn.client.PasskeyCreateOptions
+
+val result = client.createCredential(
+    options = creationOptions,
+    createOptions = PasskeyCreateOptions.Conditional,
+)
+```
+
+This maps to Credential Manager conditional create with immediately-available credentials preferred,
+so providers can create the passkey opportunistically without blocking system UI.
+If no enabled provider has an immediately available creation option, Credential Manager returns
+`CreateCredentialNoCreateOptionException`; this bridge reports that as
+`PasskeyClientError.Platform("No credential creation option found")`. Treat that as an expected
+conditional-create no-op and continue the already-successful sign-in flow.
+
 ## How it fits
 
 ```mermaid
@@ -39,8 +58,12 @@ flowchart LR
 - Reported capabilities use the shared two-type model:
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
-  - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
+  - `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.ConditionalCreate)` when conditional create can be requested.
+  - `PasskeyCapability.PlatformFeature(PasskeyPlatformFeatureKeys.SecurityKey)` when cross-platform security keys are supported.
 - Keep backend contract alignment with your chosen server client implementation.
+- Conditional create should only run after a successful non-passkey sign-in or sign-up where an
+  automatic passkey upgrade is appropriate; keep explicit registration flows on the default
+  `createCredential(options)` path.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.

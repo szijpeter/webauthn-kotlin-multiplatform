@@ -58,6 +58,21 @@ class AuthDemoCoordinatorTest {
         assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Sign In tapped") })
         assertTrue(debugLogs.entries.any { it.source == "controller" && it.message.contains("Sign In success") })
     }
+
+    @Test
+    fun auto_create_action_logs_distinct_manual_conditional_create_path() {
+        val debugLogs = DebugLogStore()
+        val sessionStore = AppSessionStore()
+        val coordinator = AuthDemoCoordinator(
+            config = testDemoConfig(),
+            debugLogs = debugLogs,
+            sessionStore = sessionStore,
+        )
+
+        coordinator.onAutoCreateClicked()
+
+        assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Auto Create tapped") })
+    }
 }
 
 private fun testDemoConfig(): PasskeyDemoConfig {
