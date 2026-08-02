@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **103**
+Managed blocks: **106**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -22,12 +22,12 @@ Managed blocks: **103**
 | contributing-bash-3 | CONTRIBUTING.md:32 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | contributing-bash-4 | CONTRIBUTING.md:39 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | readme-mermaid-1 | README.md:50 | WebAuthn Core Concepts | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-mermaid-2 | README.md:82 | Repository Structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-kotlin-1 | README.md:181 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
-| readme-kotlin-2 | README.md:193 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-3 | README.md:215 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
-| readme-bash-1 | README.md:235 | Install | bash | maintainer | markdown | Markdown block | syntax |  |
-| readme-bash-2 | README.md:322 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-mermaid-2 | README.md:82 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| readme-kotlin-1 | README.md:142 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
+| readme-kotlin-2 | README.md:154 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-3 | README.md:176 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
+| readme-bash-1 | README.md:196 | Install | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-bash-2 | README.md:283 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
 | client-webauthn-client-android-readme-kotlin-1 | client/webauthn-client-android/README.md:19 | How to use | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client | platform-compile |  |
 | client-webauthn-client-android-readme-mermaid-1 | client/webauthn-client-android/README.md:34 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-compose-readme-mermaid-1 | client/webauthn-client-compose/README.md:12 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
@@ -71,7 +71,10 @@ Managed blocks: **103**
 | docs-ai-workflows-bash-9 | docs/ai/WORKFLOWS.md:79 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-10 | docs/ai/WORKFLOWS.md:91 | Full Validation Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-11 | docs/ai/WORKFLOWS.md:101 | Release-Prep Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-architecture-mermaid-1 | docs/architecture.md:16 | Layering | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-1 | docs/architecture.md:32 | Reference integration | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-2 | docs/architecture.md:58 | Shared foundation | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-3 | docs/architecture.md:83 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-4 | docs/architecture.md:136 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-unused-return-value-checker-bash-1 | docs/unused-return-value-checker.md:20 | Audit coverage | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-wiki-quality-and-release-bash-1 | docs/wiki/quality-and-release.md:12 | Default Quality Gates | bash | contributor | markdown | Markdown block | syntax |  |
 | platform-bom-readme-kotlin-1 | platform/bom/README.md:25 | How to use | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
