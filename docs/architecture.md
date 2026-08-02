@@ -1,103 +1,198 @@
-# Architecture Overview
+# Architecture
 
-## Goals
+## Design goals
 
 - Standards-first WebAuthn L3 behavior.
-- Strict separation of concerns:
-  - model and validation
-  - protocol/core logic
-  - crypto implementation
-  - transport and platform adapters
-- Dependency minimization with optional feature modules.
+- Strict separation between protocol model, shared foundation, cryptography, client orchestration, and JVM server services.
+- Thin platform and transport adapters with optional features kept out of the core path.
+- Architecture documentation that explains both repository structure and real application adoption.
 
-## Layering
+## How to read the diagrams
+
+The repository overview shows logical responsibility relationships. The focused
+module diagrams show direct internal Gradle project dependencies for a selected
+slice. In module diagrams, arrows point from the consumer to its dependency.
+
+External Maven dependencies are omitted. Optional adapters are labelled
+explicitly. The diagrams are intentionally curated rather than exhaustive.
+
+## Repository overview
+
+The [repository overview in the root README](../README.md#repository-structure)
+shows the five logical responsibility areas. It intentionally omits individual
+projects, samples, documentation utilities, and transitive dependencies.
+
+## Reference integration
+
+This view shows where the library is used in a typical passkey application. The
+SDK is represented inside the client and backend descriptions rather than as a
+separate runtime system.
 
 <!-- doc-example: id=docs-architecture-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
-flowchart TB
-    subgraph L1[Layer 1: Protocol Model]
-        MODEL[webauthn-model]
+flowchart LR
+    USER([End user])
+
+    subgraph APPLICATION["Reference passkey application"]
+        CLIENT["Client application<br/>webauthn-client-core plus an Android or iOS bridge"]
+        BACKEND["Relying-party backend<br/>webauthn-server-core-jvm plus optional adapters"]
+        STORE[("Credential store")]
     end
 
-    subgraph L2[Layer 2: Validation and Serialization]
-        CORE[webauthn-core]
-        SER[webauthn-serialization-kotlinx]
-        CBOR[webauthn-cbor-core]
-    end
+    PLATFORM["Platform passkey API<br/>Credential Manager, AuthenticationServices,<br/>browser WebAuthn, or a security key"]
+    MDS["Attestation metadata service<br/>(optional)"]
 
-    subgraph L2R[Layer 2.5: Runtime Utilities]
-        RUNTIME[webauthn-runtime-core]
-    end
-
-    subgraph L3[Layer 3: Crypto]
-        API[webauthn-crypto-api]
-        JVMCRYPTO[webauthn-server-jvm-crypto]
-    end
-
-    subgraph L4[Layer 4: Server]
-        SVC[webauthn-server-core-jvm]
-        KTOR[webauthn-server-ktor]
-        STORE[webauthn-server-store-exposed]
-        MDS[webauthn-attestation-mds]
-    end
-
-    subgraph L5[Layer 5: Client]
-        CCORE[webauthn-client-core]
-        CJSON[webauthn-client-json-core]
-        CANDROID[webauthn-client-android]
-        CIOS[webauthn-client-ios]
-        CCOMPOSE[webauthn-client-compose]
-        CPRF[webauthn-client-prf-crypto]
-        NET[webauthn-network-ktor-client]
-    end
-
-    MODEL --> CORE
-    MODEL --> SER
-    CBOR --> SER
-    CORE --> API
-    CBOR --> JVMCRYPTO
-    JVMCRYPTO --> API
-    CORE --> SVC
-    SER --> SVC
-    SVC --> KTOR
-    SVC --> STORE
-    MDS --> API
-
-    MODEL --> CCORE
-    RUNTIME --> CCORE
-    RUNTIME --> CPRF
-    RUNTIME --> NET
-    CCORE --> CJSON
-    CCORE --> CANDROID
-    CCORE --> CIOS
-    CCORE --> CCOMPOSE
-    CCORE --> CPRF
-    CORE --> NET
-    SER --> NET
-    CCORE --> NET
+    USER -->|initiates registration or authentication| CLIENT
+    CLIENT -->|sends options and credential responses over HTTPS| BACKEND
+    CLIENT -->|invokes the passkey ceremony| PLATFORM
+    BACKEND -->|stores registered credentials| STORE
+    BACKEND -. optionally obtains attestation metadata .-> MDS
 ```
 
-`webauthn-model` has no dependencies on the rest of the codebase.
+## Shared foundation
 
-## Repository layout
+The shared foundation keeps protocol contracts, validation, serialization,
+runtime helpers, and cryptographic contracts separated.
 
-Reusable published libraries are grouped by responsibility: `core/` for shared protocol, validation, runtime, serialization, and crypto contracts; `client/` for client orchestration, platform bridges, Compose helpers, and transport; and `server/` for JVM services, adapters, crypto, stores, and trust metadata. The leaf module names remain the published artifact names.
+<!-- doc-example: id=docs-architecture-mermaid-2; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
+```mermaid
+flowchart TB
+    CRYPTO_API["webauthn-crypto-api<br/>Kotlin/JVM"]
+    CORE["webauthn-core"]
+    SERIALIZATION["webauthn-serialization-kotlinx"]
+    CBOR["webauthn-cbor-core"]
+    MODEL["webauthn-model"]
+    RUNTIME["webauthn-runtime-core<br/>No internal project dependencies"]
 
-## Backend runtime
+    CRYPTO_API --> CORE
+    CRYPTO_API --> MODEL
+    CORE --> MODEL
+    SERIALIZATION --> MODEL
+    SERIALIZATION --> CBOR
+```
 
-V1 backend target is Kotlin/JVM. Core ceremony services are in `webauthn-server-core-jvm` and stay framework-agnostic.
+The isolated runtime node is intentional. It communicates that this module has
+no internal project dependencies without inventing an edge.
 
-## Deployable Samples
+## Client stack
 
-Sample apps and CLIs are separate deployable modules under `sample/*` rather than extra targets inside published library modules.
-This keeps packaging/runtime concerns isolated from reusable API modules (for example, `sample/passkey-cli` for the experimental macOS-first native CLI flow).
+`webauthn-client-core` owns shared orchestration. JSON, Android, iOS, Compose,
+PRF, and network modules build around that shared boundary.
 
-## Framework adapters
+<!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
+```mermaid
+flowchart TB
+    COMPOSE["webauthn-client-compose"]
+    ANDROID["webauthn-client-android"]
+    IOS["webauthn-client-ios"]
+    JSON["webauthn-client-json-core"]
+    PRF["webauthn-client-prf-crypto<br/>(optional)"]
+    NETWORK["webauthn-network-ktor-client<br/>(optional)"]
+    CLIENT_CORE["webauthn-client-core"]
+    FOUNDATION["Shared foundation"]
+    MODEL["Protocol model"]
 
-Ktor adapter modules are intentionally thin wrappers around core services.
+    COMPOSE --> CLIENT_CORE
+    COMPOSE --> ANDROID
+    COMPOSE --> IOS
 
-`webauthn-network-ktor-client` keeps `io.ktor.client.HttpClient` in its public contract, so the module publishes `ktor-client-core` as an API dependency for consumer compile compatibility while leaving engine selection to host apps.
+    ANDROID --> CLIENT_CORE
+    ANDROID --> JSON
 
-## Experimental Level 3 API surface
+    IOS --> CLIENT_CORE
+    IOS --> JSON
 
-Extension APIs that may evolve are marked with `@ExperimentalWebAuthnL3Api`.
+    JSON --> CLIENT_CORE
+    JSON --> FOUNDATION
+
+    PRF --> CLIENT_CORE
+    PRF --> FOUNDATION
+
+    NETWORK --> CLIENT_CORE
+    NETWORK --> FOUNDATION
+
+    CLIENT_CORE --> FOUNDATION
+    CLIENT_CORE --> MODEL
+```
+
+This is close to the maximum useful density. Do not add:
+
+- external Ktor dependencies;
+- Credential Manager;
+- AuthenticationServices;
+- Compose runtime;
+- coroutine libraries;
+- source-set nodes;
+- samples.
+
+Those belong in module READMEs or the reference integration view.
+
+## JVM server stack
+
+The server core remains framework-agnostic. Ktor, Exposed, and metadata support
+are optional adapters around the core and cryptographic boundaries.
+
+<!-- doc-example: id=docs-architecture-mermaid-4; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
+```mermaid
+flowchart TB
+    KTOR["webauthn-server-ktor<br/>(optional adapter)"]
+    STORE["webauthn-server-store-exposed<br/>(optional adapter)"]
+    MDS["webauthn-attestation-mds<br/>(optional adapter)"]
+    SERVER_CORE["webauthn-server-core-jvm"]
+    JVM_CRYPTO["webauthn-server-jvm-crypto"]
+    FOUNDATION["Shared foundation"]
+    CRYPTO["Cryptography boundary"]
+
+    KTOR --> SERVER_CORE
+
+    STORE --> SERVER_CORE
+    STORE --> FOUNDATION
+    STORE --> CRYPTO
+
+    MDS --> CRYPTO
+
+    SERVER_CORE --> FOUNDATION
+    SERVER_CORE --> CRYPTO
+
+    JVM_CRYPTO --> FOUNDATION
+    JVM_CRYPTO --> CRYPTO
+```
+
+## Distribution and samples
+
+| Project | Role |
+| --- | --- |
+| `platform:bom` | Aligns versions across the published WebAuthn artifacts as `webauthn-bom`. |
+| `platform:constraints` | Internal dependency constraints used by the build. It is not published. |
+| `sample:*` | Runnable backend, client, Android, iOS, Compose, and CLI examples. Samples are not published runtime libraries. |
+| `documentation:*` | Documentation example and verification tooling. These projects are not part of the published SDK surface. |
+
+The published modules remain grouped under `core/`, `client/`, and `server/` by
+responsibility. Distribution projects and samples are intentionally omitted
+from the overview because they explain packaging and adoption rather than the
+reusable library architecture.
+
+## Dependency rules
+
+- `webauthn-model` remains independent of the rest of the repository.
+- `webauthn-client-core` owns shared client business logic; Android and iOS modules remain platform bridges.
+- `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
+- `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
+- Optional adapters must not become hidden prerequisites of core modules.
+- Direct project dependencies shown here must be checked against the owning `build.gradle.kts` whenever the module graph changes.
+
+## Diagram maintenance
+
+Architecture diagrams are maintained directly as Mermaid blocks beside their
+supporting prose.
+
+Keep each diagram focused on one concern. Prefer a small curated view over a
+complete repository dependency graph. Module dependency arrows point from the
+consumer to its dependency, and optional modules must be labelled explicitly.
+
+When changing a diagram:
+
+1. Check direct project dependencies against the relevant `build.gradle.kts` files.
+2. Run `./gradlew docsUpdate docsCheck --stacktrace`.
+3. Run `tools/agent/quality-gate.sh --mode strict --scope changed --block true`.
+4. Inspect the rendered diagram on GitHub for readability and edge crossings.

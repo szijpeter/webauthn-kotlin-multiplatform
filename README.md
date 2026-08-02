@@ -74,85 +74,46 @@ sequenceDiagram
 
 Validation and trust decisions are server responsibilities: challenge/origin/type checks, authenticator data rules, signature/attestation verification, counter handling, and policy decisions.
 
-## Repository Structure
+## Repository structure
 
 The repository follows a layered model that keeps protocol and validation concerns separate from transport and platform adapters.
 
 <!-- doc-example: id=readme-mermaid-2; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TB
-    subgraph Layer1[Layer 1: Protocol Model]
-        M[webauthn-model]
-    end
+    CLIENT["Client stack<br/>Shared orchestration and platform bridges"]
+    SERVER["JVM server stack<br/>Ceremonies, storage and HTTP adapters"]
+    CRYPTO["Cryptography boundary<br/>Crypto contracts and implementations"]
+    FOUNDATION["Shared foundation<br/>Validation, serialization and runtime"]
+    MODEL["Protocol model<br/>Typed WebAuthn contracts"]
 
-    subgraph Layer2[Layer 2: Validation and Serialization]
-        CBOR[webauthn-cbor-core]
-        C[webauthn-core]
-        S[webauthn-serialization-kotlinx]
-        RUNTIME[webauthn-runtime-core]
-    end
-
-    subgraph Layer3[Layer 3: Crypto Abstractions and Backends]
-        API[webauthn-crypto-api]
-        JCRYPTO[webauthn-server-jvm-crypto]
-    end
-
-    subgraph Layer4[Layer 4: Server Services and Adapters]
-        SVC[webauthn-server-core-jvm]
-        KTOR[webauthn-server-ktor]
-        STORE[webauthn-server-store-exposed]
-        MDS[webauthn-attestation-mds]
-    end
-
-    subgraph Layer5[Layer 5: Client Orchestration and Platform]
-        CCORE[webauthn-client-core]
-        CJSON[webauthn-client-json-core]
-        CANDROID[webauthn-client-android]
-        CIOS[webauthn-client-ios]
-        CCOMPOSE[webauthn-client-compose]
-        CPRF[webauthn-client-prf-crypto]
-        NET[webauthn-network-ktor-client]
-    end
-
-    M --> C
-    M --> S
-    CBOR --> S
-    C --> API
-    S --> SVC
-    CBOR --> JCRYPTO
-    JCRYPTO --> API
-    C --> SVC
-    SVC --> KTOR
-    SVC --> STORE
-    MDS --> API
-
-    M --> CCORE
-    RUNTIME --> CCORE
-    RUNTIME --> CPRF
-    RUNTIME --> NET
-    CCORE --> CJSON
-    CCORE --> CANDROID
-    CCORE --> CIOS
-    CCORE --> CCOMPOSE
-    CCORE --> CPRF
-    C --> NET
-    S --> NET
-    CCORE --> NET
+    CLIENT --> FOUNDATION
+    CLIENT --> MODEL
+    SERVER --> FOUNDATION
+    SERVER --> CRYPTO
+    CRYPTO --> FOUNDATION
+    FOUNDATION --> MODEL
 ```
 
-Focus modules for this documentation round:
+The overview shows logical responsibility areas rather than every Gradle
+dependency. See the [architecture guide](docs/architecture.md) for the
+reference integration and focused core, client, and server dependency views.
+
+### Repository areas
 
 - `core/` contains reusable protocol, validation, runtime, serialization, and crypto contracts.
 - `client/` contains shared client orchestration, platform bridges, Compose helpers, and client transport.
 - `server/` contains JVM server services, Ktor/store adapters, JVM crypto, and optional trust metadata.
 - `sample/` contains runnable samples and demo entry points; these modules are not published.
 
+### Common entry points
+
 - [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md): shared coroutine/failure boundary helpers for adapters.
 - [`webauthn-model`](./core/webauthn-model/README.md): typed protocol/value contracts.
 - [`webauthn-core`](./core/webauthn-core/README.md): standards-first ceremony validation.
-- [`webauthn-client-core`](./client/webauthn-client-core/README.md): shared passkey orchestration and controller flows.
-- [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration helpers over client core.
-- [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): PRF-enabled key derivation/session crypto helpers.
+- [`webauthn-client-core`](./client/webauthn-client-core/README.md): shared client orchestration.
+- [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
+- [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
 
 ## How To Read Module Docs
 
