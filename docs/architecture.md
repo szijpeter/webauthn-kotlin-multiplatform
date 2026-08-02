@@ -39,11 +39,11 @@ flowchart LR
         STORE[("Credential store")]
     end
 
-    PLATFORM["Platform passkey API<br/>Credential Manager, AuthenticationServices,<br/>browser WebAuthn, or a security key"]
+    PLATFORM["Platform passkey API<br/>Credential Manager or AuthenticationServices"]
     MDS["Attestation metadata service<br/>(optional)"]
 
     USER -->|initiates registration or authentication| CLIENT
-    CLIENT -->|sends options and credential responses over HTTPS| BACKEND
+    CLIENT -->|requests ceremony options and submits credential responses| BACKEND; BACKEND -->|returns ceremony options and verification results| CLIENT
     CLIENT -->|invokes the passkey ceremony| PLATFORM
     BACKEND -->|stores registered credentials| STORE
     BACKEND -. optionally obtains attestation metadata .-> MDS
@@ -115,17 +115,17 @@ flowchart TB
     CLIENT_CORE --> MODEL
 ```
 
-This is close to the maximum useful density. Do not add:
+External libraries, platform APIs, source-set details, and samples are
+intentionally omitted from this module dependency view.
 
-- external Ktor dependencies;
-- Credential Manager;
-- AuthenticationServices;
-- Compose runtime;
-- coroutine libraries;
-- source-set nodes;
-- samples.
+The view focuses on direct project dependencies among published client modules.
+Platform adapters remain separate from shared orchestration, and optional
+features remain outside the core path.
 
-Those belong in module READMEs or the reference integration view.
+For platform-specific behavior, see the reference integration and module
+READMEs. For runnable adoption paths, see the sample documentation.
+
+
 
 ## JVM server stack
 
