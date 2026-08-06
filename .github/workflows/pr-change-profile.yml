@@ -25,14 +25,14 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      # This workflow is privileged so it can update fork PR comments. Keep the
+      # executable profiler pinned to trusted main; PR contents are API data only.
       - name: Checkout trusted profiler
         uses: actions/checkout@v7
         with:
           ref: main
           persist-credentials: false
-          sparse-checkout: |
-            .github/pr-change-profile.config.json
-            .github/scripts/pr-change-profile.cjs
+          sparse-checkout: .github
 
       - name: Update PR change profile
         uses: actions/github-script@v9
