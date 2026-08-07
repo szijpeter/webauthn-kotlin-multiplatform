@@ -25,6 +25,7 @@ jobs:
       - name: Test PR change profiler
         run: node --test .github/scripts/pr-change-profile.test.cjs
 
+  # Temporary live smoke test for PR #218; remove before merge.
   smoke-comment:
     if: >
       github.event.pull_request.number == 218 &&
