@@ -1,0 +1,52 @@
+name: PR change profile
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-change-profile-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # This workflow is privileged so it can update fork PR comments. Keep the
+      # executable profiler pinned to trusted main; PR contents are API data only.
+      - name: Checkout trusted profiler
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Update PR change profile
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        with:
+          retries: 2
+          script: |
+            const profile = require('./.github/scripts/pr-change-profile.cjs')
+            const config = require('./.github/pr-change-profile.config.json')
+
+            await profile.run({
+              github,
+              context,
+              core,
+              prNumber: Number(process.env.PR_NUMBER),
+              config,
+            })
