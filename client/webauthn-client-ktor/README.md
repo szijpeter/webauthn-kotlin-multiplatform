@@ -2,7 +2,7 @@
 
 Codec-neutral Ktor transport for typed passkey backends.
 
-The default `/webauthn/…` contract, including `KtorPasskeyServerClient`, is in the
+The default `/webauthn/…` contract is in the
 `webauthn-client-ktor-kotlinx` companion artifact.
 
 ## What it provides

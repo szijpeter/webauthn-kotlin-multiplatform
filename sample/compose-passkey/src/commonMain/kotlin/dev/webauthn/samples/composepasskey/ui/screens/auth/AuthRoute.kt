@@ -13,7 +13,6 @@ import dev.webauthn.client.CeremonyResult
 import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.compose.rememberPasskeyFlow
 import dev.webauthn.samples.composepasskey.app.LocalShowDebugLogs
@@ -22,6 +21,7 @@ import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoCeremonyState
 import dev.webauthn.samples.composepasskey.domain.passkey.areCeremonyActionsEnabled
 import dev.webauthn.samples.composepasskey.domain.passkey.toAuthenticationStartPayload
 import dev.webauthn.samples.composepasskey.domain.passkey.toDemoStatus
@@ -47,17 +47,17 @@ internal fun AuthRoute() {
     }
     // docs-region compose-sample-auth-route
     val flow = rememberPasskeyFlow(passkeyClient)
-    var controllerState by remember { mutableStateOf<PasskeyControllerState>(PasskeyControllerState.Idle) }
+    var ceremonyState by remember { mutableStateOf<PasskeyDemoCeremonyState>(PasskeyDemoCeremonyState.Idle) }
     val canRegister by coordinator.canRegister.collectAsState()
-    val actionsEnabled = areCeremonyActionsEnabled(controllerState)
+    val actionsEnabled = areCeremonyActionsEnabled(ceremonyState)
     // docs-endregion compose-sample-auth-route
 
-    LaunchedEffect(controllerState) {
-        coordinator.onControllerStateChanged(controllerState)
+    LaunchedEffect(ceremonyState) {
+        coordinator.onCeremonyStateChanged(ceremonyState)
     }
 
     AuthScreen(
-        status = controllerState.toDemoStatus(),
+        status = ceremonyState.toDemoStatus(),
         actionsEnabled = actionsEnabled,
         canRegister = canRegister,
         onShowLogs = showDebugLogs,
@@ -65,11 +65,11 @@ internal fun AuthRoute() {
             if (actionsEnabled && canRegister) {
                 coordinator.onRegisterClicked()
                 scope.launch {
-                    controllerState = flow.register(
+                    ceremonyState = flow.register(
                         input = config.toRegistrationStartPayload(),
                         backend = backend.registrationBackend(),
                         onPhaseChanged = { phase ->
-                            controllerState = PasskeyControllerState.InProgress(PasskeyAction.REGISTER, phase)
+                            ceremonyState = PasskeyDemoCeremonyState.InProgress(PasskeyAction.REGISTER, phase)
                         },
                     ).toDemoControllerState(PasskeyAction.REGISTER)
                 }
@@ -79,11 +79,11 @@ internal fun AuthRoute() {
             if (actionsEnabled) {
                 coordinator.onSignInClicked()
                 scope.launch {
-                    controllerState = flow.signIn(
+                    ceremonyState = flow.signIn(
                         input = config.toAuthenticationStartPayload(),
                         backend = backend.authenticationBackend(),
                         onPhaseChanged = { phase ->
-                            controllerState = PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, phase)
+                            ceremonyState = PasskeyDemoCeremonyState.InProgress(PasskeyAction.SIGN_IN, phase)
                         },
                     ).toDemoControllerState(PasskeyAction.SIGN_IN)
                 }
@@ -94,16 +94,16 @@ internal fun AuthRoute() {
 
 internal fun CeremonyResult<PasskeyFinishResult>.toDemoControllerState(
     action: PasskeyAction,
-): PasskeyControllerState = when (this) {
+): PasskeyDemoCeremonyState = when (this) {
     is CeremonyResult.Success -> when (val result = value) {
-        PasskeyFinishResult.Verified -> PasskeyControllerState.Success(action)
-        is PasskeyFinishResult.Rejected -> PasskeyControllerState.Failure(
+        PasskeyFinishResult.Verified -> PasskeyDemoCeremonyState.Success(action)
+        is PasskeyFinishResult.Rejected -> PasskeyDemoCeremonyState.Failure(
             action = action,
             error = PasskeyClientError.Transport(result.message ?: "The server rejected the passkey response."),
         )
     }
 
-    is CeremonyResult.Failure -> PasskeyControllerState.Failure(
+    is CeremonyResult.Failure -> PasskeyDemoCeremonyState.Failure(
         action = action,
         error = when (val failure = error) {
             CeremonyFailure.AlreadyInProgress ->

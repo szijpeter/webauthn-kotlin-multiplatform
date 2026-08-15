@@ -2,7 +2,6 @@ package dev.webauthn.samples.composepasskey.domain.passkey
 
 import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.samples.composepasskey.PasskeyDemoBuildConfig
 import dev.webauthn.samples.composepasskey.data.network.resolveDefaultOrigin
@@ -19,19 +18,38 @@ internal data class PasskeyDemoConfig(
     val userName: String = PasskeyDemoBuildConfig.USER_NAME,
 )
 
-internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean {
-    return uiState !is PasskeyControllerState.InProgress
+/** Presentation state owned by this sample while [dev.webauthn.client.PasskeyFlow] runs a ceremony. */
+internal sealed interface PasskeyDemoCeremonyState {
+    data object Idle : PasskeyDemoCeremonyState
+
+    data class InProgress(
+        val action: PasskeyAction,
+        val phase: PasskeyPhase,
+    ) : PasskeyDemoCeremonyState
+
+    data class Success(
+        val action: PasskeyAction,
+    ) : PasskeyDemoCeremonyState
+
+    data class Failure(
+        val action: PasskeyAction,
+        val error: PasskeyClientError,
+    ) : PasskeyDemoCeremonyState
 }
 
-internal fun PasskeyControllerState.toDemoStatus(): PasskeyDemoStatus {
+internal fun areCeremonyActionsEnabled(uiState: PasskeyDemoCeremonyState): Boolean {
+    return uiState !is PasskeyDemoCeremonyState.InProgress
+}
+
+internal fun PasskeyDemoCeremonyState.toDemoStatus(): PasskeyDemoStatus {
     return when (this) {
-        PasskeyControllerState.Idle -> PasskeyDemoStatus(
+        PasskeyDemoCeremonyState.Idle -> PasskeyDemoStatus(
             tone = StatusTone.IDLE,
             headline = "Ready",
             detail = "Run Register or Sign In to exercise the end-to-end passkey flow.",
         )
 
-        is PasskeyControllerState.InProgress -> PasskeyDemoStatus(
+        is PasskeyDemoCeremonyState.InProgress -> PasskeyDemoStatus(
             tone = StatusTone.WORKING,
             headline = when (action) {
                 PasskeyAction.REGISTER -> "Register in progress"
@@ -44,7 +62,7 @@ internal fun PasskeyControllerState.toDemoStatus(): PasskeyDemoStatus {
             },
         )
 
-        is PasskeyControllerState.Success -> PasskeyDemoStatus(
+        is PasskeyDemoCeremonyState.Success -> PasskeyDemoStatus(
             tone = StatusTone.SUCCESS,
             headline = when (action) {
                 PasskeyAction.REGISTER -> "Register complete"
@@ -56,7 +74,7 @@ internal fun PasskeyControllerState.toDemoStatus(): PasskeyDemoStatus {
             },
         )
 
-        is PasskeyControllerState.Failure -> {
+        is PasskeyDemoCeremonyState.Failure -> {
             val category = error.toCategory()
             PasskeyDemoStatus(
                 tone = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {
@@ -76,13 +94,13 @@ internal data class ControllerTransitionEvent(
     val message: String,
 )
 
-internal fun controllerTransitionEvent(
-    previous: PasskeyControllerState,
-    current: PasskeyControllerState,
+internal fun ceremonyTransitionEvent(
+    previous: PasskeyDemoCeremonyState,
+    current: PasskeyDemoCeremonyState,
 ): ControllerTransitionEvent? {
-    if (current is PasskeyControllerState.InProgress) {
+    if (current is PasskeyDemoCeremonyState.InProgress) {
         val changed =
-            previous !is PasskeyControllerState.InProgress ||
+            previous !is PasskeyDemoCeremonyState.InProgress ||
                 previous.action != current.action ||
                 previous.phase != current.phase
         if (changed) {
@@ -93,14 +111,14 @@ internal fun controllerTransitionEvent(
         }
     }
 
-    if (current is PasskeyControllerState.Success && previous != current) {
+    if (current is PasskeyDemoCeremonyState.Success && previous != current) {
         return ControllerTransitionEvent(
             level = DebugLogLevel.INFO,
             message = "${current.action.label()} success",
         )
     }
 
-    if (current is PasskeyControllerState.Failure && previous != current) {
+    if (current is PasskeyDemoCeremonyState.Failure && previous != current) {
         val category = current.error.toCategory()
         return ControllerTransitionEvent(
             level = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {

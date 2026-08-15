@@ -1,12 +1,12 @@
 package dev.webauthn.samples.composepasskey.app.auth
 
 import dev.webauthn.client.PasskeyAction
-import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
-import dev.webauthn.samples.composepasskey.domain.passkey.controllerTransitionEvent
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoCeremonyState
+import dev.webauthn.samples.composepasskey.domain.passkey.ceremonyTransitionEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,7 +17,7 @@ internal class AuthDemoCoordinator(
 ) {
     val canRegister: StateFlow<Boolean> field = MutableStateFlow<Boolean>(true)
 
-    private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
+    private var previousCeremonyState: PasskeyDemoCeremonyState = PasskeyDemoCeremonyState.Idle
 
     init {
         debugLogs.i(
@@ -43,26 +43,26 @@ internal class AuthDemoCoordinator(
         )
     }
 
-    fun onControllerStateChanged(current: PasskeyControllerState) {
-        controllerTransitionEvent(previous = previousControllerState, current = current)?.let { event ->
+    fun onCeremonyStateChanged(current: PasskeyDemoCeremonyState) {
+        ceremonyTransitionEvent(previous = previousCeremonyState, current = current)?.let { event ->
             when (event.level) {
-                DebugLogLevel.DEBUG -> debugLogs.d(source = "controller", message = event.message)
-                DebugLogLevel.INFO -> debugLogs.i(source = "controller", message = event.message)
-                DebugLogLevel.WARN -> debugLogs.w(source = "controller", message = event.message)
-                DebugLogLevel.ERROR -> debugLogs.e(source = "controller", message = event.message)
+                DebugLogLevel.DEBUG -> debugLogs.d(source = "ceremony", message = event.message)
+                DebugLogLevel.INFO -> debugLogs.i(source = "ceremony", message = event.message)
+                DebugLogLevel.WARN -> debugLogs.w(source = "ceremony", message = event.message)
+                DebugLogLevel.ERROR -> debugLogs.e(source = "ceremony", message = event.message)
             }
         }
 
         when {
-            current is PasskeyControllerState.Success && current.action == PasskeyAction.REGISTER -> {
+            current is PasskeyDemoCeremonyState.Success && current.action == PasskeyAction.REGISTER -> {
                 canRegister.value = false
             }
 
-            current is PasskeyControllerState.Success && current.action == PasskeyAction.SIGN_IN -> {
+            current is PasskeyDemoCeremonyState.Success && current.action == PasskeyAction.SIGN_IN -> {
                 sessionStore.signIn(config.userName)
             }
         }
 
-        previousControllerState = current
+        previousCeremonyState = current
     }
 }

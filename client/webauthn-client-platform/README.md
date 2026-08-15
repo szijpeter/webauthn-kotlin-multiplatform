@@ -30,7 +30,7 @@ fun androidPasskeyClient(activity: Activity): PasskeyClient {
 }
 ```
 
-Real-world scenario: your shared app logic drives ceremony flow in `PasskeyController`, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
+Real-world scenario: your shared app logic drives a `PasskeyFlow` ceremony with a typed backend, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
 
 ### iOS
 
@@ -55,7 +55,7 @@ flowchart LR
     CORE --> IOS["IosPasskeyClient"]
     ANDROID --> CM["Credential Manager"]
     IOS --> AS["AuthenticationServices"]
-    CORE --> NET["PasskeyServerClient"]
+    CORE --> NET["Typed backend"]
 ```
 
 ## Pitfalls and limits

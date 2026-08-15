@@ -6,7 +6,6 @@ Audience: Compose applications that want lifecycle-safe passkey orchestration wi
 
 - `rememberPasskeyClient()` to create the platform `PasskeyClient` in Compose.
 - `rememberPasskeyFlow(...)` to retain a state-free `PasskeyFlow` while Compose owns screen state.
-- Deprecated `rememberPasskeyController(...)` compatibility for existing controller-backed integrations.
 - A small Compose-first bridge over `webauthn-client-flow`.
 
 <!-- doc-example: id=client-webauthn-client-compose-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
@@ -75,8 +74,6 @@ Usage notes:
 - Keep the platform client stable when you pass one explicitly.
 - Own phase, result, and retry state in your screen or ViewModel; avoid silent failures.
 - `PasskeyFlow` reports concurrent use as `CeremonyFailure.AlreadyInProgress`; disable duplicate taps in the UI.
-- `rememberPasskeyController(...)` is deprecated and remains only as a migration seam for legacy
-  `PasskeyServerClient` integrations.
 
 ## How it fits
 

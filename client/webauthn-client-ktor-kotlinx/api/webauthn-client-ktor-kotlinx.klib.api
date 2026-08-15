@@ -68,17 +68,6 @@ final class dev.webauthn.network/KtorOriginMetadataProvider : dev.webauthn.core/
     final suspend fun getRelatedOrigins(dev.webauthn.model/Origin): kotlin.collections/Set<dev.webauthn.model/Origin> // dev.webauthn.network/KtorOriginMetadataProvider.getRelatedOrigins|getRelatedOrigins(dev.webauthn.model.Origin){}[0]
 }
 
-final class dev.webauthn.network/KtorPasskeyServerClient : dev.webauthn.client/PasskeyServerClient<dev.webauthn.network/RegistrationStartPayload, dev.webauthn.network/AuthenticationStartPayload> { // dev.webauthn.network/KtorPasskeyServerClient|null[0]
-    constructor <init>(io.ktor.client/HttpClient, kotlin/String, dev.webauthn.network/KtorPasskeyRoutes = ...) // dev.webauthn.network/KtorPasskeyServerClient.<init>|<init>(io.ktor.client.HttpClient;kotlin.String;dev.webauthn.network.KtorPasskeyRoutes){}[0]
-
-    final fun authenticationBackend(): dev.webauthn.client/AuthenticationBackend<dev.webauthn.network/AuthenticationStartPayload, kotlin/Unit, dev.webauthn.client/PasskeyFinishResult> // dev.webauthn.network/KtorPasskeyServerClient.authenticationBackend|authenticationBackend(){}[0]
-    final fun registrationBackend(): dev.webauthn.client/RegistrationBackend<dev.webauthn.network/RegistrationStartPayload, kotlin/Unit, dev.webauthn.client/PasskeyFinishResult> // dev.webauthn.network/KtorPasskeyServerClient.registrationBackend|registrationBackend(){}[0]
-    final suspend fun finishRegister(dev.webauthn.network/RegistrationStartPayload, dev.webauthn.model/RawRegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.network/KtorPasskeyServerClient.finishRegister|finishRegister(dev.webauthn.network.RegistrationStartPayload;dev.webauthn.model.RawRegistrationResponse;kotlin.String){}[0]
-    final suspend fun finishSignIn(dev.webauthn.network/AuthenticationStartPayload, dev.webauthn.model/RawAuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.network/KtorPasskeyServerClient.finishSignIn|finishSignIn(dev.webauthn.network.AuthenticationStartPayload;dev.webauthn.model.RawAuthenticationResponse;kotlin.String){}[0]
-    final suspend fun getRegisterOptions(dev.webauthn.network/RegistrationStartPayload): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.network/KtorPasskeyServerClient.getRegisterOptions|getRegisterOptions(dev.webauthn.network.RegistrationStartPayload){}[0]
-    final suspend fun getSignInOptions(dev.webauthn.network/AuthenticationStartPayload): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.network/KtorPasskeyServerClient.getSignInOptions|getSignInOptions(dev.webauthn.network.AuthenticationStartPayload){}[0]
-}
-
 final class dev.webauthn.network/RegistrationStartPayload { // dev.webauthn.network/RegistrationStartPayload|null[0]
     constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/RegistrationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
 

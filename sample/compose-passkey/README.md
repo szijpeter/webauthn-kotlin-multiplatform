@@ -106,7 +106,7 @@ The sample emits structured logs with tag `PasskeyDemo` and uses the same entrie
 - `capabilities`: probe start/success/failure
 - `action`: register/sign-in taps
 - `prf`: PRF sign-in/session/encrypt/decrypt outcomes
-- `controller`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
+- `ceremony`: typed-flow state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
 - `http`: raw Ktor engine lines
 
 To inspect logs:
@@ -122,9 +122,9 @@ The auth screen is intentionally the cleanest API example in the repo:
 <!-- doc-example: id=sample-compose-passkey-readme-kotlin-1; owner=sample; verify=sample-build; audience=consumer; source=sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route -->
 ```kotlin
     val flow = rememberPasskeyFlow(passkeyClient)
-    var controllerState by remember { mutableStateOf<PasskeyControllerState>(PasskeyControllerState.Idle) }
+    var ceremonyState by remember { mutableStateOf<PasskeyDemoCeremonyState>(PasskeyDemoCeremonyState.Idle) }
     val canRegister by coordinator.canRegister.collectAsState()
-    val actionsEnabled = areCeremonyActionsEnabled(controllerState)
+    val actionsEnabled = areCeremonyActionsEnabled(ceremonyState)
 ```
 
 Sample-only side effects stay outside the library API surface:

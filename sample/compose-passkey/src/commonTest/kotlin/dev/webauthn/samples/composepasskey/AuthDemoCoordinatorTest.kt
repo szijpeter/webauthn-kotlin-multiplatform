@@ -4,7 +4,6 @@ import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.CeremonyFailure
 import dev.webauthn.client.CeremonyResult
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
@@ -12,6 +11,7 @@ import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoCeremonyState
 import dev.webauthn.samples.composepasskey.ui.screens.auth.toDemoControllerState
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,11 +23,11 @@ class AuthDemoCoordinatorTest {
     @Test
     fun typed_flow_results_map_to_caller_owned_ui_state() {
         assertEquals(
-            PasskeyControllerState.Success(PasskeyAction.REGISTER),
+            PasskeyDemoCeremonyState.Success(PasskeyAction.REGISTER),
             CeremonyResult.Success(PasskeyFinishResult.Verified).toDemoControllerState(PasskeyAction.REGISTER),
         )
 
-        val failure = assertIs<PasskeyControllerState.Failure>(
+        val failure = assertIs<PasskeyDemoCeremonyState.Failure>(
             CeremonyResult.Failure(CeremonyFailure.Backend("offline"))
                 .toDemoControllerState(PasskeyAction.SIGN_IN),
         )
@@ -46,17 +46,17 @@ class AuthDemoCoordinatorTest {
         )
 
         coordinator.onRegisterClicked()
-        coordinator.onControllerStateChanged(
-            PasskeyControllerState.InProgress(
+        coordinator.onCeremonyStateChanged(
+            PasskeyDemoCeremonyState.InProgress(
                 action = PasskeyAction.REGISTER,
                 phase = PasskeyPhase.STARTING,
             ),
         )
-        coordinator.onControllerStateChanged(PasskeyControllerState.Success(PasskeyAction.REGISTER))
+        coordinator.onCeremonyStateChanged(PasskeyDemoCeremonyState.Success(PasskeyAction.REGISTER))
 
         assertFalse(coordinator.canRegister.value)
         assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Register tapped") })
-        assertTrue(debugLogs.entries.any { it.source == "controller" && it.message.contains("Register success") })
+        assertTrue(debugLogs.entries.any { it.source == "ceremony" && it.message.contains("Register success") })
     }
 
     @Test
@@ -70,14 +70,14 @@ class AuthDemoCoordinatorTest {
         )
 
         coordinator.onSignInClicked()
-        coordinator.onControllerStateChanged(PasskeyControllerState.Success(PasskeyAction.SIGN_IN))
+        coordinator.onCeremonyStateChanged(PasskeyDemoCeremonyState.Success(PasskeyAction.SIGN_IN))
 
         assertEquals(
             AppSessionState.SignedIn(userName = "demo@local"),
             sessionStore.state.value,
         )
         assertTrue(debugLogs.entries.any { it.source == "action" && it.message.contains("Sign In tapped") })
-        assertTrue(debugLogs.entries.any { it.source == "controller" && it.message.contains("Sign In success") })
+        assertTrue(debugLogs.entries.any { it.source == "ceremony" && it.message.contains("Sign In success") })
     }
 }
 
