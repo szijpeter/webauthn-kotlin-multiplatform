@@ -145,13 +145,12 @@ internal class AndroidPasskeyPlatformBridge(
     override fun mapPlatformError(throwable: Throwable): PasskeyClientError = when (throwable) {
         is CreateCredentialCancellationException,
         is GetCredentialCancellationException -> PasskeyClientError.UserCancelled()
-        is NoCredentialException -> PasskeyClientError.Platform("No credentials found")
+        is NoCredentialException -> PasskeyClientError.NoCredential()
         is IllegalArgumentException -> PasskeyClientError.InvalidOptions(
             enrichRpIdValidationMessage(throwable.message ?: "Invalid options"),
         )
         else -> PasskeyClientError.Platform(
             enrichRpIdValidationMessage(throwable.message ?: "Unknown platform error"),
-            throwable,
         )
     }
 

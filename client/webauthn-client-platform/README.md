@@ -69,6 +69,7 @@ flowchart LR
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
   - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
+- A provider with no matching credential is reported as `PasskeyClientError.NoCredential`; other provider failures expose a stable message without leaking OS exception objects.
 - Keep backend contract alignment with your chosen server client implementation.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.

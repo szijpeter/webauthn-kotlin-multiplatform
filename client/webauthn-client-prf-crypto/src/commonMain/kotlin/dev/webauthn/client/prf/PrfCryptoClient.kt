@@ -74,10 +74,7 @@ private fun Throwable.toFailure(): PasskeyResult.Failure {
 
         else -> {
             PasskeyResult.Failure(
-                PasskeyClientError.Platform(
-                    message = nonFatal.message ?: "PRF crypto operation failed",
-                    cause = nonFatal,
-                ),
+                PasskeyClientError.Platform(nonFatal.message ?: "PRF crypto operation failed"),
             )
         }
     }

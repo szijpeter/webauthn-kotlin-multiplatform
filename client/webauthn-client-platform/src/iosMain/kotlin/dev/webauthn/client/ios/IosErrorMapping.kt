@@ -14,15 +14,15 @@ internal fun NSError.toPasskeyClientError(): PasskeyClientError {
         when (this.code) {
             ASAuthorizationErrorCanceled -> return PasskeyClientError.UserCancelled()
             ASAuthorizationErrorNotHandled -> {
-                return PasskeyClientError.Platform("Request not handled", NSErrorException(this))
+                return PasskeyClientError.Platform("Request not handled")
             }
 
             ASAuthorizationErrorFailed -> {
-                return PasskeyClientError.Platform("Authorization failed", NSErrorException(this))
+                return PasskeyClientError.Platform("Authorization failed")
             }
 
-            else -> return PasskeyClientError.Platform(this.localizedDescription, NSErrorException(this))
+            else -> return PasskeyClientError.Platform(this.localizedDescription)
         }
     }
-    return PasskeyClientError.Platform(this.localizedDescription, NSErrorException(this))
+    return PasskeyClientError.Platform(this.localizedDescription)
 }

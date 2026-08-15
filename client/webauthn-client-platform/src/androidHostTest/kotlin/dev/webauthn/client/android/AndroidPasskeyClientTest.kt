@@ -142,7 +142,7 @@ class AndroidPasskeyClientTest {
     }
 
     @Test
-    fun getAssertion_returns_Platform_error_on_NoCredentialException() = runBlocking {
+    fun getAssertion_returns_NoCredential_on_NoCredentialException() = runBlocking {
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = testClient(credentialManager = mockCredentialManager)
 
@@ -159,8 +159,8 @@ class AndroidPasskeyClientTest {
         val result = client.getAssertion(options)
         assertTrue(result is PasskeyResult.Failure)
         val failure = result as PasskeyResult.Failure
-        assertTrue(failure.error is PasskeyClientError.Platform)
-        assertEquals("No credentials found", failure.error.message)
+        assertTrue(failure.error is PasskeyClientError.NoCredential)
+        assertEquals("No passkey credential was available", failure.error.message)
     }
 
     @Test

@@ -76,7 +76,7 @@ internal class IosPasskeyPlatformBridge(
         return when (throwable) {
             is NSErrorException -> throwable.error.toPasskeyClientError()
             is IllegalArgumentException -> PasskeyClientError.InvalidOptions(throwable.message ?: "Invalid options")
-            else -> PasskeyClientError.Platform(throwable.message ?: "Unknown platform error", throwable)
+            else -> PasskeyClientError.Platform(throwable.message ?: "Unknown platform error")
         }
     }
 

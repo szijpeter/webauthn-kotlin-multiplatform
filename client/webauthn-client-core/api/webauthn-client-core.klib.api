@@ -64,33 +64,40 @@ sealed interface dev.webauthn.client/PasskeyClientError { // dev.webauthn.client
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.InvalidOptions.toString|toString(){}[0]
     }
 
-    final class Platform : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Platform|null[0]
-        constructor <init>(kotlin/String, kotlin/Throwable? = ...) // dev.webauthn.client/PasskeyClientError.Platform.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    final class NoCredential : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.NoCredential|null[0]
+        constructor <init>(kotlin/String = ...) // dev.webauthn.client/PasskeyClientError.NoCredential.<init>|<init>(kotlin.String){}[0]
 
-        final val cause // dev.webauthn.client/PasskeyClientError.Platform.cause|{}cause[0]
-            final fun <get-cause>(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Platform.cause.<get-cause>|<get-cause>(){}[0]
+        final val message // dev.webauthn.client/PasskeyClientError.NoCredential.message|{}message[0]
+            final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.NoCredential.message.<get-message>|<get-message>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.NoCredential.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.NoCredential // dev.webauthn.client/PasskeyClientError.NoCredential.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.NoCredential.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.NoCredential.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.NoCredential.toString|toString(){}[0]
+    }
+
+    final class Platform : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Platform|null[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyClientError.Platform.<init>|<init>(kotlin.String){}[0]
+
         final val message // dev.webauthn.client/PasskeyClientError.Platform.message|{}message[0]
             final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.Platform.message.<get-message>|<get-message>(){}[0]
 
         final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.Platform.component1|component1(){}[0]
-        final fun component2(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Platform.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlin/Throwable? = ...): dev.webauthn.client/PasskeyClientError.Platform // dev.webauthn.client/PasskeyClientError.Platform.copy|copy(kotlin.String;kotlin.Throwable?){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.Platform // dev.webauthn.client/PasskeyClientError.Platform.copy|copy(kotlin.String){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.Platform.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.Platform.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.Platform.toString|toString(){}[0]
     }
 
     final class Transport : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Transport|null[0]
-        constructor <init>(kotlin/String, kotlin/Throwable? = ...) // dev.webauthn.client/PasskeyClientError.Transport.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyClientError.Transport.<init>|<init>(kotlin.String){}[0]
 
-        final val cause // dev.webauthn.client/PasskeyClientError.Transport.cause|{}cause[0]
-            final fun <get-cause>(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Transport.cause.<get-cause>|<get-cause>(){}[0]
         final val message // dev.webauthn.client/PasskeyClientError.Transport.message|{}message[0]
             final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.Transport.message.<get-message>|<get-message>(){}[0]
 
         final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.Transport.component1|component1(){}[0]
-        final fun component2(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Transport.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlin/Throwable? = ...): dev.webauthn.client/PasskeyClientError.Transport // dev.webauthn.client/PasskeyClientError.Transport.copy|copy(kotlin.String;kotlin.Throwable?){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.Transport // dev.webauthn.client/PasskeyClientError.Transport.copy|copy(kotlin.String){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.Transport.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.Transport.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.Transport.toString|toString(){}[0]

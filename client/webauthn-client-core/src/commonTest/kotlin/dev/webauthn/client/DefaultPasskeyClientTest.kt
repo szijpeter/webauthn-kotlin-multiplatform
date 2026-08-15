@@ -55,7 +55,7 @@ class DefaultPasskeyClientTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 assertionAction = { error("boom") },
-                errorMapper = { PasskeyClientError.Transport("mapped", it) },
+                errorMapper = { PasskeyClientError.Transport("mapped") },
             ),
         )
 
@@ -109,7 +109,7 @@ class DefaultPasskeyClientTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { throw IllegalArgumentException("bad options") },
-                errorMapper = { PasskeyClientError.Platform("unexpected", it) },
+                errorMapper = { PasskeyClientError.Platform("unexpected") },
             ),
         )
 
@@ -141,7 +141,7 @@ class DefaultPasskeyClientTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { error("bridge failure") },
-                errorMapper = { PasskeyClientError.Transport("mapped", it) },
+                errorMapper = { PasskeyClientError.Transport("mapped") },
             ),
         )
 
@@ -352,7 +352,7 @@ class DefaultPasskeyClientTest {
     private class TestBridge(
         private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RawRegistrationResponse = { validRawRegistrationResponse() },
         private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> RawAuthenticationResponse = { validRawAuthenticationResponse() },
-        private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform", it) },
+        private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform") },
         private val capabilitiesAction: suspend () -> PasskeyCapabilities = { PasskeyCapabilities() },
     ) : PasskeyPlatformBridge {
         override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse = createAction(options)

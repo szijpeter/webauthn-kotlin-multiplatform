@@ -10,6 +10,8 @@ Platform-neutral passkey operations and result/error contracts at the raw platfo
 
 `PasskeyPlatformBridge` is the public SPI for custom target-specific integrations. Application code should normally depend on `PasskeyClient` or the platform/defaults modules instead.
 
+`PasskeyClientError` is a stable, message-only cross-platform surface: it classifies cancellation, no-credential, invalid-options, transport, and platform failures without exposing platform `Throwable` instances.
+
 Use `webauthn-client-flow` when the application also needs start → prompt → finish orchestration.
 
 ## Status

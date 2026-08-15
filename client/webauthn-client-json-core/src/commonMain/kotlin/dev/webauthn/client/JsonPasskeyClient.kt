@@ -65,10 +65,7 @@ public class DefaultJsonPasskeyClient(
                 onSuccess = { PasskeyResult.Success(it) },
                 onFailure = { error ->
                     PasskeyResult.Failure(
-                        PasskeyClientError.Platform(
-                            "$encodeErrorMessage: ${error.message ?: "unknown error"}",
-                            error,
-                        ),
+                        PasskeyClientError.Platform("$encodeErrorMessage: ${error.message ?: "unknown error"}"),
                     )
                 },
             )

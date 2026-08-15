@@ -119,6 +119,7 @@ internal fun controllerTransitionEvent(
 private enum class PasskeyDemoErrorCategory(val label: String) {
     INVALID_OPTIONS("Invalid Options"),
     USER_CANCELLED("User Cancelled"),
+    NO_CREDENTIAL("No Credential"),
     PLATFORM("Platform"),
     TRANSPORT("Transport"),
 }
@@ -127,6 +128,7 @@ private fun PasskeyClientError.toCategory(): PasskeyDemoErrorCategory {
     return when (this) {
         is PasskeyClientError.InvalidOptions -> PasskeyDemoErrorCategory.INVALID_OPTIONS
         is PasskeyClientError.UserCancelled -> PasskeyDemoErrorCategory.USER_CANCELLED
+        is PasskeyClientError.NoCredential -> PasskeyDemoErrorCategory.NO_CREDENTIAL
         is PasskeyClientError.Platform -> PasskeyDemoErrorCategory.PLATFORM
         is PasskeyClientError.Transport -> PasskeyDemoErrorCategory.TRANSPORT
     }
