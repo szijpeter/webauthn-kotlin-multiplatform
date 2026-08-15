@@ -4,18 +4,17 @@ Audience: teams building shared registration and authentication flows across And
 
 ## What it provides
 
-- `PasskeyController` that coordinates start -> platform prompt -> finish flow with state updates.
-- `PasskeyServerClient` backend contract and `PasskeyFinishResult` outcome.
+- `RegistrationBackend` and `AuthenticationBackend` contracts for application-defined backend input, state, and output.
 - `PasskeyFlow` for opaque backend state, generic finish output, optional phase callbacks, and explicit concurrent-operation failures.
 
 <!-- doc-example: id=client-webauthn-client-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TD
-    Action["UI/User action"] --> Start["PasskeyController.start step<br/>serverClient.get*Options"]
+    Action["UI/User action"] --> Start["typed backend start"]
     Start --> Platform["PasskeyClient.createCredential/getAssertion"]
-    Platform --> Finish["serverClient.finish* (challenge echo + response)"]
-    Finish --> State["PasskeyControllerState.Success / Failure"]
-    State --> App["App state + navigation"]
+    Platform --> Finish["typed backend finish (opaque state + response)"]
+    Finish --> Result["CeremonyResult<Output>"]
+    Result --> App["caller-owned state + navigation"]
 ```
 
 ## When to use
@@ -27,61 +26,51 @@ opaque state from `start` to `finish` and returns the application-defined finish
 
 ## How to use
 
-A common setup wires `PasskeyController` in a shared ViewModel/service and reacts to `uiState` transitions.
+A common setup remembers or owns a `PasskeyFlow`, then maps its `CeremonyResult` into application UI state.
 
 <!-- doc-example: id=client-webauthn-client-core-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCoreExample.kt#client-core-controller -->
 ```kotlin
-import dev.webauthn.client.PasskeyController
-import dev.webauthn.client.PasskeyControllerState
+import dev.webauthn.client.AuthenticationBackend
+import dev.webauthn.client.CeremonyResult
+import dev.webauthn.client.CeremonyStart
 import dev.webauthn.client.PasskeyFinishResult
-import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.PasskeyFlow
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RawRegistrationResponse
-import dev.webauthn.model.ValidationResult
 
-/** Example backend adapter for the shared ceremony controller. */
-class AccountServerClient : PasskeyServerClient<String, String> {
-    override suspend fun getRegisterOptions(
-        params: String,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> {
+/** Example typed backend for the shared ceremony flow. */
+class AccountRegistrationBackend : RegistrationBackend<String, String, PasskeyFinishResult> {
+    override suspend fun start(input: String): CeremonyStart<String, PublicKeyCredentialCreationOptions> {
         TODO("Call backend /registration/start")
     }
 
-    override suspend fun finishRegister(
-        params: String,
-        response: RawRegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
+    override suspend fun finish(state: String, response: RawRegistrationResponse): PasskeyFinishResult {
         TODO("Call backend /registration/finish")
     }
 
-    override suspend fun getSignInOptions(
-        params: String,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> {
+}
+
+class AccountAuthenticationBackend : AuthenticationBackend<String, String, PasskeyFinishResult> {
+    override suspend fun start(input: String): CeremonyStart<String, PublicKeyCredentialRequestOptions> {
         TODO("Call backend /authentication/start")
     }
 
-    override suspend fun finishSignIn(
-        params: String,
-        response: RawAuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
+    override suspend fun finish(state: String, response: RawAuthenticationResponse): PasskeyFinishResult {
         TODO("Call backend /authentication/finish")
     }
 }
 
-suspend fun runSignIn(controller: PasskeyController<String, String>, userId: String) {
-    controller.signIn(userId)
-    when (val state = controller.uiState.value) {
-        is PasskeyControllerState.Success -> {
+suspend fun runSignIn(flow: PasskeyFlow, backend: AccountAuthenticationBackend, userId: String) {
+    when (flow.signIn(input = userId, backend = backend)) {
+        is CeremonyResult.Success -> {
             // Continue into authenticated app flow.
         }
-        is PasskeyControllerState.Failure -> {
-            // Render or log state.error.message.
+        is CeremonyResult.Failure -> {
+            // Render or log the caller-owned failure state.
         }
-        else -> Unit
     }
 }
 ```

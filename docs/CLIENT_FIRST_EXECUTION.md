@@ -8,13 +8,13 @@ Goal: keep Android and iOS client implementation moving with an in-repo backend 
 
 1. Client work must not block on server hardening.
 2. Use explicit backend contracts for interop testing.
-3. Keep shared ceremony logic in `webauthn-client-core`; platform modules only bridge OS APIs.
+3. Keep shared ceremony logic in `webauthn-client-flow`; platform modules only bridge OS APIs.
 
 ## Backend Options for Client Bring-Up
 
 ### Option A: First-party default backend contract
 
-Use `KtorPasskeyServerClient` with its default routes and call:
+Use `KotlinxKtorPasskeyBackend` with its default routes and call:
 
 - `POST /webauthn/registration/start`
 - `POST /webauthn/registration/finish`
@@ -41,11 +41,11 @@ fun <RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationO
 }
 ```
 
-If your backend uses the same payload semantics but different paths, pass `KtorPasskeyRoutes(...)` to `KtorPasskeyServerClient`.
+If your backend uses the same payload semantics but different paths, pass `KtorPasskeyRoutes(...)` to `KotlinxKtorPasskeyBackend`.
 
 ### Option B: Host-provided custom backend contract
 
-If your backend payloads differ from the default `/webauthn/*` contract, provide your own `PasskeyServerClient` implementation instead of trying to extend `KtorPasskeyServerClient`.
+If your backend payloads differ from the default `/webauthn/*` contract, provide a `KtorPasskeyContractCodec` and compose it with `KtorPasskeyBackend`.
 
 ## Local Backend App (`sample/backend-ktor`)
 

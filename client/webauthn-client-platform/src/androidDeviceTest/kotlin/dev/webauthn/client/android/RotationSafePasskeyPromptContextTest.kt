@@ -22,9 +22,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dev.webauthn.client.PasskeyController
+import dev.webauthn.client.AuthenticationBackend
+import dev.webauthn.client.CeremonyStart
 import dev.webauthn.client.PasskeyFinishResult
-import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.PasskeyFlow
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -145,7 +147,7 @@ class RuntimeHostViewModel(
 ) : ViewModel() {
     private val credentialManager = RecordingCredentialManager()
     private val fakeServerClient = RuntimeTestServerClient()
-    private val controller = PasskeyController(
+    private val flow = PasskeyFlow(
         passkeyClient = AndroidPasskeyClient(
             contextProvider = ForegroundActivityPasskeyPromptContextProvider.forApplication(
                 application = application,
@@ -153,7 +155,6 @@ class RuntimeHostViewModel(
             ),
             credentialManagerFactory = { credentialManager },
         ),
-        serverClient = fakeServerClient,
     )
 
     val registerPromptContextIdentityIds: List<Int>
@@ -169,11 +170,11 @@ class RuntimeHostViewModel(
         get() = fakeServerClient.signInStartCalls
 
     suspend fun register() {
-        controller.register("demo-user")
+        flow.register(input = "demo-user", backend = fakeServerClient.registrationBackend)
     }
 
     suspend fun signIn() {
-        controller.signIn("demo-user")
+        flow.signIn(input = "demo-user", backend = fakeServerClient.authenticationBackend)
     }
 
     companion object {
@@ -260,60 +261,60 @@ private class RecordingCredentialManager : CredentialManager {
     }
 }
 
-private class RuntimeTestServerClient : PasskeyServerClient<String, String> {
+private class RuntimeTestServerClient {
     var registerStartCalls: Int = 0
         private set
 
     var signInStartCalls: Int = 0
         private set
 
-    override suspend fun getRegisterOptions(
-        params: String,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> {
-        registerStartCalls += 1
-        return ValidationResult.Valid(
-            PublicKeyCredentialCreationOptions(
-                rp = PublicKeyCredentialRpEntity(
-                    id = RpId.parseOrThrow("example.test"),
-                    name = "Example",
-                ),
-                user = PublicKeyCredentialUserEntity(
-                    id = UserHandle.fromBytes(byteArrayOf(1)),
-                    name = "demo",
-                    displayName = "Demo User",
-                ),
-                challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
-                pubKeyCredParams = listOf(
-                    PublicKeyCredentialParameters(
-                        type = PublicKeyCredentialType.PUBLIC_KEY,
-                        alg = -7,
+    val registrationBackend = object : RegistrationBackend<String, Unit, PasskeyFinishResult> {
+        override suspend fun start(
+            input: String,
+        ): CeremonyStart<Unit, PublicKeyCredentialCreationOptions> {
+            registerStartCalls += 1
+            return CeremonyStart(
+                state = Unit,
+                options = PublicKeyCredentialCreationOptions(
+                    rp = PublicKeyCredentialRpEntity(
+                        id = RpId.parseOrThrow("example.test"),
+                        name = "Example",
+                    ),
+                    user = PublicKeyCredentialUserEntity(
+                        id = UserHandle.fromBytes(byteArrayOf(1)),
+                        name = "demo",
+                        displayName = "Demo User",
+                    ),
+                    challenge = Challenge.fromBytes(ByteArray(32) { 1 }),
+                    pubKeyCredParams = listOf(
+                        PublicKeyCredentialParameters(
+                            type = PublicKeyCredentialType.PUBLIC_KEY,
+                            alg = -7,
+                        ),
                     ),
                 ),
-            ),
-        )
+            )
+        }
+
+        override suspend fun finish(state: Unit, response: RawRegistrationResponse): PasskeyFinishResult =
+            PasskeyFinishResult.Verified
     }
 
-    override suspend fun finishRegister(
-        params: String,
-        response: RawRegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult = PasskeyFinishResult.Verified
+    val authenticationBackend = object : AuthenticationBackend<String, Unit, PasskeyFinishResult> {
+        override suspend fun start(
+            input: String,
+        ): CeremonyStart<Unit, PublicKeyCredentialRequestOptions> {
+            signInStartCalls += 1
+            return CeremonyStart(
+                state = Unit,
+                options = PublicKeyCredentialRequestOptions(
+                    challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
+                    rpId = RpId.parseOrThrow("example.test"),
+                ),
+            )
+        }
 
-    override suspend fun getSignInOptions(
-        params: String,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> {
-        signInStartCalls += 1
-        return ValidationResult.Valid(
-            PublicKeyCredentialRequestOptions(
-                challenge = Challenge.fromBytes(ByteArray(32) { 2 }),
-                rpId = RpId.parseOrThrow("example.test"),
-            ),
-        )
+        override suspend fun finish(state: Unit, response: RawAuthenticationResponse): PasskeyFinishResult =
+            PasskeyFinishResult.Verified
     }
-
-    override suspend fun finishSignIn(
-        params: String,
-        response: RawAuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult = PasskeyFinishResult.Verified
 }
