@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                api(project(":core:webauthn-json-api"))
                 implementation(project(":core:webauthn-protocol"))
                 api(project(":core:webauthn-model"))
                 implementation(libs.kotlinx.serialization.core)

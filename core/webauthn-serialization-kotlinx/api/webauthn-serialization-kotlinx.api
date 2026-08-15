@@ -169,6 +169,21 @@ public final class dev/webauthn/serialization/AuthenticatorSelectionCriteriaDto$
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class dev/webauthn/serialization/KotlinxWebAuthnJsonCodec : dev/webauthn/json/WebAuthnJsonCodec {
+	public fun <init> ()V
+	public fun <init> (Lkotlinx/serialization/json/Json;)V
+	public synthetic fun <init> (Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun decodeAuthenticationResponse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public fun decodeCollectedClientData ([B)Ldev/webauthn/model/ValidationResult;
+	public fun decodeCreationOptions (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public fun decodeRegistrationResponse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public fun decodeRequestOptions (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public fun encodeAuthenticationResponse (Ldev/webauthn/model/RawAuthenticationResponse;)Ljava/lang/String;
+	public fun encodeCreationOptions (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ljava/lang/String;
+	public fun encodeRegistrationResponse (Ldev/webauthn/model/RawRegistrationResponse;)Ljava/lang/String;
+	public fun encodeRequestOptions (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ljava/lang/String;
+}
+
 public final class dev/webauthn/serialization/LargeBlobExtensionInputDto {
 	public static final field Companion Ldev/webauthn/serialization/LargeBlobExtensionInputDto$Companion;
 	public fun <init> ()V
@@ -632,6 +647,8 @@ public final class dev/webauthn/serialization/WebAuthnDtoMapper {
 	public final fun fromModel (Ldev/webauthn/model/AuthenticationResponse;)Ldev/webauthn/serialization/AuthenticationResponseDto;
 	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
 	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
+	public final fun fromModel (Ldev/webauthn/model/RawAuthenticationResponse;)Ldev/webauthn/serialization/AuthenticationResponseDto;
+	public final fun fromModel (Ldev/webauthn/model/RawRegistrationResponse;)Ldev/webauthn/serialization/RegistrationResponseDto;
 	public final fun fromModel (Ldev/webauthn/model/RegistrationResponse;)Ldev/webauthn/serialization/RegistrationResponseDto;
 	public final fun parseCollectedClientData-UlGSvtQ (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public final fun toModel (Ldev/webauthn/serialization/AuthenticationResponseDto;)Ldev/webauthn/model/ValidationResult;
@@ -642,5 +659,7 @@ public final class dev/webauthn/serialization/WebAuthnDtoMapper {
 	public final fun toModelValidated (Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public static synthetic fun toModelValidated$default (Ldev/webauthn/serialization/WebAuthnDtoMapper;Ldev/webauthn/serialization/AuthenticationExtensionsClientInputsDto;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
 	public static synthetic fun toModelValidated$default (Ldev/webauthn/serialization/WebAuthnDtoMapper;Ldev/webauthn/serialization/AuthenticationExtensionsClientOutputsDto;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun toRawModel (Ldev/webauthn/serialization/AuthenticationResponseDto;)Ldev/webauthn/model/ValidationResult;
+	public final fun toRawModel (Ldev/webauthn/serialization/RegistrationResponseDto;)Ldev/webauthn/model/ValidationResult;
 }
 

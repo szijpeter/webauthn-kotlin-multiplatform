@@ -180,6 +180,20 @@ final class dev.webauthn.serialization/AuthenticatorSelectionCriteriaDto { // de
     }
 }
 
+final class dev.webauthn.serialization/KotlinxWebAuthnJsonCodec : dev.webauthn.json/WebAuthnJsonCodec { // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec|null[0]
+    constructor <init>(kotlinx.serialization.json/Json = ...) // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.<init>|<init>(kotlinx.serialization.json.Json){}[0]
+
+    final fun decodeAuthenticationResponse(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeAuthenticationResponse|decodeAuthenticationResponse(kotlin.String){}[0]
+    final fun decodeCollectedClientData(kotlin/ByteArray): dev.webauthn.model/ValidationResult<dev.webauthn.model/CollectedClientData> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeCollectedClientData|decodeCollectedClientData(kotlin.ByteArray){}[0]
+    final fun decodeCreationOptions(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeCreationOptions|decodeCreationOptions(kotlin.String){}[0]
+    final fun decodeRegistrationResponse(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeRegistrationResponse|decodeRegistrationResponse(kotlin.String){}[0]
+    final fun decodeRequestOptions(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeRequestOptions|decodeRequestOptions(kotlin.String){}[0]
+    final fun encodeAuthenticationResponse(dev.webauthn.model/RawAuthenticationResponse): kotlin/String // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.encodeAuthenticationResponse|encodeAuthenticationResponse(dev.webauthn.model.RawAuthenticationResponse){}[0]
+    final fun encodeCreationOptions(dev.webauthn.model/PublicKeyCredentialCreationOptions): kotlin/String // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.encodeCreationOptions|encodeCreationOptions(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final fun encodeRegistrationResponse(dev.webauthn.model/RawRegistrationResponse): kotlin/String // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.encodeRegistrationResponse|encodeRegistrationResponse(dev.webauthn.model.RawRegistrationResponse){}[0]
+    final fun encodeRequestOptions(dev.webauthn.model/PublicKeyCredentialRequestOptions): kotlin/String // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.encodeRequestOptions|encodeRequestOptions(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+}
+
 final class dev.webauthn.serialization/LargeBlobExtensionInputDto { // dev.webauthn.serialization/LargeBlobExtensionInputDto|null[0]
     constructor <init>(kotlin/String? = ..., kotlin/Boolean? = ..., kotlin/String? = ...) // dev.webauthn.serialization/LargeBlobExtensionInputDto.<init>|<init>(kotlin.String?;kotlin.Boolean?;kotlin.String?){}[0]
 
@@ -654,6 +668,8 @@ final object dev.webauthn.serialization/WebAuthnDtoMapper { // dev.webauthn.seri
     final fun fromModel(dev.webauthn.model/AuthenticationResponse): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.AuthenticationResponse){}[0]
     final fun fromModel(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.serialization/PublicKeyCredentialCreationOptionsDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
     final fun fromModel(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.serialization/PublicKeyCredentialRequestOptionsDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    final fun fromModel(dev.webauthn.model/RawAuthenticationResponse): dev.webauthn.serialization/AuthenticationResponseDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.RawAuthenticationResponse){}[0]
+    final fun fromModel(dev.webauthn.model/RawRegistrationResponse): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.RawRegistrationResponse){}[0]
     final fun fromModel(dev.webauthn.model/RegistrationResponse): dev.webauthn.serialization/RegistrationResponseDto // dev.webauthn.serialization/WebAuthnDtoMapper.fromModel|fromModel(dev.webauthn.model.RegistrationResponse){}[0]
     final fun parseCollectedClientData(dev.webauthn.model/Base64UrlBytes): dev.webauthn.model/ValidationResult<dev.webauthn.model/CollectedClientData> // dev.webauthn.serialization/WebAuthnDtoMapper.parseCollectedClientData|parseCollectedClientData(dev.webauthn.model.Base64UrlBytes){}[0]
     final fun toModel(dev.webauthn.serialization/AuthenticationResponseDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.AuthenticationResponseDto){}[0]
@@ -662,4 +678,6 @@ final object dev.webauthn.serialization/WebAuthnDtoMapper { // dev.webauthn.seri
     final fun toModel(dev.webauthn.serialization/RegistrationResponseDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.serialization/WebAuthnDtoMapper.toModel|toModel(dev.webauthn.serialization.RegistrationResponseDto){}[0]
     final fun toModelValidated(dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationExtensionsClientInputs> // dev.webauthn.serialization/WebAuthnDtoMapper.toModelValidated|toModelValidated(dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto;kotlin.String){}[0]
     final fun toModelValidated(dev.webauthn.serialization/AuthenticationExtensionsClientOutputsDto, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationExtensionsClientOutputs> // dev.webauthn.serialization/WebAuthnDtoMapper.toModelValidated|toModelValidated(dev.webauthn.serialization.AuthenticationExtensionsClientOutputsDto;kotlin.String){}[0]
+    final fun toRawModel(dev.webauthn.serialization/AuthenticationResponseDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.serialization/WebAuthnDtoMapper.toRawModel|toRawModel(dev.webauthn.serialization.AuthenticationResponseDto){}[0]
+    final fun toRawModel(dev.webauthn.serialization/RegistrationResponseDto): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.serialization/WebAuthnDtoMapper.toRawModel|toRawModel(dev.webauthn.serialization.RegistrationResponseDto){}[0]
 }

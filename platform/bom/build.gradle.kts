@@ -11,6 +11,7 @@ dependencies {
     constraints {
         api("${project.group}:webauthn-cbor-core:${project.version}")
         api("${project.group}:webauthn-model:${project.version}")
+        api("${project.group}:webauthn-json-api:${project.version}")
         api("${project.group}:webauthn-protocol:${project.version}")
         api("${project.group}:webauthn-runtime-core:${project.version}")
         api("${project.group}:webauthn-serialization-kotlinx:${project.version}")
