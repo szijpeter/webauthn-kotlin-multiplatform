@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(project(":core:webauthn-core"))
-    api(project(":core:webauthn-serialization-kotlinx"))
+    api(project(":core:webauthn-json-kotlinx"))
     api(project(":core:webauthn-crypto-api"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)

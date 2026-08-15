@@ -246,7 +246,7 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-json-api`](./core/webauthn-json-api/README.md) | Teams selecting a JSON implementation without exposing serializer-specific types |
 | [`webauthn-protocol`](./core/webauthn-protocol/README.md) | Teams interpreting raw WebAuthn binary protocol data without selecting a codec |
 | [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md) | Shared coroutine-safe error/cancellation boundary helpers for adapter modules |
-| [`webauthn-serialization-kotlinx`](./core/webauthn-serialization-kotlinx/README.md) | Teams mapping JSON/CBOR DTOs to typed models |
+| [`webauthn-json-kotlinx`](./core/webauthn-json-kotlinx/README.md) | Teams mapping JSON/CBOR DTOs to typed models |
 | [`webauthn-core`](./core/webauthn-core/README.md) | Teams validating ceremonies and authenticator data |
 | [`webauthn-crypto-api`](./core/webauthn-crypto-api/README.md) | Teams plugging crypto/attestation implementations into validation and server flows |
 | [`webauthn-server-jvm-crypto`](./server/webauthn-server-jvm-crypto/README.md) | JVM backends that want Signum-first hashing, signature, and attestation verification |

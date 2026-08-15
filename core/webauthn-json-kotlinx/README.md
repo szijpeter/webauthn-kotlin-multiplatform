@@ -1,4 +1,4 @@
-# webauthn-serialization-kotlinx
+# webauthn-json-kotlinx
 
 Serialization and mapping helpers between wire DTOs and typed WebAuthn domain models.
 
@@ -14,7 +14,7 @@ Use this when your boundary is JSON/CBOR but your application code should stay t
 
 ## How to use
 
-<!-- doc-example: id=core-webauthn-serialization-kotlinx-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/SerializationExample.kt#serialization-mapper -->
+<!-- doc-example: id=core-webauthn-json-kotlinx-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/SerializationExample.kt#serialization-mapper -->
 ```kotlin
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.ValidationResult
@@ -38,7 +38,7 @@ Real-world scenario: parse backend JSON into typed model objects, run validation
 
 ## How it fits
 
-<!-- doc-example: id=core-webauthn-serialization-kotlinx-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
+<!-- doc-example: id=core-webauthn-json-kotlinx-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     WIRE["Wire DTOs (JSON or CBOR)"] --> MAPPER["WebAuthnDtoMapper"]

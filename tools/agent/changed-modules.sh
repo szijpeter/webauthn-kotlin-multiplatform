@@ -168,8 +168,8 @@ for file in "${changed_files[@]}"; do
             mark_module "core:webauthn-core"
             mark_category "core"
             ;;
-        core/webauthn-serialization-kotlinx/*)
-            mark_module "core:webauthn-serialization-kotlinx"
+        core/webauthn-json-kotlinx/*)
+            mark_module "core:webauthn-json-kotlinx"
             mark_category "core"
             ;;
         core/webauthn-crypto-api/*)

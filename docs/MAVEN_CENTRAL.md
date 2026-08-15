@@ -22,7 +22,7 @@ Published:
 - `webauthn-cbor-core`
 - `webauthn-model`
 - `webauthn-runtime-core`
-- `webauthn-serialization-kotlinx`
+- `webauthn-json-kotlinx`
 - `webauthn-core`
 - `webauthn-crypto-api`
 - `webauthn-server-jvm-crypto`

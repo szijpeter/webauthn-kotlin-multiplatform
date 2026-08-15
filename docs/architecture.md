@@ -59,7 +59,7 @@ runtime helpers, and cryptographic contracts separated.
 flowchart TB
     CRYPTO_API["webauthn-crypto-api<br/>Kotlin/JVM"]
     CORE["webauthn-core"]
-    SERIALIZATION["webauthn-serialization-kotlinx"]
+    SERIALIZATION["webauthn-json-kotlinx"]
     JSON_API["webauthn-json-api"]
     PROTOCOL["webauthn-protocol"]
     CBOR["webauthn-cbor-core"]
@@ -187,7 +187,7 @@ reusable library architecture.
 ## Dependency rules
 
 - `webauthn-model` remains independent of the rest of the repository.
-- `webauthn-json-api` is the serialization-library-neutral JSON contract; implementations such as `webauthn-serialization-kotlinx` depend on it.
+- `webauthn-json-api` is the serialization-library-neutral JSON contract; implementations such as `webauthn-json-kotlinx` depend on it.
 - `webauthn-protocol` interprets raw WebAuthn binary data using only the model and strict CBOR scanner; codecs depend on it rather than owning protocol parsing.
 - `webauthn-client-core` owns shared client business logic and protocol interpretation; Android and iOS modules remain platform bridges that return raw output.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.

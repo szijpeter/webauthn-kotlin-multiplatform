@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <io.github.szijpeter:webauthn-serialization-kotlinx>
+// Library unique name: <io.github.szijpeter:webauthn-json-kotlinx>
 final class dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto { // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto|null[0]
     constructor <init>(dev.webauthn.serialization/PrfExtensionInputDto? = ..., dev.webauthn.serialization/LargeBlobExtensionInputDto? = ..., kotlin.collections/List<kotlin/String>? = ...) // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.<init>|<init>(dev.webauthn.serialization.PrfExtensionInputDto?;dev.webauthn.serialization.LargeBlobExtensionInputDto?;kotlin.collections.List<kotlin.String>?){}[0]
 

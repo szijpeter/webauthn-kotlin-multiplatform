@@ -19,7 +19,7 @@ This report evaluates the conceptual standing of the `webauthn-kotlin-multiplatf
 ### 2.1. Serialization and Data Modeling
 - **webauthn4j** handles all serialization via Jackson mix-ins and complex polymorphic deserializers implicitly tied to the validation logic.
 - **SimpleWebAuthn** relies entirely on native JSON/CBOR handling in JS, keeping type defs purely as interfaces.
-- **Our Approach (webauthn-kotlin-multiplatform)** distinguishes tightly between internal domain models (`webauthn-model`) and Data Transfer Objects (`webauthn-serialization-kotlinx`). This provides a cleaner separation of concerns than webauthn4j, ensuring that changes to standard external representations don't corrupt internal evaluation logic, aligning closer to SimpleWebAuthn's strict type safety but backed by Kotlin multiplatform capabilities.
+- **Our Approach (webauthn-kotlin-multiplatform)** distinguishes tightly between internal domain models (`webauthn-model`) and Data Transfer Objects (`webauthn-json-kotlinx`). This provides a cleaner separation of concerns than webauthn4j, ensuring that changes to standard external representations don't corrupt internal evaluation logic, aligning closer to SimpleWebAuthn's strict type safety but backed by Kotlin multiplatform capabilities.
 
 ### 2.2. Validation Logic
 - **webauthn4j** utilizes a monolithic `WebAuthnManager` that parses, validates, and evaluates attestation paths almost concurrently.

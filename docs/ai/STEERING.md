@@ -39,7 +39,7 @@ Published:
 - `webauthn-json-api`
 - `webauthn-protocol`
 - `webauthn-runtime-core`
-- `webauthn-serialization-kotlinx`
+- `webauthn-json-kotlinx`
 - `webauthn-core`
 - `webauthn-crypto-api`
 - `webauthn-server-jvm-crypto`
@@ -77,7 +77,7 @@ Core-critical:
 - `webauthn-json-api`
 - `webauthn-protocol`
 - `webauthn-core`
-- `webauthn-serialization-kotlinx`
+- `webauthn-json-kotlinx`
 - `webauthn-crypto-api`
 - `webauthn-server-core-jvm`
 - `webauthn-server-jvm-crypto`

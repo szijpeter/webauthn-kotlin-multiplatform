@@ -11,7 +11,7 @@ Audience: applications and adapters that need a replaceable JSON boundary for We
 ## When to use
 
 Depend on this module when your application should select its own JSON codec.
-Use `webauthn-serialization-kotlinx` for the provided kotlinx implementation.
+Use `webauthn-json-kotlinx` for the provided kotlinx implementation.
 
 ## Status
 

@@ -22,7 +22,7 @@ dependencies {
     testImplementation("com.yubico:webauthn-server-core:2.9.0")
     testFixturesApi(project(":core:webauthn-core"))
     testFixturesApi(project(":core:webauthn-crypto-api"))
-    testFixturesApi(project(":core:webauthn-serialization-kotlinx"))
+    testFixturesApi(project(":core:webauthn-json-kotlinx"))
     testFixturesApi(libs.kotlinx.serialization.json)
     testFixturesApi(project(":server:webauthn-server-jvm-crypto"))
     testFixturesApi(libs.kotlinx.coroutines.core)

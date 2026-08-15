@@ -34,7 +34,7 @@ responsible for ceremony policy and attestation verification.
 flowchart LR
     CBOR["webauthn-cbor-core"] --> PROTOCOL["webauthn-protocol"]
     MODEL["webauthn-model"] --> PROTOCOL
-    PROTOCOL --> SERIALIZATION["webauthn-serialization-kotlinx"]
+    PROTOCOL --> SERIALIZATION["webauthn-json-kotlinx"]
 ```
 
 ## Status

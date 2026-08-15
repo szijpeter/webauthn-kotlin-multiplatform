@@ -28,7 +28,7 @@ include(
     ":core:webauthn-json-api",
     ":core:webauthn-protocol",
     ":core:webauthn-runtime-core",
-    ":core:webauthn-serialization-kotlinx",
+    ":core:webauthn-json-kotlinx",
     ":core:webauthn-core",
     ":core:webauthn-crypto-api",
     ":server:webauthn-server-jvm-crypto",
