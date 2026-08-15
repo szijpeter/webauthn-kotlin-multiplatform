@@ -7,16 +7,13 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.model.Base64UrlBytes
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.protocol.WebAuthnProtocolParser
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.Foundation.NSProcessInfo
@@ -40,24 +37,16 @@ internal actual class IosPasskeyClientImpl(
 internal class IosPasskeyPlatformBridge(
     private val bridge: IosAuthorizationBridge,
 ) : PasskeyPlatformBridge {
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse {
         return bridge
             .createCredential(options)
-            .toModel()
+            .toRaw()
     }
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): RawAuthenticationResponse {
         return bridge
             .getAssertion(options)
-            .toModel()
-    }
-
-    private fun IosRegistrationPayload.toModel(): RegistrationResponse {
-        return WebAuthnProtocolParser.parseRegistrationResponse(toRaw()).toPlatformValue()
-    }
-
-    private fun IosAuthenticationPayload.toModel(): AuthenticationResponse {
-        return WebAuthnProtocolParser.parseAuthenticationResponse(toRaw()).toPlatformValue()
+            .toRaw()
     }
 
     private fun IosRegistrationPayload.toRaw(): RawRegistrationResponse {
@@ -116,14 +105,4 @@ private fun String?.toModel(): AuthenticatorAttachment? = when (this) {
     "platform" -> AuthenticatorAttachment.PLATFORM
     "cross-platform" -> AuthenticatorAttachment.CROSS_PLATFORM
     else -> throw IllegalArgumentException("Unsupported authenticator attachment: $this")
-}
-
-private fun <T> dev.webauthn.model.ValidationResult<T>.toPlatformValue(): T = when (this) {
-    is dev.webauthn.model.ValidationResult.Valid -> value
-    is dev.webauthn.model.ValidationResult.Invalid -> {
-        val error = errors.firstOrNull()
-        throw IllegalStateException(
-            "Failed to parse platform response: ${error?.field ?: "response"}: ${error?.message ?: "Unknown validation error"}",
-        )
-    }
 }

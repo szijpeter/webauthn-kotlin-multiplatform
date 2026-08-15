@@ -2,16 +2,18 @@
 
 package dev.webauthn.client
 
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 
 /** Platform bridge contract implemented by target-specific modules. */
 public interface PasskeyPlatformBridge {
-    public suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse
+    /** Returns byte-preserving registration output for shared protocol interpretation. */
+    public suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse
 
-    public suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse
+    /** Returns byte-preserving assertion output for shared protocol interpretation. */
+    public suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): RawAuthenticationResponse
 
     public fun mapPlatformError(throwable: Throwable): PasskeyClientError
 

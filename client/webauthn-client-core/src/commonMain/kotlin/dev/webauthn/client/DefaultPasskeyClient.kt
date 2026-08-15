@@ -6,6 +6,8 @@ import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.ValidationResult
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import dev.webauthn.runtime.suspendCatchingNonCancellation
 
 /** Default [PasskeyClient] orchestration that delegates to a platform bridge. */
@@ -18,7 +20,7 @@ public class DefaultPasskeyClient(
         return runOperation(
             options = options,
             validate = ::requireCreationOptions,
-            operation = bridge::createCredential,
+            operation = { bridge.createCredential(it).let(WebAuthnProtocolParser::parseRegistrationResponse).toParsedValue() },
         )
     }
 
@@ -27,7 +29,7 @@ public class DefaultPasskeyClient(
     ): PasskeyResult<AuthenticationResponse> {
         return runOperation(
             options = options,
-            operation = bridge::getAssertion,
+            operation = { bridge.getAssertion(it).let(WebAuthnProtocolParser::parseAuthenticationResponse).toParsedValue() },
         )
     }
 
@@ -64,6 +66,16 @@ public class DefaultPasskeyClient(
         if (options.pubKeyCredParams.isEmpty()) {
             throw InvalidOptionsException("pubKeyCredParams must not be empty")
         }
+    }
+}
+
+private fun <T> ValidationResult<T>.toParsedValue(): T = when (this) {
+    is ValidationResult.Valid -> value
+    is ValidationResult.Invalid -> {
+        val error = errors.firstOrNull()
+        throw IllegalStateException(
+            "Invalid platform response: ${error?.field ?: "response"}: ${error?.message ?: "Unknown validation error"}",
+        )
     }
 }
 

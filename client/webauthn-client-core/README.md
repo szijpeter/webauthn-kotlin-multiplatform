@@ -5,7 +5,7 @@ Audience: teams building shared passkey client orchestration across Android/iOS 
 ## What it provides
 
 - `PasskeyClient` abstraction for `createCredential` and `getAssertion` ceremonies.
-- `DefaultPasskeyClient` error-mapped orchestration over platform bridges.
+- `DefaultPasskeyClient` error-mapped orchestration that interprets raw platform responses through the shared protocol layer.
 - `PasskeyController` that coordinates start -> platform prompt -> finish flow with state updates.
 - Shared result/error contracts (`PasskeyResult`, `PasskeyClientError`, `PasskeyFinishResult`).
 - `PasskeyCapabilities` API for querying platform support for extensions and features.

@@ -44,8 +44,8 @@ abstract interface dev.webauthn.client/PasskeyClient { // dev.webauthn.client/Pa
 
 abstract interface dev.webauthn.client/PasskeyPlatformBridge { // dev.webauthn.client/PasskeyPlatformBridge|null[0]
     abstract fun mapPlatformError(kotlin/Throwable): dev.webauthn.client/PasskeyClientError // dev.webauthn.client/PasskeyPlatformBridge.mapPlatformError|mapPlatformError(kotlin.Throwable){}[0]
-    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.model/RegistrationResponse // dev.webauthn.client/PasskeyPlatformBridge.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
-    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.model/AuthenticationResponse // dev.webauthn.client/PasskeyPlatformBridge.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.model/RawRegistrationResponse // dev.webauthn.client/PasskeyPlatformBridge.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.model/RawAuthenticationResponse // dev.webauthn.client/PasskeyPlatformBridge.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
     open suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyPlatformBridge.capabilities|capabilities(){}[0]
 }
 

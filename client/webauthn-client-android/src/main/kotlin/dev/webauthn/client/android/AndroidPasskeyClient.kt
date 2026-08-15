@@ -23,13 +23,12 @@ import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.json.WebAuthnJsonCodec
-import dev.webauthn.model.ValidationResult
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.protocol.WebAuthnProtocolParser
 import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 private const val RP_ID_VALIDATION_HINT =
@@ -77,7 +76,7 @@ internal class AndroidPasskeyPlatformBridge(
      * W3C WebAuthn L3: §5.1.3. Create a New Credential (createCredential)
      * Maps to Android Credential Manager CreatePublicKeyCredentialRequest
      */
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse {
         val context = requirePromptContext()
         val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
@@ -90,12 +89,7 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
-            decodePayload = { payload ->
-                codec.decodeRegistrationResponse(payload)
-                    .toPlatformValue("Failed to parse registration response JSON")
-                    .let(WebAuthnProtocolParser::parseRegistrationResponse)
-                    .toPlatformValue("Failed to parse registration response")
-            },
+            decodePayload = { payload -> codec.decodeRegistrationResponse(payload).toPlatformValue("Failed to parse registration response JSON") },
         )
     }
 
@@ -103,7 +97,7 @@ internal class AndroidPasskeyPlatformBridge(
      * W3C WebAuthn L3: §5.1.4. Use an Existing Credential to Make an Assertion (getAssertion)
      * Maps to Android Credential Manager GetCredentialRequest/GetPublicKeyCredentialOption
      */
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse {
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): RawAuthenticationResponse {
         val context = requirePromptContext()
         val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
@@ -116,12 +110,7 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requirePublicKeyCredential(response).authenticationResponseJson },
-            decodePayload = { payload ->
-                codec.decodeAuthenticationResponse(payload)
-                    .toPlatformValue("Failed to parse authentication response JSON")
-                    .let(WebAuthnProtocolParser::parseAuthenticationResponse)
-                    .toPlatformValue("Failed to parse authentication response")
-            },
+            decodePayload = { payload -> codec.decodeAuthenticationResponse(payload).toPlatformValue("Failed to parse authentication response JSON") },
         )
     }
 
@@ -186,6 +175,13 @@ internal class AndroidPasskeyPlatformBridge(
     }
 }
 
+private fun enrichRpIdValidationMessage(message: String): String {
+    if (!looksLikeRpIdValidationFailure(message)) {
+        return message
+    }
+    return "$message. $RP_ID_VALIDATION_HINT"
+}
+
 private fun <T> ValidationResult<T>.toPlatformValue(context: String): T = when (this) {
     is ValidationResult.Valid -> value
     is ValidationResult.Invalid -> {
@@ -193,13 +189,6 @@ private fun <T> ValidationResult<T>.toPlatformValue(context: String): T = when (
         val message = "$context: ${error?.field ?: "response"}: ${error?.message ?: "Unknown validation error"}"
         throw IllegalStateException(message)
     }
-}
-
-private fun enrichRpIdValidationMessage(message: String): String {
-    if (!looksLikeRpIdValidationFailure(message)) {
-        return message
-    }
-    return "$message. $RP_ID_VALIDATION_HINT"
 }
 
 private fun looksLikeRpIdValidationFailure(message: String): Boolean {

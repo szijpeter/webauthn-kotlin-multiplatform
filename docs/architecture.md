@@ -107,10 +107,8 @@ flowchart TB
 
     ANDROID --> CLIENT_CORE
     ANDROID --> JSON_API
-    ANDROID --> PROTOCOL
 
     IOS --> CLIENT_CORE
-    IOS --> PROTOCOL
 
     JSON --> CLIENT_CORE
     JSON --> JSON_API
@@ -122,6 +120,7 @@ flowchart TB
     NETWORK --> FOUNDATION
 
     CLIENT_CORE --> FOUNDATION
+    CLIENT_CORE --> PROTOCOL
     CLIENT_CORE --> MODEL
 ```
 
@@ -187,7 +186,7 @@ reusable library architecture.
 - `webauthn-model` remains independent of the rest of the repository.
 - `webauthn-json-api` is the serialization-library-neutral JSON contract; implementations such as `webauthn-serialization-kotlinx` depend on it.
 - `webauthn-protocol` interprets raw WebAuthn binary data using only the model and strict CBOR scanner; codecs depend on it rather than owning protocol parsing.
-- `webauthn-client-core` owns shared client business logic; Android and iOS modules remain platform bridges that preserve raw output until `webauthn-protocol` interprets it.
+- `webauthn-client-core` owns shared client business logic and protocol interpretation; Android and iOS modules remain platform bridges that return raw output.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
 - Optional adapters must not become hidden prerequisites of core modules.
