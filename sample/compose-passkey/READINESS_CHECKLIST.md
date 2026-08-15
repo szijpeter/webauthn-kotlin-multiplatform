@@ -20,7 +20,7 @@ Pass condition:
 
 - all commands succeed without test failures.
 - shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus debug-log transition behavior.
-- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`), and the auth route remains the clearest reference usage.
+- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyFlow()`), and the auth route remains the clearest reference usage.
 - Android UI smoke test sources compile in CI (`:sample:compose-passkey-android:compileDebugAndroidTestKotlin`).
 
 ## 2. Local sample backend

@@ -8,8 +8,8 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.
-5. Compose-first auth wiring via `rememberPasskeyController(...)`, with `PasskeyControllerState` driving UI status and action enablement.
-6. Direct sample wiring to `KtorPasskeyServerClient` against the default backend contract.
+5. Compose-first auth wiring via `rememberPasskeyFlow(...)`, with caller-owned UI state driving status and action enablement.
+6. Direct sample wiring to `KotlinxKtorPasskeyBackend` against the default backend contract.
 7. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
 8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
@@ -148,9 +148,9 @@ Preview limitations and constraints:
 
 ## Test layering (fake vs real client)
 
-- `sample:compose-passkey` `commonTest` validates flow behavior with `FakePasskeyClient` and `FakeServerClient` (`PasskeyServerClient`) so orchestration is deterministic across KMP targets.
-- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
-- Runtime server wiring uses `webauthn-client-ktor` (`KtorPasskeyServerClient`).
+- `sample:compose-passkey` `commonTest` validates typed backend behavior with `FakePasskeyClient` and typed backend doubles so orchestration is deterministic across KMP targets.
+- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyFlow()`).
+- Runtime server wiring uses `webauthn-client-ktor-kotlinx` (`KotlinxKtorPasskeyBackend`).
 - Final readiness still requires the live register/sign-in checklist run on a real/emulated Android device with provider dependencies present.
 
 ## Android provider prerequisite

@@ -2,10 +2,11 @@
 
 package dev.webauthn.samples.composepasskey
 
+import dev.webauthn.client.AuthenticationBackend
+import dev.webauthn.client.CeremonyStart
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyResult
-import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.RawAuthenticationResponse
@@ -20,7 +21,6 @@ import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
-import dev.webauthn.network.RegistrationStartPayload
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoController
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
@@ -288,34 +288,24 @@ private class PrfTestServerClient(
     private val signInVerifyResult: Boolean = true,
     private val startThrowable: Throwable? = null,
     private val finishThrowable: Throwable? = null,
-) : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
+) : AuthenticationBackend<AuthenticationStartPayload, Unit, PasskeyFinishResult> {
     var signInStartCalls: Int = 0
     var lastAuthenticationStartPayload: AuthenticationStartPayload? = null
 
-    override suspend fun getRegisterOptions(params: RegistrationStartPayload): ValidationResult<PublicKeyCredentialCreationOptions> {
-        error("not used")
-    }
-
-    override suspend fun finishRegister(
-        params: RegistrationStartPayload,
-        response: RawRegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
-        error("not used")
-    }
-
-    override suspend fun getSignInOptions(params: AuthenticationStartPayload): ValidationResult<PublicKeyCredentialRequestOptions> {
+    override suspend fun start(
+        input: AuthenticationStartPayload,
+    ): CeremonyStart<Unit, PublicKeyCredentialRequestOptions> {
         startThrowable?.let { throw it }
         signInStartCalls += 1
-        lastAuthenticationStartPayload = params
-        return signInOptions
+        lastAuthenticationStartPayload = input
+        val options = when (signInOptions) {
+            is ValidationResult.Valid -> signInOptions.value
+            is ValidationResult.Invalid -> error("authentication options are invalid")
+        }
+        return CeremonyStart(state = Unit, options = options)
     }
 
-    override suspend fun finishSignIn(
-        params: AuthenticationStartPayload,
-        response: RawAuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
+    override suspend fun finish(state: Unit, response: RawAuthenticationResponse): PasskeyFinishResult {
         finishThrowable?.let { throw it }
         return if (signInVerifyResult) {
             PasskeyFinishResult.Verified
