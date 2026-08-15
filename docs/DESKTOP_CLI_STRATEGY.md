@@ -33,7 +33,7 @@ For this POC, we also validate a no-browser native CLI path to understand practi
 ## 4. CLI Strategy For This Repository
 
 1. Keep CLI as a separate deployable sample module (`:sample:passkey-cli`), not an additional JVM target inside an existing KMP module.
-2. Reuse existing typed contracts for backend orchestration (`KtorPasskeyServerClient`).
+2. Reuse the typed backend contracts via `KotlinxKtorPasskeyBackend`.
 3. Keep native authenticator interaction behind a narrow adapter boundary:
 - `AuthenticatorAdapter`
 - `PythonFido2Adapter`

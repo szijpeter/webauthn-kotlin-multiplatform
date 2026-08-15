@@ -1,7 +1,9 @@
 package dev.webauthn.samples.passkeycli
 
+import dev.webauthn.client.AuthenticationBackend
+import dev.webauthn.client.CeremonyStart
 import dev.webauthn.client.PasskeyFinishResult
-import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -30,8 +32,8 @@ import kotlin.test.assertTrue
 
 class PasskeyCeremonyRunnerTest {
     @Test
-    fun register_happyPath_finishesWithOriginalChallenge() = runTest {
-        val serverClient = FakeServerClient(
+    fun register_happyPath_finishesThroughTypedBackend() = runTest {
+        val backends = FakeServerBackends(
             registerOptions = ValidationResult.Valid(validRegisterOptions()),
             authOptions = ValidationResult.Valid(validAuthenticationOptions()),
             finishRegisterResult = PasskeyFinishResult.Verified,
@@ -45,7 +47,8 @@ class PasskeyCeremonyRunnerTest {
         val stderr = StringBuilder()
         val runner = PasskeyCeremonyRunner(
             authenticatorAdapter = adapter,
-            serverClient = serverClient,
+            registrationBackend = backends.registrationBackend,
+            authenticationBackend = backends.authenticationBackend,
             stdout = stdout,
             stderr = stderr,
         )
@@ -60,7 +63,7 @@ class PasskeyCeremonyRunnerTest {
         )
 
         assertEquals(0, exitCode)
-        assertEquals(validRegisterOptions().challenge.value.encoded(), serverClient.lastRegisterChallenge)
+        assertEquals(1, backends.registrationFinishCalls)
         assertTrue(stdout.toString().contains("Registration verified"))
         assertTrue(stderr.isEmpty())
     }
@@ -70,7 +73,7 @@ class PasskeyCeremonyRunnerTest {
         val invalidAuthResponse = validAuthenticationResponseDto().copy(
             response = validAuthenticationResponseDto().response.copy(signature = "not-base64url"),
         )
-        val serverClient = FakeServerClient(
+        val backends = FakeServerBackends(
             registerOptions = ValidationResult.Valid(validRegisterOptions()),
             authOptions = ValidationResult.Valid(validAuthenticationOptions()),
             finishRegisterResult = PasskeyFinishResult.Verified,
@@ -84,7 +87,8 @@ class PasskeyCeremonyRunnerTest {
         val stderr = StringBuilder()
         val runner = PasskeyCeremonyRunner(
             authenticatorAdapter = adapter,
-            serverClient = serverClient,
+            registrationBackend = backends.registrationBackend,
+            authenticationBackend = backends.authenticationBackend,
             stdout = stdout,
             stderr = stderr,
         )
@@ -103,7 +107,7 @@ class PasskeyCeremonyRunnerTest {
 
     @Test
     fun register_rejectedWithoutMessage_usesSafeFallbackText() = runTest {
-        val serverClient = FakeServerClient(
+        val backends = FakeServerBackends(
             registerOptions = ValidationResult.Valid(validRegisterOptions()),
             authOptions = ValidationResult.Valid(validAuthenticationOptions()),
             finishRegisterResult = PasskeyFinishResult.Rejected(),
@@ -117,7 +121,8 @@ class PasskeyCeremonyRunnerTest {
         val stderr = StringBuilder()
         val runner = PasskeyCeremonyRunner(
             authenticatorAdapter = adapter,
-            serverClient = serverClient,
+            registrationBackend = backends.registrationBackend,
+            authenticationBackend = backends.authenticationBackend,
             stdout = stdout,
             stderr = stderr,
         )
@@ -144,7 +149,8 @@ class PasskeyCeremonyRunnerTest {
         )
         val runner = PasskeyCeremonyRunner(
             authenticatorAdapter = adapter,
-            serverClient = CancellationServerClient(),
+            registrationBackend = CancellationRegistrationBackend(),
+            authenticationBackend = UnusedAuthenticationBackend(),
             stdout = StringBuilder(),
             stderr = StringBuilder(),
         )
@@ -177,65 +183,69 @@ private class FakeAuthenticatorAdapter(
     ): AuthenticationResponseDto = authenticationResponse
 }
 
-private class FakeServerClient(
+private class FakeServerBackends(
     private val registerOptions: ValidationResult<PublicKeyCredentialCreationOptions>,
     private val authOptions: ValidationResult<PublicKeyCredentialRequestOptions>,
     private val finishRegisterResult: PasskeyFinishResult,
     private val finishSignInResult: PasskeyFinishResult,
-) : PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
-    var lastRegisterChallenge: String? = null
+) {
+    var registrationFinishCalls: Int = 0
 
-    override suspend fun getRegisterOptions(
-        params: RegistrationStartPayload,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> = registerOptions
+    val registrationBackend = object : RegistrationBackend<RegistrationStartPayload, Unit, PasskeyFinishResult> {
+        override suspend fun start(
+            input: RegistrationStartPayload,
+        ): CeremonyStart<Unit, PublicKeyCredentialCreationOptions> = CeremonyStart(
+            state = Unit,
+            options = registerOptions.orThrow("registration"),
+        )
 
-    override suspend fun finishRegister(
-        params: RegistrationStartPayload,
-        response: RawRegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
-        lastRegisterChallenge = challengeAsBase64Url
-        return finishRegisterResult
+        override suspend fun finish(state: Unit, response: RawRegistrationResponse): PasskeyFinishResult {
+            registrationFinishCalls += 1
+            return finishRegisterResult
+        }
     }
 
-    override suspend fun getSignInOptions(
-        params: AuthenticationStartPayload,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> = authOptions
+    val authenticationBackend = object : AuthenticationBackend<AuthenticationStartPayload, Unit, PasskeyFinishResult> {
+        override suspend fun start(
+            input: AuthenticationStartPayload,
+        ): CeremonyStart<Unit, PublicKeyCredentialRequestOptions> = CeremonyStart(
+            state = Unit,
+            options = authOptions.orThrow("authentication"),
+        )
 
-    override suspend fun finishSignIn(
-        params: AuthenticationStartPayload,
-        response: RawAuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult = finishSignInResult
+        override suspend fun finish(state: Unit, response: RawAuthenticationResponse): PasskeyFinishResult =
+            finishSignInResult
+    }
 }
 
-private class CancellationServerClient :
-    PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload> {
-    override suspend fun getRegisterOptions(
-        params: RegistrationStartPayload,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> {
+private class CancellationRegistrationBackend :
+    RegistrationBackend<RegistrationStartPayload, Unit, PasskeyFinishResult> {
+    override suspend fun start(
+        input: RegistrationStartPayload,
+    ): CeremonyStart<Unit, PublicKeyCredentialCreationOptions> {
         throw CancellationException("simulated cancellation")
     }
 
-    override suspend fun finishRegister(
-        params: RegistrationStartPayload,
-        response: RawRegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult = PasskeyFinishResult.Verified
+    override suspend fun finish(state: Unit, response: RawRegistrationResponse): PasskeyFinishResult =
+        PasskeyFinishResult.Verified
+}
 
-    override suspend fun getSignInOptions(
-        params: AuthenticationStartPayload,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> {
+private class UnusedAuthenticationBackend :
+    AuthenticationBackend<AuthenticationStartPayload, Unit, PasskeyFinishResult> {
+    override suspend fun start(
+        input: AuthenticationStartPayload,
+    ): CeremonyStart<Unit, PublicKeyCredentialRequestOptions> {
         throw UnsupportedOperationException("not used")
     }
 
-    override suspend fun finishSignIn(
-        params: AuthenticationStartPayload,
-        response: RawAuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
+    override suspend fun finish(state: Unit, response: RawAuthenticationResponse): PasskeyFinishResult {
         throw UnsupportedOperationException("not used")
     }
+}
+
+private fun <T> ValidationResult<T>.orThrow(operation: String): T = when (this) {
+    is ValidationResult.Valid -> value
+    is ValidationResult.Invalid -> error("$operation options are invalid")
 }
 
 private fun validRegisterOptions(): PublicKeyCredentialCreationOptions {

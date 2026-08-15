@@ -1,7 +1,8 @@
 package dev.webauthn.samples.passkeycli
 
+import dev.webauthn.client.AuthenticationBackend
 import dev.webauthn.client.PasskeyFinishResult
-import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -14,7 +15,8 @@ import dev.webauthn.serialization.WebAuthnDtoMapper
 
 internal class PasskeyCeremonyRunner(
     private val authenticatorAdapter: AuthenticatorAdapter,
-    private val serverClient: PasskeyServerClient<RegistrationStartPayload, AuthenticationStartPayload>,
+    private val registrationBackend: RegistrationBackend<RegistrationStartPayload, Unit, PasskeyFinishResult>,
+    private val authenticationBackend: AuthenticationBackend<AuthenticationStartPayload, Unit, PasskeyFinishResult>,
     private val stdout: Appendable = System.out,
     private val stderr: Appendable = System.err,
 ) {
@@ -29,9 +31,9 @@ internal class PasskeyCeremonyRunner(
             userHandle = command.userHandle,
         )
 
-        val options = resolveRegisterOptions(startPayload) ?: return EXIT_OPTIONS_FAILURE
+        val options = startRegistration(startPayload) ?: return EXIT_OPTIONS_FAILURE
         val response = resolveRegistrationResponse(command.common.origin, options) ?: return EXIT_ADAPTER_FAILURE
-        return finishRegistration(startPayload, options, response)
+        return finishRegistration(response)
     }
 
     suspend fun runAuthenticate(command: CliInvocation.Authenticate): Int {
@@ -41,43 +43,29 @@ internal class PasskeyCeremonyRunner(
             userName = command.userName,
         )
 
-        val options = resolveAuthenticationOptions(startPayload) ?: return EXIT_OPTIONS_FAILURE
+        val options = startAuthentication(startPayload) ?: return EXIT_OPTIONS_FAILURE
         val response = resolveAuthenticationResponse(command.common.origin, options) ?: return EXIT_ADAPTER_FAILURE
-        return finishAuthentication(startPayload, options, response)
+        return finishAuthentication(response)
     }
 
-    private suspend fun resolveRegisterOptions(
+    private suspend fun startRegistration(
         payload: RegistrationStartPayload,
     ): PublicKeyCredentialCreationOptions? {
-        val result = runSuspendCatching { serverClient.getRegisterOptions(payload) }
+        return runSuspendCatching { registrationBackend.start(payload).options }
             .getOrElse { error ->
                 stderr.appendLine("Failed to fetch registration options: ${error.displayMessage()}")
-                return null
-            }
-        return when (result) {
-            is ValidationResult.Valid -> result.value
-            is ValidationResult.Invalid -> {
-                stderr.appendLine("Registration options failed validation: ${result.formatErrors()}")
                 null
             }
-        }
     }
 
-    private suspend fun resolveAuthenticationOptions(
+    private suspend fun startAuthentication(
         payload: AuthenticationStartPayload,
     ): PublicKeyCredentialRequestOptions? {
-        val result = runSuspendCatching { serverClient.getSignInOptions(payload) }
+        return runSuspendCatching { authenticationBackend.start(payload).options }
             .getOrElse { error ->
                 stderr.appendLine("Failed to fetch authentication options: ${error.displayMessage()}")
-                return null
-            }
-        return when (result) {
-            is ValidationResult.Valid -> result.value
-            is ValidationResult.Invalid -> {
-                stderr.appendLine("Authentication options failed validation: ${result.formatErrors()}")
                 null
             }
-        }
     }
 
     private suspend fun resolveRegistrationResponse(
@@ -119,17 +107,10 @@ internal class PasskeyCeremonyRunner(
     }
 
     private suspend fun finishRegistration(
-        payload: RegistrationStartPayload,
-        options: PublicKeyCredentialCreationOptions,
         response: RawRegistrationResponse,
     ): Int {
-        val challenge = options.challenge.value.encoded()
         val finish = runSuspendCatching {
-            serverClient.finishRegister(
-                params = payload,
-                response = response,
-                challengeAsBase64Url = challenge,
-            )
+            registrationBackend.finish(state = Unit, response = response)
         }.getOrElse { error ->
             stderr.appendLine("Registration finish call failed: ${error.displayMessage()}")
             return EXIT_FINISH_FAILURE
@@ -148,17 +129,10 @@ internal class PasskeyCeremonyRunner(
     }
 
     private suspend fun finishAuthentication(
-        payload: AuthenticationStartPayload,
-        options: PublicKeyCredentialRequestOptions,
         response: RawAuthenticationResponse,
     ): Int {
-        val challenge = options.challenge.value.encoded()
         val finish = runSuspendCatching {
-            serverClient.finishSignIn(
-                params = payload,
-                response = response,
-                challengeAsBase64Url = challenge,
-            )
+            authenticationBackend.finish(state = Unit, response = response)
         }.getOrElse { error ->
             stderr.appendLine("Authentication finish call failed: ${error.displayMessage()}")
             return EXIT_FINISH_FAILURE
