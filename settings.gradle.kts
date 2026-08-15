@@ -44,6 +44,7 @@ include(
     ":client:webauthn-client-compose",
     ":client:webauthn-client-platform",
     ":client:webauthn-client-ktor",
+    ":client:webauthn-client-ktor-kotlinx",
     ":sample:backend-ktor",
     ":sample:android-passkey",
     ":sample:ios-passkey",

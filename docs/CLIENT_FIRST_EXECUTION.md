@@ -25,13 +25,18 @@ Example:
 
 <!-- doc-example: id=docs-client-first-execution-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
-import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.KtorPasskeyBackend
+import dev.webauthn.network.KtorPasskeyContractCodec
 import io.ktor.client.HttpClient
 
-fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
-    return KtorPasskeyServerClient(
+fun <RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationOutput> serverClient(
+    httpClient: HttpClient,
+    codec: KtorPasskeyContractCodec<RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationOutput>,
+): KtorPasskeyBackend<RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationOutput> {
+    return KtorPasskeyBackend(
         httpClient = httpClient,
         endpointBase = "https://example.com",
+        codec = codec,
     )
 }
 ```

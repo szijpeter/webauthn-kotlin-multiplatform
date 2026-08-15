@@ -1,0 +1,22 @@
+public final class dev/webauthn/network/kotlinx/KotlinxKtorPasskeyBackend {
+	public fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyRoutes;)V
+	public synthetic fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyRoutes;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun authenticationBackend ()Ldev/webauthn/client/AuthenticationBackend;
+	public final fun registrationBackend ()Ldev/webauthn/client/RegistrationBackend;
+}
+public final class dev/webauthn/network/kotlinx/KotlinxKtorPasskeyContractCodec : dev/webauthn/network/KtorPasskeyContractCodec {
+	public fun <init> ()V
+	public fun decodeAuthenticationFinish (Ljava/lang/String;)Ldev/webauthn/client/PasskeyFinishResult;
+	public synthetic fun decodeAuthenticationFinish (Ljava/lang/String;)Ljava/lang/Object;
+	public fun decodeAuthenticationStart (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public fun decodeError (Ljava/lang/String;)Ljava/lang/String;
+	public fun decodeRegistrationFinish (Ljava/lang/String;)Ldev/webauthn/client/PasskeyFinishResult;
+	public synthetic fun decodeRegistrationFinish (Ljava/lang/String;)Ljava/lang/Object;
+	public fun decodeRegistrationStart (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public fun encodeAuthenticationFinish (Ldev/webauthn/model/RawAuthenticationResponse;)Ljava/lang/String;
+	public fun encodeAuthenticationStart (Ldev/webauthn/network/AuthenticationStartPayload;)Ljava/lang/String;
+	public synthetic fun encodeAuthenticationStart (Ljava/lang/Object;)Ljava/lang/String;
+	public fun encodeRegistrationFinish (Ldev/webauthn/model/RawRegistrationResponse;)Ljava/lang/String;
+	public fun encodeRegistrationStart (Ldev/webauthn/network/RegistrationStartPayload;)Ljava/lang/String;
+	public synthetic fun encodeRegistrationStart (Ljava/lang/Object;)Ljava/lang/String;
+}

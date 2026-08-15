@@ -1,11 +1,14 @@
 # webauthn-client-ktor
 
-Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server contracts.
+Codec-neutral Ktor transport for typed passkey backends.
+
+`KtorPasskeyServerClient` remains available as the legacy default-contract client while downstream
+consumers migrate to the typed backend and the Kotlinx companion artifact.
 
 ## What it provides
 
-- `KtorPasskeyServerClient`
-- `registrationBackend()` and `authenticationBackend()` adapters for `PasskeyFlow`
+- `KtorPasskeyBackend`, a typed `RegistrationBackend`/`AuthenticationBackend` transport
+- `KtorPasskeyContractCodec`, the serialization boundary for backend contracts
 - `KtorPasskeyRoutes` for path overrides when your backend keeps the default payload semantics
 - Start/finish HTTP call wiring for registration and authentication
 - A drop-in transport module for client orchestration layers
@@ -14,19 +17,26 @@ Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server cont
 
 ## When to use
 
-Use this when your backend follows the default `/webauthn/*` contract and your app already uses Ktor client.
+Use this when your app already uses Ktor client and you want to provide the backend's serialization
+contract. For the default `/webauthn/…` contract with Kotlinx Serialization, add
+`webauthn-client-ktor-kotlinx`.
 
 ## How to use
 
 <!-- doc-example: id=client-webauthn-client-ktor-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
-import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.KtorPasskeyBackend
+import dev.webauthn.network.KtorPasskeyContractCodec
 import io.ktor.client.HttpClient
 
-fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
-    return KtorPasskeyServerClient(
+fun <RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationOutput> serverClient(
+    httpClient: HttpClient,
+    codec: KtorPasskeyContractCodec<RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationOutput>,
+): KtorPasskeyBackend<RegistrationInput, AuthenticationInput, RegistrationOutput, AuthenticationOutput> {
+    return KtorPasskeyBackend(
         httpClient = httpClient,
         endpointBase = "https://example.com",
+        codec = codec,
     )
 }
 ```
@@ -38,14 +48,16 @@ Real-world scenario: a mobile app uses `PasskeyFlow` for platform ceremonies, th
 <!-- doc-example: id=client-webauthn-client-ktor-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
-    UI["App UI"] --> CORE["webauthn-client-core controller"]
-    CORE --> NET["KtorPasskeyServerClient"]
+    UI["App UI"] --> FLOW["PasskeyFlow"]
+    FLOW --> NET["KtorPasskeyBackend"]
+    CODEC["KtorPasskeyContractCodec"] --> NET
     NET --> API["Backend /webauthn/* endpoints"]
 ```
 
 ## Pitfalls and limits
 
-- Route/path assumptions are explicit; if your backend payloads differ from the default sample contract, provide your own `PasskeyServerClient` implementation instead of trying to patch this transport.
+- Route/path assumptions are explicit; if your backend payloads differ, implement
+  `KtorPasskeyContractCodec` rather than patching the transport.
 - `AuthenticationStartPayload.userName` is optional to support both identified and discoverable authentication starts on one endpoint.
 - Authentication-start payloads intentionally exclude `userHandle`; registration-start still carries `userHandle`.
 - `RegistrationStartPayload.residentKey` is optional and forwarded to compatible server contracts when present.

@@ -37,6 +37,25 @@ public final class dev/webauthn/network/KtorOriginMetadataProvider : dev/webauth
 	public fun getRelatedOrigins-w6KIa9k (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class dev/webauthn/network/KtorPasskeyBackend {
+	public fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyContractCodec;Ldev/webauthn/network/KtorPasskeyRoutes;)V
+	public synthetic fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyContractCodec;Ldev/webauthn/network/KtorPasskeyRoutes;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun authenticationBackend ()Ldev/webauthn/client/AuthenticationBackend;
+	public final fun registrationBackend ()Ldev/webauthn/client/RegistrationBackend;
+}
+
+public abstract interface class dev/webauthn/network/KtorPasskeyContractCodec {
+	public abstract fun decodeAuthenticationFinish (Ljava/lang/String;)Ljava/lang/Object;
+	public abstract fun decodeAuthenticationStart (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun decodeError (Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun decodeRegistrationFinish (Ljava/lang/String;)Ljava/lang/Object;
+	public abstract fun decodeRegistrationStart (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun encodeAuthenticationFinish (Ldev/webauthn/model/RawAuthenticationResponse;)Ljava/lang/String;
+	public abstract fun encodeAuthenticationStart (Ljava/lang/Object;)Ljava/lang/String;
+	public abstract fun encodeRegistrationFinish (Ldev/webauthn/model/RawRegistrationResponse;)Ljava/lang/String;
+	public abstract fun encodeRegistrationStart (Ljava/lang/Object;)Ljava/lang/String;
+}
+
 public final class dev/webauthn/network/KtorPasskeyRoutes {
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V

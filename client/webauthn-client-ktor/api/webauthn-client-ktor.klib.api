@@ -6,6 +6,25 @@
 // - Show declarations: true
 
 // Library unique name: <io.github.szijpeter:webauthn-client-ktor>
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?, #D: kotlin/Any?> dev.webauthn.network/KtorPasskeyContractCodec { // dev.webauthn.network/KtorPasskeyContractCodec|null[0]
+    abstract fun decodeAuthenticationFinish(kotlin/String): #D // dev.webauthn.network/KtorPasskeyContractCodec.decodeAuthenticationFinish|decodeAuthenticationFinish(kotlin.String){}[0]
+    abstract fun decodeAuthenticationStart(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.network/KtorPasskeyContractCodec.decodeAuthenticationStart|decodeAuthenticationStart(kotlin.String){}[0]
+    abstract fun decodeError(kotlin/String): kotlin/String? // dev.webauthn.network/KtorPasskeyContractCodec.decodeError|decodeError(kotlin.String){}[0]
+    abstract fun decodeRegistrationFinish(kotlin/String): #C // dev.webauthn.network/KtorPasskeyContractCodec.decodeRegistrationFinish|decodeRegistrationFinish(kotlin.String){}[0]
+    abstract fun decodeRegistrationStart(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.network/KtorPasskeyContractCodec.decodeRegistrationStart|decodeRegistrationStart(kotlin.String){}[0]
+    abstract fun encodeAuthenticationFinish(dev.webauthn.model/RawAuthenticationResponse): kotlin/String // dev.webauthn.network/KtorPasskeyContractCodec.encodeAuthenticationFinish|encodeAuthenticationFinish(dev.webauthn.model.RawAuthenticationResponse){}[0]
+    abstract fun encodeAuthenticationStart(#B): kotlin/String // dev.webauthn.network/KtorPasskeyContractCodec.encodeAuthenticationStart|encodeAuthenticationStart(1:1){}[0]
+    abstract fun encodeRegistrationFinish(dev.webauthn.model/RawRegistrationResponse): kotlin/String // dev.webauthn.network/KtorPasskeyContractCodec.encodeRegistrationFinish|encodeRegistrationFinish(dev.webauthn.model.RawRegistrationResponse){}[0]
+    abstract fun encodeRegistrationStart(#A): kotlin/String // dev.webauthn.network/KtorPasskeyContractCodec.encodeRegistrationStart|encodeRegistrationStart(1:0){}[0]
+}
+
+final class <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?, #D: kotlin/Any?> dev.webauthn.network/KtorPasskeyBackend { // dev.webauthn.network/KtorPasskeyBackend|null[0]
+    constructor <init>(io.ktor.client/HttpClient, kotlin/String, dev.webauthn.network/KtorPasskeyContractCodec<#A, #B, #C, #D>, dev.webauthn.network/KtorPasskeyRoutes = ...) // dev.webauthn.network/KtorPasskeyBackend.<init>|<init>(io.ktor.client.HttpClient;kotlin.String;dev.webauthn.network.KtorPasskeyContractCodec<1:0,1:1,1:2,1:3>;dev.webauthn.network.KtorPasskeyRoutes){}[0]
+
+    final fun authenticationBackend(): dev.webauthn.client/AuthenticationBackend<#B, kotlin/Unit, #D> // dev.webauthn.network/KtorPasskeyBackend.authenticationBackend|authenticationBackend(){}[0]
+    final fun registrationBackend(): dev.webauthn.client/RegistrationBackend<#A, kotlin/Unit, #C> // dev.webauthn.network/KtorPasskeyBackend.registrationBackend|registrationBackend(){}[0]
+}
+
 final class dev.webauthn.network/AuthenticationStartPayload { // dev.webauthn.network/AuthenticationStartPayload|null[0]
     constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/AuthenticationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
 
