@@ -81,7 +81,8 @@ no internal project dependencies without inventing an edge.
 
 ## Client stack
 
-`webauthn-client-core` owns shared orchestration. JSON, Android, iOS, Compose,
+`webauthn-client-core` owns typed platform interaction, while `webauthn-client-flow` owns optional
+start → prompt → finish orchestration. JSON, Android, iOS, Compose,
 PRF, and network modules build around that shared boundary. Platform bridges use
 the codec API at their JSON boundary and hand byte-preserving responses to the
 protocol layer for interpretation.
@@ -95,6 +96,7 @@ flowchart TB
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
     NETWORK["webauthn-network-ktor-client<br/>(optional)"]
     CLIENT_CORE["webauthn-client-core"]
+    CLIENT_FLOW["webauthn-client-flow<br/>(optional)"]
     JSON_API["webauthn-json-api"]
     PROTOCOL["webauthn-protocol"]
     FOUNDATION["Shared foundation"]
@@ -102,6 +104,7 @@ flowchart TB
 
     COMPOSE --> CLIENT_CORE
     COMPOSE --> PLATFORM
+    COMPOSE --> CLIENT_FLOW
 
     PLATFORM --> CLIENT_CORE
     PLATFORM --> JSON_API
@@ -118,6 +121,7 @@ flowchart TB
     CLIENT_CORE --> FOUNDATION
     CLIENT_CORE --> PROTOCOL
     CLIENT_CORE --> MODEL
+    CLIENT_FLOW --> CLIENT_CORE
 ```
 
 External libraries, platform APIs, source-set details, and samples are

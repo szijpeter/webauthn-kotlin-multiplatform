@@ -35,6 +35,7 @@ kotlin {
 }
 
 dependencies {
+    add("androidDeviceTestImplementation", project(":client:webauthn-client-flow"))
     add("androidHostTestImplementation", libs.junit4)
     add("androidHostTestImplementation", libs.robolectric)
     add("androidHostTestImplementation", libs.mockk)

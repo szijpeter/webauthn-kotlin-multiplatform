@@ -113,7 +113,8 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-json-api`](./core/webauthn-json-api/README.md): replaceable JSON codec boundary.
 - [`webauthn-protocol`](./core/webauthn-protocol/README.md): strict codec-neutral protocol interpretation.
 - [`webauthn-core`](./core/webauthn-core/README.md): standards-first ceremony validation.
-- [`webauthn-client-core`](./client/webauthn-client-core/README.md): shared client orchestration.
+- [`webauthn-client-core`](./client/webauthn-client-core/README.md): typed platform-client boundary.
+- [`webauthn-client-flow`](./client/webauthn-client-flow/README.md): optional start → prompt → finish orchestration.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
 
@@ -218,6 +219,7 @@ Use:
 Use:
 
 - [`webauthn-client-core`](./client/webauthn-client-core/README.md)
+- [`webauthn-client-flow`](./client/webauthn-client-flow/README.md) for backend ceremony orchestration
 - [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) if you exchange raw JSON with a host/backend
 - [`webauthn-client-platform`](./client/webauthn-client-platform/README.md)
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) for Compose helpers
@@ -252,7 +254,8 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-server-core-jvm`](./server/webauthn-server-core-jvm/README.md) | JVM backends that need registration/authentication ceremony services |
 | [`webauthn-server-ktor`](./server/webauthn-server-ktor/README.md) | Ktor backends that want ready-made WebAuthn routes |
 | [`webauthn-server-store-exposed`](./server/webauthn-server-store-exposed/README.md) | JVM backends storing WebAuthn state through Exposed |
-| [`webauthn-client-core`](./client/webauthn-client-core/README.md) | Shared passkey orchestration and controller-driven flows |
+| [`webauthn-client-core`](./client/webauthn-client-core/README.md) | Typed platform-passkey operations and error contracts |
+| [`webauthn-client-flow`](./client/webauthn-client-flow/README.md) | Optional backend ceremony orchestration and controller state |
 | [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
 | [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
 | [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |

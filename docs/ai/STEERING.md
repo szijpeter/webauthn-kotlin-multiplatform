@@ -12,7 +12,7 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 2. Security critical paths must not regress (challenge/origin/type checks, flags, counters, attestation validation behavior).
 3. Preserve strict layering and KMP boundaries (`webauthn-model` and `webauthn-core` remain free of platform/network dependencies).
 4. Public release posture is active: changes to published artifacts must preserve compatibility expectations, release quality, and OSS-facing clarity.
-5. `webauthn-client-core` owns shared client business logic; platform modules remain thin bridges to OS APIs.
+5. `webauthn-client-core` owns typed platform-client logic, while `webauthn-client-flow` owns optional backend ceremony orchestration; platform modules remain thin bridges to OS APIs.
 6. Keep changes economic: smallest sufficient scope, minimal context load, targeted checks first.
 7. Do not claim done without tests and quality gates matching impacted surface.
 8. Public repo hygiene is mandatory: no credentials/secrets in tracked files or committed history.
@@ -47,6 +47,7 @@ Published:
 - `webauthn-server-ktor`
 - `webauthn-server-store-exposed`
 - `webauthn-client-core`
+- `webauthn-client-flow`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
 - `webauthn-client-platform`
@@ -87,6 +88,7 @@ Adapter/transport/platform:
 - `webauthn-server-store-exposed`
 - `webauthn-network-ktor-client`
 - `webauthn-client-core`
+- `webauthn-client-flow`
 - `webauthn-runtime-core`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`

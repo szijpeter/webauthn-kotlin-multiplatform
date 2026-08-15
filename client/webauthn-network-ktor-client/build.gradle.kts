@@ -11,7 +11,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":client:webauthn-client-core"))
+            api(project(":client:webauthn-client-flow"))
             api(project(":core:webauthn-core"))
             api(project(":core:webauthn-json-kotlinx"))
             implementation(project(":core:webauthn-runtime-core"))
