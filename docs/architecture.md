@@ -60,6 +60,7 @@ flowchart TB
     CRYPTO_API["webauthn-crypto-api<br/>Kotlin/JVM"]
     CORE["webauthn-core"]
     SERIALIZATION["webauthn-serialization-kotlinx"]
+    PROTOCOL["webauthn-protocol"]
     CBOR["webauthn-cbor-core"]
     MODEL["webauthn-model"]
     RUNTIME["webauthn-runtime-core<br/>No internal project dependencies"]
@@ -67,8 +68,9 @@ flowchart TB
     CRYPTO_API --> CORE
     CRYPTO_API --> MODEL
     CORE --> MODEL
-    SERIALIZATION --> MODEL
-    SERIALIZATION --> CBOR
+    SERIALIZATION --> PROTOCOL
+    PROTOCOL --> MODEL
+    PROTOCOL --> CBOR
 ```
 
 The isolated runtime node is intentional. It communicates that this module has
@@ -175,6 +177,7 @@ reusable library architecture.
 ## Dependency rules
 
 - `webauthn-model` remains independent of the rest of the repository.
+- `webauthn-protocol` interprets raw WebAuthn binary data using only the model and strict CBOR scanner; codecs depend on it rather than owning protocol parsing.
 - `webauthn-client-core` owns shared client business logic; Android and iOS modules remain platform bridges.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.

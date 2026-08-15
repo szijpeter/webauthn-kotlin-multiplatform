@@ -32,8 +32,8 @@ import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.cbor.Cbor
 
 private const val PUBLIC_KEY_CREDENTIAL_TYPE = "public-key"
 
@@ -363,18 +363,16 @@ public object WebAuthnDtoMapper {
                 if (attestation is ValidationResult.Invalid) {
                     return attestation
                 }
-                val authDataBytes = extractAuthDataFromAttestationObject((attestation as ValidationResult.Valid).value.bytes())
-                if (authDataBytes == null) {
-                    return ValidationResult.Invalid(
-                        [
-                            WebAuthnValidationError.InvalidFormat(
-                                field = "attestationObject",
-                                message = "Attestation object does not contain a valid authData field",
-                            ),
-                        ],
-                    )
+                val authDataBytes = WebAuthnProtocolParser.extractAuthenticatorData(
+                    (attestation as ValidationResult.Valid).value.bytes(),
+                )
+                if (authDataBytes is ValidationResult.Invalid) {
+                    return authDataBytes
                 }
-                val parsedAuthData = parseAuthenticatorData(authDataBytes, field = "attestationObject.authData")
+                val parsedAuthData = WebAuthnProtocolParser.parseAuthenticatorData(
+                    (authDataBytes as ValidationResult.Valid).value,
+                    field = "attestationObject.authData",
+                )
                 if (parsedAuthData is ValidationResult.Invalid) {
                     return parsedAuthData
                 }
@@ -474,7 +472,7 @@ public object WebAuthnDtoMapper {
                 val clientDataValue = (clientData as ValidationResult.Valid).value
                 val signatureValue = (signature as ValidationResult.Valid).value
                 val authenticatorDataValue = (authenticatorData as ValidationResult.Valid).value
-                val parsedAuthData = parseAuthenticatorData(
+                val parsedAuthData = WebAuthnProtocolParser.parseAuthenticatorData(
                     bytes = authenticatorDataValue.bytes(),
                     field = "response.authenticatorData",
                 )

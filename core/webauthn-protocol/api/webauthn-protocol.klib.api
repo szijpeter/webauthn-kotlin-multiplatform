@@ -1,0 +1,31 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-protocol>
+final class dev.webauthn.protocol/ParsedAuthenticatorData { // dev.webauthn.protocol/ParsedAuthenticatorData|null[0]
+    constructor <init>(dev.webauthn.model/AuthenticatorData, dev.webauthn.model/AttestedCredentialData?, kotlin/ByteArray?) // dev.webauthn.protocol/ParsedAuthenticatorData.<init>|<init>(dev.webauthn.model.AuthenticatorData;dev.webauthn.model.AttestedCredentialData?;kotlin.ByteArray?){}[0]
+
+    final val attestedCredentialData // dev.webauthn.protocol/ParsedAuthenticatorData.attestedCredentialData|{}attestedCredentialData[0]
+        final fun <get-attestedCredentialData>(): dev.webauthn.model/AttestedCredentialData? // dev.webauthn.protocol/ParsedAuthenticatorData.attestedCredentialData.<get-attestedCredentialData>|<get-attestedCredentialData>(){}[0]
+    final val authenticatorData // dev.webauthn.protocol/ParsedAuthenticatorData.authenticatorData|{}authenticatorData[0]
+        final fun <get-authenticatorData>(): dev.webauthn.model/AuthenticatorData // dev.webauthn.protocol/ParsedAuthenticatorData.authenticatorData.<get-authenticatorData>|<get-authenticatorData>(){}[0]
+    final val extensionDataBytes // dev.webauthn.protocol/ParsedAuthenticatorData.extensionDataBytes|{}extensionDataBytes[0]
+        final fun <get-extensionDataBytes>(): kotlin/ByteArray? // dev.webauthn.protocol/ParsedAuthenticatorData.extensionDataBytes.<get-extensionDataBytes>|<get-extensionDataBytes>(){}[0]
+
+    final fun component1(): dev.webauthn.model/AuthenticatorData // dev.webauthn.protocol/ParsedAuthenticatorData.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.model/AttestedCredentialData? // dev.webauthn.protocol/ParsedAuthenticatorData.component2|component2(){}[0]
+    final fun component3(): kotlin/ByteArray? // dev.webauthn.protocol/ParsedAuthenticatorData.component3|component3(){}[0]
+    final fun copy(dev.webauthn.model/AuthenticatorData = ..., dev.webauthn.model/AttestedCredentialData? = ..., kotlin/ByteArray? = ...): dev.webauthn.protocol/ParsedAuthenticatorData // dev.webauthn.protocol/ParsedAuthenticatorData.copy|copy(dev.webauthn.model.AuthenticatorData;dev.webauthn.model.AttestedCredentialData?;kotlin.ByteArray?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.protocol/ParsedAuthenticatorData.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.protocol/ParsedAuthenticatorData.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.protocol/ParsedAuthenticatorData.toString|toString(){}[0]
+}
+
+final object dev.webauthn.protocol/WebAuthnProtocolParser { // dev.webauthn.protocol/WebAuthnProtocolParser|null[0]
+    final fun extractAuthenticatorData(kotlin/ByteArray, kotlin/String = ...): dev.webauthn.model/ValidationResult<kotlin/ByteArray> // dev.webauthn.protocol/WebAuthnProtocolParser.extractAuthenticatorData|extractAuthenticatorData(kotlin.ByteArray;kotlin.String){}[0]
+    final fun parseAuthenticatorData(kotlin/ByteArray, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.protocol/ParsedAuthenticatorData> // dev.webauthn.protocol/WebAuthnProtocolParser.parseAuthenticatorData|parseAuthenticatorData(kotlin.ByteArray;kotlin.String){}[0]
+}
