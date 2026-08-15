@@ -14,7 +14,7 @@ Physical module folders mirror that model: `core/`, `client/`, `server/`, `platf
 | Validation and serialization | `webauthn-core`, `webauthn-json-kotlinx`, `webauthn-cbor-core`, `webauthn-runtime-core` | Validation, parsing, DTO mapping, and shared runtime helpers |
 | Crypto | `webauthn-crypto-api`, `webauthn-server-jvm-crypto` | Crypto contracts plus JVM attestation/signature implementation |
 | Server | `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds` | Ceremony services, route adapters, persistence adapters, optional trust metadata |
-| Client | `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`, `webauthn-client-ktor` | Typed client logic, optional flows, platform bridges, Compose helpers, transport, and PRF crypto helpers |
+| Client | `webauthn-client-core`, `webauthn-client-defaults`, `webauthn-client-flow`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`, `webauthn-client-ktor` | Typed client logic, default composition, optional flows, platform bridges, Compose helpers, transport, and PRF crypto helpers |
 
 ## Published Surface
 
@@ -23,7 +23,7 @@ The published artifact surface is coordinated as one release train. The main pub
 - BOM: `platform:bom`
 - Foundation: `webauthn-cbor-core`, `webauthn-model`, `webauthn-runtime-core`, `webauthn-json-kotlinx`, `webauthn-core`
 - Crypto and server: `webauthn-crypto-api`, `webauthn-server-jvm-crypto`, `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds`
-- Client: `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`, `webauthn-client-ktor`
+- Client: `webauthn-client-core`, `webauthn-client-defaults`, `webauthn-client-flow`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`, `webauthn-client-ktor`
 
 Not published:
 
@@ -47,6 +47,7 @@ Not published:
 ### Client-first
 
 - `webauthn-client-core`
+- `webauthn-client-defaults` for platform plus Kotlinx JSON composition
 - optional: `webauthn-client-json-core`
 - `webauthn-client-platform` in the applicable platform source set
 - optional: `webauthn-client-compose`
@@ -60,7 +61,7 @@ Use [`platform/bom/README.md`](../../platform/bom/README.md) to keep versions al
 ## Design Rules Worth Remembering
 
 - `webauthn-model` and `webauthn-core` must remain free of platform and network dependencies.
-- `webauthn-client-core` owns shared client business logic; Android and iOS modules stay thin.
+- `webauthn-client-core` owns shared client business logic; Android and iOS modules stay thin. `webauthn-client-defaults` composes those bridges with the default Kotlinx JSON codec without making the platform module depend on a codec implementation.
 - Ktor modules are adapters, not the core business layer.
 - Optional trust sources like MDS should remain separable from the main validation path.
 

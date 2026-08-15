@@ -1,0 +1,18 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-client-defaults>
+final class dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration { // dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration|null[0]
+    constructor <init>() // dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration.<init>|<init>(){}[0]
+
+    final var codec // dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration.codec|{}codec[0]
+        final fun <get-codec>(): dev.webauthn.json/WebAuthnJsonCodec // dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration.codec.<get-codec>|<get-codec>(){}[0]
+        final fun <set-codec>(dev.webauthn.json/WebAuthnJsonCodec) // dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration.codec.<set-codec>|<set-codec>(dev.webauthn.json.WebAuthnJsonCodec){}[0]
+}
+
+final fun dev.webauthn.client.defaults/defaultPasskeyClient(): dev.webauthn.client/PasskeyClient // dev.webauthn.client.defaults/defaultPasskeyClient|defaultPasskeyClient(){}[0]
+final fun dev.webauthn.client.defaults/defaultPasskeyClient(dev.webauthn.client.ios/PasskeyPresentationAnchorProvider): dev.webauthn.client/PasskeyClient // dev.webauthn.client.defaults/defaultPasskeyClient|defaultPasskeyClient(dev.webauthn.client.ios.PasskeyPresentationAnchorProvider){}[0]

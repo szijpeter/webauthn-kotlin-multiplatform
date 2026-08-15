@@ -91,6 +91,7 @@ protocol layer for interpretation.
 ```mermaid
 flowchart TB
     COMPOSE["webauthn-client-compose"]
+    DEFAULTS["webauthn-client-defaults<br/>(platform + Kotlinx JSON)"]
     PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
@@ -105,6 +106,8 @@ flowchart TB
     COMPOSE --> CLIENT_CORE
     COMPOSE --> PLATFORM
     COMPOSE --> CLIENT_FLOW
+    DEFAULTS --> PLATFORM
+    DEFAULTS --> JSON_API
 
     PLATFORM --> CLIENT_CORE
     PLATFORM --> JSON_API

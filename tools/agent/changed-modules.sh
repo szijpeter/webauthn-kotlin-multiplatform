@@ -204,6 +204,11 @@ for file in "${changed_files[@]}"; do
             mark_module "client:webauthn-client-core"
             mark_category "client"
             ;;
+        client/webauthn-client-defaults/*)
+            mark_module "client:webauthn-client-defaults"
+            mark_category "android"
+            mark_category "ios"
+            ;;
         client/webauthn-client-flow/*)
             mark_module "client:webauthn-client-flow"
             mark_category "client"
