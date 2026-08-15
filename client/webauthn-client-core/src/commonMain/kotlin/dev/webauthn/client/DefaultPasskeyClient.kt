@@ -20,7 +20,9 @@ public class DefaultPasskeyClient(
         return runOperation(
             options = options,
             validate = ::requireCreationOptions,
-            operation = { bridge.createCredential(it).let(WebAuthnProtocolParser::parseRegistrationResponse).toParsedValue() },
+            operation = {
+                bridge.createCredential(it).let(WebAuthnProtocolParser::parseRegistrationResponse).toParsedValue()
+            },
         )
     }
 
@@ -29,7 +31,9 @@ public class DefaultPasskeyClient(
     ): PasskeyResult<AuthenticationResponse> {
         return runOperation(
             options = options,
-            operation = { bridge.getAssertion(it).let(WebAuthnProtocolParser::parseAuthenticationResponse).toParsedValue() },
+            operation = {
+                bridge.getAssertion(it).let(WebAuthnProtocolParser::parseAuthenticationResponse).toParsedValue()
+            },
         )
     }
 
