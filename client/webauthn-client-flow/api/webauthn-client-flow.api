@@ -1,3 +1,78 @@
+public abstract interface class dev/webauthn/client/AuthenticationBackend {
+	public abstract fun finish (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun start (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/CeremonyFailure {
+}
+
+public final class dev/webauthn/client/CeremonyFailure$AlreadyInProgress : dev/webauthn/client/CeremonyFailure {
+	public static final field INSTANCE Ldev/webauthn/client/CeremonyFailure$AlreadyInProgress;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/CeremonyFailure$Backend : dev/webauthn/client/CeremonyFailure {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/CeremonyFailure$Backend;
+	public static synthetic fun copy$default (Ldev/webauthn/client/CeremonyFailure$Backend;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/CeremonyFailure$Backend;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/CeremonyFailure$Platform : dev/webauthn/client/CeremonyFailure {
+	public fun <init> (Ldev/webauthn/client/PasskeyClientError;)V
+	public final fun component1 ()Ldev/webauthn/client/PasskeyClientError;
+	public final fun copy (Ldev/webauthn/client/PasskeyClientError;)Ldev/webauthn/client/CeremonyFailure$Platform;
+	public static synthetic fun copy$default (Ldev/webauthn/client/CeremonyFailure$Platform;Ldev/webauthn/client/PasskeyClientError;ILjava/lang/Object;)Ldev/webauthn/client/CeremonyFailure$Platform;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ldev/webauthn/client/PasskeyClientError;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/webauthn/client/CeremonyResult {
+}
+
+public final class dev/webauthn/client/CeremonyResult$Failure : dev/webauthn/client/CeremonyResult {
+	public fun <init> (Ldev/webauthn/client/CeremonyFailure;)V
+	public final fun component1 ()Ldev/webauthn/client/CeremonyFailure;
+	public final fun copy (Ldev/webauthn/client/CeremonyFailure;)Ldev/webauthn/client/CeremonyResult$Failure;
+	public static synthetic fun copy$default (Ldev/webauthn/client/CeremonyResult$Failure;Ldev/webauthn/client/CeremonyFailure;ILjava/lang/Object;)Ldev/webauthn/client/CeremonyResult$Failure;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ldev/webauthn/client/CeremonyFailure;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/CeremonyResult$Success : dev/webauthn/client/CeremonyResult {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Ldev/webauthn/client/CeremonyResult$Success;
+	public static synthetic fun copy$default (Ldev/webauthn/client/CeremonyResult$Success;Ljava/lang/Object;ILjava/lang/Object;)Ldev/webauthn/client/CeremonyResult$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/CeremonyStart {
+	public fun <init> (Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;Ljava/lang/Object;)Ldev/webauthn/client/CeremonyStart;
+	public static synthetic fun copy$default (Ldev/webauthn/client/CeremonyStart;Ljava/lang/Object;Ljava/lang/Object;ILjava/lang/Object;)Ldev/webauthn/client/CeremonyStart;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOptions ()Ljava/lang/Object;
+	public final fun getState ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/webauthn/client/PasskeyAction : java/lang/Enum {
 	public static final field REGISTER Ldev/webauthn/client/PasskeyAction;
 	public static final field SIGN_IN Ldev/webauthn/client/PasskeyAction;
@@ -84,6 +159,14 @@ public final class dev/webauthn/client/PasskeyFinishResult$Verified : dev/webaut
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/webauthn/client/PasskeyFlow {
+	public fun <init> (Ldev/webauthn/client/PasskeyClient;)V
+	public final fun register (Ljava/lang/Object;Ldev/webauthn/client/RegistrationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun register$default (Ldev/webauthn/client/PasskeyFlow;Ljava/lang/Object;Ldev/webauthn/client/RegistrationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun signIn (Ljava/lang/Object;Ldev/webauthn/client/AuthenticationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun signIn$default (Ldev/webauthn/client/PasskeyFlow;Ljava/lang/Object;Ldev/webauthn/client/AuthenticationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
 public final class dev/webauthn/client/PasskeyPhase : java/lang/Enum {
 	public static final field FINISHING Ldev/webauthn/client/PasskeyPhase;
 	public static final field PLATFORM_PROMPT Ldev/webauthn/client/PasskeyPhase;
@@ -98,5 +181,10 @@ public abstract interface class dev/webauthn/client/PasskeyServerClient {
 	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getSignInOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/RegistrationBackend {
+	public abstract fun finish (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun start (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

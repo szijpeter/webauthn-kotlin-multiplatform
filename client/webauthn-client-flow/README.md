@@ -6,6 +6,7 @@ Audience: teams building shared registration and authentication flows across And
 
 - `PasskeyController` that coordinates start -> platform prompt -> finish flow with state updates.
 - `PasskeyServerClient` backend contract and `PasskeyFinishResult` outcome.
+- `PasskeyFlow` for opaque backend state, generic finish output, optional phase callbacks, and explicit concurrent-operation failures.
 
 <!-- doc-example: id=client-webauthn-client-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
@@ -20,6 +21,9 @@ flowchart TD
 ## When to use
 
 Use this module when you want one shared ceremony flow and typed error/state handling, while leaving platform API details to `webauthn-client-core` and `webauthn-client-platform`.
+
+`PasskeyFlow` is the recommended non-UI-state API for new integrations. It carries backend-owned
+opaque state from `start` to `finish` and returns the application-defined finish output.
 
 ## How to use
 

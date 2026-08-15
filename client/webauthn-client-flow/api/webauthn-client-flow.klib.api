@@ -29,11 +29,83 @@ final enum class dev.webauthn.client/PasskeyPhase : kotlin/Enum<dev.webauthn.cli
     final fun values(): kotlin/Array<dev.webauthn.client/PasskeyPhase> // dev.webauthn.client/PasskeyPhase.values|values#static(){}[0]
 }
 
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> dev.webauthn.client/AuthenticationBackend { // dev.webauthn.client/AuthenticationBackend|null[0]
+    abstract suspend fun finish(#B, dev.webauthn.model/AuthenticationResponse): #C // dev.webauthn.client/AuthenticationBackend.finish|finish(1:1;dev.webauthn.model.AuthenticationResponse){}[0]
+    abstract suspend fun start(#A): dev.webauthn.client/CeremonyStart<#B, dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.client/AuthenticationBackend.start|start(1:0){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> dev.webauthn.client/RegistrationBackend { // dev.webauthn.client/RegistrationBackend|null[0]
+    abstract suspend fun finish(#B, dev.webauthn.model/RegistrationResponse): #C // dev.webauthn.client/RegistrationBackend.finish|finish(1:1;dev.webauthn.model.RegistrationResponse){}[0]
+    abstract suspend fun start(#A): dev.webauthn.client/CeremonyStart<#B, dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.client/RegistrationBackend.start|start(1:0){}[0]
+}
+
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyServerClient { // dev.webauthn.client/PasskeyServerClient|null[0]
     abstract suspend fun finishRegister(#A, dev.webauthn.model/RegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RegistrationResponse;kotlin.String){}[0]
     abstract suspend fun finishSignIn(#B, dev.webauthn.model/AuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.AuthenticationResponse;kotlin.String){}[0]
     abstract suspend fun getRegisterOptions(#A): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.client/PasskeyServerClient.getRegisterOptions|getRegisterOptions(1:0){}[0]
     abstract suspend fun getSignInOptions(#B): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.client/PasskeyServerClient.getSignInOptions|getSignInOptions(1:1){}[0]
+}
+
+sealed interface <#A: out kotlin/Any?> dev.webauthn.client/CeremonyResult { // dev.webauthn.client/CeremonyResult|null[0]
+    final class <#A1: kotlin/Any?> Success : dev.webauthn.client/CeremonyResult<#A1> { // dev.webauthn.client/CeremonyResult.Success|null[0]
+        constructor <init>(#A1) // dev.webauthn.client/CeremonyResult.Success.<init>|<init>(1:0){}[0]
+
+        final val value // dev.webauthn.client/CeremonyResult.Success.value|{}value[0]
+            final fun <get-value>(): #A1 // dev.webauthn.client/CeremonyResult.Success.value.<get-value>|<get-value>(){}[0]
+
+        final fun component1(): #A1 // dev.webauthn.client/CeremonyResult.Success.component1|component1(){}[0]
+        final fun copy(#A1 = ...): dev.webauthn.client/CeremonyResult.Success<#A1> // dev.webauthn.client/CeremonyResult.Success.copy|copy(1:0){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/CeremonyResult.Success.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/CeremonyResult.Success.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/CeremonyResult.Success.toString|toString(){}[0]
+    }
+
+    final class Failure : dev.webauthn.client/CeremonyResult<kotlin/Nothing> { // dev.webauthn.client/CeremonyResult.Failure|null[0]
+        constructor <init>(dev.webauthn.client/CeremonyFailure) // dev.webauthn.client/CeremonyResult.Failure.<init>|<init>(dev.webauthn.client.CeremonyFailure){}[0]
+
+        final val error // dev.webauthn.client/CeremonyResult.Failure.error|{}error[0]
+            final fun <get-error>(): dev.webauthn.client/CeremonyFailure // dev.webauthn.client/CeremonyResult.Failure.error.<get-error>|<get-error>(){}[0]
+
+        final fun component1(): dev.webauthn.client/CeremonyFailure // dev.webauthn.client/CeremonyResult.Failure.component1|component1(){}[0]
+        final fun copy(dev.webauthn.client/CeremonyFailure = ...): dev.webauthn.client/CeremonyResult.Failure // dev.webauthn.client/CeremonyResult.Failure.copy|copy(dev.webauthn.client.CeremonyFailure){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/CeremonyResult.Failure.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/CeremonyResult.Failure.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/CeremonyResult.Failure.toString|toString(){}[0]
+    }
+}
+
+sealed interface dev.webauthn.client/CeremonyFailure { // dev.webauthn.client/CeremonyFailure|null[0]
+    final class Backend : dev.webauthn.client/CeremonyFailure { // dev.webauthn.client/CeremonyFailure.Backend|null[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/CeremonyFailure.Backend.<init>|<init>(kotlin.String){}[0]
+
+        final val message // dev.webauthn.client/CeremonyFailure.Backend.message|{}message[0]
+            final fun <get-message>(): kotlin/String // dev.webauthn.client/CeremonyFailure.Backend.message.<get-message>|<get-message>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.client/CeremonyFailure.Backend.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/CeremonyFailure.Backend // dev.webauthn.client/CeremonyFailure.Backend.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/CeremonyFailure.Backend.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/CeremonyFailure.Backend.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/CeremonyFailure.Backend.toString|toString(){}[0]
+    }
+
+    final class Platform : dev.webauthn.client/CeremonyFailure { // dev.webauthn.client/CeremonyFailure.Platform|null[0]
+        constructor <init>(dev.webauthn.client/PasskeyClientError) // dev.webauthn.client/CeremonyFailure.Platform.<init>|<init>(dev.webauthn.client.PasskeyClientError){}[0]
+
+        final val error // dev.webauthn.client/CeremonyFailure.Platform.error|{}error[0]
+            final fun <get-error>(): dev.webauthn.client/PasskeyClientError // dev.webauthn.client/CeremonyFailure.Platform.error.<get-error>|<get-error>(){}[0]
+
+        final fun component1(): dev.webauthn.client/PasskeyClientError // dev.webauthn.client/CeremonyFailure.Platform.component1|component1(){}[0]
+        final fun copy(dev.webauthn.client/PasskeyClientError = ...): dev.webauthn.client/CeremonyFailure.Platform // dev.webauthn.client/CeremonyFailure.Platform.copy|copy(dev.webauthn.client.PasskeyClientError){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/CeremonyFailure.Platform.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/CeremonyFailure.Platform.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/CeremonyFailure.Platform.toString|toString(){}[0]
+    }
+
+    final object AlreadyInProgress : dev.webauthn.client/CeremonyFailure { // dev.webauthn.client/CeremonyFailure.AlreadyInProgress|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/CeremonyFailure.AlreadyInProgress.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/CeremonyFailure.AlreadyInProgress.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/CeremonyFailure.AlreadyInProgress.toString|toString(){}[0]
+    }
 }
 
 sealed interface dev.webauthn.client/PasskeyControllerState { // dev.webauthn.client/PasskeyControllerState|null[0]
@@ -110,6 +182,22 @@ sealed interface dev.webauthn.client/PasskeyFinishResult { // dev.webauthn.clien
     }
 }
 
+final class <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/CeremonyStart { // dev.webauthn.client/CeremonyStart|null[0]
+    constructor <init>(#A, #B) // dev.webauthn.client/CeremonyStart.<init>|<init>(1:0;1:1){}[0]
+
+    final val options // dev.webauthn.client/CeremonyStart.options|{}options[0]
+        final fun <get-options>(): #B // dev.webauthn.client/CeremonyStart.options.<get-options>|<get-options>(){}[0]
+    final val state // dev.webauthn.client/CeremonyStart.state|{}state[0]
+        final fun <get-state>(): #A // dev.webauthn.client/CeremonyStart.state.<get-state>|<get-state>(){}[0]
+
+    final fun component1(): #A // dev.webauthn.client/CeremonyStart.component1|component1(){}[0]
+    final fun component2(): #B // dev.webauthn.client/CeremonyStart.component2|component2(){}[0]
+    final fun copy(#A = ..., #B = ...): dev.webauthn.client/CeremonyStart<#A, #B> // dev.webauthn.client/CeremonyStart.copy|copy(1:0;1:1){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/CeremonyStart.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.client/CeremonyStart.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.client/CeremonyStart.toString|toString(){}[0]
+}
+
 final class <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyController { // dev.webauthn.client/PasskeyController|null[0]
     constructor <init>(dev.webauthn.client/PasskeyClient, dev.webauthn.client/PasskeyServerClient<#A, #B>) // dev.webauthn.client/PasskeyController.<init>|<init>(dev.webauthn.client.PasskeyClient;dev.webauthn.client.PasskeyServerClient<1:0,1:1>){}[0]
 
@@ -119,4 +207,11 @@ final class <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyContro
     final fun resetToIdle() // dev.webauthn.client/PasskeyController.resetToIdle|resetToIdle(){}[0]
     final suspend fun register(#A) // dev.webauthn.client/PasskeyController.register|register(1:0){}[0]
     final suspend fun signIn(#B) // dev.webauthn.client/PasskeyController.signIn|signIn(1:1){}[0]
+}
+
+final class dev.webauthn.client/PasskeyFlow { // dev.webauthn.client/PasskeyFlow|null[0]
+    constructor <init>(dev.webauthn.client/PasskeyClient) // dev.webauthn.client/PasskeyFlow.<init>|<init>(dev.webauthn.client.PasskeyClient){}[0]
+
+    final suspend fun <#A1: kotlin/Any?, #B1: kotlin/Any?, #C1: kotlin/Any?> register(#A1, dev.webauthn.client/RegistrationBackend<#A1, #B1, #C1>, kotlin/Function1<dev.webauthn.client/PasskeyPhase, kotlin/Unit> = ...): dev.webauthn.client/CeremonyResult<#C1> // dev.webauthn.client/PasskeyFlow.register|register(0:0;dev.webauthn.client.RegistrationBackend<0:0,0:1,0:2>;kotlin.Function1<dev.webauthn.client.PasskeyPhase,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+    final suspend fun <#A1: kotlin/Any?, #B1: kotlin/Any?, #C1: kotlin/Any?> signIn(#A1, dev.webauthn.client/AuthenticationBackend<#A1, #B1, #C1>, kotlin/Function1<dev.webauthn.client/PasskeyPhase, kotlin/Unit> = ...): dev.webauthn.client/CeremonyResult<#C1> // dev.webauthn.client/PasskeyFlow.signIn|signIn(0:0;dev.webauthn.client.AuthenticationBackend<0:0,0:1,0:2>;kotlin.Function1<dev.webauthn.client.PasskeyPhase,kotlin.Unit>){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
 }

@@ -184,6 +184,60 @@ class PasskeyControllerTest {
         assertEquals(PasskeyControllerState.Idle, controller.uiState.value)
     }
 
+    @Test
+    fun flow_carries_opaque_state_and_returns_backend_output() = runTest {
+        val flow = PasskeyFlow(
+            FakePasskeyClient(createResult = PasskeyResult.Success(validRegistrationResponse())),
+        )
+        val phases = mutableListOf<PasskeyPhase>()
+        val backend = object : RegistrationBackend<String, String, Int> {
+            override suspend fun start(input: String): CeremonyStart<String, PublicKeyCredentialCreationOptions> {
+                return CeremonyStart(state = "opaque-$input", options = validCreationOptions())
+            }
+
+            override suspend fun finish(state: String, response: RegistrationResponse): Int {
+                assertEquals("opaque-alice", state)
+                assertEquals("BwcH", response.credentialId.value.encoded())
+                return 42
+            }
+        }
+
+        val result = flow.register("alice", backend, phases::add)
+
+        assertEquals(CeremonyResult.Success(42), result)
+        assertEquals(
+            [PasskeyPhase.STARTING, PasskeyPhase.PLATFORM_PROMPT, PasskeyPhase.FINISHING],
+            phases,
+        )
+    }
+
+    @Test
+    fun flow_rejects_concurrent_ceremony_explicitly() = runTest(UnconfinedTestDispatcher()) {
+        val started = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val backend = object : RegistrationBackend<Unit, Unit, Unit> {
+            override suspend fun start(input: Unit): CeremonyStart<Unit, PublicKeyCredentialCreationOptions> {
+                started.complete(Unit)
+                release.await()
+                return CeremonyStart(Unit, validCreationOptions())
+            }
+
+            override suspend fun finish(state: Unit, response: RegistrationResponse): Unit = Unit
+        }
+        val flow = PasskeyFlow(FakePasskeyClient(createResult = PasskeyResult.Success(validRegistrationResponse())))
+
+        val first = launch { flow.register(Unit, backend) }
+        started.await()
+
+        assertEquals(
+            CeremonyResult.Failure(CeremonyFailure.AlreadyInProgress),
+            flow.register(Unit, backend),
+        )
+
+        release.complete(Unit)
+        first.join()
+    }
+
     private class FakePasskeyServerClient(
         val registerOptionsDeferred: CompletableDeferred<ValidationResult<PublicKeyCredentialCreationOptions>> = CompletableDeferred(),
         val finishRegisterDeferred: CompletableDeferred<PasskeyFinishResult> = CompletableDeferred(),
