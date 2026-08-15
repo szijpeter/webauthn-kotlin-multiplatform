@@ -29,6 +29,7 @@ kotlin {
         commonMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-core:<version>")
             implementation("io.github.szijpeter:webauthn-client-ktor:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor-kotlinx:<version>")
         }
 
         androidMain.dependencies {

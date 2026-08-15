@@ -28,14 +28,6 @@ import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-/** Route configuration for [KtorPasskeyServerClient]. */
-public data class KtorPasskeyRoutes(
-    public val registerOptionsPath: String = "/webauthn/registration/start",
-    public val registerFinishPath: String = "/webauthn/registration/finish",
-    public val signInOptionsPath: String = "/webauthn/authentication/start",
-    public val signInFinishPath: String = "/webauthn/authentication/finish",
-)
-
 /** Ktor-based [PasskeyServerClient] implementation for JSON WebAuthn backend endpoints. */
 public class KtorPasskeyServerClient(
     private val httpClient: HttpClient,

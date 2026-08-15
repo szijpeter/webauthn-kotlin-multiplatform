@@ -161,6 +161,7 @@ kotlin {
         commonMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-core:<version>")
             implementation("io.github.szijpeter:webauthn-client-ktor:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor-kotlinx:<version>")
         }
 
         androidMain.dependencies {
@@ -262,8 +263,8 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
 | [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |
 | [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
-| [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) | Clients composing a typed Ktor transport with their own backend-contract codec; legacy default client remains during migration |
-| `webauthn-client-ktor-kotlinx` | Apps using the default `/webauthn/…` contract with Kotlinx Serialization |
+| [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) | Clients composing a typed Ktor transport with their own backend-contract codec |
+| [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md) | Apps using the default `/webauthn/…` contract, Kotlinx Serialization, or the legacy client |
 | [`webauthn-attestation-mds`](./server/webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |
 
 ## Status and Current Limits

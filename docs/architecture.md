@@ -86,8 +86,8 @@ start → prompt → finish orchestration. JSON, Android, iOS, Compose,
 PRF, and network modules build around that shared boundary. The codec-neutral
 `webauthn-client-ktor` typed backend receives its wire contract through
 `KtorPasskeyContractCodec`; `webauthn-client-ktor-kotlinx` is the optional
-default-contract implementation. The legacy Ktor client remains temporarily
-while consumers migrate. Platform bridges use
+default-contract implementation and owns the legacy Ktor client while consumers
+migrate. Platform bridges use
 the codec API only at their JSON boundary and return byte-preserving responses;
 protocol interpretation and ceremony validation remain server-side trust-boundary work.
 
@@ -99,7 +99,7 @@ flowchart TB
     PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
-    NETWORK["webauthn-client-ktor<br/>(optional typed transport + legacy client)"]
+    NETWORK["webauthn-client-ktor<br/>(optional typed transport)"]
     NETWORK_KOTLINX["webauthn-client-ktor-kotlinx<br/>(optional default contract)"]
     CLIENT_CORE["webauthn-client-core"]
     CLIENT_FLOW["webauthn-client-flow<br/>(optional)"]

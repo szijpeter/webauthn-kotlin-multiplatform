@@ -10,6 +10,7 @@ application {
 
 dependencies {
     implementation(project(":client:webauthn-client-ktor"))
+    implementation(project(":client:webauthn-client-ktor-kotlinx"))
     implementation(project(":core:webauthn-runtime-core"))
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)

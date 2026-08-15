@@ -2,8 +2,8 @@
 
 Codec-neutral Ktor transport for typed passkey backends.
 
-`KtorPasskeyServerClient` remains available as the legacy default-contract client while downstream
-consumers migrate to the typed backend and the Kotlinx companion artifact.
+The default `/webauthn/…` contract, including `KtorPasskeyServerClient`, is in the
+`webauthn-client-ktor-kotlinx` companion artifact.
 
 ## What it provides
 
@@ -13,7 +13,6 @@ consumers migrate to the typed backend and the Kotlinx companion artifact.
 - Start/finish HTTP call wiring for registration and authentication
 - A drop-in transport module for client orchestration layers
 - Public `HttpClient`-based constructor with transitive `ktor-client-core` export for consumer compile safety
-- Shared coroutine-boundary cancellation/failure behavior via `webauthn-runtime-core`
 
 ## When to use
 
@@ -58,12 +57,8 @@ flowchart LR
 
 - Route/path assumptions are explicit; if your backend payloads differ, implement
   `KtorPasskeyContractCodec` rather than patching the transport.
-- `AuthenticationStartPayload.userName` is optional to support both identified and discoverable authentication starts on one endpoint.
-- Authentication-start payloads intentionally exclude `userHandle`; registration-start still carries `userHandle`.
-- `RegistrationStartPayload.residentKey` is optional and forwarded to compatible server contracts when present.
 - You still need to choose/install an engine dependency (`ktor-client-cio`, Darwin, etc.) in your app runtime.
 - Retry, timeout, auth headers, and observability remain caller-owned through the provided `HttpClient`.
-- `KtorOriginMetadataProvider` fails closed (returns empty related origins) on transport/parse failures, but coroutine cancellation is always rethrown.
 
 ## iOS targets
 
@@ -72,4 +67,4 @@ flowchart LR
 
 ## Status
 
-Production-leaning transport helper with explicit backend contract support.
+Codec-neutral typed transport with explicit backend-contract support.
