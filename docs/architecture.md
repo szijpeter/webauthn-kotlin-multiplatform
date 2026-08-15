@@ -81,11 +81,11 @@ no internal project dependencies without inventing an edge.
 
 ## Client stack
 
-`webauthn-client-core` owns typed platform interaction, while `webauthn-client-flow` owns optional
+`webauthn-client-core` owns the raw platform interaction boundary, while `webauthn-client-flow` owns optional
 start → prompt → finish orchestration. JSON, Android, iOS, Compose,
 PRF, and network modules build around that shared boundary. Platform bridges use
-the codec API at their JSON boundary and hand byte-preserving responses to the
-protocol layer for interpretation.
+the codec API only at their JSON boundary and return byte-preserving responses;
+protocol interpretation and ceremony validation remain server-side trust-boundary work.
 
 <!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
@@ -122,7 +122,6 @@ flowchart TB
     NETWORK --> FOUNDATION
 
     CLIENT_CORE --> FOUNDATION
-    CLIENT_CORE --> PROTOCOL
     CLIENT_CORE --> MODEL
     CLIENT_FLOW --> CLIENT_CORE
 ```

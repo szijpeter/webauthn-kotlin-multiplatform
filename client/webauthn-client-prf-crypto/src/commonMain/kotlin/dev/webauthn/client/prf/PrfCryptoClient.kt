@@ -8,7 +8,7 @@ import dev.webauthn.client.PasskeyResult
 import dev.webauthn.runtime.rethrowCancellationOrFatal
 import dev.webauthn.runtime.suspendCatchingNonCancellation
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -16,7 +16,7 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 @ExperimentalWebAuthnL3Api
 /** Result bundle for a PRF-enabled assertion and its derived crypto session. */
 public data class PrfAuthenticationResult(
-    public val response: AuthenticationResponse,
+    public val response: RawAuthenticationResponse,
     public val prfResults: AuthenticationExtensionsPRFValues,
     public val session: PrfCryptoSession,
 )

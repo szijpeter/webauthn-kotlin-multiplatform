@@ -5,10 +5,10 @@ import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 
 /** Example backend adapter for the shared ceremony controller. */
@@ -21,7 +21,7 @@ class AccountServerClient : PasskeyServerClient<String, String> {
 
     override suspend fun finishRegister(
         params: String,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         TODO("Call backend /registration/finish")
@@ -35,7 +35,7 @@ class AccountServerClient : PasskeyServerClient<String, String> {
 
     override suspend fun finishSignIn(
         params: String,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         TODO("Call backend /authentication/finish")

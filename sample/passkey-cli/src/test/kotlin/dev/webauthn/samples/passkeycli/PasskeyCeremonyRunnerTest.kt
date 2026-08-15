@@ -9,8 +9,8 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
-import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
@@ -191,7 +191,7 @@ private class FakeServerClient(
 
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         lastRegisterChallenge = challengeAsBase64Url
@@ -204,7 +204,7 @@ private class FakeServerClient(
 
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult = finishSignInResult
 }
@@ -219,7 +219,7 @@ private class CancellationServerClient :
 
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult = PasskeyFinishResult.Verified
 
@@ -231,7 +231,7 @@ private class CancellationServerClient :
 
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         throw UnsupportedOperationException("not used")

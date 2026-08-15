@@ -7,8 +7,8 @@
 
 // Library unique name: <io.github.szijpeter:webauthn-client-core>
 abstract interface dev.webauthn.client/PasskeyClient { // dev.webauthn.client/PasskeyClient|null[0]
-    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client/PasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
-    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.client/PasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/PasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client/PasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
     open suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyClient.capabilities|capabilities(){}[0]
 }
 
@@ -114,8 +114,8 @@ final class dev.webauthn.client/DefaultPasskeyClient : dev.webauthn.client/Passk
     constructor <init>(dev.webauthn.client/PasskeyPlatformBridge) // dev.webauthn.client/DefaultPasskeyClient.<init>|<init>(dev.webauthn.client.PasskeyPlatformBridge){}[0]
 
     final suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/DefaultPasskeyClient.capabilities|capabilities(){}[0]
-    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client/DefaultPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
-    final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.client/DefaultPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/DefaultPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client/DefaultPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
 }
 
 final class dev.webauthn.client/PasskeyCapabilities { // dev.webauthn.client/PasskeyCapabilities|null[0]

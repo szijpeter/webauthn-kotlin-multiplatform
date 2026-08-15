@@ -7,7 +7,7 @@ Manager; its iOS source set uses AuthenticationServices.
 
 - `AndroidPasskeyClient`
 - `IosPasskeyClient`
-- Android and iOS `PasskeyClient` implementations for registration and authentication ceremonies
+- Android and iOS `PasskeyClient` implementations that return byte-preserving raw registration and authentication responses
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
 - Capabilities reporting via `PasskeyCapabilities.supported: Set<PasskeyCapability>` with key-based lookup
 
@@ -78,4 +78,4 @@ flowchart LR
 
 ## Status
 
-Beta, thin Android bridge on top of shared client orchestration.
+Beta, thin Android/iOS bridge on top of shared raw-response client orchestration.

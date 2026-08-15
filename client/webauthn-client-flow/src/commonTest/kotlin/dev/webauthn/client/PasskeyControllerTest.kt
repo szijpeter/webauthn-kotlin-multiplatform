@@ -1,12 +1,8 @@
 package dev.webauthn.client
 
-import dev.webauthn.model.AttestedCredentialData
-import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.AuthenticatorData
-import dev.webauthn.model.Aaguid
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
-import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -14,8 +10,7 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
-import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.RpIdHash
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
@@ -195,7 +190,7 @@ class PasskeyControllerTest {
                 return CeremonyStart(state = "opaque-$input", options = validCreationOptions())
             }
 
-            override suspend fun finish(state: String, response: RegistrationResponse): Int {
+            override suspend fun finish(state: String, response: RawRegistrationResponse): Int {
                 assertEquals("opaque-alice", state)
                 assertEquals("BwcH", response.credentialId.value.encoded())
                 return 42
@@ -222,7 +217,7 @@ class PasskeyControllerTest {
                 return CeremonyStart(Unit, validCreationOptions())
             }
 
-            override suspend fun finish(state: Unit, response: RegistrationResponse): Unit = Unit
+            override suspend fun finish(state: Unit, response: RawRegistrationResponse): Unit = Unit
         }
         val flow = PasskeyFlow(FakePasskeyClient(createResult = PasskeyResult.Success(validRegistrationResponse())))
 
@@ -248,7 +243,7 @@ class PasskeyControllerTest {
         override suspend fun getRegisterOptions(params: Unit): ValidationResult<PublicKeyCredentialCreationOptions> = registerOptionsDeferred.await()
         override suspend fun finishRegister(
             params: Unit,
-            response: RegistrationResponse,
+            response: RawRegistrationResponse,
             challengeAsBase64Url: String,
         ): PasskeyFinishResult = finishRegisterDeferred.await()
         override suspend fun getSignInOptions(params: Unit): ValidationResult<PublicKeyCredentialRequestOptions> {
@@ -257,17 +252,17 @@ class PasskeyControllerTest {
         }
         override suspend fun finishSignIn(
             params: Unit,
-            response: AuthenticationResponse,
+            response: RawAuthenticationResponse,
             challengeAsBase64Url: String,
         ): PasskeyFinishResult = finishSignInDeferred.await()
     }
 
     private class FakePasskeyClient(
-        private val createResult: PasskeyResult<RegistrationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
-        private val assertionResult: PasskeyResult<AuthenticationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
+        private val createResult: PasskeyResult<RawRegistrationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
+        private val assertionResult: PasskeyResult<RawAuthenticationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
     ) : PasskeyClient {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> = createResult
-        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> = assertionResult
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> = createResult
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> = assertionResult
     }
 
     private companion object {
@@ -282,25 +277,13 @@ class PasskeyControllerTest {
             )
         }
 
-        fun validRegistrationResponse(): RegistrationResponse {
-            return RegistrationResponse(
+        fun validRegistrationResponse(): RawRegistrationResponse {
+            return RawRegistrationResponse(
                 credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
                 attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-                rawAuthenticatorData = AuthenticatorData(rpIdHash = rpIdHash(1), flags = 0x41, signCount = 1),
-                attestedCredentialData = AttestedCredentialData(
-                    aaguid = aaguid(2),
-                    credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-                    cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
-                ),
             )
         }
 
-        fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
-
-        fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
-
-        fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
-            Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })
     }
 }

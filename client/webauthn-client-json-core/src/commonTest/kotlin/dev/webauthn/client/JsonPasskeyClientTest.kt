@@ -1,6 +1,6 @@
 package dev.webauthn.client
 
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -8,10 +8,9 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
-import dev.webauthn.protocol.WebAuthnProtocolParser
 import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -36,8 +35,7 @@ class JsonPasskeyClientTest {
 
     @Test
     fun createCredentialJson_returns_normalized_response_json() = runTest {
-        val registrationResponse = WebAuthnProtocolParser.parseRegistrationResponse(
-            codec.decodeRegistrationResponse(
+        val registrationResponse = codec.decodeRegistrationResponse(
             """
             {
               "id": "MzMzMzMzMzMzMzMzMzMzMw",
@@ -48,8 +46,7 @@ class JsonPasskeyClientTest {
               }
             }
                 """.trimIndent(),
-            ).toValueOrThrow(::IllegalStateException),
-        ).toValueOrThrow(::IllegalStateException)
+            ).toValueOrThrow(::IllegalStateException)
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(createResult = PasskeyResult.Success(registrationResponse)),
             codec = codec,
@@ -82,8 +79,7 @@ class JsonPasskeyClientTest {
 
     @Test
     fun getAssertionJson_returns_normalized_response_json() = runTest {
-        val authenticationResponse = WebAuthnProtocolParser.parseAuthenticationResponse(
-            codec.decodeAuthenticationResponse(
+        val authenticationResponse = codec.decodeAuthenticationResponse(
             """
             {
               "id": "MzMzMzMzMzMzMzMzMzMzMw",
@@ -95,8 +91,7 @@ class JsonPasskeyClientTest {
               }
             }
                 """.trimIndent(),
-            ).toValueOrThrow(::IllegalStateException),
-        ).toValueOrThrow(::IllegalStateException)
+            ).toValueOrThrow(::IllegalStateException)
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(assertionResult = PasskeyResult.Success(authenticationResponse)),
             codec = codec,
@@ -129,16 +124,16 @@ class JsonPasskeyClientTest {
     }
 
     private class FakePasskeyClient(
-        private val createResult: PasskeyResult<RegistrationResponse> =
+        private val createResult: PasskeyResult<RawRegistrationResponse> =
             PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
-        private val assertionResult: PasskeyResult<AuthenticationResponse> =
+        private val assertionResult: PasskeyResult<RawAuthenticationResponse> =
             PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
     ) : PasskeyClient {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> {
             return createResult
         }
 
-        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> {
             return assertionResult
         }
     }

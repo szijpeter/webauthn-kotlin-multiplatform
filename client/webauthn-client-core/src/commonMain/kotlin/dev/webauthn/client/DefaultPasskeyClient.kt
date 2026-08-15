@@ -2,12 +2,10 @@
 
 package dev.webauthn.client
 
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.ValidationResult
-import dev.webauthn.protocol.WebAuthnProtocolParser
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.runtime.suspendCatchingNonCancellation
 
 /** Default [PasskeyClient] orchestration that delegates to a platform bridge. */
@@ -16,24 +14,20 @@ public class DefaultPasskeyClient(
 ) : PasskeyClient {
     override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
-    ): PasskeyResult<RegistrationResponse> {
+    ): PasskeyResult<RawRegistrationResponse> {
         return runOperation(
             options = options,
             validate = ::requireCreationOptions,
-            operation = {
-                bridge.createCredential(it).let(WebAuthnProtocolParser::parseRegistrationResponse).toParsedValue()
-            },
+            operation = bridge::createCredential,
         )
     }
 
     override suspend fun getAssertion(
         options: PublicKeyCredentialRequestOptions,
-    ): PasskeyResult<AuthenticationResponse> {
+    ): PasskeyResult<RawAuthenticationResponse> {
         return runOperation(
             options = options,
-            operation = {
-                bridge.getAssertion(it).let(WebAuthnProtocolParser::parseAuthenticationResponse).toParsedValue()
-            },
+            operation = bridge::getAssertion,
         )
     }
 
@@ -70,16 +64,6 @@ public class DefaultPasskeyClient(
         if (options.pubKeyCredParams.isEmpty()) {
             throw InvalidOptionsException("pubKeyCredParams must not be empty")
         }
-    }
-}
-
-private fun <T> ValidationResult<T>.toParsedValue(): T = when (this) {
-    is ValidationResult.Valid -> value
-    is ValidationResult.Invalid -> {
-        val error = errors.firstOrNull()
-        throw IllegalStateException(
-            "Invalid platform response: ${error?.field ?: "response"}: ${error?.message ?: "Unknown validation error"}",
-        )
     }
 }
 

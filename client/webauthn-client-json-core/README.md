@@ -1,16 +1,16 @@
 # webauthn-client-json-core
 
-JSON interoperability layer on top of typed client orchestration.
+JSON interoperability layer on top of raw-response client orchestration.
 
 ## What it provides
 
 - `withJsonSupport(...)` extension for `PasskeyClient`
 - `WebAuthnJsonCodec` integration point, with `KotlinxWebAuthnJsonCodec` as the bundled default
-- JSON-first boundary support while retaining typed core orchestration
+- JSON-first boundary support while retaining raw, byte-preserving client output
 
 ## When to use
 
-Use this when your host/backend boundary exchanges raw WebAuthn JSON payloads and your app still wants typed internal flow control.
+Use this when your host/backend boundary exchanges WebAuthn JSON payloads and your app wants the platform response to remain raw until the backend trust boundary.
 
 ## How to use
 
@@ -26,7 +26,7 @@ fun jsonClient(passkeyClient: PasskeyClient): JsonPasskeyClient {
 }
 ```
 
-Real-world scenario: an SDK surface accepts and returns JSON strings, but delegates actual ceremony orchestration to typed client logic internally.
+Real-world scenario: an SDK surface accepts and returns JSON strings, but delegates actual ceremony orchestration to the raw client boundary internally.
 
 ## How it fits
 

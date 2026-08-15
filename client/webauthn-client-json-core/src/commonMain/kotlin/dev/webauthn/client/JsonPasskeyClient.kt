@@ -5,10 +5,6 @@
 package dev.webauthn.client
 
 import dev.webauthn.json.WebAuthnJsonCodec
-import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.RawAuthenticationResponse
-import dev.webauthn.model.RawRegistrationResponse
-import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 /** JSON-first facade over [PasskeyClient] for backend contracts that speak JSON DTOs. */
@@ -30,7 +26,7 @@ public class DefaultJsonPasskeyClient(
                 codec.decodeCreationOptions(payload).toValueOrThrow(::IllegalArgumentException)
             },
             execute = passkeyClient::createCredential,
-            encodeResponse = { response -> codec.encodeRegistrationResponse(response.toRaw()) },
+            encodeResponse = codec::encodeRegistrationResponse,
             encodeErrorMessage = "Failed to encode registration response JSON",
         )
     }
@@ -42,7 +38,7 @@ public class DefaultJsonPasskeyClient(
                 codec.decodeRequestOptions(payload).toValueOrThrow(::IllegalArgumentException)
             },
             execute = passkeyClient::getAssertion,
-            encodeResponse = { response -> codec.encodeAuthenticationResponse(response.toRaw()) },
+            encodeResponse = codec::encodeAuthenticationResponse,
             encodeErrorMessage = "Failed to encode authentication response JSON",
         )
     }
@@ -87,21 +83,3 @@ public fun PasskeyClient.withJsonSupport(
 ): JsonPasskeyClient {
     return DefaultJsonPasskeyClient(this, codec)
 }
-
-private fun RegistrationResponse.toRaw(): RawRegistrationResponse = RawRegistrationResponse(
-    credentialId = credentialId,
-    clientDataJson = clientDataJson,
-    attestationObject = attestationObject,
-    authenticatorAttachment = authenticatorAttachment,
-    extensions = extensions,
-)
-
-private fun AuthenticationResponse.toRaw(): RawAuthenticationResponse = RawAuthenticationResponse(
-    credentialId = credentialId,
-    clientDataJson = clientDataJson,
-    authenticatorData = rawAuthenticatorData,
-    signature = signature,
-    userHandle = userHandle,
-    authenticatorAttachment = authenticatorAttachment,
-    extensions = extensions,
-)

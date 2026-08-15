@@ -15,7 +15,7 @@ import at.asitplus.signum.supreme.symmetric.decrypt
 import at.asitplus.signum.supreme.symmetric.encrypt
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.PrfExtensionInput
@@ -80,11 +80,11 @@ public object PrfCrypto {
         )
     }
 
-    public fun prfResultsOrNull(response: AuthenticationResponse): AuthenticationExtensionsPRFValues? {
+    public fun prfResultsOrNull(response: RawAuthenticationResponse): AuthenticationExtensionsPRFValues? {
         return response.extensions?.prf?.results
     }
 
-    public fun requirePrfResults(response: AuthenticationResponse): AuthenticationExtensionsPRFValues {
+    public fun requirePrfResults(response: RawAuthenticationResponse): AuthenticationExtensionsPRFValues {
         return requireNotNull(prfResultsOrNull(response)) {
             "PRF extension was requested but no PRF results were returned by the authenticator."
         }

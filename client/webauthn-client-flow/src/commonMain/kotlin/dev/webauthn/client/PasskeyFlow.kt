@@ -1,9 +1,9 @@
 package dev.webauthn.client
 
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.runtime.rethrowCancellation
 import kotlinx.coroutines.sync.Mutex
 
@@ -17,14 +17,14 @@ public data class CeremonyStart<State, Options>(
 public interface RegistrationBackend<Input, State, Output> {
     public suspend fun start(input: Input): CeremonyStart<State, PublicKeyCredentialCreationOptions>
 
-    public suspend fun finish(state: State, response: RegistrationResponse): Output
+    public suspend fun finish(state: State, response: RawRegistrationResponse): Output
 }
 
 /** Backend contract for an authentication ceremony with opaque server state and application output. */
 public interface AuthenticationBackend<Input, State, Output> {
     public suspend fun start(input: Input): CeremonyStart<State, PublicKeyCredentialRequestOptions>
 
-    public suspend fun finish(state: State, response: AuthenticationResponse): Output
+    public suspend fun finish(state: State, response: RawAuthenticationResponse): Output
 }
 
 /** Completion value or deliberately classified failure from [PasskeyFlow]. */

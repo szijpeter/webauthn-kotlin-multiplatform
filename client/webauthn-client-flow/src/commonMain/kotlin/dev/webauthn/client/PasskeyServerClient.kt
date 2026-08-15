@@ -2,10 +2,10 @@
 
 package dev.webauthn.client
 
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 
 /** Backend contract used by [PasskeyController] to start/finish ceremonies. */
@@ -27,7 +27,7 @@ public interface PasskeyServerClient<RegisterParams, SignInParams> {
      */
     public suspend fun finishRegister(
         params: RegisterParams,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult
 
@@ -48,7 +48,7 @@ public interface PasskeyServerClient<RegisterParams, SignInParams> {
      */
     public suspend fun finishSignIn(
         params: SignInParams,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult
 }

@@ -1,5 +1,5 @@
 public abstract interface class dev/webauthn/client/AuthenticationBackend {
-	public abstract fun finish (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finish (Ljava/lang/Object;Ldev/webauthn/model/RawAuthenticationResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun start (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -177,14 +177,14 @@ public final class dev/webauthn/client/PasskeyPhase : java/lang/Enum {
 }
 
 public abstract interface class dev/webauthn/client/PasskeyServerClient {
-	public abstract fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RawRegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/RawAuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getSignInOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class dev/webauthn/client/RegistrationBackend {
-	public abstract fun finish (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finish (Ljava/lang/Object;Ldev/webauthn/model/RawRegistrationResponse;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun start (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

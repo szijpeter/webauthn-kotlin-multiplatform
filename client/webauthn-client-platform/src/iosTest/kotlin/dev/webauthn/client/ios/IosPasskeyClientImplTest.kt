@@ -144,34 +144,33 @@ class IosPasskeyClientImplTest {
     }
 
     @Test
-    fun createCredential_returns_Platform_error_on_malformed_payload() = runBlocking {
+    fun createCredential_preserves_unparsed_attestation_payload() = runBlocking {
         val bridge = FakeAuthorizationBridge(
             createResult = Result.success(
                 IosRegistrationPayload(
                     credentialId = decode("MzMzMzMzMzMzMzMzMzMzMw"),
                     rawId = decode("MzMzMzMzMzMzMzMzMzMzMw"),
                     clientDataJson = decode("BAUG"),
-                    attestationObject = ByteArray(10) // Invalid attestation
+                    attestationObject = ByteArray(10),
                 )
             )
         )
         val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.createCredential(mockOptions())
-        assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.Platform)
-        assertTrue(result.error.message.contains("attestationObject"))
+        assertTrue(result is PasskeyResult.Success)
+        assertEquals(10, result.value.attestationObject.bytes().size)
     }
 
     @Test
-    fun getAssertion_returns_Platform_error_on_malformed_payload() = runBlocking {
+    fun getAssertion_preserves_unparsed_authenticator_data() = runBlocking {
         val bridge = FakeAuthorizationBridge(
             getResult = Result.success(
                 IosAuthenticationPayload(
                     credentialId = decode("MzMzMzMzMzMzMzMzMzMzMw"),
                     rawId = decode("MzMzMzMzMzMzMzMzMzMzMw"),
                     clientDataJson = decode("AQID"),
-                    authenticatorData = ByteArray(10), // Invalid auth data (< 37)
+                    authenticatorData = ByteArray(10),
                     signature = decode("CQkJ"),
                     userHandle = null,
                 )
@@ -180,9 +179,8 @@ class IosPasskeyClientImplTest {
         val delegate = IosPasskeyClientImpl(bridge)
 
         val result = delegate.getAssertion(mockRequestOptions())
-        assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.Platform)
-        assertTrue(result.error.message.contains("authenticatorData"))
+        assertTrue(result is PasskeyResult.Success)
+        assertEquals(10, result.value.authenticatorData.bytes().size)
     }
 
     @Test

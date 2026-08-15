@@ -5,10 +5,10 @@ import dev.webauthn.client.CeremonyStart
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyServerClient
 import dev.webauthn.client.RegistrationBackend
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
 import dev.webauthn.serialization.AuthenticationResponseDto
@@ -58,7 +58,7 @@ public class KtorPasskeyServerClient(
     @Suppress("UnusedParameter")
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         return postForFinish(
@@ -84,7 +84,7 @@ public class KtorPasskeyServerClient(
     @Suppress("UnusedParameter")
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         return postForFinish(
@@ -113,7 +113,7 @@ public class KtorPasskeyServerClient(
             @Suppress("UnusedParameter")
             override suspend fun finish(
                 state: Unit,
-                response: RegistrationResponse,
+                response: RawRegistrationResponse,
             ): PasskeyFinishResult {
                 return postForFinish(
                     path = routes.registerFinishPath,
@@ -136,7 +136,7 @@ public class KtorPasskeyServerClient(
             @Suppress("UnusedParameter")
             override suspend fun finish(
                 state: Unit,
-                response: AuthenticationResponse,
+                response: RawAuthenticationResponse,
             ): PasskeyFinishResult {
                 return postForFinish(
                     path = routes.signInFinishPath,

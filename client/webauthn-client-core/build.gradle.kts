@@ -11,7 +11,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:webauthn-model"))
-            implementation(project(":core:webauthn-protocol"))
             implementation(project(":core:webauthn-runtime-core"))
             implementation(libs.kotlinx.coroutines.core)
         }

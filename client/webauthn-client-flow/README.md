@@ -20,7 +20,7 @@ flowchart TD
 
 ## When to use
 
-Use this module when you want one shared ceremony flow and typed error/state handling, while leaving platform API details to `webauthn-client-core` and `webauthn-client-platform`.
+Use this module when you want one shared ceremony flow and typed error/state handling, while leaving platform API details to `webauthn-client-core` and `webauthn-client-platform`. Backend finish contracts receive byte-preserving raw credential responses; protocol interpretation and validation remain server-owned.
 
 `PasskeyFlow` is the recommended non-UI-state API for new integrations. It carries backend-owned
 opaque state from `start` to `finish` and returns the application-defined finish output.
@@ -35,10 +35,10 @@ import dev.webauthn.client.PasskeyController
 import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 
 /** Example backend adapter for the shared ceremony controller. */
@@ -51,7 +51,7 @@ class AccountServerClient : PasskeyServerClient<String, String> {
 
     override suspend fun finishRegister(
         params: String,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         TODO("Call backend /registration/finish")
@@ -65,7 +65,7 @@ class AccountServerClient : PasskeyServerClient<String, String> {
 
     override suspend fun finishSignIn(
         params: String,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         TODO("Call backend /authentication/finish")

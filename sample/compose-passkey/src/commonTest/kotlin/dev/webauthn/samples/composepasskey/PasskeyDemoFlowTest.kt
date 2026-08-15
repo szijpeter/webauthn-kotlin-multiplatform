@@ -9,13 +9,9 @@ import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.Aaguid
-import dev.webauthn.model.AttestedCredentialData
-import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
-import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialParameters
@@ -23,9 +19,8 @@ import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
-import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
@@ -201,7 +196,7 @@ private class FakeServerClient(
 
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         return if (registerVerifyResult) {
@@ -217,7 +212,7 @@ private class FakeServerClient(
 
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         return if (signInVerifyResult) {
@@ -229,14 +224,14 @@ private class FakeServerClient(
 }
 
 private class FakePasskeyClient(
-    private val createResult: PasskeyResult<RegistrationResponse> = PasskeyResult.Success(validRegistrationResponse()),
-    private val assertionResult: PasskeyResult<AuthenticationResponse> = PasskeyResult.Success(validAuthenticationResponse()),
+    private val createResult: PasskeyResult<RawRegistrationResponse> = PasskeyResult.Success(validRegistrationResponse()),
+    private val assertionResult: PasskeyResult<RawAuthenticationResponse> = PasskeyResult.Success(validAuthenticationResponse()),
 ) : PasskeyClient {
-    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+    override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> {
         return createResult
     }
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> {
         return assertionResult
     }
 }
@@ -272,34 +267,19 @@ private fun validRequestOptions(): PublicKeyCredentialRequestOptions {
     )
 }
 
-private fun validRegistrationResponse(): RegistrationResponse {
-    return RegistrationResponse(
+private fun validRegistrationResponse(): RawRegistrationResponse {
+    return RawRegistrationResponse(
         credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
         attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-        rawAuthenticatorData = AuthenticatorData(
-            rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 1 }),
-            flags = 0x41,
-            signCount = 1,
-        ),
-        attestedCredentialData = AttestedCredentialData(
-            aaguid = Aaguid.fromBytes(ByteArray(16) { 2 }),
-            credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-            cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
-        ),
     )
 }
 
-private fun validAuthenticationResponse(): AuthenticationResponse {
-    return AuthenticationResponse(
+private fun validAuthenticationResponse(): RawAuthenticationResponse {
+    return RawAuthenticationResponse(
         credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
-        rawAuthenticatorData = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-        authenticatorData = AuthenticatorData(
-            rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 1 }),
-            flags = 0x01,
-            signCount = 2,
-        ),
+        authenticatorData = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
         signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)),
     )
 }

@@ -30,18 +30,18 @@ final enum class dev.webauthn.client/PasskeyPhase : kotlin/Enum<dev.webauthn.cli
 }
 
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> dev.webauthn.client/AuthenticationBackend { // dev.webauthn.client/AuthenticationBackend|null[0]
-    abstract suspend fun finish(#B, dev.webauthn.model/AuthenticationResponse): #C // dev.webauthn.client/AuthenticationBackend.finish|finish(1:1;dev.webauthn.model.AuthenticationResponse){}[0]
+    abstract suspend fun finish(#B, dev.webauthn.model/RawAuthenticationResponse): #C // dev.webauthn.client/AuthenticationBackend.finish|finish(1:1;dev.webauthn.model.RawAuthenticationResponse){}[0]
     abstract suspend fun start(#A): dev.webauthn.client/CeremonyStart<#B, dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.client/AuthenticationBackend.start|start(1:0){}[0]
 }
 
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> dev.webauthn.client/RegistrationBackend { // dev.webauthn.client/RegistrationBackend|null[0]
-    abstract suspend fun finish(#B, dev.webauthn.model/RegistrationResponse): #C // dev.webauthn.client/RegistrationBackend.finish|finish(1:1;dev.webauthn.model.RegistrationResponse){}[0]
+    abstract suspend fun finish(#B, dev.webauthn.model/RawRegistrationResponse): #C // dev.webauthn.client/RegistrationBackend.finish|finish(1:1;dev.webauthn.model.RawRegistrationResponse){}[0]
     abstract suspend fun start(#A): dev.webauthn.client/CeremonyStart<#B, dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.client/RegistrationBackend.start|start(1:0){}[0]
 }
 
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyServerClient { // dev.webauthn.client/PasskeyServerClient|null[0]
-    abstract suspend fun finishRegister(#A, dev.webauthn.model/RegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RegistrationResponse;kotlin.String){}[0]
-    abstract suspend fun finishSignIn(#B, dev.webauthn.model/AuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.AuthenticationResponse;kotlin.String){}[0]
+    abstract suspend fun finishRegister(#A, dev.webauthn.model/RawRegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RawRegistrationResponse;kotlin.String){}[0]
+    abstract suspend fun finishSignIn(#B, dev.webauthn.model/RawAuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.RawAuthenticationResponse;kotlin.String){}[0]
     abstract suspend fun getRegisterOptions(#A): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.client/PasskeyServerClient.getRegisterOptions|getRegisterOptions(1:0){}[0]
     abstract suspend fun getSignInOptions(#B): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.client/PasskeyServerClient.getSignInOptions|getSignInOptions(1:1){}[0]
 }
