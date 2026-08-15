@@ -5,6 +5,7 @@ Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server cont
 ## What it provides
 
 - `KtorPasskeyServerClient`
+- `registrationBackend()` and `authenticationBackend()` adapters for `PasskeyFlow`
 - `KtorPasskeyRoutes` for path overrides when your backend keeps the default payload semantics
 - Start/finish HTTP call wiring for registration and authentication
 - A drop-in transport module for client orchestration layers
@@ -30,7 +31,7 @@ fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
 }
 ```
 
-Real-world scenario: a mobile app uses `PasskeyController` for platform ceremonies, then delegates start/finish HTTP calls to this client.
+Real-world scenario: a mobile app uses `PasskeyFlow` for platform ceremonies, then delegates start/finish HTTP calls to this client.
 
 ## How it fits
 

@@ -106,8 +106,9 @@ class KtorPasskeyServerClientTest {
         assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/finish")).jsonObject
-        assertEquals("webauthn.create", finishBody["clientDataType"]?.jsonPrimitive?.content)
-        assertEquals("https://example.com", finishBody["origin"]?.jsonPrimitive?.content)
+        assertTrue("clientDataType" !in finishBody)
+        assertTrue("challenge" !in finishBody)
+        assertTrue("origin" !in finishBody)
     }
 
     @Test
@@ -171,8 +172,9 @@ class KtorPasskeyServerClientTest {
         assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/finish")).jsonObject
-        assertEquals("webauthn.get", finishBody["clientDataType"]?.jsonPrimitive?.content)
-        assertEquals("https://example.com", finishBody["origin"]?.jsonPrimitive?.content)
+        assertTrue("clientDataType" !in finishBody)
+        assertTrue("challenge" !in finishBody)
+        assertTrue("origin" !in finishBody)
     }
 
     @Test

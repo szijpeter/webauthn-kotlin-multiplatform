@@ -1,7 +1,10 @@
 package dev.webauthn.network
 
+import dev.webauthn.client.AuthenticationBackend
+import dev.webauthn.client.CeremonyStart
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -52,6 +55,7 @@ public class KtorPasskeyServerClient(
         )
     }
 
+    @Suppress("UnusedParameter")
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
         response: RegistrationResponse,
@@ -61,9 +65,6 @@ public class KtorPasskeyServerClient(
             path = routes.registerFinishPath,
             payload = RegistrationFinishPayload(
                 response = WebAuthnDtoMapper.fromModel(response),
-                clientDataType = "webauthn.create",
-                challenge = challengeAsBase64Url,
-                origin = params.origin,
             ),
             operation = "Registration finish",
         )
@@ -80,6 +81,7 @@ public class KtorPasskeyServerClient(
         )
     }
 
+    @Suppress("UnusedParameter")
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
         response: AuthenticationResponse,
@@ -89,12 +91,60 @@ public class KtorPasskeyServerClient(
             path = routes.signInFinishPath,
             payload = AuthenticationFinishPayload(
                 response = WebAuthnDtoMapper.fromModel(response),
-                clientDataType = "webauthn.get",
-                challenge = challengeAsBase64Url,
-                origin = params.origin,
             ),
             operation = "Authentication finish",
         )
+    }
+
+    /**
+     * Adapts this transport to the opaque-state [RegistrationBackend] flow API.
+     *
+     * This default HTTP contract needs no client-side finish state; signed response data remains
+     * the server authority.
+     */
+    public fun registrationBackend(): RegistrationBackend<RegistrationStartPayload, Unit, PasskeyFinishResult> {
+        return object : RegistrationBackend<RegistrationStartPayload, Unit, PasskeyFinishResult> {
+            override suspend fun start(
+                input: RegistrationStartPayload,
+            ): CeremonyStart<Unit, PublicKeyCredentialCreationOptions> {
+                return CeremonyStart(state = Unit, options = getRegisterOptions(input).toFlowValue())
+            }
+
+            @Suppress("UnusedParameter")
+            override suspend fun finish(
+                state: Unit,
+                response: RegistrationResponse,
+            ): PasskeyFinishResult {
+                return postForFinish(
+                    path = routes.registerFinishPath,
+                    payload = RegistrationFinishPayload(response = WebAuthnDtoMapper.fromModel(response)),
+                    operation = "Registration finish",
+                )
+            }
+        }
+    }
+
+    /** Adapts this transport to the opaque-state [AuthenticationBackend] flow API. */
+    public fun authenticationBackend(): AuthenticationBackend<AuthenticationStartPayload, Unit, PasskeyFinishResult> {
+        return object : AuthenticationBackend<AuthenticationStartPayload, Unit, PasskeyFinishResult> {
+            override suspend fun start(
+                input: AuthenticationStartPayload,
+            ): CeremonyStart<Unit, PublicKeyCredentialRequestOptions> {
+                return CeremonyStart(state = Unit, options = getSignInOptions(input).toFlowValue())
+            }
+
+            @Suppress("UnusedParameter")
+            override suspend fun finish(
+                state: Unit,
+                response: AuthenticationResponse,
+            ): PasskeyFinishResult {
+                return postForFinish(
+                    path = routes.signInFinishPath,
+                    payload = AuthenticationFinishPayload(response = WebAuthnDtoMapper.fromModel(response)),
+                    operation = "Authentication finish",
+                )
+            }
+        }
     }
 
     private fun endpointFor(path: String): String {
@@ -140,6 +190,11 @@ private fun decodeRegistrationOptions(
 ): ValidationResult<PublicKeyCredentialCreationOptions> {
     val dto = decodeOrThrow<PublicKeyCredentialCreationOptionsDto>(body, operation)
     return WebAuthnDtoMapper.toModel(dto)
+}
+
+private fun <T> ValidationResult<T>.toFlowValue(): T = when (this) {
+    is ValidationResult.Valid -> value
+    is ValidationResult.Invalid -> throw IllegalArgumentException(errors.joinToString("; ") { it.message })
 }
 
 private fun decodeAuthenticationOptions(
@@ -205,17 +260,11 @@ public data class AuthenticationStartPayload(
 @Serializable
 private data class RegistrationFinishPayload(
     val response: RegistrationResponseDto,
-    val clientDataType: String,
-    val challenge: String,
-    val origin: String,
 )
 
 @Serializable
 private data class AuthenticationFinishPayload(
     val response: AuthenticationResponseDto,
-    val clientDataType: String,
-    val challenge: String,
-    val origin: String,
 )
 
 @Serializable

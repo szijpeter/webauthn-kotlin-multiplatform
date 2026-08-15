@@ -59,6 +59,7 @@ public final class dev/webauthn/network/KtorPasskeyRoutes {
 public final class dev/webauthn/network/KtorPasskeyServerClient : dev/webauthn/client/PasskeyServerClient {
 	public fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyRoutes;)V
 	public synthetic fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyRoutes;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun authenticationBackend ()Ldev/webauthn/client/AuthenticationBackend;
 	public fun finishRegister (Ldev/webauthn/network/RegistrationStartPayload;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public synthetic fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun finishSignIn (Ldev/webauthn/network/AuthenticationStartPayload;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -67,6 +68,7 @@ public final class dev/webauthn/network/KtorPasskeyServerClient : dev/webauthn/c
 	public synthetic fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getSignInOptions (Ldev/webauthn/network/AuthenticationStartPayload;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public synthetic fun getSignInOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun registrationBackend ()Ldev/webauthn/client/RegistrationBackend;
 }
 
 public final class dev/webauthn/network/RegistrationStartPayload {
