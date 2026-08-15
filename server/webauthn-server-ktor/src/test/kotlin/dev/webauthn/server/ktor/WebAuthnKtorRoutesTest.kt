@@ -398,10 +398,7 @@ class WebAuthnKtorRoutesTest {
                       "clientDataJSON": "YWFh",
                       "attestationObject": "YWFh"
                     }
-                  },
-                  "clientDataType": "webauthn.create",
-                  "challenge": "YWFhYWFhYWFhYWFhYWFhYQ",
-                  "origin": "https://example.com"
+                  }
                 }
                 """.trimIndent()
             )

@@ -22,12 +22,12 @@ Managed blocks: **106**
 | contributing-bash-3 | CONTRIBUTING.md:32 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | contributing-bash-4 | CONTRIBUTING.md:39 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | readme-mermaid-1 | README.md:50 | WebAuthn Core Concepts | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-mermaid-2 | README.md:82 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-kotlin-1 | README.md:142 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
-| readme-kotlin-2 | README.md:154 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-3 | README.md:176 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
-| readme-bash-1 | README.md:196 | Install | bash | maintainer | markdown | Markdown block | syntax |  |
-| readme-bash-2 | README.md:283 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-mermaid-2 | README.md:85 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| readme-kotlin-1 | README.md:145 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
+| readme-kotlin-2 | README.md:157 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-3 | README.md:179 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
+| readme-bash-1 | README.md:199 | Install | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-bash-2 | README.md:286 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
 | client-webauthn-client-android-readme-kotlin-1 | client/webauthn-client-android/README.md:19 | How to use | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client | platform-compile |  |
 | client-webauthn-client-android-readme-mermaid-1 | client/webauthn-client-android/README.md:34 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-compose-readme-mermaid-1 | client/webauthn-client-compose/README.md:12 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
