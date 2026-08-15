@@ -5,9 +5,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.webauthn.client.compose.rememberPasskeyClient
 import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.kotlinx.KotlinxKtorPasskeyBackend
 import dev.webauthn.samples.composepasskey.app.di.sampleAppModules
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
+import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.samples.composepasskey.data.network.normalizedEndpoint
 import dev.webauthn.samples.composepasskey.data.network.rememberPlatformHttpClient
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
@@ -32,13 +34,20 @@ fun App() {
             endpointBase = config.endpointBase.normalizedEndpoint(),
         )
     }
+    val backend: DemoPasskeyBackend = remember(httpClient, config.endpointBase) {
+        KotlinxKtorPasskeyBackend(
+            httpClient = httpClient,
+            endpointBase = config.endpointBase.normalizedEndpoint(),
+        )
+    }
 
-    val modules = remember(config, debugLogs, passkeyClient, serverClient) {
+    val modules = remember(config, debugLogs, passkeyClient, serverClient, backend) {
         sampleAppModules(
             config = config,
             debugLogs = debugLogs,
             passkeyClient = passkeyClient,
             serverClient = serverClient,
+            backend = backend,
         )
     }
     val koinConfig = remember(modules) {

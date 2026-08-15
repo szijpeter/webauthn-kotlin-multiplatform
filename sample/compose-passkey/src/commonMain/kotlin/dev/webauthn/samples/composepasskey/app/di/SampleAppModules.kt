@@ -4,6 +4,7 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.samples.composepasskey.app.navigation.AppRoute
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
+import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.prf.InMemoryPrfSaltStore
@@ -23,6 +24,7 @@ internal fun sampleAppModules(
     debugLogs: DebugLogStore,
     passkeyClient: PasskeyClient,
     serverClient: DemoPasskeyServerClient,
+    backend: DemoPasskeyBackend,
 ): List<Module> {
     return listOf(
         module {
@@ -30,6 +32,7 @@ internal fun sampleAppModules(
             single<DebugLogStore> { debugLogs }
             single<PasskeyClient> { passkeyClient }
             single<DemoPasskeyServerClient> { serverClient }
+            single<DemoPasskeyBackend> { backend }
             single<AppSessionStore> { AppSessionStore() }
             single<PrfSaltStore> { InMemoryPrfSaltStore() }
 

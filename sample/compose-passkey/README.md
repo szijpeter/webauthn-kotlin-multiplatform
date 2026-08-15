@@ -121,11 +121,8 @@ The auth screen is intentionally the cleanest API example in the repo:
 
 <!-- doc-example: id=sample-compose-passkey-readme-kotlin-1; owner=sample; verify=sample-build; audience=consumer; source=sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route -->
 ```kotlin
-    val controller = rememberPasskeyController(
-        serverClient = serverClient,
-        passkeyClient = passkeyClient,
-    )
-    val controllerState by controller.uiState.collectAsState()
+    val flow = rememberPasskeyFlow(passkeyClient)
+    var controllerState by remember { mutableStateOf<PasskeyControllerState>(PasskeyControllerState.Idle) }
     val canRegister by coordinator.canRegister.collectAsState()
     val actionsEnabled = areCeremonyActionsEnabled(controllerState)
 ```

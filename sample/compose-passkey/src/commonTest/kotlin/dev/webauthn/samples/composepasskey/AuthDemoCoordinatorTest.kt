@@ -1,19 +1,40 @@
 package dev.webauthn.samples.composepasskey
 
 import dev.webauthn.client.PasskeyAction
+import dev.webauthn.client.CeremonyFailure
+import dev.webauthn.client.CeremonyResult
+import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyControllerState
+import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.ui.screens.auth.toDemoControllerState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class AuthDemoCoordinatorTest {
+    @Test
+    fun typed_flow_results_map_to_caller_owned_ui_state() {
+        assertEquals(
+            PasskeyControllerState.Success(PasskeyAction.REGISTER),
+            CeremonyResult.Success(PasskeyFinishResult.Verified).toDemoControllerState(PasskeyAction.REGISTER),
+        )
+
+        val failure = assertIs<PasskeyControllerState.Failure>(
+            CeremonyResult.Failure(CeremonyFailure.Backend("offline"))
+                .toDemoControllerState(PasskeyAction.SIGN_IN),
+        )
+        assertEquals(PasskeyAction.SIGN_IN, failure.action)
+        assertEquals(PasskeyClientError.Transport("offline"), failure.error)
+    }
+
     @Test
     fun register_success_disables_register_after_logging_action_and_transition() {
         val debugLogs = DebugLogStore()
