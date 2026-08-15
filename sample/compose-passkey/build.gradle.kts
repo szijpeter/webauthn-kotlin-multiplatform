@@ -48,7 +48,7 @@ kotlin {
                 implementation(libs.kermit)
                 implementation(project(":client:webauthn-client-compose"))
                 implementation(project(":client:webauthn-client-prf-crypto"))
-                implementation(project(":client:webauthn-network-ktor-client"))
+                implementation(project(":client:webauthn-client-ktor"))
                 implementation(project(":core:webauthn-runtime-core"))
             }
         }

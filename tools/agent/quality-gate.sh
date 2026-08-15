@@ -185,7 +185,7 @@ else
     for module in "${modules[@]}"; do
         [[ -z "$module" ]] && continue
         case "$module" in
-            core:webauthn-cbor-core|core:webauthn-model|core:webauthn-runtime-core|core:webauthn-core|core:webauthn-json-kotlinx|core:webauthn-crypto-api|client:webauthn-client-core|client:webauthn-client-flow|client:webauthn-client-json-core|client:webauthn-client-compose|client:webauthn-client-prf-crypto|client:webauthn-network-ktor-client)
+            core:webauthn-cbor-core|core:webauthn-model|core:webauthn-runtime-core|core:webauthn-core|core:webauthn-json-kotlinx|core:webauthn-crypto-api|client:webauthn-client-core|client:webauthn-client-flow|client:webauthn-client-json-core|client:webauthn-client-compose|client:webauthn-client-prf-crypto|client:webauthn-client-ktor)
                 run_list+=("./gradlew :$module:detekt --stacktrace")
                 run_list+=("./gradlew :$module:allTests --stacktrace")
                 ;;

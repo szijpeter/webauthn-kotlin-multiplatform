@@ -94,7 +94,7 @@ flowchart TB
     PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
-    NETWORK["webauthn-network-ktor-client<br/>(optional)"]
+    NETWORK["webauthn-client-ktor<br/>(optional)"]
     CLIENT_CORE["webauthn-client-core"]
     CLIENT_FLOW["webauthn-client-flow<br/>(optional)"]
     JSON_API["webauthn-json-api"]

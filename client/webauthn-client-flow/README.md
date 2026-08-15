@@ -130,7 +130,7 @@ Usage notes:
 
 - Uses `webauthn-runtime-core` for shared coroutine-boundary cancellation/failure handling helpers.
 - Foundation for `webauthn-client-compose`, `webauthn-client-json-core`, and platform client modules.
-- Pairs naturally with `webauthn-network-ktor-client` for default backend contract integration.
+- Pairs naturally with `webauthn-client-ktor` for default backend contract integration.
 
 ## Limits
 

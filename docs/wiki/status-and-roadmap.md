@@ -15,7 +15,7 @@ This page compresses the current project maturity into a quick scan. For exact w
 
 ## Maturity Pattern
 
-- Production-leaning: core validation paths and `webauthn-network-ktor-client`
+- Production-leaning: core validation paths and `webauthn-client-ktor`
 - Beta: most server, client, crypto, and adapter modules
 - Scaffold: not the dominant status right now; most major module families already exceed scaffold level
 

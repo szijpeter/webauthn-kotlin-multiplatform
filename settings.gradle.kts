@@ -42,7 +42,7 @@ include(
     ":client:webauthn-client-json-core",
     ":client:webauthn-client-compose",
     ":client:webauthn-client-platform",
-    ":client:webauthn-network-ktor-client",
+    ":client:webauthn-client-ktor",
     ":sample:backend-ktor",
     ":sample:android-passkey",
     ":sample:ios-passkey",

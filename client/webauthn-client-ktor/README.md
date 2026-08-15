@@ -1,4 +1,4 @@
-# webauthn-network-ktor-client
+# webauthn-client-ktor
 
 Default Ktor-based `PasskeyServerClient` transport for `/webauthn/*` server contracts.
 
@@ -17,7 +17,7 @@ Use this when your backend follows the default `/webauthn/*` contract and your a
 
 ## How to use
 
-<!-- doc-example: id=client-webauthn-network-ktor-client-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
+<!-- doc-example: id=client-webauthn-client-ktor-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
 import dev.webauthn.network.KtorPasskeyServerClient
 import io.ktor.client.HttpClient
@@ -34,7 +34,7 @@ Real-world scenario: a mobile app uses `PasskeyController` for platform ceremoni
 
 ## How it fits
 
-<!-- doc-example: id=client-webauthn-network-ktor-client-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
+<!-- doc-example: id=client-webauthn-client-ktor-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
     UI["App UI"] --> CORE["webauthn-client-core controller"]

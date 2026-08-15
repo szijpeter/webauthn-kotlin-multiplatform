@@ -10,7 +10,7 @@ The client side is organized around shared orchestration in common Kotlin code, 
 - `webauthn-client-platform` bridges into Credential Manager from `androidMain` and AuthenticationServices from `iosMain`.
 - `webauthn-client-compose` provides remembered helpers for Compose-driven apps.
 - `webauthn-client-json-core` is an optional raw JSON interop layer.
-- `webauthn-network-ktor-client` is the default transport helper for `/webauthn/*` backends.
+- `webauthn-client-ktor` is the default transport helper for `/webauthn/*` backends.
 - `webauthn-client-prf-crypto` adds PRF-derived application crypto helpers on top of passkey flows.
 
 ## Practical Flow

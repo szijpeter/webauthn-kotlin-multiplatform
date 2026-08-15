@@ -86,7 +86,7 @@ Usage notes:
 
 - Sits on top of `webauthn-client-core`.
 - Delegates platform behavior to `webauthn-client-platform` via `rememberPasskeyClient()`.
-- Commonly paired with `webauthn-network-ktor-client` for `/webauthn/*` backends.
+- Commonly paired with `webauthn-client-ktor` for `/webauthn/*` backends.
 
 ## Limits
 

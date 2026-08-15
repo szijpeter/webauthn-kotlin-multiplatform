@@ -35,7 +35,7 @@ Published:
 - `webauthn-client-compose`
 - `webauthn-client-platform`
 - `webauthn-client-prf-crypto`
-- `webauthn-network-ktor-client`
+- `webauthn-client-ktor`
 - `webauthn-attestation-mds`
 - `platform:bom` as `webauthn-bom`
 

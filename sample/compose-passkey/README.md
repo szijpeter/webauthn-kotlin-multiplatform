@@ -153,7 +153,7 @@ Preview limitations and constraints:
 
 - `sample:compose-passkey` `commonTest` validates flow behavior with `FakePasskeyClient` and `FakeServerClient` (`PasskeyServerClient`) so orchestration is deterministic across KMP targets.
 - Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
-- Runtime server wiring uses `webauthn-network-ktor-client` (`KtorPasskeyServerClient`).
+- Runtime server wiring uses `webauthn-client-ktor` (`KtorPasskeyServerClient`).
 - Final readiness still requires the live register/sign-in checklist run on a real/emulated Android device with provider dependencies present.
 
 ## Android provider prerequisite

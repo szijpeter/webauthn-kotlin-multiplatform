@@ -52,7 +52,7 @@ Published:
 - `webauthn-client-compose`
 - `webauthn-client-platform`
 - `webauthn-client-prf-crypto`
-- `webauthn-network-ktor-client`
+- `webauthn-client-ktor`
 - `webauthn-attestation-mds`
 
 Not published:
@@ -86,7 +86,7 @@ Adapter/transport/platform:
 
 - `webauthn-server-ktor`
 - `webauthn-server-store-exposed`
-- `webauthn-network-ktor-client`
+- `webauthn-client-ktor`
 - `webauthn-client-core`
 - `webauthn-client-flow`
 - `webauthn-runtime-core`

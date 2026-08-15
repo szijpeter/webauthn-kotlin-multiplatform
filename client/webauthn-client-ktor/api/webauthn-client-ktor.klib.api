@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <io.github.szijpeter:webauthn-network-ktor-client>
+// Library unique name: <io.github.szijpeter:webauthn-client-ktor>
 final class dev.webauthn.network/AuthenticationStartPayload { // dev.webauthn.network/AuthenticationStartPayload|null[0]
     constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network/AuthenticationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
 

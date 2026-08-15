@@ -22,7 +22,7 @@ The sample backend exposes:
 - `POST /webauthn/authentication/start`
 - `POST /webauthn/authentication/finish`
 
-This contract is the default assumed by `webauthn-network-ktor-client` and the Compose sample.
+This contract is the default assumed by `webauthn-client-ktor` and the Compose sample.
 
 ## Why These Matter
 

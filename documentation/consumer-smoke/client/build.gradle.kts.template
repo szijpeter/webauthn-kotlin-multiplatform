@@ -28,7 +28,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-core:<version>")
-            implementation("io.github.szijpeter:webauthn-network-ktor-client:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor:<version>")
         }
 
         androidMain.dependencies {
