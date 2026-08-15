@@ -24,8 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.webauthn.client.CapabilitySupport
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.model.WebAuthnExtension
 
 @Composable
@@ -34,7 +36,7 @@ fun CapabilitiesCard(
 ) {
     val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }
     val largeBlobCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) }
-    val securityKeyCapability = remember { PasskeyCapability.PlatformFeature("securityKey") }
+    val securityKeyCapability = remember { PasskeyCapability.Platform(PlatformCapability.SecurityKey) }
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -49,21 +51,17 @@ fun CapabilitiesCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("PRF", capabilities.supports(prfCapability))
-                CapabilityChip("Large Blob", capabilities.supports(largeBlobCapability))
+                CapabilityChip("PRF", capabilities.supportOf(prfCapability))
+                CapabilityChip("Large Blob", capabilities.supportOf(largeBlobCapability))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CapabilityChip("Security Key", capabilities.supports(securityKeyCapability))
+                CapabilityChip("Security Key", capabilities.supportOf(securityKeyCapability))
             }
             Text(
-                text = if (capabilities.platformVersionHints.isEmpty()) {
-                    "No platform hints reported"
-                } else {
-                    capabilities.platformVersionHints.joinToString()
-                },
+                text = "Unknown means the client cannot determine support reliably.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -72,8 +70,17 @@ fun CapabilitiesCard(
 }
 
 @Composable
-private fun CapabilityChip(label: String, enabled: Boolean) {
-    val color = if (enabled) Color(0xFF9BC08E) else Color(0xFFD4D9DD)
+private fun CapabilityChip(label: String, support: CapabilitySupport) {
+    val color = when (support) {
+        CapabilitySupport.SUPPORTED -> Color(0xFF9BC08E)
+        CapabilitySupport.UNSUPPORTED -> Color(0xFFD4D9DD)
+        CapabilitySupport.UNKNOWN -> Color(0xFFF4D6A0)
+    }
+    val indicatorColor = when (support) {
+        CapabilitySupport.SUPPORTED -> Color(0xFF1B4D2C)
+        CapabilitySupport.UNSUPPORTED -> Color(0xFF5E6C77)
+        CapabilitySupport.UNKNOWN -> Color(0xFF7A4D00)
+    }
     Surface(
         shape = RoundedCornerShape(999.dp),
         color = color,
@@ -87,10 +94,10 @@ private fun CapabilityChip(label: String, enabled: Boolean) {
                 modifier = Modifier
                     .size(7.dp)
                     .clip(CircleShape)
-                    .background(if (enabled) Color(0xFF1B4D2C) else Color(0xFF5E6C77)),
+                    .background(indicatorColor),
             )
             Text(
-                text = "$label: ${if (enabled) "yes" else "no"}",
+                text = "$label: ${support.name.lowercase()}",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF1B2C39),
             )

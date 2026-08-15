@@ -158,8 +158,9 @@ class DefaultPasskeyClientTest {
             bridge = TestBridge(
                 capabilitiesAction = {
                     PasskeyCapabilities(
-                        supported = [PasskeyCapability.Extension(WebAuthnExtension.Prf)],
-                        platformVersionHints = ["test"],
+                        support = [
+                            PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
+                        ].toMap(),
                     )
                 },
             ),
@@ -167,58 +168,49 @@ class DefaultPasskeyClientTest {
 
         val capabilities = client.capabilities()
         assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
-        assertEquals(["test"], capabilities.platformVersionHints)
+        assertEquals(
+            CapabilitySupport.SUPPORTED,
+            capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
+        )
     }
 
     @Test
-    fun capabilities_supports_lookup_is_key_based_for_string_and_exact_for_capability() {
+    fun capabilities_report_explicit_support_and_default_to_unknown() {
         val capabilities = PasskeyCapabilities(
-            supported = [PasskeyCapability.Extension(WebAuthnExtension.Prf)],
+            support = [
+                PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
+                PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) to CapabilitySupport.UNSUPPORTED,
+            ].toMap(),
         )
 
         assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
-        assertFalse(capabilities.supports(PasskeyCapability.PlatformFeature("prf")))
-        assertTrue(capabilities.supports("prf"))
-        assertFalse(capabilities.supports("unknown"))
-    }
-
-    @Test
-    fun capabilities_reject_duplicate_keys() {
-        assertFailsWith<IllegalArgumentException> {
-            PasskeyCapabilities(
-                supported = [
-                    PasskeyCapability.Extension(WebAuthnExtension.Custom("same")),
-                    PasskeyCapability.PlatformFeature("same"),
-                ],
-            )
-        }
-    }
-
-    @Test
-    fun capabilities_supports_lookup_uses_a_snapshot_of_supported_capabilities() {
-        val mutable = mutableSetOf<PasskeyCapability>(
-            PasskeyCapability.Extension(WebAuthnExtension.Prf),
+        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)))
+        assertEquals(
+            CapabilitySupport.UNSUPPORTED,
+            capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)),
         )
-        val capabilities = PasskeyCapabilities(supported = mutable)
+        assertEquals(
+            CapabilitySupport.UNKNOWN,
+            capabilities.supportOf(PasskeyCapability.Platform(PlatformCapability.SecurityKey)),
+        )
+    }
 
-        assertTrue(capabilities.supports("prf"))
+    @Test
+    fun capabilities_support_lookup_uses_a_snapshot_of_reported_support() {
+        val prf = PasskeyCapability.Extension(WebAuthnExtension.Prf)
+        val securityKey = PasskeyCapability.Platform(PlatformCapability.SecurityKey)
+        val mutable = mutableMapOf<PasskeyCapability, CapabilitySupport>(
+            prf to CapabilitySupport.SUPPORTED,
+        )
+        val capabilities = PasskeyCapabilities(support = mutable)
+
+        assertTrue(capabilities.supports(prf))
 
         mutable.clear()
-        mutable.add(PasskeyCapability.PlatformFeature("securityKey"))
+        mutable[securityKey] = CapabilitySupport.SUPPORTED
 
-        assertTrue(capabilities.supports("prf"))
-        assertFalse(capabilities.supports("securityKey"))
-    }
-
-    @Test
-    fun capabilities_supports_capability_requires_variant_match() {
-        val capabilities = PasskeyCapabilities(
-            supported = [PasskeyCapability.PlatformFeature("securityKey")],
-        )
-
-        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("securityKey")))
-        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Custom("securityKey"))))
-        assertTrue(capabilities.supports("securityKey"))
+        assertTrue(capabilities.supports(prf))
+        assertEquals(CapabilitySupport.UNKNOWN, capabilities.supportOf(securityKey))
     }
 
     @Test

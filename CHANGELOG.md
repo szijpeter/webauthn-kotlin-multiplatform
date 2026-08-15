@@ -6,6 +6,13 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ## Unreleased
 
+### Changed
+
+- **BREAKING**: Capability reporting is now typed and three-state. Replace
+  `PlatformFeature("securityKey")` with `Platform(PlatformCapability.SecurityKey)`, replace the
+  `supported` set and `platformVersionHints` with `support`, and use
+  `supportOf(capability)` when `UNKNOWN` must be distinguished from `UNSUPPORTED`.
+
 ## 0.3.0 - 2026-03-31
 
 ### Added

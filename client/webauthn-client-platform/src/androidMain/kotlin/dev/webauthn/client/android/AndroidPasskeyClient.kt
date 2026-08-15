@@ -16,12 +16,14 @@ import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.CreateCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
+import dev.webauthn.client.CapabilitySupport
+import dev.webauthn.client.DefaultPasskeyClient
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyPlatformBridge
-import dev.webauthn.client.DefaultPasskeyClient
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.json.WebAuthnJsonCodec
 import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.RawRegistrationResponse
@@ -157,14 +159,21 @@ internal class AndroidPasskeyPlatformBridge(
     override suspend fun capabilities(): PasskeyCapabilities {
         val supportsExtensions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         return PasskeyCapabilities(
-            supported = buildSet {
-                if (supportsExtensions) {
-                    add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
-                    add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
-                }
-                add(PasskeyCapability.PlatformFeature("securityKey"))
+            support = buildMap {
+                put(
+                    PasskeyCapability.Extension(WebAuthnExtension.Prf),
+                    supportsExtensions.asCapabilitySupport(),
+                )
+                put(
+                    PasskeyCapability.Extension(WebAuthnExtension.LargeBlob),
+                    supportsExtensions.asCapabilitySupport(),
+                )
+                put(
+                    PasskeyCapability.Platform(PlatformCapability.SecurityKey),
+                    // Credential Manager does not expose a separate security-key capability probe.
+                    CapabilitySupport.UNKNOWN,
+                )
             },
-            platformVersionHints = listOf("androidSdk=${Build.VERSION.SDK_INT}"),
         )
     }
 
@@ -208,6 +217,9 @@ private fun enrichRpIdValidationMessage(message: String): String {
     }
     return "$message. $RP_ID_VALIDATION_HINT"
 }
+
+private fun Boolean.asCapabilitySupport(): CapabilitySupport =
+    if (this) CapabilitySupport.SUPPORTED else CapabilitySupport.UNSUPPORTED
 
 private fun <T> ValidationResult<T>.toPlatformValue(context: String): T = when (this) {
     is ValidationResult.Valid -> value

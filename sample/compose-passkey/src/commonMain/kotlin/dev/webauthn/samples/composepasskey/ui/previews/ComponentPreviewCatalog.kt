@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.CapabilitySupport
 import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.samples.composepasskey.domain.model.DebugLogEntry
 import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
@@ -61,11 +62,10 @@ private fun CapabilitiesCardPreview() {
     PreviewSurface {
         CapabilitiesCard(
             capabilities = PasskeyCapabilities(
-                supported = setOf(
-                    PasskeyCapability.Extension(WebAuthnExtension.Prf),
-                    PasskeyCapability.Extension(WebAuthnExtension.LargeBlob),
+                support = mapOf(
+                    PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
+                    PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) to CapabilitySupport.SUPPORTED,
                 ),
-                platformVersionHints = listOf("ios 18.2", "platform passkeys enabled"),
             ),
         )
     }

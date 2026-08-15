@@ -92,13 +92,17 @@ Query platform support for extensions and features:
 
 <!-- doc-example: id=client-webauthn-client-core-readme-kotlin-2; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ClientCapabilitiesExample.kt#client-capabilities -->
 ```kotlin
+import dev.webauthn.client.CapabilitySupport
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.model.WebAuthnExtension
 
 suspend fun inspectCapabilities(client: PasskeyClient) {
     val capabilities = client.capabilities()
-    if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf))) {
+    if (
+        capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)) ==
+            CapabilitySupport.SUPPORTED
+    ) {
         // Platform supports PRF extension.
     }
     if (capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))) {
@@ -110,10 +114,11 @@ suspend fun inspectCapabilities(client: PasskeyClient) {
 Available capabilities:
 - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` - HMAC secret extension (W3C prf)
 - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` - Large blob storage extension
-- `PasskeyCapability.PlatformFeature("securityKey")` - Cross-platform authenticator support
+- `PasskeyCapability.Platform(PlatformCapability.SecurityKey)` - Cross-platform authenticator support
 - `PasskeyCapability.Extension(WebAuthnExtension.Custom("example"))` - proprietary/draft extension identifier
 
-`PasskeyCapabilities.supports(key)` is key-based; `supports(capability)` requires an exact capability match for that key (same variant/value). Duplicate keys are rejected at construction time.
+Use `PasskeyCapabilities.supportOf(capability)` when callers need to distinguish `SUPPORTED`,
+`UNSUPPORTED`, and `UNKNOWN`; `supports(capability)` returns `true` only for `SUPPORTED`.
 
 Usage notes:
 

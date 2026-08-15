@@ -1,11 +1,13 @@
 package dev.webauthn.client.ios
 
 import dev.webauthn.client.DefaultPasskeyClient
+import dev.webauthn.client.CapabilitySupport
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyPlatformBridge
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.CredentialId
@@ -86,15 +88,26 @@ internal class IosPasskeyPlatformBridge(
         val version = NSProcessInfo.processInfo.operatingSystemVersion
         val major = version.useContents { majorVersion.toInt() }
         return PasskeyCapabilities(
-            supported = buildSet {
-                if (major >= 18) add(PasskeyCapability.Extension(WebAuthnExtension.Prf))
-                if (major >= 17) add(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob))
-                if (major >= 15) add(PasskeyCapability.PlatformFeature("securityKey"))
+            support = buildMap {
+                put(
+                    PasskeyCapability.Extension(WebAuthnExtension.Prf),
+                    (major >= 18).asCapabilitySupport(),
+                )
+                put(
+                    PasskeyCapability.Extension(WebAuthnExtension.LargeBlob),
+                    (major >= 17).asCapabilitySupport(),
+                )
+                put(
+                    PasskeyCapability.Platform(PlatformCapability.SecurityKey),
+                    (major >= 15).asCapabilitySupport(),
+                )
             },
-            platformVersionHints = ["iosMajor=$major"],
         )
     }
 }
+
+private fun Boolean.asCapabilitySupport(): CapabilitySupport =
+    if (this) CapabilitySupport.SUPPORTED else CapabilitySupport.UNSUPPORTED
 
 private fun requireMatchingCredentialIds(credentialId: ByteArray, rawId: ByteArray) {
     require(credentialId.contentEquals(rawId)) { "credentialId must match rawId" }

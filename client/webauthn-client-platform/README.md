@@ -9,7 +9,7 @@ Manager; its iOS source set uses AuthenticationServices.
 - `IosPasskeyClient`
 - Android and iOS `PasskeyClient` implementations that return byte-preserving raw registration and authentication responses
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
-- Capabilities reporting via `PasskeyCapabilities.supported: Set<PasskeyCapability>` with key-based lookup
+- Typed capability reporting via `PasskeyCapabilities.supportOf(...)`
 
 ## When to use
 
@@ -65,10 +65,12 @@ flowchart LR
   automatic foreground-activity tracking for clients that outlive a screen.
 - iOS accepts a `PasskeyPresentationAnchorProvider`, including a mutable provider for apps whose
   foreground window changes.
-- Reported capabilities use the shared two-type model:
-  - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
-  - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
-  - `PasskeyCapability.PlatformFeature("securityKey")` when cross-platform security keys are supported.
+- Reported capability values have explicit `SUPPORTED`, `UNSUPPORTED`, or `UNKNOWN` status:
+  - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` for PRF.
+  - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` for largeBlob.
+  - `PasskeyCapability.Platform(PlatformCapability.SecurityKey)` for cross-platform security keys.
+- iOS reports security-key support from its dedicated AuthenticationServices bridge; Android reports it
+  as `UNKNOWN` because Credential Manager does not expose a separate security-key capability probe.
 - A provider with no matching credential is reported as `PasskeyClientError.NoCredential`; other provider failures expose a stable message without leaking OS exception objects.
 - Keep backend contract alignment with your chosen server client implementation.
 - If the platform reports `RP ID cannot be validated`, verify:
