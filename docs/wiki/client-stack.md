@@ -21,7 +21,8 @@ The client side is organized around a raw-response boundary in common Kotlin cod
 4. The platform result remains a byte-preserving raw credential response.
 5. The app sends that raw finish payload to the backend, where protocol interpretation and validation occur.
 
-Compose apps can keep most of the view-facing wiring in `rememberPasskeyClient(...)` and `rememberPasskeyController(...)`.
+Compose apps can keep platform wiring in `rememberPasskeyClient(...)` and retain `PasskeyFlow` with
+`rememberPasskeyFlow(...)`; the Compose screen or ViewModel owns observable UI state.
 
 ## Important Boundaries
 
@@ -36,7 +37,7 @@ From the current implementation/status docs:
 
 - shared raw client orchestration is in place
 - Android and iOS bridges are usable and deliberately thin
-- Compose helpers exist for retained-controller usage
+- Compose helpers retain a state-free flow while app code owns UI state
 - PRF helpers are available for apps that need post-auth crypto material
 - more device/provider/runtime matrix hardening is still expected, especially around platform-specific behavior
 

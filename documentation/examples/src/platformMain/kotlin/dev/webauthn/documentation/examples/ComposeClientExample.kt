@@ -2,46 +2,38 @@ package dev.webauthn.documentation.examples
 
 // docs-region compose-client
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import dev.webauthn.client.CeremonyResult
 import dev.webauthn.client.PasskeyClient
-import dev.webauthn.client.PasskeyControllerState
-import dev.webauthn.client.PasskeyServerClient
+import dev.webauthn.client.PasskeyPhase
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.client.compose.rememberPasskeyClient
-import dev.webauthn.client.compose.rememberPasskeyController
+import dev.webauthn.client.compose.rememberPasskeyFlow
 import kotlinx.coroutines.launch
 
 @Composable
-fun <RegisterParams, SignInParams> PasskeyEntryScreen(
-    serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
+fun <Input, State, Output> PasskeyRegistrationEntryScreen(
+    backend: RegistrationBackend<Input, State, Output>,
     passkeyClient: PasskeyClient = rememberPasskeyClient(),
-    registerParams: RegisterParams,
-    signInParams: SignInParams,
+    input: Input,
 ) {
     val scope = rememberCoroutineScope()
-    val controller = rememberPasskeyController(
-        serverClient = serverClient,
-        passkeyClient = passkeyClient,
-    )
-    val state by controller.uiState.collectAsState()
+    val flow = rememberPasskeyFlow(passkeyClient)
+    var phase by remember { mutableStateOf<PasskeyPhase?>(null) }
+    var status by remember { mutableStateOf("Ready") }
 
-    fun onRegisterClick() = scope.launch { controller.register(registerParams) }
-    fun onSignInClick() = scope.launch { controller.signIn(signInParams) }
-
-    when (val current = state) {
-        PasskeyControllerState.Idle -> Unit
-        is PasskeyControllerState.InProgress -> {
-            // Show loading state and disable repeated taps.
-        }
-        is PasskeyControllerState.Success -> {
-            // Navigate or refresh session state.
-        }
-        is PasskeyControllerState.Failure -> {
-            // Surface current.error.message in UI.
+    fun onRegisterClick() = scope.launch {
+        when (val result = flow.register(input, backend, onPhaseChanged = { phase = it })) {
+            is CeremonyResult.Success -> status = "Registration completed"
+            is CeremonyResult.Failure -> status = "Registration failed: ${result.error}"
         }
     }
 
-    // Wire onRegisterClick / onSignInClick to your Compose buttons.
+    // Render phase and status; disable repeated taps while phase is non-null.
+    // Wire onRegisterClick to a Compose button.
 }
 // docs-endregion compose-client
