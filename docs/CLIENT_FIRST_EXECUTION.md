@@ -116,7 +116,7 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 }
 ```
 
-### `webauthn-client-android`
+### `webauthn-client-platform` Android source set
 
 - `:client:webauthn-client-core`
 - `:client:webauthn-client-json-core`
@@ -124,7 +124,7 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 - `androidx.credentials:credentials-play-services-auth` (required for Google Play provider integration on Android)
 - `androidx.core:core-ktx`
 
-### `webauthn-client-ios`
+### `webauthn-client-platform` iOS source set
 
 - `:client:webauthn-client-core`
 - `:client:webauthn-client-json-core`
@@ -134,8 +134,7 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 
 - `:client:webauthn-client-core`
 - `org.jetbrains.compose.runtime:runtime`
-- Android actual: `:client:webauthn-client-android`
-- iOS actual: `:client:webauthn-client-ios`
+- Android and iOS actuals: `:client:webauthn-client-platform`
 
 ## Association File Requirement
 

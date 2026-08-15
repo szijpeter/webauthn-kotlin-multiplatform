@@ -22,7 +22,7 @@ flowchart TD
 
 ## When to use
 
-Use this module when you want one shared ceremony flow and typed error/state handling, while leaving platform API details to `webauthn-client-android` / `webauthn-client-ios`.
+Use this module when you want one shared ceremony flow and typed error/state handling, while leaving platform API details to `webauthn-client-platform`.
 
 ## How to use
 

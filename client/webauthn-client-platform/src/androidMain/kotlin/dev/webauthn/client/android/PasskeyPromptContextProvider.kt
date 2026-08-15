@@ -67,13 +67,13 @@ public class ForegroundActivityPasskeyPromptContextProvider private constructor(
         }
     }
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?): Unit = Unit
 
-    override fun onActivityStarted(activity: Activity) = Unit
+    override fun onActivityStarted(activity: Activity): Unit = Unit
 
-    override fun onActivityStopped(activity: Activity) = Unit
+    override fun onActivityStopped(activity: Activity): Unit = Unit
 
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle): Unit = Unit
 
     private fun seedFromContext(contextHint: Context?) {
         val activity = contextHint?.findActivityOrNull() ?: return

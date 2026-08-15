@@ -18,12 +18,12 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.Foundation.NSProcessInfo
 
-internal actual class IosPasskeyClientImpl(
+internal class IosPasskeyClientImpl(
     private val bridge: IosAuthorizationBridge,
 ) : PasskeyClient by DefaultPasskeyClient(
     bridge = IosPasskeyPlatformBridge(bridge),
 ) {
-    actual constructor() : this(
+    constructor() : this(
         AuthenticationServicesAuthorizationBridge(UIKitPasskeyPresentationAnchorProvider),
     )
 

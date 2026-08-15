@@ -90,8 +90,7 @@ protocol layer for interpretation.
 ```mermaid
 flowchart TB
     COMPOSE["webauthn-client-compose"]
-    ANDROID["webauthn-client-android"]
-    IOS["webauthn-client-ios"]
+    PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
     NETWORK["webauthn-network-ktor-client<br/>(optional)"]
@@ -102,13 +101,10 @@ flowchart TB
     MODEL["Protocol model"]
 
     COMPOSE --> CLIENT_CORE
-    COMPOSE --> ANDROID
-    COMPOSE --> IOS
+    COMPOSE --> PLATFORM
 
-    ANDROID --> CLIENT_CORE
-    ANDROID --> JSON_API
-
-    IOS --> CLIENT_CORE
+    PLATFORM --> CLIENT_CORE
+    PLATFORM --> JSON_API
 
     JSON --> CLIENT_CORE
     JSON --> JSON_API

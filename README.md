@@ -162,11 +162,11 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("io.github.szijpeter:webauthn-client-android:<version>")
+            implementation("io.github.szijpeter:webauthn-client-platform:<version>")
         }
 
         iosMain.dependencies {
-            implementation("io.github.szijpeter:webauthn-client-ios:<version>")
+            implementation("io.github.szijpeter:webauthn-client-platform:<version>")
         }
     }
 }
@@ -187,7 +187,7 @@ dependencies {
 Notes:
 
 - Client apps do not need `webauthn-server-*` dependencies.
-- You only add `webauthn-client-android` / `webauthn-client-ios` when that target instantiates the concrete platform client.
+- Add `webauthn-client-platform` to each platform source set that instantiates a concrete platform client.
 - If you only use the shared client abstractions, `commonMain` only needs the common modules.
 - Keep the explicit KMP artifact versions identical; JVM server builds can use the BOM shown below to align them.
 - For a complete source set example, see [`sample/compose-passkey`](./sample/compose-passkey/README.md), [`sample/compose-passkey-android`](./sample/compose-passkey-android/README.md), and [`sample/compose-passkey-ios`](./sample/compose-passkey-ios/README.md).
@@ -219,8 +219,7 @@ Use:
 
 - [`webauthn-client-core`](./client/webauthn-client-core/README.md)
 - [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) if you exchange raw JSON with a host/backend
-- [`webauthn-client-android`](./client/webauthn-client-android/README.md)
-- [`webauthn-client-ios`](./client/webauthn-client-ios/README.md)
+- [`webauthn-client-platform`](./client/webauthn-client-platform/README.md)
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) for Compose helpers
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
 - [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) for the default backend contract (`HttpClient`-based API; add your preferred Ktor engine at app runtime)
@@ -256,8 +255,7 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-client-core`](./client/webauthn-client-core/README.md) | Shared passkey orchestration and controller-driven flows |
 | [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
 | [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
-| [`webauthn-client-android`](./client/webauthn-client-android/README.md) | Android apps using Credential Manager |
-| [`webauthn-client-ios`](./client/webauthn-client-ios/README.md) | iOS apps using AuthenticationServices |
+| [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |
 | [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
 | [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) | Clients talking to a `/webauthn/*` backend contract over Ktor (`HttpClient` contract + caller-selected engine) |
 | [`webauthn-attestation-mds`](./server/webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |

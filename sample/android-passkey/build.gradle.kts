@@ -11,5 +11,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":client:webauthn-client-android"))
+    implementation(project(":client:webauthn-client-platform"))
 }
