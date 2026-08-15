@@ -89,7 +89,9 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
-            decodePayload = { payload -> codec.decodeRegistrationResponse(payload).toPlatformValue("Failed to parse registration response JSON") },
+            decodePayload = { payload ->
+                codec.decodeRegistrationResponse(payload).toPlatformValue("Failed to parse registration response JSON")
+            },
         )
     }
 
@@ -109,8 +111,13 @@ internal class AndroidPasskeyPlatformBridge(
                     GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson))),
                 )
             },
-            extractPayload = { response -> requirePublicKeyCredential(response).authenticationResponseJson },
-            decodePayload = { payload -> codec.decodeAuthenticationResponse(payload).toPlatformValue("Failed to parse authentication response JSON") },
+            extractPayload = { response ->
+                requirePublicKeyCredential(response).authenticationResponseJson
+            },
+            decodePayload = { payload ->
+                codec.decodeAuthenticationResponse(payload)
+                    .toPlatformValue("Failed to parse authentication response JSON")
+            },
         )
     }
 
