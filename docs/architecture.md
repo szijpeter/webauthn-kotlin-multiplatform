@@ -82,7 +82,9 @@ no internal project dependencies without inventing an edge.
 ## Client stack
 
 `webauthn-client-core` owns shared orchestration. JSON, Android, iOS, Compose,
-PRF, and network modules build around that shared boundary.
+PRF, and network modules build around that shared boundary. Platform bridges use
+the codec API at their JSON boundary and hand byte-preserving responses to the
+protocol layer for interpretation.
 
 <!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
@@ -94,6 +96,8 @@ flowchart TB
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
     NETWORK["webauthn-network-ktor-client<br/>(optional)"]
     CLIENT_CORE["webauthn-client-core"]
+    JSON_API["webauthn-json-api"]
+    PROTOCOL["webauthn-protocol"]
     FOUNDATION["Shared foundation"]
     MODEL["Protocol model"]
 
@@ -102,13 +106,14 @@ flowchart TB
     COMPOSE --> IOS
 
     ANDROID --> CLIENT_CORE
-    ANDROID --> JSON
+    ANDROID --> JSON_API
+    ANDROID --> PROTOCOL
 
     IOS --> CLIENT_CORE
-    IOS --> JSON
+    IOS --> PROTOCOL
 
     JSON --> CLIENT_CORE
-    JSON --> FOUNDATION
+    JSON --> JSON_API
 
     PRF --> CLIENT_CORE
     PRF --> FOUNDATION
@@ -182,7 +187,7 @@ reusable library architecture.
 - `webauthn-model` remains independent of the rest of the repository.
 - `webauthn-json-api` is the serialization-library-neutral JSON contract; implementations such as `webauthn-serialization-kotlinx` depend on it.
 - `webauthn-protocol` interprets raw WebAuthn binary data using only the model and strict CBOR scanner; codecs depend on it rather than owning protocol parsing.
-- `webauthn-client-core` owns shared client business logic; Android and iOS modules remain platform bridges.
+- `webauthn-client-core` owns shared client business logic; Android and iOS modules remain platform bridges that preserve raw output until `webauthn-protocol` interprets it.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
 - Optional adapters must not become hidden prerequisites of core modules.

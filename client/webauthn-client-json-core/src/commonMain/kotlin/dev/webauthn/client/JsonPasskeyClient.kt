@@ -4,20 +4,12 @@
 
 package dev.webauthn.client
 
-import at.asitplus.catching
-
-/** JSON codec abstraction used by the JSON client facade. */
-public interface PasskeyJsonMapper {
-    public fun <T> encode(
-        value: T,
-        serializer: kotlinx.serialization.SerializationStrategy<T>,
-    ): String
-
-    public fun <T> decode(
-        payload: String,
-        deserializer: kotlinx.serialization.DeserializationStrategy<T>,
-    ): T
-}
+import dev.webauthn.json.WebAuthnJsonCodec
+import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
+import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 /** JSON-first facade over [PasskeyClient] for backend contracts that speak JSON DTOs. */
 public interface JsonPasskeyClient {
@@ -29,14 +21,16 @@ public interface JsonPasskeyClient {
 /** Default JSON facade that maps request/response DTO payloads to model-level ceremonies. */
 public class DefaultJsonPasskeyClient(
     private val passkeyClient: PasskeyClient,
-    private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
+    private val codec: WebAuthnJsonCodec = KotlinxWebAuthnJsonCodec(),
 ) : JsonPasskeyClient {
     override suspend fun createCredentialJson(requestJson: String): PasskeyResult<String> {
         return runJsonCeremony(
             requestJson = requestJson,
-            decodeOptions = jsonMapper::decodeCreationOptionsOrThrowInvalid,
+            decodeOptions = { payload ->
+                codec.decodeCreationOptions(payload).toValueOrThrow(::IllegalArgumentException)
+            },
             execute = passkeyClient::createCredential,
-            encodeResponse = jsonMapper::encodeRegistrationResponse,
+            encodeResponse = { response -> codec.encodeRegistrationResponse(response.toRaw()) },
             encodeErrorMessage = "Failed to encode registration response JSON",
         )
     }
@@ -44,9 +38,11 @@ public class DefaultJsonPasskeyClient(
     override suspend fun getAssertionJson(requestJson: String): PasskeyResult<String> {
         return runJsonCeremony(
             requestJson = requestJson,
-            decodeOptions = jsonMapper::decodeAssertionOptionsOrThrowInvalid,
+            decodeOptions = { payload ->
+                codec.decodeRequestOptions(payload).toValueOrThrow(::IllegalArgumentException)
+            },
             execute = passkeyClient::getAssertion,
-            encodeResponse = jsonMapper::encodeAuthenticationResponse,
+            encodeResponse = { response -> codec.encodeAuthenticationResponse(response.toRaw()) },
             encodeErrorMessage = "Failed to encode authentication response JSON",
         )
     }
@@ -58,12 +54,13 @@ public class DefaultJsonPasskeyClient(
         encodeResponse: (TResponse) -> String,
         encodeErrorMessage: String,
     ): PasskeyResult<String> {
-        val options = catching { decodeOptions(requestJson) }
-            .getOrElse { error ->
-                return PasskeyResult.Failure(
-                    PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"),
-                )
-            }
+        val options = try {
+            decodeOptions(requestJson)
+        } catch (error: IllegalArgumentException) {
+            return PasskeyResult.Failure(
+                PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"),
+            )
+        }
 
         return when (val result = execute(options)) {
             is PasskeyResult.Success -> runCatching {
@@ -86,7 +83,25 @@ public class DefaultJsonPasskeyClient(
 }
 
 public fun PasskeyClient.withJsonSupport(
-    mapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
+    codec: WebAuthnJsonCodec = KotlinxWebAuthnJsonCodec(),
 ): JsonPasskeyClient {
-    return DefaultJsonPasskeyClient(this, mapper)
+    return DefaultJsonPasskeyClient(this, codec)
 }
+
+private fun RegistrationResponse.toRaw(): RawRegistrationResponse = RawRegistrationResponse(
+    credentialId = credentialId,
+    clientDataJson = clientDataJson,
+    attestationObject = attestationObject,
+    authenticatorAttachment = authenticatorAttachment,
+    extensions = extensions,
+)
+
+private fun AuthenticationResponse.toRaw(): RawAuthenticationResponse = RawAuthenticationResponse(
+    credentialId = credentialId,
+    clientDataJson = clientDataJson,
+    authenticatorData = rawAuthenticatorData,
+    signature = signature,
+    userHandle = userHandle,
+    authenticatorAttachment = authenticatorAttachment,
+    extensions = extensions,
+)

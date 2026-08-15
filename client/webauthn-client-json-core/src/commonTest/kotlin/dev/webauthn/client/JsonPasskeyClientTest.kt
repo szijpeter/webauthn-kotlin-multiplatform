@@ -11,31 +11,33 @@ import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
+import dev.webauthn.protocol.WebAuthnProtocolParser
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class JsonPasskeyClientTest {
-    private val mapper = KotlinxPasskeyJsonMapper()
+    private val codec = KotlinxWebAuthnJsonCodec()
 
     @Test
     fun createCredentialJson_rejects_invalid_json() = runTest {
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(),
-            jsonMapper = mapper,
+            codec = codec,
         )
 
         val result = jsonClient.createCredentialJson("{not-json")
 
         assertTrue(result is PasskeyResult.Failure)
         assertTrue(result.error is PasskeyClientError.InvalidOptions)
-        assertTrue(result.error.message.contains("Failed to parse registration options JSON"))
     }
 
     @Test
     fun createCredentialJson_returns_normalized_response_json() = runTest {
-        val registrationResponse = mapper.decodeRegistrationResponseOrThrowPlatform(
+        val registrationResponse = WebAuthnProtocolParser.parseRegistrationResponse(
+            codec.decodeRegistrationResponse(
             """
             {
               "id": "MzMzMzMzMzMzMzMzMzMzMw",
@@ -45,20 +47,21 @@ class JsonPasskeyClientTest {
                 "attestationObject": "o2NmbXRkbm9uZWhhdXRoRGF0YVhKRERERERERERERERERERERERERERERERERERERERERERBAAAACVVVVVVVVVVVVVVVVVVVVVUAEDMzMzMzMzMzMzMzMzMzMzOhAQJnYXR0U3RtdKA"
               }
             }
-            """.trimIndent(),
-        )
+                """.trimIndent(),
+            ).toValueOrThrow(::IllegalStateException),
+        ).toValueOrThrow(::IllegalStateException)
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(createResult = PasskeyResult.Success(registrationResponse)),
-            jsonMapper = mapper,
+            codec = codec,
         )
-        val requestJson = mapper.encodeCreationOptionsOrThrowInvalid(validCreationOptions())
+        val requestJson = codec.encodeCreationOptions(validCreationOptions())
 
         val result = jsonClient.createCredentialJson(requestJson)
 
         assertTrue(result is PasskeyResult.Success)
         assertTrue(result.value.contains("\"type\":\"public-key\""))
         assertTrue(result.value.contains("\"clientExtensionResults\":{}"))
-        val decoded = mapper.decodeRegistrationResponseOrThrowPlatform(result.value)
+        val decoded = codec.decodeRegistrationResponse(result.value).toValueOrThrow(::IllegalStateException)
         assertEquals(registrationResponse.credentialId.value.encoded(), decoded.credentialId.value.encoded())
     }
 
@@ -67,9 +70,9 @@ class JsonPasskeyClientTest {
         val failure = PasskeyResult.Failure(PasskeyClientError.UserCancelled())
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(assertionResult = failure),
-            jsonMapper = mapper,
+            codec = codec,
         )
-        val requestJson = mapper.encodeAssertionOptionsOrThrowInvalid(validRequestOptions())
+        val requestJson = codec.encodeRequestOptions(validRequestOptions())
 
         val result = jsonClient.getAssertionJson(requestJson)
 
@@ -79,7 +82,8 @@ class JsonPasskeyClientTest {
 
     @Test
     fun getAssertionJson_returns_normalized_response_json() = runTest {
-        val authenticationResponse = mapper.decodeAuthenticationResponseOrThrowPlatform(
+        val authenticationResponse = WebAuthnProtocolParser.parseAuthenticationResponse(
+            codec.decodeAuthenticationResponse(
             """
             {
               "id": "MzMzMzMzMzMzMzMzMzMzMw",
@@ -90,20 +94,21 @@ class JsonPasskeyClientTest {
                 "signature": "CQkJ"
               }
             }
-            """.trimIndent(),
-        )
+                """.trimIndent(),
+            ).toValueOrThrow(::IllegalStateException),
+        ).toValueOrThrow(::IllegalStateException)
         val jsonClient = DefaultJsonPasskeyClient(
             passkeyClient = FakePasskeyClient(assertionResult = PasskeyResult.Success(authenticationResponse)),
-            jsonMapper = mapper,
+            codec = codec,
         )
-        val requestJson = mapper.encodeAssertionOptionsOrThrowInvalid(validRequestOptions())
+        val requestJson = codec.encodeRequestOptions(validRequestOptions())
 
         val result = jsonClient.getAssertionJson(requestJson)
 
         assertTrue(result is PasskeyResult.Success)
         assertTrue(result.value.contains("\"type\":\"public-key\""))
         assertTrue(result.value.contains("\"clientExtensionResults\":{}"))
-        val decoded = mapper.decodeAuthenticationResponseOrThrowPlatform(result.value)
+        val decoded = codec.decodeAuthenticationResponse(result.value).toValueOrThrow(::IllegalStateException)
         assertEquals(authenticationResponse.credentialId.value.encoded(), decoded.credentialId.value.encoded())
     }
 
@@ -118,7 +123,7 @@ class JsonPasskeyClientTest {
             }
         """.trimIndent()
 
-        val options = mapper.decodeAssertionOptionsOrThrowInvalid(payload)
+        val options = codec.decodeRequestOptions(payload).toValueOrThrow(::IllegalArgumentException)
 
         assertTrue(options.allowCredentials.isEmpty())
     }

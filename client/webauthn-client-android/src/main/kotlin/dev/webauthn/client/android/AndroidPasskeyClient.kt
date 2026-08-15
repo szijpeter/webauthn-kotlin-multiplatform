@@ -16,23 +16,21 @@ import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.CreateCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
-import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
-import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
-import dev.webauthn.client.encodeAssertionOptionsOrThrowInvalid
-import dev.webauthn.client.encodeCreationOptionsOrThrowInvalid
-import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyJsonMapper
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.DefaultPasskeyClient
+import dev.webauthn.json.WebAuthnJsonCodec
+import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.WebAuthnExtension
+import dev.webauthn.protocol.WebAuthnProtocolParser
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 private const val RP_ID_VALIDATION_HINT =
     "Troubleshooting: verify RP ID/domain alignment, serve /.well-known/assetlinks.json over HTTPS, " +
@@ -47,10 +45,12 @@ private const val RP_ID_VALIDATION_HINT =
 public class AndroidPasskeyClient(
     private val contextProvider: PasskeyPromptContextProvider,
     private val credentialManagerFactory: (Context) -> CredentialManager = CredentialManager::create,
+    private val codec: WebAuthnJsonCodec = KotlinxWebAuthnJsonCodec(),
 ) : PasskeyClient by DefaultPasskeyClient(
     bridge = AndroidPasskeyPlatformBridge(
         contextProvider = contextProvider,
         credentialManagerFactory = credentialManagerFactory,
+        codec = codec,
     ),
 ) {
     /**
@@ -71,7 +71,7 @@ public class AndroidPasskeyClient(
 internal class AndroidPasskeyPlatformBridge(
     private val contextProvider: PasskeyPromptContextProvider,
     private val credentialManagerFactory: (Context) -> CredentialManager,
-    private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
+    private val codec: WebAuthnJsonCodec = KotlinxWebAuthnJsonCodec(),
 ) : PasskeyPlatformBridge {
     /**
      * W3C WebAuthn L3: §5.1.3. Create a New Credential (createCredential)
@@ -82,7 +82,7 @@ internal class AndroidPasskeyPlatformBridge(
         val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
             options = options,
-            encodeOptions = jsonMapper::encodeCreationOptionsOrThrowInvalid,
+            encodeOptions = codec::encodeCreationOptions,
             executeRequest = { requestJson ->
                 credentialManager.createCredential(
                     context = context,
@@ -90,7 +90,12 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requireCreatePublicKeyResponse(response).registrationResponseJson },
-            decodePayload = jsonMapper::decodeRegistrationResponseOrThrowPlatform,
+            decodePayload = { payload ->
+                codec.decodeRegistrationResponse(payload)
+                    .toPlatformValue("Failed to parse registration response JSON")
+                    .let(WebAuthnProtocolParser::parseRegistrationResponse)
+                    .toPlatformValue("Failed to parse registration response")
+            },
         )
     }
 
@@ -103,7 +108,7 @@ internal class AndroidPasskeyPlatformBridge(
         val credentialManager = credentialManagerFactory(context)
         return runTypedCeremony(
             options = options,
-            encodeOptions = jsonMapper::encodeAssertionOptionsOrThrowInvalid,
+            encodeOptions = codec::encodeRequestOptions,
             executeRequest = { requestJson ->
                 credentialManager.getCredential(
                     context,
@@ -111,7 +116,12 @@ internal class AndroidPasskeyPlatformBridge(
                 )
             },
             extractPayload = { response -> requirePublicKeyCredential(response).authenticationResponseJson },
-            decodePayload = jsonMapper::decodeAuthenticationResponseOrThrowPlatform,
+            decodePayload = { payload ->
+                codec.decodeAuthenticationResponse(payload)
+                    .toPlatformValue("Failed to parse authentication response JSON")
+                    .let(WebAuthnProtocolParser::parseAuthenticationResponse)
+                    .toPlatformValue("Failed to parse authentication response")
+            },
         )
     }
 
@@ -173,6 +183,15 @@ internal class AndroidPasskeyPlatformBridge(
         val platformResponse = executeRequest(requestJson)
         val responseJson = extractPayload(platformResponse)
         return decodePayload(responseJson)
+    }
+}
+
+private fun <T> ValidationResult<T>.toPlatformValue(context: String): T = when (this) {
+    is ValidationResult.Valid -> value
+    is ValidationResult.Invalid -> {
+        val error = errors.firstOrNull()
+        val message = "$context: ${error?.field ?: "response"}: ${error?.message ?: "Unknown validation error"}"
+        throw IllegalStateException(message)
     }
 }
 

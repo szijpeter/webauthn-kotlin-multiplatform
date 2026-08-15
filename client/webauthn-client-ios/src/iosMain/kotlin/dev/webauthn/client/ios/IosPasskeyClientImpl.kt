@@ -1,29 +1,24 @@
 package dev.webauthn.client.ios
 
 import dev.webauthn.client.DefaultPasskeyClient
-import dev.webauthn.client.KotlinxPasskeyJsonMapper
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyJsonMapper
 import dev.webauthn.client.PasskeyPlatformBridge
-import dev.webauthn.client.decodeAuthenticationResponseOrThrowPlatform
-import dev.webauthn.client.decodeRegistrationResponseOrThrowPlatform
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.AuthenticatorAttachment
+import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.serialization.AuthenticationResponseDto
-import dev.webauthn.serialization.AuthenticationResponsePayloadDto
-import dev.webauthn.serialization.RegistrationResponseDto
-import dev.webauthn.serialization.RegistrationResponsePayloadDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
-import kotlinx.serialization.json.Json
 import platform.Foundation.NSProcessInfo
 
 internal actual class IosPasskeyClientImpl(
@@ -44,13 +39,7 @@ internal actual class IosPasskeyClientImpl(
 
 internal class IosPasskeyPlatformBridge(
     private val bridge: IosAuthorizationBridge,
-    private val jsonMapper: PasskeyJsonMapper = KotlinxPasskeyJsonMapper(),
 ) : PasskeyPlatformBridge {
-    private val json = Json {
-        encodeDefaults = false
-        ignoreUnknownKeys = true
-    }
-
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse {
         return bridge
             .createCredential(options)
@@ -64,43 +53,35 @@ internal class IosPasskeyPlatformBridge(
     }
 
     private fun IosRegistrationPayload.toModel(): RegistrationResponse {
-        return jsonMapper.decodeRegistrationResponseOrThrowPlatform(asRegistrationResponseJson())
+        return WebAuthnProtocolParser.parseRegistrationResponse(toRaw()).toPlatformValue()
     }
 
     private fun IosAuthenticationPayload.toModel(): AuthenticationResponse {
-        return jsonMapper.decodeAuthenticationResponseOrThrowPlatform(asAuthenticationResponseJson())
+        return WebAuthnProtocolParser.parseAuthenticationResponse(toRaw()).toPlatformValue()
     }
 
-    private fun IosRegistrationPayload.asRegistrationResponseJson(): String = json.encodeToString(
-        RegistrationResponseDto.serializer(),
-        RegistrationResponseDto(
-            id = credentialId.toBase64Url(),
-            rawId = rawId.toBase64Url(),
-            response = RegistrationResponsePayloadDto(
-                clientDataJson = clientDataJson.toBase64Url(),
-                attestationObject = attestationObject.toBase64Url(),
-            ),
-            authenticatorAttachment = authenticatorAttachment,
-        ),
-    )
+    private fun IosRegistrationPayload.toRaw(): RawRegistrationResponse {
+        requireMatchingCredentialIds(credentialId, rawId)
+        return RawRegistrationResponse(
+            credentialId = CredentialId.fromBytes(rawId),
+            clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
+            attestationObject = Base64UrlBytes.fromBytes(attestationObject),
+            authenticatorAttachment = authenticatorAttachment.toModel(),
+        )
+    }
 
-    private fun IosAuthenticationPayload.asAuthenticationResponseJson(): String = json.encodeToString(
-        AuthenticationResponseDto.serializer(),
-        AuthenticationResponseDto(
-            id = credentialId.toBase64Url(),
-            rawId = rawId.toBase64Url(),
-            response = AuthenticationResponsePayloadDto(
-                clientDataJson = clientDataJson.toBase64Url(),
-                authenticatorData = authenticatorData.toBase64Url(),
-                signature = signature.toBase64Url(),
-                userHandle = userHandle?.toBase64Url(),
-            ),
-            authenticatorAttachment = authenticatorAttachment,
-            clientExtensionResults = extensions?.let(WebAuthnDtoMapper::fromModel),
-        ),
-    )
-
-    private fun ByteArray.toBase64Url(): String = Base64UrlBytes.fromBytes(this).encoded()
+    private fun IosAuthenticationPayload.toRaw(): RawAuthenticationResponse {
+        requireMatchingCredentialIds(credentialId, rawId)
+        return RawAuthenticationResponse(
+            credentialId = CredentialId.fromBytes(rawId),
+            clientDataJson = Base64UrlBytes.fromBytes(clientDataJson),
+            authenticatorData = Base64UrlBytes.fromBytes(authenticatorData),
+            signature = Base64UrlBytes.fromBytes(signature),
+            userHandle = userHandle?.let { dev.webauthn.model.UserHandle.fromBytes(it) },
+            authenticatorAttachment = authenticatorAttachment.toModel(),
+            extensions = extensions,
+        )
+    }
 
     override fun mapPlatformError(throwable: Throwable): PasskeyClientError {
         return when (throwable) {
@@ -122,6 +103,27 @@ internal class IosPasskeyPlatformBridge(
                 if (major >= 15) add(PasskeyCapability.PlatformFeature("securityKey"))
             },
             platformVersionHints = ["iosMajor=$major"],
+        )
+    }
+}
+
+private fun requireMatchingCredentialIds(credentialId: ByteArray, rawId: ByteArray) {
+    require(credentialId.contentEquals(rawId)) { "credentialId must match rawId" }
+}
+
+private fun String?.toModel(): AuthenticatorAttachment? = when (this) {
+    null -> null
+    "platform" -> AuthenticatorAttachment.PLATFORM
+    "cross-platform" -> AuthenticatorAttachment.CROSS_PLATFORM
+    else -> throw IllegalArgumentException("Unsupported authenticator attachment: $this")
+}
+
+private fun <T> dev.webauthn.model.ValidationResult<T>.toPlatformValue(): T = when (this) {
+    is dev.webauthn.model.ValidationResult.Valid -> value
+    is dev.webauthn.model.ValidationResult.Invalid -> {
+        val error = errors.firstOrNull()
+        throw IllegalStateException(
+            "Failed to parse platform response: ${error?.field ?: "response"}: ${error?.message ?: "Unknown validation error"}",
         )
     }
 }

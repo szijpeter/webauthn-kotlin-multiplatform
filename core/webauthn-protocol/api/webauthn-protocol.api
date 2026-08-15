@@ -17,7 +17,9 @@ public final class dev/webauthn/protocol/WebAuthnProtocolParser {
 	public static final field INSTANCE Ldev/webauthn/protocol/WebAuthnProtocolParser;
 	public final fun extractAuthenticatorData ([BLjava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public static synthetic fun extractAuthenticatorData$default (Ldev/webauthn/protocol/WebAuthnProtocolParser;[BLjava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseAuthenticationResponse (Ldev/webauthn/model/RawAuthenticationResponse;)Ldev/webauthn/model/ValidationResult;
 	public final fun parseAuthenticatorData ([BLjava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public static synthetic fun parseAuthenticatorData$default (Ldev/webauthn/protocol/WebAuthnProtocolParser;[BLjava/lang/String;ILjava/lang/Object;)Ldev/webauthn/model/ValidationResult;
+	public final fun parseRegistrationResponse (Ldev/webauthn/model/RawRegistrationResponse;)Ldev/webauthn/model/ValidationResult;
 }
 

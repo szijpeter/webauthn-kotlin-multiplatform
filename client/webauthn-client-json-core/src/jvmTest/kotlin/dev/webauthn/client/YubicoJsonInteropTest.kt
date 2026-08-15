@@ -12,12 +12,13 @@ import com.yubico.webauthn.data.RelyingPartyIdentity
 import com.yubico.webauthn.data.UserIdentity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class YubicoJsonInteropTest {
-    private val mapper = KotlinxPasskeyJsonMapper()
+    private val codec = KotlinxWebAuthnJsonCodec()
 
     @Test
     fun decodeCreationOptions_acceptsYubicoCredentialsCreateJson() {
@@ -40,7 +41,7 @@ class YubicoJsonInteropTest {
             .build()
             .toJson()
 
-        val decoded = mapper.decodeCreationOptionsOrThrowInvalid(yubicoJson)
+        val decoded = codec.decodeCreationOptions(yubicoJson).toValueOrThrow(::IllegalArgumentException)
 
         assertEquals("example.com", decoded.rp.id.value)
         assertEquals("alice", decoded.user.name)
@@ -65,7 +66,7 @@ class YubicoJsonInteropTest {
             .toCredentialsGetJson()
         val publicKeyPayload = Json.parseToJsonElement(yubicoJson).jsonObject["publicKey"]!!.toString()
 
-        val decoded = mapper.decodeAssertionOptionsOrThrowInvalid(publicKeyPayload)
+        val decoded = codec.decodeRequestOptions(publicKeyPayload).toValueOrThrow(::IllegalArgumentException)
 
         assertEquals("example.com", decoded.rpId?.value)
         assertEquals("AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE", decoded.challenge.value.encoded())
@@ -74,7 +75,7 @@ class YubicoJsonInteropTest {
 
     @Test
     fun encodeRegistrationResponse_producesJsonYubicoCanParse() {
-        val response = mapper.decodeRegistrationResponseOrThrowPlatform(
+        val response = codec.decodeRegistrationResponse(
             """
             {
               "id": "adnJdzQQOzHT8aobzfRCfA",
@@ -87,9 +88,9 @@ class YubicoJsonInteropTest {
               "clientExtensionResults": {}
             }
             """.trimIndent(),
-        )
+        ).toValueOrThrow(::IllegalStateException)
 
-        val encoded = mapper.encodeRegistrationResponse(response)
+        val encoded = codec.encodeRegistrationResponse(response)
         val yubicoParsed = PublicKeyCredential.parseRegistrationResponseJson(encoded)
 
         assertEquals(response.credentialId.value.encoded(), yubicoParsed.id.base64Url)
@@ -98,7 +99,7 @@ class YubicoJsonInteropTest {
 
     @Test
     fun encodeAuthenticationResponse_producesJsonYubicoCanParse() {
-        val response = mapper.decodeAuthenticationResponseOrThrowPlatform(
+        val response = codec.decodeAuthenticationResponse(
             """
             {
               "id": "adnJdzQQOzHT8aobzfRCfA",
@@ -113,14 +114,14 @@ class YubicoJsonInteropTest {
               "clientExtensionResults": {}
             }
             """.trimIndent(),
-        )
+        ).toValueOrThrow(::IllegalStateException)
 
-        val encoded = mapper.encodeAuthenticationResponse(response)
+        val encoded = codec.encodeAuthenticationResponse(response)
         val yubicoParsed = PublicKeyCredential.parseAssertionResponseJson(encoded)
 
         assertEquals(response.credentialId.value.encoded(), yubicoParsed.id.base64Url)
         assertEquals(response.signature.encoded(), yubicoParsed.response.signature.base64Url)
-        assertEquals(response.rawAuthenticatorData.encoded(), yubicoParsed.response.authenticatorData.base64Url)
+        assertEquals(response.authenticatorData.encoded(), yubicoParsed.response.authenticatorData.base64Url)
         assertTrue(yubicoParsed.response.userHandle.isPresent)
     }
 }
