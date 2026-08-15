@@ -16,14 +16,14 @@ import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import dev.webauthn.serialization.AuthenticationResponseDto
-import dev.webauthn.serialization.RegistrationResponseDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import java.security.SecureRandom
 
 /** Server-side account identity used to map usernames to stable [UserHandle] values. */
@@ -85,7 +85,9 @@ public data class RegistrationStartRequest(
 
 /** Input for finishing registration (WebAuthn L3 §7.1 response verification). */
 public data class RegistrationFinishRequest(
-    public val responseDto: RegistrationResponseDto,
+    /** Byte-preserving response material from the authenticator/browser boundary. */
+    public val rawResponse: RawRegistrationResponse,
+    /** Parsed from [rawResponse]'s signed `clientDataJSON` by the transport adapter. */
     public val clientData: CollectedClientData,
 )
 
@@ -101,7 +103,9 @@ public data class AuthenticationStartRequest(
 
 /** Input for finishing authentication (WebAuthn L3 §7.2 assertion verification). */
 public data class AuthenticationFinishRequest(
-    public val responseDto: AuthenticationResponseDto,
+    /** Byte-preserving response material from the authenticator/browser boundary. */
+    public val rawResponse: RawAuthenticationResponse,
+    /** Parsed from [rawResponse]'s signed `clientDataJSON` by the transport adapter. */
     public val clientData: CollectedClientData,
 )
 
@@ -155,11 +159,11 @@ internal fun failure(field: String, message: String): ValidationResult.Invalid {
 
 internal fun parseRegistrationResponse(
     request: RegistrationFinishRequest,
-): ValidationResult<RegistrationResponse> = WebAuthnDtoMapper.toModel(request.responseDto)
+): ValidationResult<RegistrationResponse> = WebAuthnProtocolParser.parseRegistrationResponse(request.rawResponse)
 
 internal fun parseAuthenticationResponse(
     request: AuthenticationFinishRequest,
-): ValidationResult<AuthenticationResponse> = WebAuthnDtoMapper.toModel(request.responseDto)
+): ValidationResult<AuthenticationResponse> = WebAuthnProtocolParser.parseAuthenticationResponse(request.rawResponse)
 
 internal fun defaultCredentialDescriptor(
     credential: StoredCredential,

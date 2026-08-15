@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     api(project(":server:webauthn-server-core-jvm"))
+    implementation(project(":core:webauthn-serialization-kotlinx"))
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json.jvm)

@@ -24,6 +24,8 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import kotlinx.coroutines.runBlocking
@@ -199,7 +201,7 @@ class WebAuthn4jDifferentialTest {
         )
         return service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = Challenge.parseOrThrow(fixture.relyingParty.challenge),
@@ -247,7 +249,7 @@ class WebAuthn4jDifferentialTest {
         )
         return service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = Challenge.parseOrThrow(fixture.relyingParty.challenge),

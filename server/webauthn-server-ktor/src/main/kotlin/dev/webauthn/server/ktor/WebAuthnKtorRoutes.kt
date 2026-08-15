@@ -1,7 +1,6 @@
 package dev.webauthn.server.ktor
 
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
-import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.Origin
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.RpId
@@ -120,17 +119,13 @@ public fun Route.webAuthnRoutes(
 
         post("/registration/finish") {
             val payload = call.receive<RegistrationFinishPayload>()
-            val clientData = when (val parsed = parseClientData(payload.response)) {
+            val request = when (val parsed = parseRegistrationFinishRequest(payload.response)) {
                 is ValidationResult.Valid -> parsed.value
                 is ValidationResult.Invalid -> {
                     call.respondValidationFailure("webauthn.registration.finish", parsed.errors)
                     return@post
                 }
             }
-            val request = RegistrationFinishRequest(
-                responseDto = payload.response,
-                clientData = clientData,
-            )
             call.respondValidationResult(
                 operation = "webauthn.registration.finish",
                 result = registrationService.finish(request),
@@ -170,17 +165,13 @@ public fun Route.webAuthnRoutes(
 
         post("/authentication/finish") {
             val payload = call.receive<AuthenticationFinishPayload>()
-            val clientData = when (val parsed = parseClientData(payload.response)) {
+            val request = when (val parsed = parseAuthenticationFinishRequest(payload.response)) {
                 is ValidationResult.Valid -> parsed.value
                 is ValidationResult.Invalid -> {
                     call.respondValidationFailure("webauthn.authentication.finish", parsed.errors)
                     return@post
                 }
             }
-            val request = AuthenticationFinishRequest(
-                responseDto = payload.response,
-                clientData = clientData,
-            )
 
             call.respondValidationResult(
                 operation = "webauthn.authentication.finish",
@@ -195,19 +186,37 @@ public fun Route.webAuthnRoutes(
     }
 }
 
-private fun parseClientData(response: RegistrationResponseDto): ValidationResult<CollectedClientData> {
-    return when (val parsed = WebAuthnDtoMapper.toModel(response)) {
-        is ValidationResult.Valid -> WebAuthnDtoMapper.parseCollectedClientData(parsed.value.clientDataJson)
+private fun parseRegistrationFinishRequest(
+    response: RegistrationResponseDto,
+): ValidationResult<RegistrationFinishRequest> {
+    return when (val parsed = WebAuthnDtoMapper.toRawModel(response)) {
+        is ValidationResult.Valid -> {
+            when (val clientData = WebAuthnDtoMapper.parseCollectedClientData(parsed.value.clientDataJson)) {
+                is ValidationResult.Valid -> RegistrationFinishRequest(parsed.value, clientData.value).asValid()
+                is ValidationResult.Invalid -> clientData
+            }
+        }
+
         is ValidationResult.Invalid -> parsed
     }
 }
 
-private fun parseClientData(response: AuthenticationResponseDto): ValidationResult<CollectedClientData> {
-    return when (val parsed = WebAuthnDtoMapper.toModel(response)) {
-        is ValidationResult.Valid -> WebAuthnDtoMapper.parseCollectedClientData(parsed.value.clientDataJson)
+private fun parseAuthenticationFinishRequest(
+    response: AuthenticationResponseDto,
+): ValidationResult<AuthenticationFinishRequest> {
+    return when (val parsed = WebAuthnDtoMapper.toRawModel(response)) {
+        is ValidationResult.Valid -> {
+            when (val clientData = WebAuthnDtoMapper.parseCollectedClientData(parsed.value.clientDataJson)) {
+                is ValidationResult.Valid -> AuthenticationFinishRequest(parsed.value, clientData.value).asValid()
+                is ValidationResult.Invalid -> clientData
+            }
+        }
+
         is ValidationResult.Invalid -> parsed
     }
 }
+
+private fun <T> T.asValid(): ValidationResult<T> = ValidationResult.Valid(this)
 
 private sealed interface ParsedExtensionsResult {
     data class Accepted(

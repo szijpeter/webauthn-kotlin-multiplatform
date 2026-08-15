@@ -69,6 +69,7 @@ Real-world scenario: run start/finish ceremonies in your backend service layer, 
 ```mermaid
 flowchart LR
     CORE["webauthn-core"] --> SVC["webauthn-server-core-jvm"]
+    PROTOCOL["webauthn-protocol"] --> SVC
     CRYPTO["webauthn-server-jvm-crypto or custom crypto-api impl"] --> SVC
     STORE["In-memory or Exposed stores"] --> SVC
     KTOR["webauthn-server-ktor (optional)"] --> SVC
@@ -80,6 +81,7 @@ flowchart LR
 - Registration and authentication keep shared fail-fast origin/session handling internally, so callers should expect matching origin-mismatch behavior across both ceremony types.
 - `RegistrationService.finish()` now returns a typed validation error when the user disappears between start and finish instead of throwing from the user store lookup.
 - Authentication challenge sessions allow nullable `userName` for discoverable ceremonies, while named-mode finish still enforces credential ownership for the resolved account.
+- Finish requests carry byte-preserving `RawRegistrationResponse` or `RawAuthenticationResponse`; the adapter must derive `CollectedClientData` from that response's signed `clientDataJSON` before calling the service.
 - This module does not define your HTTP contract by itself.
 
 ## Status

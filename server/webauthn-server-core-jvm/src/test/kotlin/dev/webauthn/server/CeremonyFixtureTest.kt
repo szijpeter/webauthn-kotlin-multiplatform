@@ -11,6 +11,7 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
@@ -58,7 +59,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = fixture.registrationClientData(),
             ),
         )
@@ -79,7 +80,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = fixture.authenticationClientData(),
             ),
         )
@@ -103,7 +104,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = fixture.authenticationClientData(),
             ),
         )
@@ -125,7 +126,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = fixture.authenticationClientData(),
             ),
         )
@@ -147,7 +148,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = fixture.authenticationClientData(),
             ),
         )
@@ -176,7 +177,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
                 clientData = fixture.authenticationClientData(),
             ),
         )
@@ -195,9 +196,9 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.copy(
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.copy(
                     authenticatorData = Base64UrlBytes.fromBytes(ByteArray(10) { 0x01 }).encoded(),
-                ).toDto(),
+                ).toDto()).getOrThrow(),
                 clientData = fixture.authenticationClientData(),
             ),
         )
@@ -239,9 +240,9 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.copy(
+                rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.copy(
                     attestationObject = Base64UrlBytes.fromBytes(malformedAttestationObject).encoded(),
-                ).toDto(),
+                ).toDto()).getOrThrow(),
                 clientData = fixture.registrationClientData(),
             ),
         )

@@ -138,7 +138,8 @@ READMEs. For runnable adoption paths, see the sample documentation.
 
 ## JVM server stack
 
-The server core remains framework-agnostic. Ktor, Exposed, and metadata support
+The server core remains framework-agnostic and depends on the neutral protocol
+layer rather than a JSON implementation. Ktor, Exposed, and metadata support
 are optional adapters around the core and cryptographic boundaries.
 
 <!-- doc-example: id=docs-architecture-mermaid-4; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
@@ -148,6 +149,7 @@ flowchart TB
     STORE["webauthn-server-store-exposed<br/>(optional adapter)"]
     MDS["webauthn-attestation-mds<br/>(optional adapter)"]
     SERVER_CORE["webauthn-server-core-jvm"]
+    PROTOCOL["webauthn-protocol"]
     JVM_CRYPTO["webauthn-server-jvm-crypto"]
     FOUNDATION["Shared foundation"]
     CRYPTO["Cryptography boundary"]
@@ -161,6 +163,7 @@ flowchart TB
     MDS --> CRYPTO
 
     SERVER_CORE --> FOUNDATION
+    SERVER_CORE --> PROTOCOL
     SERVER_CORE --> CRYPTO
 
     JVM_CRYPTO --> FOUNDATION
