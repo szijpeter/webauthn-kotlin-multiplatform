@@ -633,6 +633,7 @@ public final class dev/webauthn/serialization/WebAuthnDtoMapper {
 	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;
 	public final fun fromModel (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;
 	public final fun fromModel (Ldev/webauthn/model/RegistrationResponse;)Ldev/webauthn/serialization/RegistrationResponseDto;
+	public final fun parseCollectedClientData-UlGSvtQ (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public final fun toModel (Ldev/webauthn/serialization/AuthenticationResponseDto;)Ldev/webauthn/model/ValidationResult;
 	public final fun toModel (Ldev/webauthn/serialization/PublicKeyCredentialCreationOptionsDto;)Ldev/webauthn/model/ValidationResult;
 	public final fun toModel (Ldev/webauthn/serialization/PublicKeyCredentialRequestOptionsDto;)Ldev/webauthn/model/ValidationResult;

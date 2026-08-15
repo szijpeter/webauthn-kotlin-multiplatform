@@ -49,6 +49,7 @@ flowchart LR
   - omitted/null `userName`: discoverable flow
 - Authentication-start payloads intentionally do not include `userHandle`.
 - Registration-start payloads accept optional `residentKey` (`discouraged`, `preferred`, `required`) and pass it through to server-core options assembly.
+- Finish payloads contain only the credential response. The routes derive `type`, `challenge`, and `origin` from its signed `clientDataJSON`; do not send duplicate client-data fields.
 - Security still depends on your deployment controls (TLS, auth/session, CSRF posture).
 
 ## Status
