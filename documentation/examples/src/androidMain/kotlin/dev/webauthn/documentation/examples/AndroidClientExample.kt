@@ -1,11 +1,11 @@
 package dev.webauthn.documentation.examples
 
 // docs-region android-client
-import android.content.Context
+import android.app.Activity
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.android.AndroidPasskeyClient
 
-fun androidPasskeyClient(context: Context): PasskeyClient {
-    return AndroidPasskeyClient(context)
+fun androidPasskeyClient(activity: Activity): PasskeyClient {
+    return AndroidPasskeyClient.forActivity(activity)
 }
 // docs-endregion android-client

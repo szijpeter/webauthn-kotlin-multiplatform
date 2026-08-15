@@ -6,12 +6,13 @@ import platform.UIKit.UIWindow
 /**
  * Provides the current iOS presentation anchor used by AuthenticationServices.
  */
-internal fun interface PasskeyPresentationAnchorProvider {
-    fun currentAnchorOrNull(): UIWindow?
+public fun interface PasskeyPresentationAnchorProvider {
+    /** Returns the window that AuthenticationServices should use to present its UI. */
+    public fun currentAnchorOrNull(): UIWindow?
 }
 
 /** Fixed-anchor provider for apps that can keep a stable presentation window. */
-internal class StaticPasskeyPresentationAnchorProvider(
+public class StaticPasskeyPresentationAnchorProvider(
     private val window: UIWindow,
 ) : PasskeyPresentationAnchorProvider {
     override fun currentAnchorOrNull(): UIWindow = window
@@ -20,14 +21,15 @@ internal class StaticPasskeyPresentationAnchorProvider(
 /**
  * Mutable provider for retained runtimes where the foreground window may change.
  */
-internal class MutablePasskeyPresentationAnchorProvider(
+public class MutablePasskeyPresentationAnchorProvider(
     initial: UIWindow? = null,
 ) : PasskeyPresentationAnchorProvider {
     private var anchor: UIWindow? = initial
 
     override fun currentAnchorOrNull(): UIWindow? = anchor
 
-    fun update(window: UIWindow?) {
+    /** Updates the presentation window used by subsequent ceremonies. */
+    public fun update(window: UIWindow?) {
         anchor = window
     }
 }

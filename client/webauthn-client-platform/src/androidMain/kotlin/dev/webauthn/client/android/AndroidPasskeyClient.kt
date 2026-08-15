@@ -61,10 +61,31 @@ public class AndroidPasskeyClient(
     public constructor(
         context: Context,
         credentialManager: CredentialManager = CredentialManager.create(context),
+        codec: WebAuthnJsonCodec = KotlinxWebAuthnJsonCodec(),
     ) : this(
         contextProvider = defaultPromptContextProvider(context),
         credentialManagerFactory = { credentialManager },
+        codec = codec,
     )
+
+    /** Factory methods for explicitly owned Android passkey clients. */
+    public companion object {
+        /**
+         * Creates a client that always presents Credential Manager UI from [activity].
+         *
+         * Use the primary constructor when the client outlives an activity and must resolve the
+         * current foreground context through a [PasskeyPromptContextProvider].
+         */
+        public fun forActivity(
+            activity: Activity,
+            codec: WebAuthnJsonCodec = KotlinxWebAuthnJsonCodec(),
+        ): AndroidPasskeyClient {
+            return AndroidPasskeyClient(
+                contextProvider = PasskeyPromptContextProvider { activity },
+                codec = codec,
+            )
+        }
+    }
 }
 
 internal class AndroidPasskeyPlatformBridge(

@@ -21,12 +21,12 @@ Use this in Android or iOS apps that need real platform passkey prompts and cred
 
 <!-- doc-example: id=client-webauthn-client-platform-readme-kotlin-1; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client -->
 ```kotlin
-import android.content.Context
+import android.app.Activity
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.android.AndroidPasskeyClient
 
-fun androidPasskeyClient(context: Context): PasskeyClient {
-    return AndroidPasskeyClient(context)
+fun androidPasskeyClient(activity: Activity): PasskeyClient {
+    return AndroidPasskeyClient.forActivity(activity)
 }
 ```
 
@@ -38,9 +38,10 @@ Real-world scenario: your shared app logic drives ceremony flow in `PasskeyContr
 ```kotlin
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.ios.IosPasskeyClient
+import dev.webauthn.client.ios.PasskeyPresentationAnchorProvider
 
-fun iosPasskeyClient(): PasskeyClient {
-    return IosPasskeyClient()
+fun iosPasskeyClient(anchorProvider: PasskeyPresentationAnchorProvider): PasskeyClient {
+    return IosPasskeyClient(anchorProvider)
 }
 ```
 
@@ -60,6 +61,10 @@ flowchart LR
 ## Pitfalls and limits
 
 - This module contains the platform adapters; network and orchestration are separate concerns.
+- Android offers `forActivity(activity)` for explicit UI ownership; the `Context` constructor retains
+  automatic foreground-activity tracking for clients that outlive a screen.
+- iOS accepts a `PasskeyPresentationAnchorProvider`, including a mutable provider for apps whose
+  foreground window changes.
 - Reported capabilities use the shared two-type model:
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
