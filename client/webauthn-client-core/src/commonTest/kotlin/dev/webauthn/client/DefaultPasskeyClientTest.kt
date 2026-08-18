@@ -1,21 +1,16 @@
 package dev.webauthn.client
 
-import dev.webauthn.model.AttestedCredentialData
-import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.AuthenticatorData
-import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
-import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.PublicKeyCredentialParameters
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
-import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.RpId
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
@@ -60,7 +55,7 @@ class DefaultPasskeyClientTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 assertionAction = { error("boom") },
-                errorMapper = { PasskeyClientError.Transport("mapped", it) },
+                errorMapper = { PasskeyClientError.Platform("mapped") },
             ),
         )
 
@@ -78,7 +73,7 @@ class DefaultPasskeyClientTest {
         )
 
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.Transport)
+        assertTrue(result.error is PasskeyClientError.Platform)
         assertEquals("mapped", result.error.message)
     }
 
@@ -110,18 +105,18 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
-    fun createCredential_centralizes_invalid_options_for_illegal_argument() = runTest {
+    fun createCredential_maps_bridge_illegal_argument_with_platform_mapper() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { throw IllegalArgumentException("bad options") },
-                errorMapper = { PasskeyClientError.Platform("unexpected", it) },
+                errorMapper = { PasskeyClientError.Platform("unexpected") },
             ),
         )
 
         val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.InvalidOptions)
+        assertTrue(result.error is PasskeyClientError.Platform)
         assertEquals("unexpected", result.error.message)
     }
 
@@ -146,14 +141,14 @@ class DefaultPasskeyClientTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 createAction = { error("bridge failure") },
-                errorMapper = { PasskeyClientError.Transport("mapped", it) },
+                errorMapper = { PasskeyClientError.Platform("mapped") },
             ),
         )
 
         val result = client.createCredential(validCreationOptions())
 
         assertTrue(result is PasskeyResult.Failure)
-        assertTrue(result.error is PasskeyClientError.Transport)
+        assertTrue(result.error is PasskeyClientError.Platform)
         assertEquals("mapped", result.error.message)
     }
 
@@ -163,8 +158,9 @@ class DefaultPasskeyClientTest {
             bridge = TestBridge(
                 capabilitiesAction = {
                     PasskeyCapabilities(
-                        supported = [PasskeyCapability.Extension(WebAuthnExtension.Prf)],
-                        platformVersionHints = ["test"],
+                        support = [
+                            PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
+                        ].toMap(),
                     )
                 },
             ),
@@ -172,58 +168,56 @@ class DefaultPasskeyClientTest {
 
         val capabilities = client.capabilities()
         assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
-        assertEquals(["test"], capabilities.platformVersionHints)
+        assertEquals(
+            CapabilitySupport.SUPPORTED,
+            capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)),
+        )
     }
 
     @Test
-    fun capabilities_supports_lookup_is_key_based_for_string_and_exact_for_capability() {
+    fun capabilities_report_explicit_support_and_default_to_unknown() {
         val capabilities = PasskeyCapabilities(
-            supported = [PasskeyCapability.Extension(WebAuthnExtension.Prf)],
+            support = [
+                PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
+                PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) to CapabilitySupport.UNSUPPORTED,
+            ].toMap(),
         )
 
         assertTrue(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
-        assertFalse(capabilities.supports(PasskeyCapability.PlatformFeature("prf")))
-        assertTrue(capabilities.supports("prf"))
-        assertFalse(capabilities.supports("unknown"))
-    }
-
-    @Test
-    fun capabilities_reject_duplicate_keys() {
-        assertFailsWith<IllegalArgumentException> {
-            PasskeyCapabilities(
-                supported = [
-                    PasskeyCapability.Extension(WebAuthnExtension.Custom("same")),
-                    PasskeyCapability.PlatformFeature("same"),
-                ],
-            )
-        }
-    }
-
-    @Test
-    fun capabilities_supports_lookup_uses_a_snapshot_of_supported_capabilities() {
-        val mutable = mutableSetOf<PasskeyCapability>(
-            PasskeyCapability.Extension(WebAuthnExtension.Prf),
+        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)))
+        assertEquals(
+            CapabilitySupport.UNSUPPORTED,
+            capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)),
         )
-        val capabilities = PasskeyCapabilities(supported = mutable)
+        assertEquals(
+            CapabilitySupport.UNKNOWN,
+            capabilities.supportOf(PasskeyCapability.Platform(PlatformCapability.SecurityKey)),
+        )
+    }
 
-        assertTrue(capabilities.supports("prf"))
+    @Test
+    fun capabilities_support_lookup_uses_a_snapshot_of_reported_support() {
+        val prf = PasskeyCapability.Extension(WebAuthnExtension.Prf)
+        val securityKey = PasskeyCapability.Platform(PlatformCapability.SecurityKey)
+        val mutable = mutableMapOf<PasskeyCapability, CapabilitySupport>(
+            prf to CapabilitySupport.SUPPORTED,
+        )
+        val capabilities = PasskeyCapabilities(support = mutable)
+
+        assertTrue(capabilities.supports(prf))
 
         mutable.clear()
-        mutable.add(PasskeyCapability.PlatformFeature("securityKey"))
+        mutable[securityKey] = CapabilitySupport.SUPPORTED
 
-        assertTrue(capabilities.supports("prf"))
-        assertFalse(capabilities.supports("securityKey"))
+        assertTrue(capabilities.supports(prf))
+        assertEquals(CapabilitySupport.UNKNOWN, capabilities.supportOf(securityKey))
     }
 
     @Test
-    fun capabilities_supports_capability_requires_variant_match() {
-        val capabilities = PasskeyCapabilities(
-            supported = [PasskeyCapability.PlatformFeature("securityKey")],
-        )
-
-        assertTrue(capabilities.supports(PasskeyCapability.PlatformFeature("securityKey")))
-        assertFalse(capabilities.supports(PasskeyCapability.Extension(WebAuthnExtension.Custom("securityKey"))))
-        assertTrue(capabilities.supports("securityKey"))
+    fun custom_platform_capability_rejects_blank_identifier() {
+        assertFailsWith<IllegalArgumentException> {
+            PlatformCapability.Custom("  ")
+        }
     }
 
     @Test
@@ -233,7 +227,7 @@ class DefaultPasskeyClientTest {
             bridge = TestBridge(
                 createAction = {
                     passedExtensions = it.extensions
-                    validRegistrationResponse()
+                    validRawRegistrationResponse()
                 },
             ),
         )
@@ -260,7 +254,7 @@ class DefaultPasskeyClientTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
                 assertionAction = {
-                    validAuthenticationResponse().copy(
+                    validRawAuthenticationResponse().copy(
                         extensions = AuthenticationExtensionsClientOutputs(
                             largeBlob = LargeBlobExtensionOutput(
                                 supported = true,
@@ -355,14 +349,14 @@ class DefaultPasskeyClientTest {
     }
 
     private class TestBridge(
-        private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RegistrationResponse = { validRegistrationResponse() },
-        private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> AuthenticationResponse = { validAuthenticationResponse() },
-        private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform", it) },
+        private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RawRegistrationResponse = { validRawRegistrationResponse() },
+        private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> RawAuthenticationResponse = { validRawAuthenticationResponse() },
+        private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform") },
         private val capabilitiesAction: suspend () -> PasskeyCapabilities = { PasskeyCapabilities() },
     ) : PasskeyPlatformBridge {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RegistrationResponse = createAction(options)
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse = createAction(options)
 
-        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): AuthenticationResponse = assertionAction(options)
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): RawAuthenticationResponse = assertionAction(options)
 
         override fun mapPlatformError(throwable: Throwable): PasskeyClientError = errorMapper(throwable)
 
@@ -384,41 +378,24 @@ class DefaultPasskeyClientTest {
             )
         }
 
-        fun validRegistrationResponse(): RegistrationResponse {
-            return RegistrationResponse(
-                credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
+        fun validRawRegistrationResponse(): RawRegistrationResponse {
+            return RawRegistrationResponse(
+                credentialId = CredentialId.parseOrThrow("MzMzMzMzMzMzMzMzMzMzMw"),
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
-                attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-                rawAuthenticatorData = AuthenticatorData(
-                    rpIdHash = rpIdHash(1),
-                    flags = 0x41,
-                    signCount = 1,
-                ),
-                attestedCredentialData = AttestedCredentialData(
-                    aaguid = aaguid(2),
-                    credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-                    cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
+                attestationObject = Base64UrlBytes.parseOrThrow(
+                    "o2NmbXRkbm9uZWhhdXRoRGF0YVhKRERERERERERERERERERERERERERERERERERERERERERBAAAACVVVVVVVVVVVVVVVVVVVVVUAEDMzMzMzMzMzMzMzMzMzMzOhAQJnYXR0U3RtdKA",
                 ),
             )
         }
 
-        fun validAuthenticationResponse(): AuthenticationResponse {
-            return AuthenticationResponse(
+        fun validRawAuthenticationResponse(): RawAuthenticationResponse {
+            return RawAuthenticationResponse(
                 credentialId = CredentialId.fromBytes(byteArrayOf(8, 8, 8)),
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)),
-                rawAuthenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 3 }),
-                authenticatorData = AuthenticatorData(
-                    rpIdHash = rpIdHash(4),
-                    flags = 0x01,
-                    signCount = 2,
-                ),
+                authenticatorData = Base64UrlBytes.fromBytes(ByteArray(37).also { it[32] = 0x01 }),
                 signature = Base64UrlBytes.fromBytes(byteArrayOf(5, 5, 5)),
             )
         }
-
-        fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
-
-        fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
 
         fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
             Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })

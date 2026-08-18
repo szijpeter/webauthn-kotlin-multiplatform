@@ -6,8 +6,7 @@ import dev.webauthn.client.PasskeyResult
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
-import dev.webauthn.model.AuthenticationResponse
-import dev.webauthn.model.AuthenticatorData
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CredentialId
@@ -16,7 +15,7 @@ import dev.webauthn.model.PrfExtensionInput
 import dev.webauthn.model.PrfExtensionOutput
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.RpIdHash
 import kotlinx.coroutines.CancellationException
@@ -233,13 +232,13 @@ class PrfCryptoClientTest {
     }
 
     private class FakePasskeyClient(
-        private val assertionResult: PasskeyResult<AuthenticationResponse>,
+        private val assertionResult: PasskeyResult<RawAuthenticationResponse>,
     ) : PasskeyClient {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> {
             error("unused in test")
         }
 
-        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> {
             return assertionResult
         }
     }
@@ -247,11 +246,11 @@ class PrfCryptoClientTest {
     private class ThrowingPasskeyClient(
         private val throwable: Throwable,
     ) : PasskeyClient {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RegistrationResponse> {
+        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> {
             error("unused in test")
         }
 
-        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<AuthenticationResponse> {
+        override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> {
             throw throwable
         }
     }
@@ -266,16 +265,11 @@ class PrfCryptoClientTest {
 
         fun validAuthenticationResponse(
             extensions: AuthenticationExtensionsClientOutputs?,
-        ): AuthenticationResponse {
-            return AuthenticationResponse(
+        ): RawAuthenticationResponse {
+            return RawAuthenticationResponse(
                 credentialId = CredentialId.fromBytes(byteArrayOf(8, 8, 8)),
                 clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)),
-                rawAuthenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 3 }),
-                authenticatorData = AuthenticatorData(
-                    rpIdHash = RpIdHash.fromBytes(ByteArray(32) { 4 }),
-                    flags = 0x01,
-                    signCount = 2,
-                ),
+                authenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 3 }),
                 signature = Base64UrlBytes.fromBytes(byteArrayOf(5, 5, 5)),
                 extensions = extensions,
             )

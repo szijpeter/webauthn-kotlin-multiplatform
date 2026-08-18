@@ -4,7 +4,7 @@ Android sample app for trying the Android passkey client integration.
 
 Status: legacy thin wrapper sample, not the primary showcase; sample app, not published.
 
-Use this sample only when you want the smallest Android-only shell around `webauthn-client-android`.
+Use this sample only when you want the smallest Android-only shell around `webauthn-client-platform`.
 
 For the current end-to-end reference path, prefer:
 

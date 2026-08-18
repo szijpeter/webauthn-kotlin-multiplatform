@@ -4,7 +4,7 @@ iOS sample client wrapper for trying the iOS passkey integration.
 
 Status: legacy thin wrapper sample, not the primary showcase; sample app, not published.
 
-Use this sample only when you want a minimal iOS-oriented wrapper around `webauthn-client-ios`.
+Use this sample only when you want a minimal iOS-oriented wrapper around `webauthn-client-platform`.
 
 For the current end-to-end reference path, prefer:
 

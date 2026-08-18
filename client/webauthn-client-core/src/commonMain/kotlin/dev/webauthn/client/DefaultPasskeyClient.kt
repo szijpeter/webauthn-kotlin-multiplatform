@@ -2,10 +2,10 @@
 
 package dev.webauthn.client
 
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.runtime.suspendCatchingNonCancellation
 
 /** Default [PasskeyClient] orchestration that delegates to a platform bridge. */
@@ -14,7 +14,7 @@ public class DefaultPasskeyClient(
 ) : PasskeyClient {
     override suspend fun createCredential(
         options: PublicKeyCredentialCreationOptions,
-    ): PasskeyResult<RegistrationResponse> {
+    ): PasskeyResult<RawRegistrationResponse> {
         return runOperation(
             options = options,
             validate = ::requireCreationOptions,
@@ -24,7 +24,7 @@ public class DefaultPasskeyClient(
 
     override suspend fun getAssertion(
         options: PublicKeyCredentialRequestOptions,
-    ): PasskeyResult<AuthenticationResponse> {
+    ): PasskeyResult<RawAuthenticationResponse> {
         return runOperation(
             options = options,
             operation = bridge::getAssertion,
@@ -41,22 +41,17 @@ public class DefaultPasskeyClient(
         validate: (TOptions) -> Unit = {},
         operation: suspend (TOptions) -> TResult,
     ): PasskeyResult<TResult> {
-        return suspendCatchingNonCancellation {
+        try {
             validate(options)
-            operation(options)
-        }.fold(
-            onSuccess = { PasskeyResult.Success(it) },
-            onFailure = { error ->
-                when (error) {
-                    is IllegalArgumentException -> {
-                        val mapped = bridge.mapPlatformError(error)
-                        val message = mapped.message.ifBlank { error.message ?: "Invalid options" }
-                        PasskeyResult.Failure(PasskeyClientError.InvalidOptions(message))
-                    }
+        } catch (error: IllegalArgumentException) {
+            return PasskeyResult.Failure(
+                PasskeyClientError.InvalidOptions(error.message ?: "Invalid options"),
+            )
+        }
 
-                    else -> PasskeyResult.Failure(bridge.mapPlatformError(error))
-                }
-            },
+        return suspendCatchingNonCancellation { operation(options) }.fold(
+            onSuccess = { PasskeyResult.Success(it) },
+            onFailure = { error -> PasskeyResult.Failure(bridge.mapPlatformError(error)) },
         )
     }
 

@@ -3,27 +3,41 @@
 package dev.webauthn.client
 
 /**
- * Capability hints surfaced by platform implementations.
+ * Capability support reported by a platform implementation.
  *
- * Use [supports] with a [PasskeyCapability] object to query a specific capability.
- * Extensions and platform bridges can advertise capabilities dynamically without modifying
- * this class.
+ * Missing entries are [CapabilitySupport.UNKNOWN]. This keeps a platform from reporting a
+ * capability as unsupported when it cannot determine support reliably at runtime.
  */
-public data class PasskeyCapabilities(
-    public val supported: Set<PasskeyCapability> = [],
-    public val platformVersionHints: List<String> = [],
+public class PasskeyCapabilities(
+    support: Map<PasskeyCapability, CapabilitySupport> = emptyMap(),
 ) {
-    private val supportedByKey: Map<String, PasskeyCapability> =
-        supported.associateBy(PasskeyCapability::key)
-            .also { capabilitiesByKey ->
-                require(capabilitiesByKey.size == supported.size) {
-                    "Duplicate capability keys are not allowed"
-                }
-            }
+    /** A defensive snapshot of the support values reported by the platform. */
+    public val support: Map<PasskeyCapability, CapabilitySupport> = support.toMap()
 
-    /** Returns `true` if the given [capability] is supported. */
-    public fun supports(capability: PasskeyCapability): Boolean = supportedByKey[capability.key] == capability
+    /** Returns the reported support state for [capability]. */
+    public fun supportOf(capability: PasskeyCapability): CapabilitySupport =
+        support[capability] ?: CapabilitySupport.UNKNOWN
 
-    /** Returns `true` if the given capability [key] is supported. */
-    public fun supports(key: String): Boolean = key in supportedByKey
+    /** Returns `true` only when [capability] is explicitly reported as supported. */
+    public fun supports(capability: PasskeyCapability): Boolean =
+        supportOf(capability) == CapabilitySupport.SUPPORTED
+
+    override fun equals(other: Any?): Boolean =
+        other is PasskeyCapabilities && support == other.support
+
+    override fun hashCode(): Int = support.hashCode()
+
+    override fun toString(): String = "PasskeyCapabilities(support=$support)"
+}
+
+/** The confidence with which a platform can report support for a capability. */
+public enum class CapabilitySupport {
+    /** The platform integration can use the capability. */
+    SUPPORTED,
+
+    /** The platform integration cannot use the capability. */
+    UNSUPPORTED,
+
+    /** The platform integration cannot determine support reliably. */
+    UNKNOWN,
 }

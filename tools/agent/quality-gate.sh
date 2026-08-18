@@ -193,11 +193,8 @@ else
                 run_list+=("./gradlew :$module:detekt --stacktrace")
                 run_list+=("./gradlew :$module:test --stacktrace")
                 ;;
-            client:webauthn-client-android)
-                run_list+=("./gradlew :client:webauthn-client-android:detekt :client:webauthn-client-android:lintDebug :client:webauthn-client-android:assemble --stacktrace")
-                ;;
-            client:webauthn-client-ios)
-                run_list+=("./gradlew :client:webauthn-client-ios:detekt :client:webauthn-client-ios:compileKotlinIosSimulatorArm64 --stacktrace")
+            client:webauthn-client-platform)
+                run_list+=("./gradlew :client:webauthn-client-platform:detektAndroidMainSourceSet :client:webauthn-client-platform:detektIosMainSourceSet :client:webauthn-client-platform:lintAnalyzeAndroidHostTest :client:webauthn-client-platform:testAndroidHostTest :client:webauthn-client-platform:compileKotlinIosSimulatorArm64 --stacktrace")
                 ;;
             sample:android-passkey)
                 run_list+=("./gradlew :sample:android-passkey:detekt :sample:android-passkey:lintDebug :sample:android-passkey:assemble --stacktrace")

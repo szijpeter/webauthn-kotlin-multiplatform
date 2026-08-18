@@ -9,6 +9,7 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.android.AndroidPasskeyClient
 import dev.webauthn.client.android.ForegroundActivityPasskeyPromptContextProvider
 import dev.webauthn.client.android.MutablePasskeyPromptContextProvider
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 /** Remembers an Android-backed [PasskeyClient] that remains valid across activity recreation. */
 @Composable
@@ -26,7 +27,7 @@ public actual fun rememberPasskeyClient(): PasskeyClient {
             }
         }
         return remember(provider) {
-            AndroidPasskeyClient(provider)
+            AndroidPasskeyClient(provider, codec = KotlinxWebAuthnJsonCodec())
         }
     }
 
@@ -37,6 +38,6 @@ public actual fun rememberPasskeyClient(): PasskeyClient {
         )
     }
     return remember(provider) {
-        AndroidPasskeyClient(provider)
+        AndroidPasskeyClient(provider, codec = KotlinxWebAuthnJsonCodec())
     }
 }

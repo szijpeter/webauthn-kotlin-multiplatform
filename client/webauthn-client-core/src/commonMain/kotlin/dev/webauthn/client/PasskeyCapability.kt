@@ -9,20 +9,38 @@ import dev.webauthn.model.WebAuthnExtension
  * or authenticator might support.
  *
  * Capabilities are modeled as either a typed W3C WebAuthn [Extension] or a
- * [PlatformFeature] behavior.
+ * typed [Platform] behavior.
  */
-public sealed class PasskeyCapability {
-    public abstract val key: String
-
+public sealed interface PasskeyCapability {
     /** A capability that resolves directly to a specific W3C protocol extension identifier. */
     public data class Extension(
         public val extension: WebAuthnExtension,
-    ) : PasskeyCapability() {
-        override val key: String = extension.identifier
-    }
+    ) : PasskeyCapability
 
-    /** A capability that represents a literal platform transport or OS feature without a protocol payload. */
-    public data class PlatformFeature(
-        override val key: String,
-    ) : PasskeyCapability()
+    /** A capability supplied by the operating-system platform integration. */
+    public data class Platform(
+        public val feature: PlatformCapability,
+    ) : PasskeyCapability
+}
+
+/**
+ * A typed platform behavior that can be reported by [PasskeyCapability.Platform].
+ *
+ * Use [Custom] only for a stable, documented platform feature that does not yet have a
+ * dedicated type.
+ */
+public sealed interface PlatformCapability {
+    /** Support for cross-platform security-key ceremonies. */
+    public data object SecurityKey : PlatformCapability
+
+    /** A stable, implementation-defined platform behavior. */
+    public data class Custom(
+        public val id: String,
+    ) : PlatformCapability {
+        init {
+            require(id.isNotBlank()) {
+                "Custom platform capability ID must not be blank"
+            }
+        }
+    }
 }

@@ -1,3 +1,12 @@
+public final class dev/webauthn/client/CapabilitySupport : java/lang/Enum {
+	public static final field SUPPORTED Ldev/webauthn/client/CapabilitySupport;
+	public static final field UNKNOWN Ldev/webauthn/client/CapabilitySupport;
+	public static final field UNSUPPORTED Ldev/webauthn/client/CapabilitySupport;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/CapabilitySupport;
+	public static fun values ()[Ldev/webauthn/client/CapabilitySupport;
+}
+
 public final class dev/webauthn/client/DefaultPasskeyClient : dev/webauthn/client/PasskeyClient {
 	public fun <init> (Ldev/webauthn/client/PasskeyPlatformBridge;)V
 	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -15,23 +24,17 @@ public final class dev/webauthn/client/PasskeyAction : java/lang/Enum {
 
 public final class dev/webauthn/client/PasskeyCapabilities {
 	public fun <init> ()V
-	public fun <init> (Ljava/util/Set;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/util/Set;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/util/Set;
-	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/util/Set;Ljava/util/List;)Ldev/webauthn/client/PasskeyCapabilities;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapabilities;Ljava/util/Set;Ljava/util/List;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapabilities;
+	public fun <init> (Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getPlatformVersionHints ()Ljava/util/List;
-	public final fun getSupported ()Ljava/util/Set;
+	public final fun getSupport ()Ljava/util/Map;
 	public fun hashCode ()I
+	public final fun supportOf (Ldev/webauthn/client/PasskeyCapability;)Ldev/webauthn/client/CapabilitySupport;
 	public final fun supports (Ldev/webauthn/client/PasskeyCapability;)Z
-	public final fun supports (Ljava/lang/String;)Z
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract class dev/webauthn/client/PasskeyCapability {
-	public abstract fun getKey ()Ljava/lang/String;
+public abstract interface class dev/webauthn/client/PasskeyCapability {
 }
 
 public final class dev/webauthn/client/PasskeyCapability$Extension : dev/webauthn/client/PasskeyCapability {
@@ -41,18 +44,17 @@ public final class dev/webauthn/client/PasskeyCapability$Extension : dev/webauth
 	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapability$Extension;Ldev/webauthn/model/WebAuthnExtension;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapability$Extension;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getExtension ()Ldev/webauthn/model/WebAuthnExtension;
-	public fun getKey ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/webauthn/client/PasskeyCapability$PlatformFeature : dev/webauthn/client/PasskeyCapability {
-	public fun <init> (Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyCapability$PlatformFeature;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapability$PlatformFeature;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapability$PlatformFeature;
+public final class dev/webauthn/client/PasskeyCapability$Platform : dev/webauthn/client/PasskeyCapability {
+	public fun <init> (Ldev/webauthn/client/PlatformCapability;)V
+	public final fun component1 ()Ldev/webauthn/client/PlatformCapability;
+	public final fun copy (Ldev/webauthn/client/PlatformCapability;)Ldev/webauthn/client/PasskeyCapability$Platform;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyCapability$Platform;Ldev/webauthn/client/PlatformCapability;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyCapability$Platform;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getKey ()Ljava/lang/String;
+	public final fun getFeature ()Ldev/webauthn/client/PlatformCapability;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -71,6 +73,17 @@ public abstract interface class dev/webauthn/client/PasskeyClientError {
 	public abstract fun getMessage ()Ljava/lang/String;
 }
 
+public final class dev/webauthn/client/PasskeyClientError$Codec : dev/webauthn/client/PasskeyClientError {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyClientError$Codec;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Codec;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Codec;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/webauthn/client/PasskeyClientError$InvalidOptions : dev/webauthn/client/PasskeyClientError {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -82,29 +95,36 @@ public final class dev/webauthn/client/PasskeyClientError$InvalidOptions : dev/w
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/webauthn/client/PasskeyClientError$Platform : dev/webauthn/client/PasskeyClientError {
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+public final class dev/webauthn/client/PasskeyClientError$NoCredential : dev/webauthn/client/PasskeyClientError {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/Throwable;
-	public final fun copy (Ljava/lang/String;Ljava/lang/Throwable;)Ldev/webauthn/client/PasskeyClientError$Platform;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Platform;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Platform;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyClientError$NoCredential;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$NoCredential;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$NoCredential;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCause ()Ljava/lang/Throwable;
+	public fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PasskeyClientError$Platform : dev/webauthn/client/PasskeyClientError {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyClientError$Platform;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Platform;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Platform;
+	public fun equals (Ljava/lang/Object;)Z
 	public fun getMessage ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/client/PasskeyClientError$Transport : dev/webauthn/client/PasskeyClientError {
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/Throwable;
-	public final fun copy (Ljava/lang/String;Ljava/lang/Throwable;)Ldev/webauthn/client/PasskeyClientError$Transport;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Transport;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Transport;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PasskeyClientError$Transport;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyClientError$Transport;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyClientError$Transport;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCause ()Ljava/lang/Throwable;
 	public fun getMessage ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -247,9 +267,30 @@ public final class dev/webauthn/client/PasskeyResult$Success : dev/webauthn/clie
 }
 
 public abstract interface class dev/webauthn/client/PasskeyServerClient {
-	public abstract fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RawRegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/RawAuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getSignInOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class dev/webauthn/client/PlatformCapability {
+}
+
+public final class dev/webauthn/client/PlatformCapability$Custom : dev/webauthn/client/PlatformCapability {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/webauthn/client/PlatformCapability$Custom;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PlatformCapability$Custom;Ljava/lang/String;ILjava/lang/Object;)Ldev/webauthn/client/PlatformCapability$Custom;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/webauthn/client/PlatformCapability$SecurityKey : dev/webauthn/client/PlatformCapability {
+	public static final field INSTANCE Ldev/webauthn/client/PlatformCapability$SecurityKey;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 

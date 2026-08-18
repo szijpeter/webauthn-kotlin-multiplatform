@@ -6,6 +6,18 @@
 // - Show declarations: true
 
 // Library unique name: <io.github.szijpeter:webauthn-client-core>
+final enum class dev.webauthn.client/CapabilitySupport : kotlin/Enum<dev.webauthn.client/CapabilitySupport> { // dev.webauthn.client/CapabilitySupport|null[0]
+    enum entry SUPPORTED // dev.webauthn.client/CapabilitySupport.SUPPORTED|null[0]
+    enum entry UNKNOWN // dev.webauthn.client/CapabilitySupport.UNKNOWN|null[0]
+    enum entry UNSUPPORTED // dev.webauthn.client/CapabilitySupport.UNSUPPORTED|null[0]
+
+    final val entries // dev.webauthn.client/CapabilitySupport.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.client/CapabilitySupport> // dev.webauthn.client/CapabilitySupport.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.webauthn.client/CapabilitySupport // dev.webauthn.client/CapabilitySupport.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.webauthn.client/CapabilitySupport> // dev.webauthn.client/CapabilitySupport.values|values#static(){}[0]
+}
+
 final enum class dev.webauthn.client/PasskeyAction : kotlin/Enum<dev.webauthn.client/PasskeyAction> { // dev.webauthn.client/PasskeyAction|null[0]
     enum entry REGISTER // dev.webauthn.client/PasskeyAction.REGISTER|null[0]
     enum entry SIGN_IN // dev.webauthn.client/PasskeyAction.SIGN_IN|null[0]
@@ -30,22 +42,22 @@ final enum class dev.webauthn.client/PasskeyPhase : kotlin/Enum<dev.webauthn.cli
 }
 
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyServerClient { // dev.webauthn.client/PasskeyServerClient|null[0]
-    abstract suspend fun finishRegister(#A, dev.webauthn.model/RegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RegistrationResponse;kotlin.String){}[0]
-    abstract suspend fun finishSignIn(#B, dev.webauthn.model/AuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.AuthenticationResponse;kotlin.String){}[0]
+    abstract suspend fun finishRegister(#A, dev.webauthn.model/RawRegistrationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishRegister|finishRegister(1:0;dev.webauthn.model.RawRegistrationResponse;kotlin.String){}[0]
+    abstract suspend fun finishSignIn(#B, dev.webauthn.model/RawAuthenticationResponse, kotlin/String): dev.webauthn.client/PasskeyFinishResult // dev.webauthn.client/PasskeyServerClient.finishSignIn|finishSignIn(1:1;dev.webauthn.model.RawAuthenticationResponse;kotlin.String){}[0]
     abstract suspend fun getRegisterOptions(#A): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.client/PasskeyServerClient.getRegisterOptions|getRegisterOptions(1:0){}[0]
     abstract suspend fun getSignInOptions(#B): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.client/PasskeyServerClient.getSignInOptions|getSignInOptions(1:1){}[0]
 }
 
 abstract interface dev.webauthn.client/PasskeyClient { // dev.webauthn.client/PasskeyClient|null[0]
-    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client/PasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
-    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.client/PasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/PasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client/PasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
     open suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyClient.capabilities|capabilities(){}[0]
 }
 
 abstract interface dev.webauthn.client/PasskeyPlatformBridge { // dev.webauthn.client/PasskeyPlatformBridge|null[0]
     abstract fun mapPlatformError(kotlin/Throwable): dev.webauthn.client/PasskeyClientError // dev.webauthn.client/PasskeyPlatformBridge.mapPlatformError|mapPlatformError(kotlin.Throwable){}[0]
-    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.model/RegistrationResponse // dev.webauthn.client/PasskeyPlatformBridge.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
-    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.model/AuthenticationResponse // dev.webauthn.client/PasskeyPlatformBridge.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.model/RawRegistrationResponse // dev.webauthn.client/PasskeyPlatformBridge.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.model/RawAuthenticationResponse // dev.webauthn.client/PasskeyPlatformBridge.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
     open suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyPlatformBridge.capabilities|capabilities(){}[0]
 }
 
@@ -77,9 +89,50 @@ sealed interface <#A: out kotlin/Any?> dev.webauthn.client/PasskeyResult { // de
     }
 }
 
+sealed interface dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability|null[0]
+    final class Extension : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.Extension|null[0]
+        constructor <init>(dev.webauthn.model/WebAuthnExtension) // dev.webauthn.client/PasskeyCapability.Extension.<init>|<init>(dev.webauthn.model.WebAuthnExtension){}[0]
+
+        final val extension // dev.webauthn.client/PasskeyCapability.Extension.extension|{}extension[0]
+            final fun <get-extension>(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.client/PasskeyCapability.Extension.extension.<get-extension>|<get-extension>(){}[0]
+
+        final fun component1(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.client/PasskeyCapability.Extension.component1|component1(){}[0]
+        final fun copy(dev.webauthn.model/WebAuthnExtension = ...): dev.webauthn.client/PasskeyCapability.Extension // dev.webauthn.client/PasskeyCapability.Extension.copy|copy(dev.webauthn.model.WebAuthnExtension){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.Extension.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.Extension.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Extension.toString|toString(){}[0]
+    }
+
+    final class Platform : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.Platform|null[0]
+        constructor <init>(dev.webauthn.client/PlatformCapability) // dev.webauthn.client/PasskeyCapability.Platform.<init>|<init>(dev.webauthn.client.PlatformCapability){}[0]
+
+        final val feature // dev.webauthn.client/PasskeyCapability.Platform.feature|{}feature[0]
+            final fun <get-feature>(): dev.webauthn.client/PlatformCapability // dev.webauthn.client/PasskeyCapability.Platform.feature.<get-feature>|<get-feature>(){}[0]
+
+        final fun component1(): dev.webauthn.client/PlatformCapability // dev.webauthn.client/PasskeyCapability.Platform.component1|component1(){}[0]
+        final fun copy(dev.webauthn.client/PlatformCapability = ...): dev.webauthn.client/PasskeyCapability.Platform // dev.webauthn.client/PasskeyCapability.Platform.copy|copy(dev.webauthn.client.PlatformCapability){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.Platform.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.Platform.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Platform.toString|toString(){}[0]
+    }
+}
+
 sealed interface dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError|null[0]
     abstract val message // dev.webauthn.client/PasskeyClientError.message|{}message[0]
         abstract fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.message.<get-message>|<get-message>(){}[0]
+
+    final class Codec : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Codec|null[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyClientError.Codec.<init>|<init>(kotlin.String){}[0]
+
+        final val message // dev.webauthn.client/PasskeyClientError.Codec.message|{}message[0]
+            final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.Codec.message.<get-message>|<get-message>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.Codec.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.Codec // dev.webauthn.client/PasskeyClientError.Codec.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.Codec.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.Codec.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.Codec.toString|toString(){}[0]
+    }
 
     final class InvalidOptions : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.InvalidOptions|null[0]
         constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyClientError.InvalidOptions.<init>|<init>(kotlin.String){}[0]
@@ -94,33 +147,40 @@ sealed interface dev.webauthn.client/PasskeyClientError { // dev.webauthn.client
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.InvalidOptions.toString|toString(){}[0]
     }
 
-    final class Platform : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Platform|null[0]
-        constructor <init>(kotlin/String, kotlin/Throwable? = ...) // dev.webauthn.client/PasskeyClientError.Platform.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+    final class NoCredential : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.NoCredential|null[0]
+        constructor <init>(kotlin/String = ...) // dev.webauthn.client/PasskeyClientError.NoCredential.<init>|<init>(kotlin.String){}[0]
 
-        final val cause // dev.webauthn.client/PasskeyClientError.Platform.cause|{}cause[0]
-            final fun <get-cause>(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Platform.cause.<get-cause>|<get-cause>(){}[0]
+        final val message // dev.webauthn.client/PasskeyClientError.NoCredential.message|{}message[0]
+            final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.NoCredential.message.<get-message>|<get-message>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.NoCredential.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.NoCredential // dev.webauthn.client/PasskeyClientError.NoCredential.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.NoCredential.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.NoCredential.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.NoCredential.toString|toString(){}[0]
+    }
+
+    final class Platform : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Platform|null[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyClientError.Platform.<init>|<init>(kotlin.String){}[0]
+
         final val message // dev.webauthn.client/PasskeyClientError.Platform.message|{}message[0]
             final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.Platform.message.<get-message>|<get-message>(){}[0]
 
         final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.Platform.component1|component1(){}[0]
-        final fun component2(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Platform.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlin/Throwable? = ...): dev.webauthn.client/PasskeyClientError.Platform // dev.webauthn.client/PasskeyClientError.Platform.copy|copy(kotlin.String;kotlin.Throwable?){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.Platform // dev.webauthn.client/PasskeyClientError.Platform.copy|copy(kotlin.String){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.Platform.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.Platform.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.Platform.toString|toString(){}[0]
     }
 
     final class Transport : dev.webauthn.client/PasskeyClientError { // dev.webauthn.client/PasskeyClientError.Transport|null[0]
-        constructor <init>(kotlin/String, kotlin/Throwable? = ...) // dev.webauthn.client/PasskeyClientError.Transport.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyClientError.Transport.<init>|<init>(kotlin.String){}[0]
 
-        final val cause // dev.webauthn.client/PasskeyClientError.Transport.cause|{}cause[0]
-            final fun <get-cause>(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Transport.cause.<get-cause>|<get-cause>(){}[0]
         final val message // dev.webauthn.client/PasskeyClientError.Transport.message|{}message[0]
             final fun <get-message>(): kotlin/String // dev.webauthn.client/PasskeyClientError.Transport.message.<get-message>|<get-message>(){}[0]
 
         final fun component1(): kotlin/String // dev.webauthn.client/PasskeyClientError.Transport.component1|component1(){}[0]
-        final fun component2(): kotlin/Throwable? // dev.webauthn.client/PasskeyClientError.Transport.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlin/Throwable? = ...): dev.webauthn.client/PasskeyClientError.Transport // dev.webauthn.client/PasskeyClientError.Transport.copy|copy(kotlin.String;kotlin.Throwable?){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyClientError.Transport // dev.webauthn.client/PasskeyClientError.Transport.copy|copy(kotlin.String){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyClientError.Transport.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyClientError.Transport.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyClientError.Transport.toString|toString(){}[0]
@@ -214,6 +274,27 @@ sealed interface dev.webauthn.client/PasskeyFinishResult { // dev.webauthn.clien
     }
 }
 
+sealed interface dev.webauthn.client/PlatformCapability { // dev.webauthn.client/PlatformCapability|null[0]
+    final class Custom : dev.webauthn.client/PlatformCapability { // dev.webauthn.client/PlatformCapability.Custom|null[0]
+        constructor <init>(kotlin/String) // dev.webauthn.client/PlatformCapability.Custom.<init>|<init>(kotlin.String){}[0]
+
+        final val id // dev.webauthn.client/PlatformCapability.Custom.id|{}id[0]
+            final fun <get-id>(): kotlin/String // dev.webauthn.client/PlatformCapability.Custom.id.<get-id>|<get-id>(){}[0]
+
+        final fun component1(): kotlin/String // dev.webauthn.client/PlatformCapability.Custom.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.webauthn.client/PlatformCapability.Custom // dev.webauthn.client/PlatformCapability.Custom.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PlatformCapability.Custom.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PlatformCapability.Custom.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PlatformCapability.Custom.toString|toString(){}[0]
+    }
+
+    final object SecurityKey : dev.webauthn.client/PlatformCapability { // dev.webauthn.client/PlatformCapability.SecurityKey|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PlatformCapability.SecurityKey.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PlatformCapability.SecurityKey.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PlatformCapability.SecurityKey.toString|toString(){}[0]
+    }
+}
+
 final class <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyController { // dev.webauthn.client/PasskeyController|null[0]
     constructor <init>(dev.webauthn.client/PasskeyClient, dev.webauthn.client/PasskeyServerClient<#A, #B>) // dev.webauthn.client/PasskeyController.<init>|<init>(dev.webauthn.client.PasskeyClient;dev.webauthn.client.PasskeyServerClient<1:0,1:1>){}[0]
 
@@ -229,57 +310,19 @@ final class dev.webauthn.client/DefaultPasskeyClient : dev.webauthn.client/Passk
     constructor <init>(dev.webauthn.client/PasskeyPlatformBridge) // dev.webauthn.client/DefaultPasskeyClient.<init>|<init>(dev.webauthn.client.PasskeyPlatformBridge){}[0]
 
     final suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/DefaultPasskeyClient.capabilities|capabilities(){}[0]
-    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.client/DefaultPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
-    final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.client/DefaultPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/DefaultPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client/DefaultPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
 }
 
 final class dev.webauthn.client/PasskeyCapabilities { // dev.webauthn.client/PasskeyCapabilities|null[0]
-    constructor <init>(kotlin.collections/Set<dev.webauthn.client/PasskeyCapability> = ..., kotlin.collections/List<kotlin/String> = ...) // dev.webauthn.client/PasskeyCapabilities.<init>|<init>(kotlin.collections.Set<dev.webauthn.client.PasskeyCapability>;kotlin.collections.List<kotlin.String>){}[0]
+    constructor <init>(kotlin.collections/Map<dev.webauthn.client/PasskeyCapability, dev.webauthn.client/CapabilitySupport> = ...) // dev.webauthn.client/PasskeyCapabilities.<init>|<init>(kotlin.collections.Map<dev.webauthn.client.PasskeyCapability,dev.webauthn.client.CapabilitySupport>){}[0]
 
-    final val platformVersionHints // dev.webauthn.client/PasskeyCapabilities.platformVersionHints|{}platformVersionHints[0]
-        final fun <get-platformVersionHints>(): kotlin.collections/List<kotlin/String> // dev.webauthn.client/PasskeyCapabilities.platformVersionHints.<get-platformVersionHints>|<get-platformVersionHints>(){}[0]
-    final val supported // dev.webauthn.client/PasskeyCapabilities.supported|{}supported[0]
-        final fun <get-supported>(): kotlin.collections/Set<dev.webauthn.client/PasskeyCapability> // dev.webauthn.client/PasskeyCapabilities.supported.<get-supported>|<get-supported>(){}[0]
+    final val support // dev.webauthn.client/PasskeyCapabilities.support|{}support[0]
+        final fun <get-support>(): kotlin.collections/Map<dev.webauthn.client/PasskeyCapability, dev.webauthn.client/CapabilitySupport> // dev.webauthn.client/PasskeyCapabilities.support.<get-support>|<get-support>(){}[0]
 
-    final fun component1(): kotlin.collections/Set<dev.webauthn.client/PasskeyCapability> // dev.webauthn.client/PasskeyCapabilities.component1|component1(){}[0]
-    final fun component2(): kotlin.collections/List<kotlin/String> // dev.webauthn.client/PasskeyCapabilities.component2|component2(){}[0]
-    final fun copy(kotlin.collections/Set<dev.webauthn.client/PasskeyCapability> = ..., kotlin.collections/List<kotlin/String> = ...): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyCapabilities.copy|copy(kotlin.collections.Set<dev.webauthn.client.PasskeyCapability>;kotlin.collections.List<kotlin.String>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapabilities.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapabilities.hashCode|hashCode(){}[0]
+    final fun supportOf(dev.webauthn.client/PasskeyCapability): dev.webauthn.client/CapabilitySupport // dev.webauthn.client/PasskeyCapabilities.supportOf|supportOf(dev.webauthn.client.PasskeyCapability){}[0]
     final fun supports(dev.webauthn.client/PasskeyCapability): kotlin/Boolean // dev.webauthn.client/PasskeyCapabilities.supports|supports(dev.webauthn.client.PasskeyCapability){}[0]
-    final fun supports(kotlin/String): kotlin/Boolean // dev.webauthn.client/PasskeyCapabilities.supports|supports(kotlin.String){}[0]
     final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapabilities.toString|toString(){}[0]
-}
-
-sealed class dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability|null[0]
-    abstract val key // dev.webauthn.client/PasskeyCapability.key|{}key[0]
-        abstract fun <get-key>(): kotlin/String // dev.webauthn.client/PasskeyCapability.key.<get-key>|<get-key>(){}[0]
-
-    final class Extension : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.Extension|null[0]
-        constructor <init>(dev.webauthn.model/WebAuthnExtension) // dev.webauthn.client/PasskeyCapability.Extension.<init>|<init>(dev.webauthn.model.WebAuthnExtension){}[0]
-
-        final val extension // dev.webauthn.client/PasskeyCapability.Extension.extension|{}extension[0]
-            final fun <get-extension>(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.client/PasskeyCapability.Extension.extension.<get-extension>|<get-extension>(){}[0]
-        final val key // dev.webauthn.client/PasskeyCapability.Extension.key|{}key[0]
-            final fun <get-key>(): kotlin/String // dev.webauthn.client/PasskeyCapability.Extension.key.<get-key>|<get-key>(){}[0]
-
-        final fun component1(): dev.webauthn.model/WebAuthnExtension // dev.webauthn.client/PasskeyCapability.Extension.component1|component1(){}[0]
-        final fun copy(dev.webauthn.model/WebAuthnExtension = ...): dev.webauthn.client/PasskeyCapability.Extension // dev.webauthn.client/PasskeyCapability.Extension.copy|copy(dev.webauthn.model.WebAuthnExtension){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.Extension.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.Extension.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.Extension.toString|toString(){}[0]
-    }
-
-    final class PlatformFeature : dev.webauthn.client/PasskeyCapability { // dev.webauthn.client/PasskeyCapability.PlatformFeature|null[0]
-        constructor <init>(kotlin/String) // dev.webauthn.client/PasskeyCapability.PlatformFeature.<init>|<init>(kotlin.String){}[0]
-
-        final val key // dev.webauthn.client/PasskeyCapability.PlatformFeature.key|{}key[0]
-            final fun <get-key>(): kotlin/String // dev.webauthn.client/PasskeyCapability.PlatformFeature.key.<get-key>|<get-key>(){}[0]
-
-        final fun component1(): kotlin/String // dev.webauthn.client/PasskeyCapability.PlatformFeature.component1|component1(){}[0]
-        final fun copy(kotlin/String = ...): dev.webauthn.client/PasskeyCapability.PlatformFeature // dev.webauthn.client/PasskeyCapability.PlatformFeature.copy|copy(kotlin.String){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCapability.PlatformFeature.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCapability.PlatformFeature.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapability.PlatformFeature.toString|toString(){}[0]
-    }
 }

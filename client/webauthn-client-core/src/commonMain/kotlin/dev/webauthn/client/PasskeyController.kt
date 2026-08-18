@@ -96,7 +96,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
             e.rethrowCancellation()
             val error = when (e) {
                 is IllegalArgumentException -> PasskeyClientError.InvalidOptions(e.message ?: "Invalid options")
-                else -> PasskeyClientError.Transport(e.message ?: "Server interaction failed", e)
+                else -> PasskeyClientError.Transport(e.message ?: "Server interaction failed")
             }
             uiState.value = PasskeyControllerState.Failure(action, error)
         } finally {

@@ -49,8 +49,7 @@ Published:
 - `webauthn-client-core`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
-- `webauthn-client-android`
-- `webauthn-client-ios`
+- `webauthn-client-platform`
 - `webauthn-client-prf-crypto`
 - `webauthn-network-ktor-client`
 - `webauthn-attestation-mds`
@@ -91,8 +90,7 @@ Adapter/transport/platform:
 - `webauthn-runtime-core`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
-- `webauthn-client-android`
-- `webauthn-client-ios`
+- `webauthn-client-platform`
 - `webauthn-client-prf-crypto`
 
 Optional trust source:

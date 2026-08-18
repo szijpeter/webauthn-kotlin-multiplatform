@@ -22,19 +22,19 @@ final class dev.webauthn.client.prf/MissingPrfOutputException : kotlin/IllegalAr
 }
 
 final class dev.webauthn.client.prf/PrfAuthenticationResult { // dev.webauthn.client.prf/PrfAuthenticationResult|null[0]
-    constructor <init>(dev.webauthn.model/AuthenticationResponse, dev.webauthn.model/AuthenticationExtensionsPRFValues, dev.webauthn.client.prf/PrfCryptoSession) // dev.webauthn.client.prf/PrfAuthenticationResult.<init>|<init>(dev.webauthn.model.AuthenticationResponse;dev.webauthn.model.AuthenticationExtensionsPRFValues;dev.webauthn.client.prf.PrfCryptoSession){}[0]
+    constructor <init>(dev.webauthn.model/RawAuthenticationResponse, dev.webauthn.model/AuthenticationExtensionsPRFValues, dev.webauthn.client.prf/PrfCryptoSession) // dev.webauthn.client.prf/PrfAuthenticationResult.<init>|<init>(dev.webauthn.model.RawAuthenticationResponse;dev.webauthn.model.AuthenticationExtensionsPRFValues;dev.webauthn.client.prf.PrfCryptoSession){}[0]
 
     final val prfResults // dev.webauthn.client.prf/PrfAuthenticationResult.prfResults|{}prfResults[0]
         final fun <get-prfResults>(): dev.webauthn.model/AuthenticationExtensionsPRFValues // dev.webauthn.client.prf/PrfAuthenticationResult.prfResults.<get-prfResults>|<get-prfResults>(){}[0]
     final val response // dev.webauthn.client.prf/PrfAuthenticationResult.response|{}response[0]
-        final fun <get-response>(): dev.webauthn.model/AuthenticationResponse // dev.webauthn.client.prf/PrfAuthenticationResult.response.<get-response>|<get-response>(){}[0]
+        final fun <get-response>(): dev.webauthn.model/RawAuthenticationResponse // dev.webauthn.client.prf/PrfAuthenticationResult.response.<get-response>|<get-response>(){}[0]
     final val session // dev.webauthn.client.prf/PrfAuthenticationResult.session|{}session[0]
         final fun <get-session>(): dev.webauthn.client.prf/PrfCryptoSession // dev.webauthn.client.prf/PrfAuthenticationResult.session.<get-session>|<get-session>(){}[0]
 
-    final fun component1(): dev.webauthn.model/AuthenticationResponse // dev.webauthn.client.prf/PrfAuthenticationResult.component1|component1(){}[0]
+    final fun component1(): dev.webauthn.model/RawAuthenticationResponse // dev.webauthn.client.prf/PrfAuthenticationResult.component1|component1(){}[0]
     final fun component2(): dev.webauthn.model/AuthenticationExtensionsPRFValues // dev.webauthn.client.prf/PrfAuthenticationResult.component2|component2(){}[0]
     final fun component3(): dev.webauthn.client.prf/PrfCryptoSession // dev.webauthn.client.prf/PrfAuthenticationResult.component3|component3(){}[0]
-    final fun copy(dev.webauthn.model/AuthenticationResponse = ..., dev.webauthn.model/AuthenticationExtensionsPRFValues = ..., dev.webauthn.client.prf/PrfCryptoSession = ...): dev.webauthn.client.prf/PrfAuthenticationResult // dev.webauthn.client.prf/PrfAuthenticationResult.copy|copy(dev.webauthn.model.AuthenticationResponse;dev.webauthn.model.AuthenticationExtensionsPRFValues;dev.webauthn.client.prf.PrfCryptoSession){}[0]
+    final fun copy(dev.webauthn.model/RawAuthenticationResponse = ..., dev.webauthn.model/AuthenticationExtensionsPRFValues = ..., dev.webauthn.client.prf/PrfCryptoSession = ...): dev.webauthn.client.prf/PrfAuthenticationResult // dev.webauthn.client.prf/PrfAuthenticationResult.copy|copy(dev.webauthn.model.RawAuthenticationResponse;dev.webauthn.model.AuthenticationExtensionsPRFValues;dev.webauthn.client.prf.PrfCryptoSession){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client.prf/PrfAuthenticationResult.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.webauthn.client.prf/PrfAuthenticationResult.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.webauthn.client.prf/PrfAuthenticationResult.toString|toString(){}[0]
@@ -87,8 +87,8 @@ final object dev.webauthn.client.prf/PrfCrypto { // dev.webauthn.client.prf/PrfC
     final const val DEFAULT_CONTEXT // dev.webauthn.client.prf/PrfCrypto.DEFAULT_CONTEXT|{}DEFAULT_CONTEXT[0]
         final fun <get-DEFAULT_CONTEXT>(): kotlin/String // dev.webauthn.client.prf/PrfCrypto.DEFAULT_CONTEXT.<get-DEFAULT_CONTEXT>|<get-DEFAULT_CONTEXT>(){}[0]
 
-    final fun prfResultsOrNull(dev.webauthn.model/AuthenticationResponse): dev.webauthn.model/AuthenticationExtensionsPRFValues? // dev.webauthn.client.prf/PrfCrypto.prfResultsOrNull|prfResultsOrNull(dev.webauthn.model.AuthenticationResponse){}[0]
-    final fun requirePrfResults(dev.webauthn.model/AuthenticationResponse): dev.webauthn.model/AuthenticationExtensionsPRFValues // dev.webauthn.client.prf/PrfCrypto.requirePrfResults|requirePrfResults(dev.webauthn.model.AuthenticationResponse){}[0]
+    final fun prfResultsOrNull(dev.webauthn.model/RawAuthenticationResponse): dev.webauthn.model/AuthenticationExtensionsPRFValues? // dev.webauthn.client.prf/PrfCrypto.prfResultsOrNull|prfResultsOrNull(dev.webauthn.model.RawAuthenticationResponse){}[0]
+    final fun requirePrfResults(dev.webauthn.model/RawAuthenticationResponse): dev.webauthn.model/AuthenticationExtensionsPRFValues // dev.webauthn.client.prf/PrfCrypto.requirePrfResults|requirePrfResults(dev.webauthn.model.RawAuthenticationResponse){}[0]
     final fun withPrfEvaluation(dev.webauthn.model/PublicKeyCredentialRequestOptions, dev.webauthn.model/AuthenticationExtensionsPRFValues): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.client.prf/PrfCrypto.withPrfEvaluation|withPrfEvaluation(dev.webauthn.model.PublicKeyCredentialRequestOptions;dev.webauthn.model.AuthenticationExtensionsPRFValues){}[0]
     final fun withPrfEvaluation(dev.webauthn.model/PublicKeyCredentialRequestOptions, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/Base64UrlBytes? = ...): dev.webauthn.model/PublicKeyCredentialRequestOptions // dev.webauthn.client.prf/PrfCrypto.withPrfEvaluation|withPrfEvaluation(dev.webauthn.model.PublicKeyCredentialRequestOptions;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes?){}[0]
     final suspend fun createSession(dev.webauthn.model/AuthenticationExtensionsPRFValues, dev.webauthn.client.prf/PrfOutputSelection = ..., kotlin/String = ..., dev.webauthn.model/Base64UrlBytes? = ...): dev.webauthn.client.prf/PrfCryptoSession // dev.webauthn.client.prf/PrfCrypto.createSession|createSession(dev.webauthn.model.AuthenticationExtensionsPRFValues;dev.webauthn.client.prf.PrfOutputSelection;kotlin.String;dev.webauthn.model.Base64UrlBytes?){}[0]
