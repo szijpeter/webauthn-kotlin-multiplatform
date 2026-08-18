@@ -50,6 +50,7 @@ Published:
 - `webauthn-client-flow`
 - `webauthn-client-ktor`
 - `webauthn-client-ktor-kotlinx`
+- `webauthn-client-defaults`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
 - `webauthn-client-platform`
@@ -93,6 +94,7 @@ Adapter/transport/platform:
 - `webauthn-client-flow`
 - `webauthn-client-ktor`
 - `webauthn-client-ktor-kotlinx`
+- `webauthn-client-defaults`
 - `webauthn-runtime-core`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`

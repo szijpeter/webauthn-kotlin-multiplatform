@@ -116,6 +116,13 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 - Supplies `KotlinxKtorPasskeyBackend`, typed start payloads, and `DefaultPasskeyFinishResult`.
 - Uses `Unit` state because the default server contract stores ceremony state server-side.
 
+### `webauthn-client-defaults` (recommended platform composition)
+
+- `:client:webauthn-client-platform`
+- `:core:webauthn-json-kotlinx` as the explicit Android default.
+- Creates the recommended Android/iOS `PasskeyClient` while allowing Android codec and iOS anchor overrides.
+- Does not create a flow, backend, Ktor engine, or presentation state.
+
 ### `webauthn-client-json-core` (optional)
 
 - `:client:webauthn-client-core`

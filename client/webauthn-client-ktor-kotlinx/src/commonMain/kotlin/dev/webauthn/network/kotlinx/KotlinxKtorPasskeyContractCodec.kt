@@ -51,7 +51,9 @@ public class KotlinxKtorPasskeyContractCodec :
     override fun decodeAuthenticationStart(
         body: String,
     ): ValidationResult<CeremonyStart<Unit, PublicKeyCredentialRequestOptions>> =
-        WebAuthnDtoMapper.toModel(decodeOrThrow<PublicKeyCredentialRequestOptionsDto>(body, "Authentication start"))
+        WebAuthnDtoMapper.toModel(
+            decodeOrThrow<PublicKeyCredentialRequestOptionsDto>(body, "Authentication start"),
+        )
             .let { result ->
                 when (result) {
                     is ValidationResult.Valid -> ValidationResult.Valid(CeremonyStart(Unit, result.value))
@@ -111,7 +113,7 @@ public data class AuthenticationStartPayload(
 
 /** Outcome of the default `/webauthn/...` finish response contract. */
 public sealed interface DefaultPasskeyFinishResult {
-    /** The default server contract verified the ceremony response. */
+    /** The backend accepted and verified the ceremony response. */
     public data object Verified : DefaultPasskeyFinishResult
     public data class Rejected(public val message: String? = null) : DefaultPasskeyFinishResult
 }

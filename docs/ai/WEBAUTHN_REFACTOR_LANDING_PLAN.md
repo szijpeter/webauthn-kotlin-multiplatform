@@ -11,7 +11,7 @@ between checkpoints; it will be updated as the stack advances and deleted after 
 | 4 | In progress | Client/platform raw-response foundation and consolidated KMP platform module |
 | 5 | In progress | Final state-free ceremony flow and Compose entry point |
 | 6 | In progress | Neutral Ktor transport plus opt-in Kotlinx contract |
-| 7 | Pending | Default platform composition |
+| 7 | In progress | Default platform composition |
 | 8 | Pending | Final stack integration and release readiness |
 
 The earlier #222–#247 incremental PRs are retained as historical source material. This landing
@@ -37,3 +37,9 @@ public behavior in reviewable checkpoints.
 - `webauthn-client-ktor` depends on the generic flow and Ktor only; it has no serialization implementation.
 - `webauthn-client-ktor-kotlinx` owns the default `/webauthn/...` payload contract and `Unit` state choice.
 - The neutral adapter forwards every decoded continuation state verbatim into finish encoding.
+
+## Checkpoint 7 boundary
+
+- `webauthn-client-defaults` owns the convenient Kotlinx codec and platform factory composition.
+- The platform artifact and JSON-core remain usable with a caller-supplied codec and do not resolve the Kotlinx implementation.
+- Android and iOS defaults expose the recommended setup while preserving explicit customization.

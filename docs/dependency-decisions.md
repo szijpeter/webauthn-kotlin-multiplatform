@@ -75,6 +75,10 @@ Policy:
 3. Prefer additive capability flags (`PasskeyCapabilities`) over target-specific branching in public API signatures.
 4. Keep serialization replaceable through `WebAuthnJsonCodec`; choose `webauthn-json-kotlinx` only in an explicit default/integration layer.
 
+`webauthn-client-defaults` is that explicit platform composition layer. Depending on it intentionally
+selects `webauthn-json-kotlinx` for Android convenience; consumers requiring dependency-pure codec
+replacement depend on `webauthn-client-platform` and provide their codec directly.
+
 ## Immutable Byte Contracts
 
 Public shared model contracts no longer expose raw `ByteArray` properties for value objects.

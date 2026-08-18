@@ -27,4 +27,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "webauthn-published-consumer-smoke"
-include(":client", ":server", ":json-kotlinx")
+include(":client", ":defaults", ":server", ":json-kotlinx")
