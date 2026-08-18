@@ -37,6 +37,7 @@ include(
     ":server:webauthn-server-store-exposed",
     ":server:webauthn-attestation-mds",
     ":client:webauthn-client-core",
+    ":client:webauthn-client-flow",
     ":client:webauthn-client-prf-crypto",
     ":client:webauthn-client-json-core",
     ":client:webauthn-client-compose",

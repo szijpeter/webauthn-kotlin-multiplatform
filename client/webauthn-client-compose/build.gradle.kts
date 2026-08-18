@@ -17,6 +17,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":client:webauthn-client-core"))
+            api(project(":client:webauthn-client-flow"))
             implementation(libs.compose.runtime)
             implementation(libs.kotlinx.coroutines.core)
         }

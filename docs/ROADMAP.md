@@ -15,7 +15,7 @@ Last updated: 2026-04-17
 
 1. Keep client implementation velocity independent from first-party backend hardening.
 2. Use explicit backend contracts and the in-repo sample backend for client validation.
-3. Keep shared typed platform operations in `webauthn-client-core`; platform wrappers stay thin and return raw credential responses.
+3. Keep shared typed platform operations in `webauthn-client-core`, ceremony sequencing in `webauthn-client-flow`, and platform wrappers thin.
 4. Drive all client API and behavior decisions from WebAuthn spec requirements first.
 
 ## Phase Status Snapshot (2026-04-17)
@@ -29,7 +29,7 @@ Last updated: 2026-04-17
 
 ## Phase 1: Client Readiness and Interoperability (Completed Baseline; Maintenance)
 
-1. Keep shared typed platform operations in `webauthn-client-core` and maintain optional, caller-codec JSON APIs in `webauthn-client-json-core`.
+1. Keep shared typed platform operations in `webauthn-client-core`, application-neutral ceremony orchestration in `webauthn-client-flow`, and optional caller-codec JSON APIs in `webauthn-client-json-core`.
 2. Keep Android Credential Manager and iOS AuthenticationServices adapters as thin platform bridges.
 3. Maintain interop paths for host-provided backend contracts and the local sample backend app (`sample/backend-ktor`).
 4. Verify extension transport and response mapping for PRF and Large Blob semantics.

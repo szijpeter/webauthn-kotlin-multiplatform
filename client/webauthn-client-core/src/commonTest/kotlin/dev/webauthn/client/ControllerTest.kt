@@ -44,7 +44,7 @@ class PasskeyControllerTest {
 
         // Before returning options, state should be STARTING
         assertEquals(
-            PasskeyControllerState.InProgress(PasskeyAction.REGISTER, PasskeyPhase.STARTING),
+            PasskeyControllerState.InProgress(PasskeyAction.REGISTER, ControllerPhase.STARTING),
             controller.uiState.value,
         )
 
@@ -53,7 +53,7 @@ class PasskeyControllerTest {
         // After returning options, but before platform finishes (Platform finishes instantly because it's synchronous fake),
         // we then enter FINISHING phase because getOptions and platform are done.
         assertEquals(
-            PasskeyControllerState.InProgress(PasskeyAction.REGISTER, PasskeyPhase.FINISHING),
+            PasskeyControllerState.InProgress(PasskeyAction.REGISTER, ControllerPhase.FINISHING),
             controller.uiState.value,
         )
 
@@ -146,13 +146,13 @@ class PasskeyControllerTest {
         }
 
         // State is now STARTING
-        assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
+        assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, ControllerPhase.STARTING), controller.uiState.value)
 
         // Try to register concurrently
         controller.register(Unit)
 
         // State should remain SIGN_IN STARTING without throwing exception out of runCeremony, but the register loop silently aborted.
-        assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING), controller.uiState.value)
+        assertEquals(PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, ControllerPhase.STARTING), controller.uiState.value)
 
         serverClient.signInOptionsDeferred.complete(ValidationResult.Invalid(emptyList()))
         firstJob.join()
@@ -169,7 +169,7 @@ class PasskeyControllerTest {
         }
 
         assertEquals(
-            PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, PasskeyPhase.STARTING),
+            PasskeyControllerState.InProgress(PasskeyAction.SIGN_IN, ControllerPhase.STARTING),
             controller.uiState.value,
         )
 

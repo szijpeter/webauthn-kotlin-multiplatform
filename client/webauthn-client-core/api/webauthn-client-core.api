@@ -7,6 +7,15 @@ public final class dev/webauthn/client/CapabilitySupport : java/lang/Enum {
 	public static fun values ()[Ldev/webauthn/client/CapabilitySupport;
 }
 
+public final class dev/webauthn/client/ControllerPhase : java/lang/Enum {
+	public static final field FINISHING Ldev/webauthn/client/ControllerPhase;
+	public static final field PLATFORM_PROMPT Ldev/webauthn/client/ControllerPhase;
+	public static final field STARTING Ldev/webauthn/client/ControllerPhase;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/ControllerPhase;
+	public static fun values ()[Ldev/webauthn/client/ControllerPhase;
+}
+
 public final class dev/webauthn/client/DefaultPasskeyClient : dev/webauthn/client/PasskeyClient {
 	public fun <init> (Ldev/webauthn/client/PasskeyPlatformBridge;)V
 	public fun capabilities (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -175,14 +184,14 @@ public final class dev/webauthn/client/PasskeyControllerState$Idle : dev/webauth
 }
 
 public final class dev/webauthn/client/PasskeyControllerState$InProgress : dev/webauthn/client/PasskeyControllerState {
-	public fun <init> (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyPhase;)V
+	public fun <init> (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/ControllerPhase;)V
 	public final fun component1 ()Ldev/webauthn/client/PasskeyAction;
-	public final fun component2 ()Ldev/webauthn/client/PasskeyPhase;
-	public final fun copy (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyPhase;)Ldev/webauthn/client/PasskeyControllerState$InProgress;
-	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyControllerState$InProgress;Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/PasskeyPhase;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyControllerState$InProgress;
+	public final fun component2 ()Ldev/webauthn/client/ControllerPhase;
+	public final fun copy (Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/ControllerPhase;)Ldev/webauthn/client/PasskeyControllerState$InProgress;
+	public static synthetic fun copy$default (Ldev/webauthn/client/PasskeyControllerState$InProgress;Ldev/webauthn/client/PasskeyAction;Ldev/webauthn/client/ControllerPhase;ILjava/lang/Object;)Ldev/webauthn/client/PasskeyControllerState$InProgress;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction ()Ldev/webauthn/client/PasskeyAction;
-	public final fun getPhase ()Ldev/webauthn/client/PasskeyPhase;
+	public final fun getPhase ()Ldev/webauthn/client/ControllerPhase;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -219,15 +228,6 @@ public final class dev/webauthn/client/PasskeyFinishResult$Verified : dev/webaut
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-}
-
-public final class dev/webauthn/client/PasskeyPhase : java/lang/Enum {
-	public static final field FINISHING Ldev/webauthn/client/PasskeyPhase;
-	public static final field PLATFORM_PROMPT Ldev/webauthn/client/PasskeyPhase;
-	public static final field STARTING Ldev/webauthn/client/PasskeyPhase;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Ldev/webauthn/client/PasskeyPhase;
-	public static fun values ()[Ldev/webauthn/client/PasskeyPhase;
 }
 
 public abstract interface class dev/webauthn/client/PasskeyPlatformBridge {
