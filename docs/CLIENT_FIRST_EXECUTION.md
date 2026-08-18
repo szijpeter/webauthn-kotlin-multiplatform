@@ -14,7 +14,7 @@ Goal: keep Android and iOS client implementation moving with an in-repo backend 
 
 ### Option A: First-party default backend contract
 
-Use `KtorPasskeyServerClient` with its default routes and call:
+Use `KotlinxKtorPasskeyBackend` with its default routes and call:
 
 - `POST /webauthn/registration/start`
 - `POST /webauthn/registration/finish`
@@ -25,22 +25,24 @@ Example:
 
 <!-- doc-example: id=docs-client-first-execution-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
 ```kotlin
-import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.kotlinx.KotlinxKtorPasskeyBackend
 import io.ktor.client.HttpClient
 
-fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
-    return KtorPasskeyServerClient(
+fun serverBackend(httpClient: HttpClient): KotlinxKtorPasskeyBackend {
+    return KotlinxKtorPasskeyBackend(
         httpClient = httpClient,
         endpointBase = "https://example.com",
     )
 }
 ```
 
-If your backend uses the same payload semantics but different paths, pass `KtorPasskeyRoutes(...)` to `KtorPasskeyServerClient`.
+If your backend uses the same payload semantics but different paths, pass `KtorPasskeyRoutes(...)` to `KotlinxKtorPasskeyBackend`.
 
 ### Option B: Host-provided custom backend contract
 
-If your backend payloads differ from the default `/webauthn/*` contract, provide your own `PasskeyServerClient` implementation instead of trying to extend `KtorPasskeyServerClient`.
+If your backend payloads differ from the default `/webauthn/*` contract, provide your own
+`KtorPasskeyContractCodec` and use `KtorPasskeyBackend`. The codec controls registration and
+authentication input, opaque continuation state, and application-defined output independently.
 
 ## Local Backend App (`sample/backend-ktor`)
 
@@ -100,6 +102,19 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 - Generic registration/authentication start-prompt-finish sequencing.
 - Carries backend-defined opaque state unchanged and returns backend-defined output.
 - Classifies platform and concurrent-use failures; backend and callback exceptions propagate.
+
+### `webauthn-client-ktor` (optional)
+
+- `:client:webauthn-client-flow`
+- Ktor client core, with no bundled engine.
+- Requires a caller-supplied `KtorPasskeyContractCodec` and preserves its opaque state types.
+
+### `webauthn-client-ktor-kotlinx` (optional default contract)
+
+- `:client:webauthn-client-ktor`
+- `:core:webauthn-json-kotlinx`
+- Supplies `KotlinxKtorPasskeyBackend`, typed start payloads, and `DefaultPasskeyFinishResult`.
+- Uses `Unit` state because the default server contract stores ceremony state server-side.
 
 ### `webauthn-client-json-core` (optional)
 

@@ -8,10 +8,12 @@ The client side separates typed platform operations from generic ceremony orches
 
 - `webauthn-client-core` owns the raw typed client contract and platform-independent client rules.
 - `webauthn-client-flow` owns state-free ceremony orchestration with opaque backend state and application-defined output.
+- `webauthn-client-ktor` adapts that flow to HTTP without choosing serialization.
+- `webauthn-client-ktor-kotlinx` is the opt-in default `/webauthn/...` contract composition.
 - `webauthn-client-platform` bridges into Credential Manager from `androidMain` and AuthenticationServices from `iosMain`.
 - `webauthn-client-compose` provides remembered helpers for Compose-driven apps.
 - `webauthn-client-json-core` is an optional raw JSON interop layer.
-- `webauthn-network-ktor-client` is the default transport helper for `/webauthn/*` backends.
+- `webauthn-network-ktor-client` is retained only for the staged legacy-controller migration.
 - `webauthn-client-prf-crypto` adds PRF-derived application crypto helpers on top of passkey flows.
 
 ## Practical Flow
@@ -30,6 +32,7 @@ Compose apps can keep most of the view-facing wiring in `rememberPasskeyClient(.
 - Platform modules should stay narrow and mostly concerned with OS API translation and error mapping.
 - JSON interop is optional and separate from the typed core.
 - Transport is optional and should not be mistaken for the client core itself.
+- The neutral Ktor adapter owns no engine or serializer; those choices remain in the app or opt-in Kotlinx module.
 
 ## Current Status Snapshot
 

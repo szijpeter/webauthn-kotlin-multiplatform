@@ -118,6 +118,8 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-core`](./core/webauthn-core/README.md): standards-first ceremony validation.
 - [`webauthn-client-core`](./client/webauthn-client-core/README.md): typed platform operations, raw responses, and shared error mapping.
 - [`webauthn-client-flow`](./client/webauthn-client-flow/README.md): state-free ceremony flow with opaque backend state.
+- [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md): codec-neutral Ktor backend transport with caller-owned engine and wire contract.
+- [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md): opt-in default `/webauthn/*` Kotlinx contract.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
 
@@ -162,12 +164,13 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-core:<version>")
-            implementation("io.github.szijpeter:webauthn-network-ktor-client:<version>")
+            implementation("io.github.szijpeter:webauthn-client-flow:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor:<version>")
+            implementation("io.github.szijpeter:webauthn-json-api:<version>")
         }
 
         androidMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-platform:<version>")
-            implementation("io.github.szijpeter:webauthn-json-kotlinx:<version>")
         }
 
         iosMain.dependencies {
@@ -229,7 +232,9 @@ Use:
 - [`webauthn-client-platform`](./client/webauthn-client-platform/README.md)
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) for Compose helpers
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
-- [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) for the default backend contract (`HttpClient`-based API; add your preferred Ktor engine at app runtime)
+- [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) for codec-neutral Ktor backends
+- [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md) for the default `/webauthn/*` contract
+- [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) only for the transitional legacy controller contract
 
 ### End-to-end reference app
 
@@ -261,6 +266,8 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-server-store-exposed`](./server/webauthn-server-store-exposed/README.md) | JVM backends storing WebAuthn state through Exposed |
 | [`webauthn-client-core`](./client/webauthn-client-core/README.md) | Apps and adapters that need typed platform operations, raw credential responses, capabilities, and shared error mapping |
 | [`webauthn-client-flow`](./client/webauthn-client-flow/README.md) | Apps coordinating backend start/finish with opaque continuation state and application-defined output |
+| [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) | Apps adapting generic flow backends to Ktor while owning the engine and wire codec |
+| [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md) | Apps using the repository's default `/webauthn/*` Kotlinx contract |
 | [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
 | [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
 | [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |

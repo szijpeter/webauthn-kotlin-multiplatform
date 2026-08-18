@@ -10,7 +10,7 @@ between checkpoints; it will be updated as the stack advances and deleted after 
 | 3 | Complete | Server-neutral finish boundary and signed-data ownership |
 | 4 | In progress | Client/platform raw-response foundation and consolidated KMP platform module |
 | 5 | In progress | Final state-free ceremony flow and Compose entry point |
-| 6 | Pending | Optional Ktor client transport artifact |
+| 6 | In progress | Neutral Ktor transport plus opt-in Kotlinx contract |
 | 7 | Pending | Default platform composition |
 | 8 | Pending | Final stack integration and release readiness |
 
@@ -31,3 +31,9 @@ public behavior in reviewable checkpoints.
 - `PasskeyFlow` returns application output and only classifies platform failures and concurrency.
 - Backend, platform-client, callback, and cancellation exceptions retain their original semantics.
 - Compose can remember a flow, while the application owns presentation state and result mapping.
+
+## Checkpoint 6 boundary
+
+- `webauthn-client-ktor` depends on the generic flow and Ktor only; it has no serialization implementation.
+- `webauthn-client-ktor-kotlinx` owns the default `/webauthn/...` payload contract and `Unit` state choice.
+- The neutral adapter forwards every decoded continuation state verbatim into finish encoding.

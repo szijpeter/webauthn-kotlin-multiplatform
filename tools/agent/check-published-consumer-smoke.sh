@@ -4,8 +4,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
+KTOR_VERSION="$(sed -n 's/^ktor = \"\(.*\)\"/\1/p' gradle/libs.versions.toml | head -n 1)"
+
 VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)"
 KOTLIN_VERSION="$(sed -n 's/^kotlin = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
+COROUTINES_VERSION="$(sed -n 's/^coroutines = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
 AGP_VERSION="$(sed -n 's/^agp = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
 
 if [[ -z "$VERSION_NAME" ]]; then
@@ -18,8 +21,18 @@ if [[ -z "$KOTLIN_VERSION" ]]; then
   exit 1
 fi
 
+if [[ -z "$COROUTINES_VERSION" ]]; then
+  echo "Unable to resolve coroutines version from gradle/libs.versions.toml" >&2
+  exit 1
+fi
+
 if [[ -z "$AGP_VERSION" ]]; then
   echo "Unable to resolve Android Gradle Plugin version from gradle/libs.versions.toml" >&2
+  exit 1
+fi
+
+if [[ -z "$KTOR_VERSION" ]]; then
+  echo "Unable to resolve Ktor version from gradle/libs.versions.toml" >&2
   exit 1
 fi
 
@@ -40,7 +53,9 @@ for template in \
   sed \
     -e "s/<version>/$VERSION_NAME/g" \
     -e "s/<kotlin-version>/$KOTLIN_VERSION/g" \
+    -e "s/<coroutines-version>/$COROUTINES_VERSION/g" \
     -e "s/<agp-version>/$AGP_VERSION/g" \
+    -e "s/<ktor-version>/$KTOR_VERSION/g" \
     "$template" > "$output"
 done
 
@@ -48,6 +63,7 @@ done
   --project-dir "$tmp_dir" \
   --no-daemon \
   :client:compileKotlinJvm \
+  :client:compileTestKotlinJvm \
   :client:compileAndroidMain \
   :client:compileKotlinIosSimulatorArm64 \
   :server:compileKotlin \
