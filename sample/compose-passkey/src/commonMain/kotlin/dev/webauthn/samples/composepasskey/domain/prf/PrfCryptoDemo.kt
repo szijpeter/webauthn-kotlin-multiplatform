@@ -1,7 +1,6 @@
 package dev.webauthn.samples.composepasskey.domain.prf
 
 import dev.webauthn.client.PasskeyClient
-import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.client.prf.PrfCiphertext
 import dev.webauthn.client.prf.PrfCryptoClient
@@ -9,9 +8,9 @@ import dev.webauthn.client.prf.PrfCryptoSession
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
-import dev.webauthn.model.ValidationResult
 import dev.webauthn.runtime.runSuspendCatching
-import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
+import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
+import dev.webauthn.network.kotlinx.DefaultPasskeyFinishResult
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.passkey.toAuthenticationStartPayload
 import kotlin.random.Random
@@ -54,7 +53,7 @@ internal class InMemoryPrfSaltStore : PrfSaltStore {
 @OptIn(ExperimentalWebAuthnL3Api::class)
 internal class PrfCryptoDemoController(
     passkeyClient: PasskeyClient,
-    private val serverClient: DemoPasskeyServerClient,
+    private val backend: DemoPasskeyBackend,
     private val saltStore: PrfSaltStore,
 ) {
     private val prfCryptoClient: PrfCryptoClient = PrfCryptoClient(passkeyClient)
@@ -72,20 +71,13 @@ internal class PrfCryptoDemoController(
         val firstSalt = saltStore.loadOrCreate(saltScope)
         val startPayload = config.toAuthenticationStartPayload(prfSalt = firstSalt)
         val startResult = runSuspendCatching {
-            serverClient.getSignInOptions(startPayload)
+            backend.authentication.start(startPayload)
         }.getOrElse { throwable ->
             return PrfDemoResult.Failure(
                 "PRF sign-in start failed: ${throwable.message ?: "unknown error"}",
             )
         }
-        val signInOptions = when (startResult) {
-            is ValidationResult.Invalid -> {
-                val details = startResult.errors.joinToString("; ") { "${it.field}: ${it.message}" }
-                return PrfDemoResult.Failure("PRF sign-in start failed: $details")
-            }
-
-            is ValidationResult.Valid -> startResult.value
-        }
+        val signInOptions = startResult.options
         val authResult = when (
             val assertionResult = prfCryptoClient.authenticateWithPrf(
                 options = signInOptions,
@@ -102,18 +94,14 @@ internal class PrfCryptoDemoController(
         var sessionTransferred = false
         try {
             val finishResult = runSuspendCatching {
-                serverClient.finishSignIn(
-                    params = startPayload,
-                    response = authResult.response,
-                    challengeAsBase64Url = signInOptions.challenge.value.encoded(),
-                )
+                backend.authentication.finish(startResult.state, authResult.response)
             }.getOrElse { throwable ->
                 return PrfDemoResult.Failure(
                     "PRF sign-in finish failed: ${throwable.message ?: "unknown error"}",
                 )
             }
             return when (finishResult) {
-                PasskeyFinishResult.Verified -> {
+                DefaultPasskeyFinishResult.Verified -> {
                     transitionTo(SessionDataState.SessionReady(authResult.session))
                     sessionTransferred = true
                     PrfDemoResult.Success(
@@ -122,7 +110,7 @@ internal class PrfCryptoDemoController(
                     )
                 }
 
-                is PasskeyFinishResult.Rejected -> {
+                is DefaultPasskeyFinishResult.Rejected -> {
                     PrfDemoResult.Failure(
                         "PRF sign-in verification rejected: ${finishResult.message ?: "server rejected response"}",
                     )

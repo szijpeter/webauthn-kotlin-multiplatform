@@ -3,8 +3,8 @@ package dev.webauthn.samples.composepasskey.domain.passkey
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
-import dev.webauthn.network.AuthenticationStartPayload
-import dev.webauthn.network.RegistrationStartPayload
+import dev.webauthn.network.kotlinx.AuthenticationStartPayload
+import dev.webauthn.network.kotlinx.RegistrationStartPayload
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
 import dev.webauthn.serialization.PrfExtensionInputDto
 import dev.webauthn.serialization.PrfValuesDto

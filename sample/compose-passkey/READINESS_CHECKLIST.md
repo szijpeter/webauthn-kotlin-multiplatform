@@ -20,7 +20,7 @@ Pass condition:
 
 - all commands succeed without test failures.
 - shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus debug-log transition behavior.
-- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`), and the auth route remains the clearest reference usage.
+- runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyFlow()`), and the auth route remains the clearest reference usage.
 - Android UI smoke test sources compile in CI (`:sample:compose-passkey-android:compileDebugAndroidTestKotlin`).
 
 ## 2. Local sample backend
@@ -54,6 +54,8 @@ Prerequisites:
 - build-time endpoint configured via `WEBAUTHN_DEMO_ENDPOINT` for your target
   - emulator: `http://10.0.2.2:8080`
   - physical device: `http://<laptop-lan-ip>:8080`
+- backend `ANDROID_SHA256` association matches the certificate that signs the
+  installed app; the Android host derives the matching ceremony origin at runtime
 - Android 17 / target SDK 37 local-network permission granted when using a
   private-network endpoint from an emulator or physical device; build with
   `WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true`
@@ -93,8 +95,15 @@ adb logcat | rg "PasskeyDemo"
 
 Pass condition:
 
-- app/action/controller/http events are present and readable.
+- app/action/flow/http events are present and readable.
+- HTTP entries contain request/response metadata without bodies under the default
+  configuration.
 - in-app debug sheet opens from the explicit `Logs` header action on both screens.
+
+For an isolated debugging session, build with
+`WEBAUTHN_DEMO_UNSAFE_HTTP_BODY_LOGGING=true` to include raw HTTP bodies. This
+explicit escape hatch does not redact WebAuthn or PRF material; never use its logs
+as shareable test evidence.
 
 ## 5. Optional emulator smoke run
 

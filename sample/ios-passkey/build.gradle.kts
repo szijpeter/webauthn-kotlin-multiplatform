@@ -9,7 +9,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":client:webauthn-client-platform"))
-            implementation(project(":client:webauthn-network-ktor-client"))
+            implementation(project(":client:webauthn-client-defaults"))
         }
     }
 }

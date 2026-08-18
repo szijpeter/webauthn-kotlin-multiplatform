@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.webauthn.client.compose.rememberPasskeyClient
-import dev.webauthn.network.KtorPasskeyServerClient
 import dev.webauthn.samples.composepasskey.app.di.sampleAppModules
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
-import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
+import dev.webauthn.samples.composepasskey.data.network.DefaultDemoPasskeyBackend
+import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.samples.composepasskey.data.network.normalizedEndpoint
 import dev.webauthn.samples.composepasskey.data.network.rememberPlatformHttpClient
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
@@ -17,28 +17,31 @@ import org.koin.core.logger.Level
 import org.koin.dsl.koinConfiguration
 
 @Composable
-fun App() {
+fun App(platformOrigin: String? = null) {
     val scope = rememberCoroutineScope()
     val debugLogs = remember { DebugLogStore() }
     val httpLogSink: (String) -> Unit = remember(scope, debugLogs) {
         { line -> scope.launch { debugLogs.d("http", line) } }
     }
     val httpClient = rememberPlatformHttpClient(onLogLine = httpLogSink)
-    val config = remember { PasskeyDemoConfig() }
+    val config = remember(platformOrigin) {
+        val defaults = PasskeyDemoConfig()
+        platformOrigin?.let { defaults.copy(origin = it) } ?: defaults
+    }
     val passkeyClient = rememberPasskeyClient()
-    val serverClient: DemoPasskeyServerClient = remember(httpClient, config.endpointBase) {
-        KtorPasskeyServerClient(
+    val backend: DemoPasskeyBackend = remember(httpClient, config.endpointBase) {
+        DefaultDemoPasskeyBackend(
             httpClient = httpClient,
             endpointBase = config.endpointBase.normalizedEndpoint(),
         )
     }
 
-    val modules = remember(config, debugLogs, passkeyClient, serverClient) {
+    val modules = remember(config, debugLogs, passkeyClient, backend) {
         sampleAppModules(
             config = config,
             debugLogs = debugLogs,
             passkeyClient = passkeyClient,
-            serverClient = serverClient,
+            backend = backend,
         )
     }
     val koinConfig = remember(modules) {

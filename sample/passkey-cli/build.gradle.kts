@@ -9,7 +9,8 @@ application {
 }
 
 dependencies {
-    implementation(project(":client:webauthn-network-ktor-client"))
+    implementation(project(":client:webauthn-client-ktor-kotlinx"))
+    implementation(project(":client:webauthn-client-flow"))
     implementation(project(":core:webauthn-runtime-core"))
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
@@ -19,6 +20,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.ktor.client.mock)
 }
 
 tasks.register<Exec>("bootstrapVenv") {

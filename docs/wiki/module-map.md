@@ -1,6 +1,6 @@
 # Module Map
 
-Last reviewed: 2026-04-06
+Last reviewed: 2026-08-19
 
 The repository uses a layered module model. Core protocol and validation concerns stay separate from crypto, server services, transport adapters, and platform clients.
 
@@ -14,7 +14,7 @@ Physical module folders mirror that model: `core/`, `client/`, `server/`, `platf
 | Validation and serialization | `webauthn-core`, `webauthn-json-kotlinx`, `webauthn-cbor-core`, `webauthn-runtime-core` | Validation, parsing, DTO mapping, and shared runtime helpers |
 | Crypto | `webauthn-crypto-api`, `webauthn-server-jvm-crypto` | Crypto contracts plus JVM attestation/signature implementation |
 | Server | `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds` | Ceremony services, route adapters, persistence adapters, optional trust metadata |
-| Client | `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-ktor`, `webauthn-client-ktor-kotlinx`, `webauthn-client-defaults`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`, `webauthn-network-ktor-client` | Raw client contract, state-free flow, codec-neutral Ktor transport, optional Kotlinx and batteries-included composition, platform bridges, Compose helpers, and PRF crypto helpers |
+| Client | `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-ktor`, `webauthn-client-ktor-kotlinx`, `webauthn-client-defaults`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto` | Raw client contract, state-free flow, codec-neutral Ktor transport, optional Kotlinx and batteries-included composition, platform bridges, Compose helpers, and PRF crypto helpers |
 
 ## Published Surface
 
@@ -23,7 +23,7 @@ The published artifact surface is coordinated as one release train. The main pub
 - BOM: `platform:bom`
 - Foundation: `webauthn-cbor-core`, `webauthn-model`, `webauthn-runtime-core`, `webauthn-json-kotlinx`, `webauthn-core`
 - Crypto and server: `webauthn-crypto-api`, `webauthn-server-jvm-crypto`, `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds`
-- Client: `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-ktor`, `webauthn-client-ktor-kotlinx`, `webauthn-client-defaults`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`, `webauthn-network-ktor-client`
+- Client: `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-ktor`, `webauthn-client-ktor-kotlinx`, `webauthn-client-defaults`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto`
 
 Not published:
 
@@ -54,7 +54,6 @@ Not published:
 - optional: `webauthn-client-json-core`
 - `webauthn-client-platform` in the applicable platform source set
 - optional: `webauthn-client-compose`
-- optional: `webauthn-network-ktor-client`
 - optional: `webauthn-client-prf-crypto`
 
 ### Mixed app + backend adoption
@@ -64,7 +63,7 @@ Use [`platform/bom/README.md`](../../platform/bom/README.md) to keep versions al
 ## Design Rules Worth Remembering
 
 - `webauthn-model` and `webauthn-core` must remain free of platform and network dependencies.
-- `webauthn-client-core` owns shared client business logic; Android and iOS modules stay thin.
+- `webauthn-client-core` owns typed platform-operation behavior, `webauthn-client-flow` owns generic ceremony sequencing, and Android/iOS source sets stay thin.
 - Ktor modules are adapters, not the core business layer.
 - Optional trust sources like MDS should remain separable from the main validation path.
 

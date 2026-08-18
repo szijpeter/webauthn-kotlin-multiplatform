@@ -46,4 +46,9 @@ For physical-device flows with associated domains:
 ./sample/backend-ktor/start-server.sh
 ```
 
-This helper updates root `local.properties` with `WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, and `WEBAUTHN_DEMO_ORIGIN`, then starts the backend with matching association values.
+This helper updates root `local.properties` with `WEBAUTHN_DEMO_ENDPOINT`,
+`WEBAUTHN_DEMO_RP_ID`, and the iOS/web `WEBAUTHN_DEMO_ORIGIN`, then starts the
+backend with matching association values. The Android host derives its
+`android:apk-key-hash:...` ceremony origin from the installed app's signing
+certificate; `ANDROID_SHA256` must describe that same certificate for the served
+Digital Asset Links statement.

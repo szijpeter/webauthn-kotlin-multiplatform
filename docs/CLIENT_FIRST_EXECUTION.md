@@ -2,13 +2,42 @@
 
 Date: 2026-03-05
 
+Last updated: 2026-08-19
+
 Goal: keep Android and iOS client implementation moving with an in-repo backend that matches the default contract.
 
 ## Principle
 
 1. Client work must not block on server hardening.
 2. Use explicit backend contracts for interop testing.
-3. Keep shared ceremony logic in `webauthn-client-core`; platform modules only bridge OS APIs.
+3. Keep raw platform-client logic in `webauthn-client-core` and `webauthn-client-platform`; generic ceremony orchestration lives in `webauthn-client-flow`, while platform modules only bridge OS APIs.
+
+## Migration from the legacy controller/client API
+
+The current client-first path is intentionally split into three replaceable seams:
+
+- `PasskeyClient` returns `RawRegistrationResponse` and `RawAuthenticationResponse`.
+- `PasskeyFlow` carries the backend's opaque state from `start` to `finish` and returns the backend's application-defined output.
+- `KtorPasskeyBackend` is codec-neutral; `KotlinxKtorPasskeyBackend` is an opt-in adapter for the repository's default JSON contract.
+
+Applications migrating from `PasskeyController`/`PasskeyServerClient` should move request and finish calls into typed `RegistrationBackend` and `AuthenticationBackend` implementations. Map `CeremonyResult.Failure.Platform` and `CeremonyFailure.AlreadyInProgress` into application UI state, and let backend or callback exceptions follow the application's error policy. The removed controller and server-client artifacts are not compatibility wrappers.
+
+### Coordinate and API mapping
+
+| Legacy integration | Replacement |
+| --- | --- |
+| `webauthn-client-android` / `webauthn-client-ios` | `webauthn-client-platform`, or `webauthn-client-defaults` for recommended construction |
+| `webauthn-network-ktor-client` | `webauthn-client-ktor-kotlinx` for the default contract, or `webauthn-client-ktor` with a custom codec |
+| `PasskeyController` | `PasskeyFlow`; the application owns presentation state |
+| `PasskeyServerClient<RegisterParams, SignInParams>` | `RegistrationBackend<Input, State, Output>` and `AuthenticationBackend<Input, State, Output>` |
+| `rememberPasskeyController(...)` | `rememberPasskeyFlow(...)` plus application-owned Compose state |
+| `PasskeyFinishResult` | `DefaultPasskeyFinishResult` only for the default Kotlinx contract; otherwise use an application-defined output type |
+| Parsed `PasskeyClient` responses | `RawRegistrationResponse` / `RawAuthenticationResponse`; interpret and validate them at the trusted protocol/server boundary |
+
+The old controller converted backend, callback, and platform concerns into controller UI state. The
+new flow deliberately classifies only platform results and concurrent use. Wrap backend calls at the
+application boundary when you need a stable application error model; never relabel callback or
+unexpected client exceptions as backend failures.
 
 ## Backend Options for Client Bring-Up
 
@@ -82,7 +111,11 @@ Defaults:
 - `IOS_APP_ID=TEAMID.com.example.app`
 - Optional convenience inputs: `IOS_TEAM_ID`, `IOS_BUNDLE_ID` (used to derive `IOS_APP_ID` when unset)
 
-The helper script writes `WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, and `WEBAUTHN_DEMO_ORIGIN` to root `local.properties`.
+The helper script writes `WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, and the
+iOS/web `WEBAUTHN_DEMO_ORIGIN` to root `local.properties`. The Android host derives
+the ceremony origin from its installed signing certificate as
+`android:apk-key-hash:...`; keep `ANDROID_SHA256` aligned with that certificate so
+the generated Digital Asset Links response identifies the same app.
 
 Use the committed iOS host app sample (`sample/compose-passkey-ios`) for device/simulator runs.
 The shared Compose module still exposes `MainViewController()` for custom host integration.
@@ -131,7 +164,8 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 - Does not select or transitively resolve a JSON implementation.
 
 Add `:core:webauthn-json-kotlinx` explicitly when you want `KotlinxWebAuthnJsonCodec`; otherwise
-supply your own `WebAuthnJsonCodec` implementation.
+supply your own `WebAuthnJsonCodec` implementation. Use `webauthn-client-defaults` for the
+recommended Android/iOS composition.
 
 JSON interop wrapper example for a typed client:
 
@@ -153,7 +187,7 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 ### `webauthn-client-platform` Android source set
 
 - `:client:webauthn-client-core`
-- `:client:webauthn-client-json-core`
+- `:core:webauthn-json-api` (the neutral Android Credential Manager boundary)
 - `androidx.credentials`
 - `androidx.credentials:credentials-play-services-auth` (required for Google Play provider integration on Android)
 - `androidx.core:core-ktx`
@@ -161,14 +195,20 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 ### `webauthn-client-platform` iOS source set
 
 - `:client:webauthn-client-core`
-- `:client:webauthn-client-json-core`
 - `kotlinx-coroutines-core`
+
+The platform artifact does not select a JSON implementation. Use `webauthn-client-defaults` for the recommended Kotlinx composition, or supply a codec through the platform/client API yourself.
 
 ### `webauthn-client-compose` (optional)
 
 - `:client:webauthn-client-core`
+- `:client:webauthn-client-flow`
 - `org.jetbrains.compose.runtime:runtime`
 - Android and iOS actuals: `:client:webauthn-client-platform`
+- Android actual: `:core:webauthn-json-kotlinx` for `rememberPasskeyClient()`.
+
+To use a custom Android codec without resolving the Compose module's built-in Kotlinx convenience,
+construct the platform client yourself and pass it to `rememberPasskeyFlow(passkeyClient)`.
 
 ## Association File Requirement
 

@@ -1,9 +1,7 @@
 package dev.webauthn.samples.composepasskey.domain.passkey
 
-import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClientError
-import dev.webauthn.client.PasskeyControllerState
-import dev.webauthn.client.ControllerPhase
+import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.samples.composepasskey.PasskeyDemoBuildConfig
 import dev.webauthn.samples.composepasskey.data.network.resolveDefaultOrigin
 import dev.webauthn.samples.composepasskey.data.network.resolveDefaultRpId
@@ -19,142 +17,137 @@ internal data class PasskeyDemoConfig(
     val userName: String = PasskeyDemoBuildConfig.USER_NAME,
 )
 
-internal fun areCeremonyActionsEnabled(uiState: PasskeyControllerState): Boolean {
-    return uiState !is PasskeyControllerState.InProgress
+internal enum class DemoPasskeyAction { REGISTER, SIGN_IN }
+
+internal sealed interface DemoCeremonyError {
+    val message: String
+
+    data class Platform(val error: PasskeyClientError) : DemoCeremonyError {
+        override val message: String = error.message
+    }
+
+    data class Backend(override val message: String) : DemoCeremonyError
+
+    data class Rejected(override val message: String) : DemoCeremonyError
+
+    data object AlreadyInProgress : DemoCeremonyError {
+        override val message: String = "Another ceremony is already in progress."
+    }
 }
 
-internal fun PasskeyControllerState.toDemoStatus(): PasskeyDemoStatus {
+internal sealed interface DemoCeremonyState {
+    data object Idle : DemoCeremonyState
+
+    data class InProgress(
+        val action: DemoPasskeyAction,
+        val phase: PasskeyPhase,
+    ) : DemoCeremonyState
+
+    data class Success(val action: DemoPasskeyAction) : DemoCeremonyState
+
+    data class Failure(
+        val action: DemoPasskeyAction,
+        val error: DemoCeremonyError,
+    ) : DemoCeremonyState
+}
+
+internal fun areCeremonyActionsEnabled(uiState: DemoCeremonyState): Boolean {
+    return uiState !is DemoCeremonyState.InProgress
+}
+
+internal fun DemoCeremonyState.toDemoStatus(): PasskeyDemoStatus {
     return when (this) {
-        PasskeyControllerState.Idle -> PasskeyDemoStatus(
+        DemoCeremonyState.Idle -> PasskeyDemoStatus(
             tone = StatusTone.IDLE,
             headline = "Ready",
             detail = "Run Register or Sign In to exercise the end-to-end passkey flow.",
         )
 
-        is PasskeyControllerState.InProgress -> PasskeyDemoStatus(
+        is DemoCeremonyState.InProgress -> PasskeyDemoStatus(
             tone = StatusTone.WORKING,
-            headline = when (action) {
-                PasskeyAction.REGISTER -> "Register in progress"
-                PasskeyAction.SIGN_IN -> "Sign In in progress"
-            },
+            headline = "${action.label()} in progress",
             detail = when (phase) {
-                ControllerPhase.STARTING -> "Loading server options."
-                ControllerPhase.PLATFORM_PROMPT -> "Waiting for the platform passkey prompt."
-                ControllerPhase.FINISHING -> "Verifying the passkey response."
+                PasskeyPhase.STARTING -> "Loading server options."
+                PasskeyPhase.PLATFORM_PROMPT -> "Waiting for the platform passkey prompt."
+                PasskeyPhase.FINISHING -> "Verifying the passkey response."
             },
         )
 
-        is PasskeyControllerState.Success -> PasskeyDemoStatus(
+        is DemoCeremonyState.Success -> PasskeyDemoStatus(
             tone = StatusTone.SUCCESS,
-            headline = when (action) {
-                PasskeyAction.REGISTER -> "Register complete"
-                PasskeyAction.SIGN_IN -> "Sign In complete"
-            },
+            headline = "${action.label()} complete",
             detail = when (action) {
-                PasskeyAction.REGISTER -> "Passkey created. Run Sign In to verify the round trip."
-                PasskeyAction.SIGN_IN -> "Authenticated successfully. Opening the extension demo."
+                DemoPasskeyAction.REGISTER -> "Passkey created. Run Sign In to verify the round trip."
+                DemoPasskeyAction.SIGN_IN -> "Authenticated successfully. Opening the extension demo."
             },
         )
 
-        is PasskeyControllerState.Failure -> {
-            val category = error.toCategory()
-            PasskeyDemoStatus(
-                tone = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {
-                    StatusTone.WARNING
-                } else {
-                    StatusTone.ERROR
-                },
-                headline = category.label,
-                detail = "[${category.label}] ${error.message.withProviderDependencyHint()}",
-            )
-        }
+        is DemoCeremonyState.Failure -> PasskeyDemoStatus(
+            tone = if (error is DemoCeremonyError.Platform && error.error is PasskeyClientError.UserCancelled) {
+                StatusTone.WARNING
+            } else {
+                StatusTone.ERROR
+            },
+            headline = error.label(),
+            detail = "[${error.label()}] ${error.message.withProviderDependencyHint()}",
+        )
     }
 }
 
-internal data class ControllerTransitionEvent(
+internal data class DemoTransitionEvent(
     val level: DebugLogLevel,
     val message: String,
 )
 
-internal fun controllerTransitionEvent(
-    previous: PasskeyControllerState,
-    current: PasskeyControllerState,
-): ControllerTransitionEvent? {
-    if (current is PasskeyControllerState.InProgress) {
-        val changed =
-            previous !is PasskeyControllerState.InProgress ||
-                previous.action != current.action ||
-                previous.phase != current.phase
-        if (changed) {
-            return ControllerTransitionEvent(
-                level = DebugLogLevel.INFO,
-                message = "${current.action.label()} ${current.phase.logLabel()}",
-            )
-        }
+internal fun demoTransitionEvent(
+    previous: DemoCeremonyState,
+    current: DemoCeremonyState,
+): DemoTransitionEvent? {
+    if (current is DemoCeremonyState.InProgress && previous != current) {
+        return DemoTransitionEvent(DebugLogLevel.INFO, "${current.action.label()} ${current.phase.logLabel()}")
     }
-
-    if (current is PasskeyControllerState.Success && previous != current) {
-        return ControllerTransitionEvent(
-            level = DebugLogLevel.INFO,
-            message = "${current.action.label()} success",
+    if (current is DemoCeremonyState.Success && previous != current) {
+        return DemoTransitionEvent(DebugLogLevel.INFO, "${current.action.label()} success")
+    }
+    if (current is DemoCeremonyState.Failure && previous != current) {
+        return DemoTransitionEvent(
+            level = if (current.error is DemoCeremonyError.Platform &&
+                current.error.error is PasskeyClientError.UserCancelled
+            ) DebugLogLevel.WARN else DebugLogLevel.ERROR,
+            message = "${current.action.label()} failed [${current.error.label()}] ${current.error.message}",
         )
     }
-
-    if (current is PasskeyControllerState.Failure && previous != current) {
-        val category = current.error.toCategory()
-        return ControllerTransitionEvent(
-            level = if (category == PasskeyDemoErrorCategory.USER_CANCELLED) {
-                DebugLogLevel.WARN
-            } else {
-                DebugLogLevel.ERROR
-            },
-            message = "${current.action.label()} failed [${category.label}] " +
-                current.error.message.withProviderDependencyHint(),
-        )
-    }
-
     return null
 }
 
-private enum class PasskeyDemoErrorCategory(val label: String) {
-    INVALID_OPTIONS("Invalid Options"),
-    USER_CANCELLED("User Cancelled"),
-    NO_CREDENTIAL("No Credential"),
-    PLATFORM("Platform"),
-    CODEC("Codec"),
-    TRANSPORT("Transport"),
+private fun DemoCeremonyError.label(): String = when (this) {
+    is DemoCeremonyError.Platform -> when (error) {
+        is PasskeyClientError.UserCancelled -> "User Cancelled"
+        is PasskeyClientError.NoCredential -> "No Credential"
+        is PasskeyClientError.InvalidOptions -> "Invalid Options"
+        is PasskeyClientError.Platform -> "Platform"
+        is PasskeyClientError.Codec -> "Codec"
+    }
+    is DemoCeremonyError.Backend -> "Backend"
+    is DemoCeremonyError.Rejected -> "Rejected"
+    DemoCeremonyError.AlreadyInProgress -> "Already In Progress"
 }
 
-private fun PasskeyClientError.toCategory(): PasskeyDemoErrorCategory {
-    return when (this) {
-        is PasskeyClientError.InvalidOptions -> PasskeyDemoErrorCategory.INVALID_OPTIONS
-        is PasskeyClientError.UserCancelled -> PasskeyDemoErrorCategory.USER_CANCELLED
-        is PasskeyClientError.NoCredential -> PasskeyDemoErrorCategory.NO_CREDENTIAL
-        is PasskeyClientError.Platform -> PasskeyDemoErrorCategory.PLATFORM
-        is PasskeyClientError.Codec -> PasskeyDemoErrorCategory.CODEC
-        is PasskeyClientError.Transport -> PasskeyDemoErrorCategory.TRANSPORT
-    }
+private fun DemoPasskeyAction.label(): String = when (this) {
+    DemoPasskeyAction.REGISTER -> "Register"
+    DemoPasskeyAction.SIGN_IN -> "Sign In"
 }
 
-private fun PasskeyAction.label(): String {
-    return when (this) {
-        PasskeyAction.REGISTER -> "Register"
-        PasskeyAction.SIGN_IN -> "Sign In"
-    }
-}
-
-private fun ControllerPhase.logLabel(): String {
-    return when (this) {
-        ControllerPhase.STARTING -> "starting"
-        ControllerPhase.PLATFORM_PROMPT -> "platform_prompt"
-        ControllerPhase.FINISHING -> "finishing"
-    }
+private fun PasskeyPhase.logLabel(): String = when (this) {
+    PasskeyPhase.STARTING -> "starting"
+    PasskeyPhase.PLATFORM_PROMPT -> "platform_prompt"
+    PasskeyPhase.FINISHING -> "finishing"
 }
 
 private fun String.withProviderDependencyHint(): String {
     val lowered = lowercase()
     return if (lowered.contains("no provider dependencies found")) {
-        "$this. Add androidx.credentials:credentials-play-services-auth and use a Google Play-enabled emulator/device."
+        "$this Add androidx.credentials:credentials-play-services-auth and use a Google Play-enabled emulator/device."
     } else {
         this
     }

@@ -1,12 +1,12 @@
 package dev.webauthn.samples.composepasskey.app.auth
 
-import dev.webauthn.client.PasskeyAction
-import dev.webauthn.client.PasskeyControllerState
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
-import dev.webauthn.samples.composepasskey.domain.passkey.controllerTransitionEvent
+import dev.webauthn.samples.composepasskey.domain.passkey.DemoCeremonyState
+import dev.webauthn.samples.composepasskey.domain.passkey.DemoPasskeyAction
+import dev.webauthn.samples.composepasskey.domain.passkey.demoTransitionEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,7 +17,7 @@ internal class AuthDemoCoordinator(
 ) {
     val canRegister: StateFlow<Boolean> field = MutableStateFlow<Boolean>(true)
 
-    private var previousControllerState: PasskeyControllerState = PasskeyControllerState.Idle
+    private var previousState: DemoCeremonyState = DemoCeremonyState.Idle
 
     init {
         debugLogs.i(
@@ -43,26 +43,26 @@ internal class AuthDemoCoordinator(
         )
     }
 
-    fun onControllerStateChanged(current: PasskeyControllerState) {
-        controllerTransitionEvent(previous = previousControllerState, current = current)?.let { event ->
+    fun onCeremonyStateChanged(current: DemoCeremonyState) {
+        demoTransitionEvent(previous = previousState, current = current)?.let { event ->
             when (event.level) {
-                DebugLogLevel.DEBUG -> debugLogs.d(source = "controller", message = event.message)
-                DebugLogLevel.INFO -> debugLogs.i(source = "controller", message = event.message)
-                DebugLogLevel.WARN -> debugLogs.w(source = "controller", message = event.message)
-                DebugLogLevel.ERROR -> debugLogs.e(source = "controller", message = event.message)
+                DebugLogLevel.DEBUG -> debugLogs.d(source = "flow", message = event.message)
+                DebugLogLevel.INFO -> debugLogs.i(source = "flow", message = event.message)
+                DebugLogLevel.WARN -> debugLogs.w(source = "flow", message = event.message)
+                DebugLogLevel.ERROR -> debugLogs.e(source = "flow", message = event.message)
             }
         }
 
         when {
-            current is PasskeyControllerState.Success && current.action == PasskeyAction.REGISTER -> {
+            current is DemoCeremonyState.Success && current.action == DemoPasskeyAction.REGISTER -> {
                 canRegister.value = false
             }
 
-            current is PasskeyControllerState.Success && current.action == PasskeyAction.SIGN_IN -> {
+            current is DemoCeremonyState.Success && current.action == DemoPasskeyAction.SIGN_IN -> {
                 sessionStore.signIn(config.userName)
             }
         }
 
-        previousControllerState = current
+        previousState = current
     }
 }

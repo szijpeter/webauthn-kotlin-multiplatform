@@ -203,6 +203,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-core:<version>")
+            implementation("io.github.szijpeter:webauthn-client-json-core:<version>")
             implementation("io.github.szijpeter:webauthn-client-flow:<version>")
             implementation("io.github.szijpeter:webauthn-client-ktor:<version>")
             implementation("io.github.szijpeter:webauthn-json-api:<version>")
@@ -274,7 +275,6 @@ Use:
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
 - [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) for codec-neutral Ktor backends
 - [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md) for the default `/webauthn/*` contract
-- [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) only for the transitional legacy controller contract
 
 ### End-to-end reference app
 
@@ -309,11 +309,10 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) | Apps adapting generic flow backends to Ktor while owning the engine and wire codec |
 | [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md) | Apps using the repository's default `/webauthn/*` Kotlinx contract |
 | [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
-| [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
+| [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want lifecycle-aware platform clients and remembered generic flows while retaining application-owned UI state |
 | [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |
 | [`webauthn-client-defaults`](./client/webauthn-client-defaults/README.md) | Apps that want the recommended platform setup with Kotlinx defaults and an explicit codec override |
 | [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
-| [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) | Clients talking to a `/webauthn/*` backend contract over Ktor (`HttpClient` contract + caller-selected engine) |
 | [`webauthn-attestation-mds`](./server/webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |
 
 ## Status and Current Limits
@@ -324,7 +323,7 @@ Current state:
 
 - Core/server validation paths are production-leaning.
 - Publish/release infrastructure is now wired for Maven Central and compatibility baselines.
-- Client flows are usable on Android and iOS with shared orchestration.
+- Client flows are usable on Android and iOS with generic `PasskeyFlow` orchestration and raw platform responses.
 - iOS external security-key support is still being hardened before it can be documented as fully ready.
 - `kotlinx-serialization` is now on `1.10.0` together with Signum `0.12.0` and indispensable `3.20.0`; captured Android assertion-vector regressions are green on this combined dependency set.
 

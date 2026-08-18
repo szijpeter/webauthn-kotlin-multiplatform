@@ -59,6 +59,14 @@ val generatePasskeyDemoBuildConfig =
                 defaultValue = "Zaphod Beeblebrox",
             ),
         )
+        unsafeHttpBodyLogging.set(
+            project.demoConfigValue(
+                envName = "WEBAUTHN_DEMO_UNSAFE_HTTP_BODY_LOGGING",
+                defaultValue = "false",
+            ).map { value ->
+                value.toBooleanStrictOrNull() ?: false
+            },
+        )
     }
 
 extensions.configure<KotlinMultiplatformExtension> {

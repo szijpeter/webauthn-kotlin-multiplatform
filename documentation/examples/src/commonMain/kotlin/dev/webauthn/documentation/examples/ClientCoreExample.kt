@@ -1,57 +1,54 @@
 package dev.webauthn.documentation.examples
 
-// docs-region client-core-controller
-import dev.webauthn.client.PasskeyController
-import dev.webauthn.client.PasskeyControllerState
-import dev.webauthn.client.PasskeyFinishResult
-import dev.webauthn.client.PasskeyServerClient
+// docs-region client-core-flow
+import dev.webauthn.client.AuthenticationBackend
+import dev.webauthn.client.CeremonyResult
+import dev.webauthn.client.PasskeyClient
+import dev.webauthn.client.PasskeyFlow
+import dev.webauthn.client.RegistrationBackend
 import dev.webauthn.model.RawAuthenticationResponse
-import dev.webauthn.model.PublicKeyCredentialCreationOptions
-import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RawRegistrationResponse
-import dev.webauthn.model.ValidationResult
 
-/** Example backend adapter for the shared ceremony controller. */
-class AccountServerClient : PasskeyServerClient<String, String> {
-    override suspend fun getRegisterOptions(
-        params: String,
-    ): ValidationResult<PublicKeyCredentialCreationOptions> {
-        TODO("Call backend /registration/start")
-    }
+/** Application input for the registration backend in this example. */
+data class AccountRegistrationInput(val userId: String)
 
-    override suspend fun finishRegister(
-        params: String,
-        response: RawRegistrationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
-        TODO("Call backend /registration/finish")
-    }
+/** Application input for the authentication backend in this example. */
+data class AccountAuthenticationInput(val userId: String)
 
-    override suspend fun getSignInOptions(
-        params: String,
-    ): ValidationResult<PublicKeyCredentialRequestOptions> {
-        TODO("Call backend /authentication/start")
-    }
+/** Application-defined registration outcome returned by the backend. */
+data class AccountRegistrationOutput(val verified: Boolean)
 
-    override suspend fun finishSignIn(
-        params: String,
-        response: RawAuthenticationResponse,
-        challengeAsBase64Url: String,
-    ): PasskeyFinishResult {
-        TODO("Call backend /authentication/finish")
-    }
+/** Application-defined authentication outcome returned by the backend. */
+data class AccountAuthenticationOutput(val verified: Boolean)
+
+/** Example backend that keeps an opaque registration transaction id. */
+class AccountRegistrationBackend : RegistrationBackend<AccountRegistrationInput, String, AccountRegistrationOutput> {
+    override suspend fun start(input: AccountRegistrationInput) =
+        TODO("Call backend start and return opaque transaction state")
+
+    override suspend fun finish(state: String, response: RawRegistrationResponse): AccountRegistrationOutput =
+        TODO("Call backend finish with the raw response and opaque state")
 }
 
-suspend fun runSignIn(controller: PasskeyController<String, String>, userId: String) {
-    controller.signIn(userId)
-    when (val state = controller.uiState.value) {
-        is PasskeyControllerState.Success -> {
-            // Continue into authenticated app flow.
-        }
-        is PasskeyControllerState.Failure -> {
-            // Render or log state.error.message.
-        }
-        else -> Unit
+/** Example backend that keeps an opaque authentication transaction id. */
+class AccountAuthenticationBackend :
+    AuthenticationBackend<AccountAuthenticationInput, String, AccountAuthenticationOutput> {
+    override suspend fun start(input: AccountAuthenticationInput) =
+        TODO("Call backend start and return opaque transaction state")
+
+    override suspend fun finish(state: String, response: RawAuthenticationResponse): AccountAuthenticationOutput =
+        TODO("Call backend finish with the raw response and opaque state")
+}
+
+/** Runs one authentication ceremony while leaving UI state to the caller. */
+suspend fun runSignIn(client: PasskeyClient, userId: String) {
+    val result = PasskeyFlow(client).signIn(
+        input = AccountAuthenticationInput(userId),
+        backend = AccountAuthenticationBackend(),
+    )
+    when (result) {
+        is CeremonyResult.Success -> Unit
+        is CeremonyResult.Failure -> Unit
     }
 }
-// docs-endregion client-core-controller
+// docs-endregion client-core-flow

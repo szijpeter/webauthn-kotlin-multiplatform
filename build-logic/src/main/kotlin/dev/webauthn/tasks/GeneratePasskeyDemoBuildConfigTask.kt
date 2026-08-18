@@ -29,6 +29,9 @@ abstract class GeneratePasskeyDemoBuildConfigTask : DefaultTask() {
     @get:Input
     abstract val userName: Property<String>
 
+    @get:Input
+    abstract val unsafeHttpBodyLogging: Property<Boolean>
+
     @TaskAction
     fun generate() {
         val packagePath = "dev/webauthn/samples/composepasskey"
@@ -45,6 +48,7 @@ abstract class GeneratePasskeyDemoBuildConfigTask : DefaultTask() {
                 internal const val ORIGIN: String = "${escape(origin.get())}"
                 internal const val USER_ID: String = "${escape(userId.get())}"
                 internal const val USER_NAME: String = "${escape(userName.get())}"
+                internal const val UNSAFE_HTTP_BODY_LOGGING: Boolean = ${unsafeHttpBodyLogging.get()}
             }
             """.trimIndent(),
         )
