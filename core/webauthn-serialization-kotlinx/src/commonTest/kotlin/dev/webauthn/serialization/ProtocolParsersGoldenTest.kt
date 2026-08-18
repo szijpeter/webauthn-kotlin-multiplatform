@@ -4,6 +4,7 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.Origin
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -113,7 +114,7 @@ class ProtocolParsersGoldenTest {
         val coseKey = Base64UrlBytes.parseOrThrow(
             "pQECAyYgASFYIHflyS-aHVhwAzewMoOb5NS3wrABqgvYKVxzLYLXoRY6IlggJ5K-fCUDYnGk0SH-8wC05tBuSYdQUk45X4tBxNOSMgw",
         ).bytes()
-        val result = parseAuthenticatorData(
+        val result = WebAuthnProtocolParser.parseAuthenticatorData(
             bytes = registrationAuthenticatorDataBytes(
                 rpIdHash = Base64UrlBytes.parseOrThrow("1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWo").bytes(),
                 flags = 0xDD,
@@ -143,10 +144,10 @@ class ProtocolParsersGoldenTest {
 
     @Test
     fun parseAuthenticatorDataSupportsExtensionsWithoutAttestedCredentialData() {
-        val result = parseAuthenticatorData(
+        val result = WebAuthnProtocolParser.parseAuthenticatorData(
             bytes = authenticatorDataBytes(
                 rpIdHash = Base64UrlBytes.parseOrThrow("1yxH9d_LMT9HH9R86tjNMYA5bPTEoE_v8MJkyJ-ScWo").bytes(),
-                flags = FLAG_EXTENSION_DATA_INCLUDED or 0x01,
+                flags = 0x80 or 0x01,
                 signCount = 0,
                 extensionData = cborMap(cborText("txAuthSimple") to cborText("ok")),
             ),
@@ -160,10 +161,10 @@ class ProtocolParsersGoldenTest {
 
     @Test
     fun parseAuthenticatorDataRejectsMalformedCoseAndTrailingBytes() {
-        val malformedCose = parseAuthenticatorData(
+        val malformedCose = WebAuthnProtocolParser.parseAuthenticatorData(
             bytes = registrationAuthenticatorDataBytes(
                 rpIdHash = ByteArray(32) { 0x11 },
-                flags = FLAG_ATTESTED_CREDENTIAL_DATA or 0x01,
+                flags = 0x40 or 0x01,
                 signCount = 1,
                 credentialId = ByteArray(16) { 0x22 },
                 cosePublicKey = byteArrayOf(0xA1.toByte(), 0x01),
@@ -171,7 +172,7 @@ class ProtocolParsersGoldenTest {
             ),
             field = "attestationObject.authData",
         )
-        val trailingBytes = parseAuthenticatorData(
+        val trailingBytes = WebAuthnProtocolParser.parseAuthenticatorData(
             bytes = authenticatorDataBytes(
                 rpIdHash = ByteArray(32) { 0x33 },
                 flags = 0x01,
@@ -187,10 +188,10 @@ class ProtocolParsersGoldenTest {
 
     @Test
     fun parseAuthenticatorDataRejectsNonMapCosePublicKey() {
-        val result = parseAuthenticatorData(
+        val result = WebAuthnProtocolParser.parseAuthenticatorData(
             bytes = registrationAuthenticatorDataBytes(
                 rpIdHash = ByteArray(32) { 0x11 },
-                flags = FLAG_ATTESTED_CREDENTIAL_DATA or 0x01,
+                flags = 0x40 or 0x01,
                 signCount = 1,
                 credentialId = ByteArray(16) { 0x22 },
                 cosePublicKey = cborText("not-a-cose-key"),
@@ -205,10 +206,10 @@ class ProtocolParsersGoldenTest {
 
     @Test
     fun parseAuthenticatorDataRejectsNonMapExtensionData() {
-        val result = parseAuthenticatorData(
+        val result = WebAuthnProtocolParser.parseAuthenticatorData(
             bytes = authenticatorDataBytes(
                 rpIdHash = ByteArray(32) { 0x33 },
-                flags = FLAG_EXTENSION_DATA_INCLUDED or 0x01,
+                flags = 0x80 or 0x01,
                 signCount = 1,
                 extensionData = cborText("not-an-extension-map"),
             ),

@@ -592,6 +592,62 @@ final class dev.webauthn.model/PublicKeyCredentialUserEntity { // dev.webauthn.m
     final fun toString(): kotlin/String // dev.webauthn.model/PublicKeyCredentialUserEntity.toString|toString(){}[0]
 }
 
+final class dev.webauthn.model/RawAuthenticationResponse { // dev.webauthn.model/RawAuthenticationResponse|null[0]
+    constructor <init>(dev.webauthn.model/CredentialId, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/UserHandle? = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...) // dev.webauthn.model/RawAuthenticationResponse.<init>|<init>(dev.webauthn.model.CredentialId;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.UserHandle?;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+
+    final val authenticatorAttachment // dev.webauthn.model/RawAuthenticationResponse.authenticatorAttachment|{}authenticatorAttachment[0]
+        final fun <get-authenticatorAttachment>(): dev.webauthn.model/AuthenticatorAttachment? // dev.webauthn.model/RawAuthenticationResponse.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
+    final val authenticatorData // dev.webauthn.model/RawAuthenticationResponse.authenticatorData|{}authenticatorData[0]
+        final fun <get-authenticatorData>(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawAuthenticationResponse.authenticatorData.<get-authenticatorData>|<get-authenticatorData>(){}[0]
+    final val clientDataJson // dev.webauthn.model/RawAuthenticationResponse.clientDataJson|{}clientDataJson[0]
+        final fun <get-clientDataJson>(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawAuthenticationResponse.clientDataJson.<get-clientDataJson>|<get-clientDataJson>(){}[0]
+    final val credentialId // dev.webauthn.model/RawAuthenticationResponse.credentialId|{}credentialId[0]
+        final fun <get-credentialId>(): dev.webauthn.model/CredentialId // dev.webauthn.model/RawAuthenticationResponse.credentialId.<get-credentialId>|<get-credentialId>(){}[0]
+    final val extensions // dev.webauthn.model/RawAuthenticationResponse.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.model/RawAuthenticationResponse.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val signature // dev.webauthn.model/RawAuthenticationResponse.signature|{}signature[0]
+        final fun <get-signature>(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawAuthenticationResponse.signature.<get-signature>|<get-signature>(){}[0]
+    final val userHandle // dev.webauthn.model/RawAuthenticationResponse.userHandle|{}userHandle[0]
+        final fun <get-userHandle>(): dev.webauthn.model/UserHandle? // dev.webauthn.model/RawAuthenticationResponse.userHandle.<get-userHandle>|<get-userHandle>(){}[0]
+
+    final fun component1(): dev.webauthn.model/CredentialId // dev.webauthn.model/RawAuthenticationResponse.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawAuthenticationResponse.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawAuthenticationResponse.component3|component3(){}[0]
+    final fun component4(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawAuthenticationResponse.component4|component4(){}[0]
+    final fun component5(): dev.webauthn.model/UserHandle? // dev.webauthn.model/RawAuthenticationResponse.component5|component5(){}[0]
+    final fun component6(): dev.webauthn.model/AuthenticatorAttachment? // dev.webauthn.model/RawAuthenticationResponse.component6|component6(){}[0]
+    final fun component7(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.model/RawAuthenticationResponse.component7|component7(){}[0]
+    final fun copy(dev.webauthn.model/CredentialId = ..., dev.webauthn.model/Base64UrlBytes = ..., dev.webauthn.model/Base64UrlBytes = ..., dev.webauthn.model/Base64UrlBytes = ..., dev.webauthn.model/UserHandle? = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...): dev.webauthn.model/RawAuthenticationResponse // dev.webauthn.model/RawAuthenticationResponse.copy|copy(dev.webauthn.model.CredentialId;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.UserHandle?;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/RawAuthenticationResponse.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.model/RawAuthenticationResponse.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.model/RawAuthenticationResponse.toString|toString(){}[0]
+}
+
+final class dev.webauthn.model/RawRegistrationResponse { // dev.webauthn.model/RawRegistrationResponse|null[0]
+    constructor <init>(dev.webauthn.model/CredentialId, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...) // dev.webauthn.model/RawRegistrationResponse.<init>|<init>(dev.webauthn.model.CredentialId;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+
+    final val attestationObject // dev.webauthn.model/RawRegistrationResponse.attestationObject|{}attestationObject[0]
+        final fun <get-attestationObject>(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawRegistrationResponse.attestationObject.<get-attestationObject>|<get-attestationObject>(){}[0]
+    final val authenticatorAttachment // dev.webauthn.model/RawRegistrationResponse.authenticatorAttachment|{}authenticatorAttachment[0]
+        final fun <get-authenticatorAttachment>(): dev.webauthn.model/AuthenticatorAttachment? // dev.webauthn.model/RawRegistrationResponse.authenticatorAttachment.<get-authenticatorAttachment>|<get-authenticatorAttachment>(){}[0]
+    final val clientDataJson // dev.webauthn.model/RawRegistrationResponse.clientDataJson|{}clientDataJson[0]
+        final fun <get-clientDataJson>(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawRegistrationResponse.clientDataJson.<get-clientDataJson>|<get-clientDataJson>(){}[0]
+    final val credentialId // dev.webauthn.model/RawRegistrationResponse.credentialId|{}credentialId[0]
+        final fun <get-credentialId>(): dev.webauthn.model/CredentialId // dev.webauthn.model/RawRegistrationResponse.credentialId.<get-credentialId>|<get-credentialId>(){}[0]
+    final val extensions // dev.webauthn.model/RawRegistrationResponse.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.model/RawRegistrationResponse.extensions.<get-extensions>|<get-extensions>(){}[0]
+
+    final fun component1(): dev.webauthn.model/CredentialId // dev.webauthn.model/RawRegistrationResponse.component1|component1(){}[0]
+    final fun component2(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawRegistrationResponse.component2|component2(){}[0]
+    final fun component3(): dev.webauthn.model/Base64UrlBytes // dev.webauthn.model/RawRegistrationResponse.component3|component3(){}[0]
+    final fun component4(): dev.webauthn.model/AuthenticatorAttachment? // dev.webauthn.model/RawRegistrationResponse.component4|component4(){}[0]
+    final fun component5(): dev.webauthn.model/AuthenticationExtensionsClientOutputs? // dev.webauthn.model/RawRegistrationResponse.component5|component5(){}[0]
+    final fun copy(dev.webauthn.model/CredentialId = ..., dev.webauthn.model/Base64UrlBytes = ..., dev.webauthn.model/Base64UrlBytes = ..., dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...): dev.webauthn.model/RawRegistrationResponse // dev.webauthn.model/RawRegistrationResponse.copy|copy(dev.webauthn.model.CredentialId;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.model/RawRegistrationResponse.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.model/RawRegistrationResponse.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.model/RawRegistrationResponse.toString|toString(){}[0]
+}
+
 final class dev.webauthn.model/RegistrationResponse { // dev.webauthn.model/RegistrationResponse|null[0]
     constructor <init>(dev.webauthn.model/CredentialId, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/Base64UrlBytes, dev.webauthn.model/AuthenticatorData, dev.webauthn.model/AttestedCredentialData, dev.webauthn.model/AuthenticatorAttachment? = ..., dev.webauthn.model/AuthenticationExtensionsClientOutputs? = ...) // dev.webauthn.model/RegistrationResponse.<init>|<init>(dev.webauthn.model.CredentialId;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.Base64UrlBytes;dev.webauthn.model.AuthenticatorData;dev.webauthn.model.AttestedCredentialData;dev.webauthn.model.AuthenticatorAttachment?;dev.webauthn.model.AuthenticationExtensionsClientOutputs?){}[0]
 

@@ -34,7 +34,8 @@ cp -R "$ROOT_DIR/documentation/consumer-smoke/." "$tmp_dir/"
 for template in \
   "$tmp_dir/build.gradle.kts.template" \
   "$tmp_dir/client/build.gradle.kts.template" \
-  "$tmp_dir/server/build.gradle.kts.template"; do
+  "$tmp_dir/server/build.gradle.kts.template" \
+  "$tmp_dir/json-kotlinx/build.gradle.kts.template"; do
   output="${template%.template}"
   sed \
     -e "s/<version>/$VERSION_NAME/g" \
@@ -50,6 +51,7 @@ done
   :client:compileAndroidMain \
   :client:compileKotlinIosSimulatorArm64 \
   :server:compileKotlin \
+  :json-kotlinx:compileKotlin \
   --stacktrace
 
 cp \

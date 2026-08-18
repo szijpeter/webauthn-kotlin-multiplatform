@@ -75,6 +75,7 @@ API notes:
 - Kotlin consumers that enable `-Xreturn-value-checker=check` are warned when marked parsing, conversion, or `ValidationResult` helper results are ignored.
 - Standard extensions are iterable via `WebAuthnExtension.Standard.entries` (and `WebAuthnExtension.standardExtensions`).
 - `WebAuthnExtension.Custom` rejects reserved standard extension identifiers (for example `prf` and `largeBlob`) to prevent collisions.
+- `RawRegistrationResponse` and `RawAuthenticationResponse` preserve untrusted platform/transport output. Parse and validate them before treating a result as a ceremony response.
 
 ## Pitfalls and limits
 

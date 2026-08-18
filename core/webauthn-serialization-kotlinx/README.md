@@ -6,7 +6,7 @@ Serialization and mapping helpers between wire DTOs and typed WebAuthn domain mo
 
 - `WebAuthnDtoMapper` mapping between DTO and `webauthn-model`
 - `kotlinx.serialization`-based DTO support
-- Authenticator data and CBOR/COSE-related conversion helpers used by higher layers
+- `clientDataJSON` parsing and DTO conversion; binary protocol interpretation is provided by `webauthn-protocol`
 
 ## When to use
 
@@ -49,7 +49,7 @@ flowchart LR
 ## Pitfalls and limits
 
 - Mapper validation is strict by design; malformed wire data should be handled as untrusted input.
-- Low-level CBOR traversal relies on `webauthn-cbor-core` strict scanner primitives shared with JVM crypto parsing.
+- Use `webauthn-protocol` directly when an adapter needs binary authenticator-data or attestation-object interpretation without selecting this codec.
 - Canonical response DTO mapping emits standards-shaped WebAuthn response JSON fields (`type = "public-key"` and `clientExtensionResults`, including empty extension objects when no outputs are present).
 - Use `WebAuthnDtoMapper.parseCollectedClientData(...)` to derive ceremony `type`, `challenge`, and `origin` from the credential response's signed `clientDataJSON`; never treat duplicate transport fields as authoritative.
 - `residentKey` is the authoritative creation-options field; legacy `requireResidentKey` payloads are now rejected explicitly instead of being mapped.
@@ -64,4 +64,4 @@ flowchart LR
 
 ## Status
 
-Beta, strict mapper validation with CBOR/COSE handling.
+Beta, strict mapper validation and signed client-data parsing.

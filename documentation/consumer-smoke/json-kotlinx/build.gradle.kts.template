@@ -1,0 +1,16 @@
+plugins {
+    kotlin("jvm")
+}
+
+apply(from = "../repositories.gradle.kts")
+
+dependencies {
+    implementation("io.github.szijpeter:webauthn-serialization-kotlinx:<version>")
+}
+
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+    }
+}

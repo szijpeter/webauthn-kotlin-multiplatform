@@ -77,6 +77,28 @@ class TypesTest {
     }
 
     @Test
+    fun rawResponsesPreserveTransportBytesWithoutProtocolInterpretation() {
+        val credentialId = CredentialId.fromBytes(ByteArray(16) { 1 })
+        val clientDataJson = Base64UrlBytes.fromBytes("client data".encodeToByteArray())
+        val authenticatorData = Base64UrlBytes.fromBytes(ByteArray(37) { 2 })
+
+        val registration = RawRegistrationResponse(
+            credentialId = credentialId,
+            clientDataJson = clientDataJson,
+            attestationObject = Base64UrlBytes.fromBytes("attestation".encodeToByteArray()),
+        )
+        val authentication = RawAuthenticationResponse(
+            credentialId = credentialId,
+            clientDataJson = clientDataJson,
+            authenticatorData = authenticatorData,
+            signature = Base64UrlBytes.fromBytes("signature".encodeToByteArray()),
+        )
+
+        assertEquals(clientDataJson, registration.clientDataJson)
+        assertEquals(authenticatorData, authentication.authenticatorData)
+    }
+
+    @Test
     fun customWebAuthnExtensionRejectsStandardIdentifiers() {
         assertFailsWith<IllegalArgumentException> {
             WebAuthnExtension.Custom(WebAuthnExtension.Prf.identifier)

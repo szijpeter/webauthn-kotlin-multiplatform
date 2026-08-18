@@ -36,6 +36,8 @@ Published:
 - `platform:bom` as `webauthn-bom`
 - `webauthn-cbor-core`
 - `webauthn-model`
+- `webauthn-json-api`
+- `webauthn-protocol`
 - `webauthn-runtime-core`
 - `webauthn-serialization-kotlinx`
 - `webauthn-core`
@@ -72,6 +74,8 @@ Core-critical:
 
 - `webauthn-cbor-core`
 - `webauthn-model`
+- `webauthn-json-api`
+- `webauthn-protocol`
 - `webauthn-core`
 - `webauthn-serialization-kotlinx`
 - `webauthn-crypto-api`
