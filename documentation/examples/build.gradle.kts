@@ -44,7 +44,7 @@ kotlin {
             implementation(project(":core:webauthn-protocol"))
             implementation(project(":core:webauthn-core"))
             implementation(project(":core:webauthn-runtime-core"))
-            implementation(project(":core:webauthn-serialization-kotlinx"))
+            implementation(project(":core:webauthn-json-kotlinx"))
             implementation(project(":client:webauthn-client-core"))
             implementation(project(":client:webauthn-client-json-core"))
             implementation(project(":client:webauthn-client-prf-crypto"))

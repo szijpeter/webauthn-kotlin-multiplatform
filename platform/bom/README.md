@@ -28,6 +28,7 @@ dependencies {
     implementation("io.github.szijpeter:webauthn-server-core-jvm")
     implementation("io.github.szijpeter:webauthn-server-jvm-crypto")
     implementation("io.github.szijpeter:webauthn-server-ktor")
+    implementation("io.github.szijpeter:webauthn-server-store-exposed")
 }
 ```
 

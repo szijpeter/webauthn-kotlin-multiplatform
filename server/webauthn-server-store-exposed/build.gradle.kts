@@ -5,14 +5,14 @@ plugins {
 
 dependencies {
     api(project(":core:webauthn-core"))
-    api(project(":core:webauthn-serialization-kotlinx"))
+    implementation(project(":core:webauthn-json-kotlinx"))
     api(project(":core:webauthn-crypto-api"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.exposed.core)
-    implementation(libs.exposed.jdbc)
+    api(libs.exposed.jdbc)
     implementation(libs.exposed.migration.core)
     implementation(libs.exposed.migration.jdbc)
 

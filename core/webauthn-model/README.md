@@ -80,7 +80,7 @@ API notes:
 ## Pitfalls and limits
 
 - No full ceremony verification (use `webauthn-core` + server crypto/services).
-- No JSON/CBOR mapping by itself (use `webauthn-serialization-kotlinx` when needed).
+- No JSON/CBOR mapping by itself (use `webauthn-json-kotlinx` when needed).
 - No RP hash/signature/attestation verification logic.
 
 ## iOS targets

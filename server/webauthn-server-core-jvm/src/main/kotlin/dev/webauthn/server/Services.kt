@@ -13,6 +13,7 @@ import dev.webauthn.crypto.AttestationVerifier
 import dev.webauthn.crypto.CoseAlgorithm
 import dev.webauthn.crypto.RpIdHasher
 import dev.webauthn.crypto.SignatureVerifier
+import dev.webauthn.json.CollectedClientDataDecoder
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.Origin
@@ -36,6 +37,7 @@ public class RegistrationService(
     private val userAccountStore: UserAccountStore,
     private val attestationVerifier: AttestationVerifier,
     private val rpIdHasher: RpIdHasher,
+    private val clientDataDecoder: CollectedClientDataDecoder,
     private val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
     @OptIn(ExperimentalWebAuthnL3Api::class)
     private val extensionHooks: List<WebAuthnExtensionHook> = [],
@@ -91,13 +93,19 @@ public class RegistrationService(
      */
     @Suppress("LongMethod")
     public suspend fun finish(request: RegistrationFinishRequest): ValidationResult<RegistrationResponse> {
+        val clientData = when (
+            val decoded = clientDataDecoder.decodeCollectedClientData(request.response.clientDataJson)
+        ) {
+            is ValidationResult.Valid -> decoded.value
+            is ValidationResult.Invalid -> return decoded
+        }
         val parsed = parseRegistrationResponse(request)
         if (parsed is ValidationResult.Invalid) {
             return parsed
         }
         val response = (parsed as ValidationResult.Valid).value
 
-        val session = challengeStore.consume(request.clientData.challenge, CeremonyType.REGISTRATION)
+        val session = challengeStore.consume(clientData.challenge, CeremonyType.REGISTRATION)
             ?: return failure("challenge", "Unknown or expired registration challenge")
 
         if (currentEpochMs(nowEpochMs) > session.expiresAtEpochMs) {
@@ -105,7 +113,7 @@ public class RegistrationService(
         }
 
         val allowedOrigins = when (
-            val result = resolveAllowedOrigins(session, request.clientData.origin, originMetadataProvider)
+            val result = resolveAllowedOrigins(session, clientData.origin, originMetadataProvider)
         ) {
             is ValidationResult.Valid -> result.value
             is ValidationResult.Invalid -> return result
@@ -121,7 +129,7 @@ public class RegistrationService(
             RegistrationValidationInput(
                 options = options,
                 response = response,
-                clientData = request.clientData,
+                clientData = clientData,
                 expectedOrigin = session.origin,
                 allowedOrigins = allowedOrigins,
                 userVerificationPolicy = session.userVerification.toPolicy(),
@@ -144,7 +152,7 @@ public class RegistrationService(
             input = RegistrationValidationInput(
                 options = options,
                 response = response,
-                clientData = request.clientData,
+                clientData = clientData,
                 expectedOrigin = session.origin,
                 allowedOrigins = allowedOrigins,
             ),
@@ -187,6 +195,7 @@ public class AuthenticationService(
     private val userAccountStore: UserAccountStore,
     private val signatureVerifier: SignatureVerifier,
     private val rpIdHasher: RpIdHasher,
+    private val clientDataDecoder: CollectedClientDataDecoder,
     @OptIn(ExperimentalWebAuthnL3Api::class)
     private val extensionHooks: List<WebAuthnExtensionHook> = [],
     private val originMetadataProvider: OriginMetadataProvider =
@@ -232,15 +241,21 @@ public class AuthenticationService(
      * W3C WebAuthn L3: §7.2. Verifying an Authentication Assertion
      */
     // Spec-step validation is intentionally structured as fail-fast guards for auditability.
-    @Suppress("LongMethod", "ReturnCount")
+    @Suppress("CyclomaticComplexMethod", "LongMethod", "ReturnCount")
     public suspend fun finish(request: AuthenticationFinishRequest): ValidationResult<AuthenticationResponse> {
+        val clientData = when (
+            val decoded = clientDataDecoder.decodeCollectedClientData(request.response.clientDataJson)
+        ) {
+            is ValidationResult.Valid -> decoded.value
+            is ValidationResult.Invalid -> return decoded
+        }
         val parsed = parseAuthenticationResponse(request)
         if (parsed is ValidationResult.Invalid) {
             return parsed
         }
         val response = (parsed as ValidationResult.Valid).value
 
-        val session = challengeStore.consume(request.clientData.challenge, CeremonyType.AUTHENTICATION)
+        val session = challengeStore.consume(clientData.challenge, CeremonyType.AUTHENTICATION)
             ?: return failure("challenge", "Unknown or expired authentication challenge")
 
         if (currentEpochMs(nowEpochMs) > session.expiresAtEpochMs) {
@@ -248,7 +263,7 @@ public class AuthenticationService(
         }
 
         val allowedOrigins = when (
-            val result = resolveAllowedOrigins(session, request.clientData.origin, originMetadataProvider)
+            val result = resolveAllowedOrigins(session, clientData.origin, originMetadataProvider)
         ) {
             is ValidationResult.Valid -> result.value
             is ValidationResult.Invalid -> return result
@@ -281,7 +296,7 @@ public class AuthenticationService(
             AuthenticationValidationInput(
                 options = requestOptions,
                 response = response,
-                clientData = request.clientData,
+                clientData = clientData,
                 expectedOrigin = session.origin,
                 allowedOrigins = allowedOrigins,
                 previousSignCount = storedCredential.signCount,

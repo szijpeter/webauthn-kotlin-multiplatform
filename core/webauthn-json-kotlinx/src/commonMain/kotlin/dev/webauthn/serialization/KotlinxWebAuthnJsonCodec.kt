@@ -58,8 +58,8 @@ public class KotlinxWebAuthnJsonCodec(
         return decode<AuthenticationResponseDto, RawAuthenticationResponse>(value, WebAuthnDtoMapper::toRawModel)
     }
 
-    override fun decodeCollectedClientData(value: ByteArray): ValidationResult<CollectedClientData> {
-        return WebAuthnDtoMapper.parseCollectedClientData(Base64UrlBytes.fromBytes(value))
+    override fun decodeCollectedClientData(value: Base64UrlBytes): ValidationResult<CollectedClientData> {
+        return WebAuthnDtoMapper.parseCollectedClientData(value)
     }
 
     private inline fun <reified T, R> decode(

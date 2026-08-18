@@ -11,7 +11,7 @@ Physical module folders mirror that model: `core/`, `client/`, `server/`, `platf
 | Layer | Key modules | Role |
 | --- | --- | --- |
 | Protocol model | `webauthn-model` | Typed WebAuthn protocol and value wrappers |
-| Validation and serialization | `webauthn-core`, `webauthn-serialization-kotlinx`, `webauthn-cbor-core`, `webauthn-runtime-core` | Validation, parsing, DTO mapping, and shared runtime helpers |
+| Validation and serialization | `webauthn-core`, `webauthn-json-kotlinx`, `webauthn-cbor-core`, `webauthn-runtime-core` | Validation, parsing, DTO mapping, and shared runtime helpers |
 | Crypto | `webauthn-crypto-api`, `webauthn-server-jvm-crypto` | Crypto contracts plus JVM attestation/signature implementation |
 | Server | `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds` | Ceremony services, route adapters, persistence adapters, optional trust metadata |
 | Client | `webauthn-client-core`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-android`, `webauthn-client-ios`, `webauthn-client-prf-crypto`, `webauthn-network-ktor-client` | Shared client logic, platform bridges, Compose helpers, transport, and PRF crypto helpers |
@@ -21,7 +21,7 @@ Physical module folders mirror that model: `core/`, `client/`, `server/`, `platf
 The published artifact surface is coordinated as one release train. The main published families are:
 
 - BOM: `platform:bom`
-- Foundation: `webauthn-cbor-core`, `webauthn-model`, `webauthn-runtime-core`, `webauthn-serialization-kotlinx`, `webauthn-core`
+- Foundation: `webauthn-cbor-core`, `webauthn-model`, `webauthn-runtime-core`, `webauthn-json-kotlinx`, `webauthn-core`
 - Crypto and server: `webauthn-crypto-api`, `webauthn-server-jvm-crypto`, `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds`
 - Client: `webauthn-client-core`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-android`, `webauthn-client-ios`, `webauthn-client-prf-crypto`, `webauthn-network-ktor-client`
 

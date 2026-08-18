@@ -19,21 +19,19 @@ public final class dev/webauthn/server/AttestationPolicy$Strict : dev/webauthn/s
 }
 
 public final class dev/webauthn/server/AuthenticationFinishRequest {
-	public fun <init> (Ldev/webauthn/serialization/AuthenticationResponseDto;Ldev/webauthn/model/CollectedClientData;)V
-	public final fun component1 ()Ldev/webauthn/serialization/AuthenticationResponseDto;
-	public final fun component2 ()Ldev/webauthn/model/CollectedClientData;
-	public final fun copy (Ldev/webauthn/serialization/AuthenticationResponseDto;Ldev/webauthn/model/CollectedClientData;)Ldev/webauthn/server/AuthenticationFinishRequest;
-	public static synthetic fun copy$default (Ldev/webauthn/server/AuthenticationFinishRequest;Ldev/webauthn/serialization/AuthenticationResponseDto;Ldev/webauthn/model/CollectedClientData;ILjava/lang/Object;)Ldev/webauthn/server/AuthenticationFinishRequest;
+	public fun <init> (Ldev/webauthn/model/RawAuthenticationResponse;)V
+	public final fun component1 ()Ldev/webauthn/model/RawAuthenticationResponse;
+	public final fun copy (Ldev/webauthn/model/RawAuthenticationResponse;)Ldev/webauthn/server/AuthenticationFinishRequest;
+	public static synthetic fun copy$default (Ldev/webauthn/server/AuthenticationFinishRequest;Ldev/webauthn/model/RawAuthenticationResponse;ILjava/lang/Object;)Ldev/webauthn/server/AuthenticationFinishRequest;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getClientData ()Ldev/webauthn/model/CollectedClientData;
-	public final fun getResponseDto ()Ldev/webauthn/serialization/AuthenticationResponseDto;
+	public final fun getResponse ()Ldev/webauthn/model/RawAuthenticationResponse;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/server/AuthenticationService {
-	public fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/RpIdHasher;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;)V
-	public synthetic fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/RpIdHasher;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/RpIdHasher;Ldev/webauthn/json/CollectedClientDataDecoder;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/SignatureVerifier;Ldev/webauthn/crypto/RpIdHasher;Ldev/webauthn/json/CollectedClientDataDecoder;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun finish (Ldev/webauthn/server/AuthenticationFinishRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun start (Ldev/webauthn/server/AuthenticationStartRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -93,21 +91,19 @@ public final class dev/webauthn/server/InMemoryUserAccountStore : dev/webauthn/s
 }
 
 public final class dev/webauthn/server/RegistrationFinishRequest {
-	public fun <init> (Ldev/webauthn/serialization/RegistrationResponseDto;Ldev/webauthn/model/CollectedClientData;)V
-	public final fun component1 ()Ldev/webauthn/serialization/RegistrationResponseDto;
-	public final fun component2 ()Ldev/webauthn/model/CollectedClientData;
-	public final fun copy (Ldev/webauthn/serialization/RegistrationResponseDto;Ldev/webauthn/model/CollectedClientData;)Ldev/webauthn/server/RegistrationFinishRequest;
-	public static synthetic fun copy$default (Ldev/webauthn/server/RegistrationFinishRequest;Ldev/webauthn/serialization/RegistrationResponseDto;Ldev/webauthn/model/CollectedClientData;ILjava/lang/Object;)Ldev/webauthn/server/RegistrationFinishRequest;
+	public fun <init> (Ldev/webauthn/model/RawRegistrationResponse;)V
+	public final fun component1 ()Ldev/webauthn/model/RawRegistrationResponse;
+	public final fun copy (Ldev/webauthn/model/RawRegistrationResponse;)Ldev/webauthn/server/RegistrationFinishRequest;
+	public static synthetic fun copy$default (Ldev/webauthn/server/RegistrationFinishRequest;Ldev/webauthn/model/RawRegistrationResponse;ILjava/lang/Object;)Ldev/webauthn/server/RegistrationFinishRequest;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getClientData ()Ldev/webauthn/model/CollectedClientData;
-	public final fun getResponseDto ()Ldev/webauthn/serialization/RegistrationResponseDto;
+	public final fun getResponse ()Ldev/webauthn/model/RawRegistrationResponse;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/webauthn/server/RegistrationService {
-	public fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/AttestationVerifier;Ldev/webauthn/crypto/RpIdHasher;Ldev/webauthn/server/AttestationPolicy;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;)V
-	public synthetic fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/AttestationVerifier;Ldev/webauthn/crypto/RpIdHasher;Ldev/webauthn/server/AttestationPolicy;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/AttestationVerifier;Ldev/webauthn/crypto/RpIdHasher;Ldev/webauthn/json/CollectedClientDataDecoder;Ldev/webauthn/server/AttestationPolicy;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Ldev/webauthn/server/ChallengeStore;Ldev/webauthn/server/CredentialStore;Ldev/webauthn/server/UserAccountStore;Ldev/webauthn/crypto/AttestationVerifier;Ldev/webauthn/crypto/RpIdHasher;Ldev/webauthn/json/CollectedClientDataDecoder;Ldev/webauthn/server/AttestationPolicy;Ljava/util/List;Ldev/webauthn/core/OriginMetadataProvider;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun finish (Ldev/webauthn/server/RegistrationFinishRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun start (Ldev/webauthn/server/RegistrationStartRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

@@ -39,6 +39,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -47,6 +48,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {
@@ -90,6 +92,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -98,6 +101,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {
@@ -126,6 +130,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -134,6 +139,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {
@@ -191,6 +197,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -199,6 +206,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {
@@ -249,6 +257,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -257,6 +266,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {
@@ -296,6 +306,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -304,6 +315,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {
@@ -351,6 +363,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         val authenticationService = AuthenticationService(
@@ -359,6 +372,7 @@ class WebAuthnKtorRoutesTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {

@@ -8,7 +8,6 @@ import dev.webauthn.model.AttestedCredentialData
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.Challenge
-import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
 import dev.webauthn.model.Origin
@@ -16,14 +15,14 @@ import dev.webauthn.model.PublicKeyCredentialDescriptor
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
-import dev.webauthn.serialization.AuthenticationResponseDto
-import dev.webauthn.serialization.RegistrationResponseDto
-import dev.webauthn.serialization.WebAuthnDtoMapper
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import java.security.SecureRandom
 
 /** Server-side account identity used to map usernames to stable [UserHandle] values. */
@@ -85,8 +84,8 @@ public data class RegistrationStartRequest(
 
 /** Input for finishing registration (WebAuthn L3 §7.1 response verification). */
 public data class RegistrationFinishRequest(
-    public val responseDto: RegistrationResponseDto,
-    public val clientData: CollectedClientData,
+    /** Byte-preserving response material from the authenticator/browser boundary. */
+    public val response: RawRegistrationResponse,
 )
 
 /** Input for starting authentication (WebAuthn L3 §7.2 ceremony options assembly). */
@@ -101,8 +100,8 @@ public data class AuthenticationStartRequest(
 
 /** Input for finishing authentication (WebAuthn L3 §7.2 assertion verification). */
 public data class AuthenticationFinishRequest(
-    public val responseDto: AuthenticationResponseDto,
-    public val clientData: CollectedClientData,
+    /** Byte-preserving response material from the authenticator/browser boundary. */
+    public val response: RawAuthenticationResponse,
 )
 
 /** Attestation handling strategy applied during registration completion. */
@@ -155,11 +154,11 @@ internal fun failure(field: String, message: String): ValidationResult.Invalid {
 
 internal fun parseRegistrationResponse(
     request: RegistrationFinishRequest,
-): ValidationResult<RegistrationResponse> = WebAuthnDtoMapper.toModel(request.responseDto)
+): ValidationResult<RegistrationResponse> = WebAuthnProtocolParser.parseRegistrationResponse(request.response)
 
 internal fun parseAuthenticationResponse(
     request: AuthenticationFinishRequest,
-): ValidationResult<AuthenticationResponse> = WebAuthnDtoMapper.toModel(request.responseDto)
+): ValidationResult<AuthenticationResponse> = WebAuthnProtocolParser.parseAuthenticationResponse(request.response)
 
 internal fun defaultCredentialDescriptor(
     credential: StoredCredential,

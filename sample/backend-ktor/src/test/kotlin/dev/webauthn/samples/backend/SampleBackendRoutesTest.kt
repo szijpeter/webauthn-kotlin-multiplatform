@@ -163,6 +163,7 @@ private fun registrationService(): RegistrationService {
         userAccountStore = userStore,
         attestationVerifier = StrictAttestationVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = dev.webauthn.serialization.KotlinxWebAuthnJsonCodec(),
         attestationPolicy = AttestationPolicy.None,
     )
 }
@@ -177,5 +178,6 @@ private fun authenticationService(): AuthenticationService {
         userAccountStore = userStore,
         signatureVerifier = JvmSignatureVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = dev.webauthn.serialization.KotlinxWebAuthnJsonCodec(),
     )
 }

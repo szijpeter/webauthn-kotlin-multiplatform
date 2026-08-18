@@ -61,7 +61,7 @@ for file in "${changed_files[@]}"; do
         core/webauthn-cbor-core/*|\
         core/webauthn-model/*|\
         core/webauthn-core/*|\
-        core/webauthn-serialization-kotlinx/*|\
+        core/webauthn-json-kotlinx/*|\
         core/webauthn-crypto-api/*|\
         server/webauthn-server-core-jvm/*|\
         server/webauthn-server-jvm-crypto/*)

@@ -2,6 +2,7 @@ package dev.webauthn.server
 
 import dev.webauthn.core.CeremonyType
 import dev.webauthn.core.ChallengeSession
+import dev.webauthn.json.CollectedClientDataDecoder
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
@@ -11,6 +12,7 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
 import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
@@ -45,6 +47,7 @@ class CeremonyFixtureTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         userStore.save(UserAccount(id = fixture.userHandle(), name = fixture.relyingParty.userName, displayName = fixture.relyingParty.userName))
@@ -58,8 +61,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.registrationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
 
@@ -79,8 +81,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.authenticationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
 
@@ -91,25 +92,28 @@ class CeremonyFixtureTest {
     }
 
     @Test
-    fun authenticationFixtureRejectsWrongChallenge() = runBlocking {
+    fun authenticationFixtureRejectsOldResponseForFreshCeremonyChallenge() = runBlocking {
         val fixture = loadAuthenticationCeremonyFixture(
             path = "fixtures/ceremony/authentication-android-es256.json",
             classLoader = javaClass.classLoader,
         )
+        val challengeStore = InMemoryChallengeStore()
+        val freshChallenge = Challenge.fromBytes(ByteArray(32) { 0x44 })
         val service = authenticationServiceFor(
             fixture = fixture,
-            sessionChallenge = Challenge.fromBytes(ByteArray(32) { 0x44 }),
+            sessionChallenge = freshChallenge,
+            challengeStore = challengeStore,
         )
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.authenticationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
 
         assertTrue(result is ValidationResult.Invalid)
         assertEquals("challenge", result.errors.single().field)
+        assertTrue(challengeStore.consume(freshChallenge, CeremonyType.AUTHENTICATION) != null)
     }
 
     @Test
@@ -125,13 +129,56 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.authenticationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
 
         assertTrue(result is ValidationResult.Invalid)
         assertEquals("origin", result.errors.single().field)
+    }
+
+    @Test
+    fun authenticationFixtureRejectsSignedRegistrationType() = runBlocking {
+        val fixture = loadAuthenticationCeremonyFixture(
+            path = "fixtures/ceremony/authentication-android-es256.json",
+            classLoader = javaClass.classLoader,
+        )
+        val service = authenticationServiceFor(fixture)
+        val rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow()
+        val responseWithWrongType = rawResponse.copy(
+            clientDataJson = Base64UrlBytes.parseOrThrow(
+                encodeTestCollectedClientData(
+                    type = "webauthn.create",
+                    challenge = Challenge.parseOrThrow(fixture.relyingParty.challenge),
+                    origin = Origin.parseOrThrow(fixture.relyingParty.origin),
+                ),
+            ),
+        )
+
+        val result = service.finish(AuthenticationFinishRequest(responseWithWrongType))
+
+        assertTrue(result is ValidationResult.Invalid)
+        assertEquals("clientData.type", result.errors.single().field)
+    }
+
+    @Test
+    fun serverDecoderReceivesExactSignedClientDataBytes() = runBlocking {
+        val fixture = loadAuthenticationCeremonyFixture(
+            path = "fixtures/ceremony/authentication-android-es256.json",
+            classLoader = javaClass.classLoader,
+        )
+        val rawResponse = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow()
+        var decodedBytes: Base64UrlBytes? = null
+        val decoder = CollectedClientDataDecoder { value ->
+            decodedBytes = value
+            TestCollectedClientDataDecoder.decodeCollectedClientData(value)
+        }
+        val service = authenticationServiceFor(fixture, clientDataDecoder = decoder)
+
+        val result = service.finish(AuthenticationFinishRequest(rawResponse))
+
+        assertTrue(result is ValidationResult.Valid)
+        assertContentEquals(rawResponse.clientDataJson.bytes(), decodedBytes?.bytes())
     }
 
     @Test
@@ -147,8 +194,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.authenticationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
 
@@ -176,8 +222,7 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.authenticationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
 
@@ -195,10 +240,9 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.copy(
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.copy(
                     authenticatorData = Base64UrlBytes.fromBytes(ByteArray(10) { 0x01 }).encoded(),
-                ).toDto(),
-                clientData = fixture.authenticationClientData(),
+                ).toDto()).getOrThrow(),
             ),
         )
 
@@ -221,6 +265,7 @@ class CeremonyFixtureTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         userStore.save(UserAccount(id = fixture.userHandle(), name = fixture.relyingParty.userName, displayName = fixture.relyingParty.userName))
@@ -239,10 +284,9 @@ class CeremonyFixtureTest {
 
         val result = service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.copy(
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.copy(
                     attestationObject = Base64UrlBytes.fromBytes(malformedAttestationObject).encoded(),
-                ).toDto(),
-                clientData = fixture.registrationClientData(),
+                ).toDto()).getOrThrow(),
             ),
         )
 
@@ -375,8 +419,9 @@ class CeremonyFixtureTest {
         sessionOrigin: Origin = Origin.parseOrThrow(fixture.relyingParty.origin),
         sessionRpId: RpId = RpId.parseOrThrow(fixture.relyingParty.rpId),
         storedPublicKeyCose: String = fixture.credential.publicKeyCose,
+        challengeStore: InMemoryChallengeStore = InMemoryChallengeStore(),
+        clientDataDecoder: CollectedClientDataDecoder = TestCollectedClientDataDecoder,
     ): AuthenticationService {
-        val challengeStore = InMemoryChallengeStore()
         val credentialStore = InMemoryCredentialStore()
         val userStore = InMemoryUserAccountStore()
         userStore.save(
@@ -412,6 +457,7 @@ class CeremonyFixtureTest {
             userAccountStore = userStore,
             signatureVerifier = JvmSignatureVerifier(),
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = clientDataDecoder,
         )
     }
 

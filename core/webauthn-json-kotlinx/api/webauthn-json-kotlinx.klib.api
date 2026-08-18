@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <io.github.szijpeter:webauthn-serialization-kotlinx>
+// Library unique name: <io.github.szijpeter:webauthn-json-kotlinx>
 final class dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto { // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto|null[0]
     constructor <init>(dev.webauthn.serialization/PrfExtensionInputDto? = ..., dev.webauthn.serialization/LargeBlobExtensionInputDto? = ..., kotlin.collections/List<kotlin/String>? = ...) // dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto.<init>|<init>(dev.webauthn.serialization.PrfExtensionInputDto?;dev.webauthn.serialization.LargeBlobExtensionInputDto?;kotlin.collections.List<kotlin.String>?){}[0]
 
@@ -184,7 +184,7 @@ final class dev.webauthn.serialization/KotlinxWebAuthnJsonCodec : dev.webauthn.j
     constructor <init>(kotlinx.serialization.json/Json = ...) // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.<init>|<init>(kotlinx.serialization.json.Json){}[0]
 
     final fun decodeAuthenticationResponse(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeAuthenticationResponse|decodeAuthenticationResponse(kotlin.String){}[0]
-    final fun decodeCollectedClientData(kotlin/ByteArray): dev.webauthn.model/ValidationResult<dev.webauthn.model/CollectedClientData> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeCollectedClientData|decodeCollectedClientData(kotlin.ByteArray){}[0]
+    final fun decodeCollectedClientData(dev.webauthn.model/Base64UrlBytes): dev.webauthn.model/ValidationResult<dev.webauthn.model/CollectedClientData> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeCollectedClientData|decodeCollectedClientData(dev.webauthn.model.Base64UrlBytes){}[0]
     final fun decodeCreationOptions(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeCreationOptions|decodeCreationOptions(kotlin.String){}[0]
     final fun decodeRegistrationResponse(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeRegistrationResponse|decodeRegistrationResponse(kotlin.String){}[0]
     final fun decodeRequestOptions(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.serialization/KotlinxWebAuthnJsonCodec.decodeRequestOptions|decodeRequestOptions(kotlin.String){}[0]

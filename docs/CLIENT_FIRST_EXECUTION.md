@@ -97,7 +97,7 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 ### `webauthn-client-json-core` (optional)
 
 - `:client:webauthn-client-core`
-- `:core:webauthn-serialization-kotlinx`
+- `:core:webauthn-json-kotlinx`
 - `kotlinx-serialization-json`
 - Provides `JsonPasskeyClient`, `PasskeyJsonMapper`, and `KotlinxPasskeyJsonMapper`
 
