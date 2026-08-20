@@ -27,6 +27,7 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 
 4. Let PR CI remain the blocking authority.
 5. CI checkout steps must disable persisted credentials before executing repository code.
+   Privileged `pull_request_target` workflows must load executable code and configuration only from the trusted default branch, must never check out or execute the pull request head, and may consume pull request content only as API metadata with least-privilege permissions.
 6. If core/model validation behavior changed, update `spec-notes/webauthn-l3-validation-map.md`.
 7. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
 8. When a published module implementation/build contract changes, update the matching module `README.md` in the same change.
@@ -52,6 +53,25 @@ Only when the API change is intentional, regenerate baselines and re-check:
 ```bash
 ./gradlew publishToMavenLocal --stacktrace
 ```
+
+## PR Change Profile Workflow
+
+`.github/workflows/pr-change-profile.yml` maintains one marker comment that
+summarizes changed-file churn by review-oriented category, module, and platform
+source set. The profile is descriptive review context, not a test-coverage
+metric or a quality gate.
+
+Repository path classification is customized in
+`.github/pr-change-profile.config.json`. Source-like files that do not match a
+known layout remain visible as `Unclassified source` instead of being silently
+folded into another category. Changes to the profiler, its configuration, or its
+workflow are covered by the unprivileged
+`.github/workflows/pr-change-profile-selftest.yml` workflow.
+
+The commenting workflow uses `pull_request_target` only to support fork pull
+requests. It loads the profiler and configuration from the trusted default
+branch, never checks out or executes the pull request head, and renders pull
+request file data obtained through the GitHub API.
 
 ## Docs-Only Workflow
 

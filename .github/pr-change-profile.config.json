@@ -1,0 +1,69 @@
+{
+  "publishedAreas": ["core", "client", "server"],
+  "testVerificationPrefixes": [
+    "documentation/consumer-smoke/"
+  ],
+  "toolingPrefixes": [
+    ".github/",
+    "build-logic/",
+    "tools/",
+    ".githooks/",
+    ".gemini/",
+    ".kiro/",
+    "config/",
+    "documentation/tooling/"
+  ],
+  "documentationPrefixes": [
+    "docs/",
+    "spec-notes/"
+  ],
+  "documentationExamplePrefixes": [
+    "documentation/examples/"
+  ],
+  "samplePrefixes": [
+    "sample/"
+  ],
+  "publishingPrefixes": [
+    "platform/",
+    "gradle/dependency-locks/"
+  ],
+  "publishingFiles": [
+    "gradle/libs.versions.toml",
+    "gradle/verification-metadata.xml"
+  ],
+  "referencePrefixes": [
+    "spec-cache/"
+  ],
+  "generatedFiles": [
+    "documentation/example-inventory.md"
+  ],
+  "rootDocumentationFiles": [
+    "README.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CODE_OF_CONDUCT.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "LICENSE.md"
+  ],
+  "sourceExtensions": [
+    ".kt",
+    ".kts",
+    ".java",
+    ".swift",
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".ts",
+    ".tsx",
+    ".c",
+    ".cc",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".sql",
+    ".sq"
+  ]
+}
