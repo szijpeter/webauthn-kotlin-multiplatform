@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **135**
+Managed blocks: **136**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -108,8 +108,9 @@ Managed blocks: **135**
 | docs-wiki-quality-and-release-bash-1 | docs/wiki/quality-and-release.md:12 | Default Quality Gates | bash | contributor | markdown | Markdown block | syntax |  |
 | platform-bom-readme-kotlin-1 | platform/bom/README.md:25 | How to use | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
 | platform-bom-readme-mermaid-1 | platform/bom/README.md:38 | Fit in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| sample-backend-ktor-readme-bash-1 | sample/backend-ktor/README.md:20 | Run | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:45 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-backend-ktor-readme-bash-1 | sample/backend-ktor/README.md:22 | Run | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-backend-ktor-readme-bash-3 | sample/backend-ktor/README.md:61 | FIDO server registration compatibility canary | bash | contributor | markdown | Markdown block | syntax |  |
+| sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:70 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-1 | sample/compose-passkey-ios/README.md:20 | Quick run on a device with a free Apple account | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-2 | sample/compose-passkey-ios/README.md:46 | Complete passkey path with Associated Domains | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-3 | sample/compose-passkey-ios/README.md:102 | Maintaining this project | bash | contributor | markdown | Markdown block | syntax |  |
