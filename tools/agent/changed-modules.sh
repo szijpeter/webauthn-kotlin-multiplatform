@@ -196,10 +196,6 @@ for file in "${changed_files[@]}"; do
             mark_module "server:webauthn-attestation-mds"
             mark_category "server"
             ;;
-        client/webauthn-network-ktor-client/*)
-            mark_module "client:webauthn-network-ktor-client"
-            mark_category "client"
-            ;;
         client/webauthn-client-core/*)
             mark_module "client:webauthn-client-core"
             mark_category "client"

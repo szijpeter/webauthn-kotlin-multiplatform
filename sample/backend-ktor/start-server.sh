@@ -178,6 +178,7 @@ if [[ -n "$IOS_BUNDLE_ID" ]]; then
 fi
 
 echo "Updated local.properties with WEBAUTHN_DEMO_* and association values."
+echo "Android derives its ceremony origin from the installed app signing certificate."
 echo "Rebuild app after this script starts to bake updated values."
 
 (

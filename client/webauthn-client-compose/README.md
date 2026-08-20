@@ -1,104 +1,74 @@
 # webauthn-client-compose
 
-Audience: Compose applications that want lifecycle-safe passkey orchestration with minimal platform-specific wiring.
+Compose helpers for lifecycle-aware platform clients and the generic, state-free `PasskeyFlow` API.
 
 ## What it provides
 
-- `rememberPasskeyClient()` to create the platform `PasskeyClient` in Compose.
-- `rememberPasskeyController(...)` to retain a `PasskeyController` bound to your server client.
-- A small Compose-first bridge over `webauthn-client-core`.
+- `rememberPasskeyClient()` for a lifecycle-safe Android or iOS platform client.
+- `rememberPasskeyFlow(...)` for shared ceremony orchestration with opaque backend state.
 
-<!-- doc-example: id=client-webauthn-client-compose-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    UI["Compose screen"] --> Controller["rememberPasskeyController(...)"]
-    Controller --> Start["serverClient.getRegisterOptions / getSignInOptions"]
-    Controller --> Platform["rememberPasskeyClient()<br/>Android/iOS bridge"]
-    Platform --> Prompt["System passkey prompt"]
-    Prompt --> Finish["serverClient.finishRegister / finishSignIn"]
-    Finish --> State["PasskeyControllerState"]
-    State --> UI
-```
+The common API exports `webauthn-client-core` and `webauthn-client-flow`. Platform actuals use
+`webauthn-client-platform`; Android's no-argument `rememberPasskeyClient()` deliberately selects
+`KotlinxWebAuthnJsonCodec`, while iOS uses AuthenticationServices directly.
 
 ## When to use
 
-Pick this module when your app UI is Compose and you want one shared way to drive register/sign-in flows without repeatedly constructing platform clients per screen.
+Use this module when Compose should retain a platform client across recomposition and activity/view
+recreation. The application still owns backend construction, navigation, dialogs, retry policy, and
+all visible ceremony state.
 
 ## How to use
 
-A realistic screen keeps `serverClient` stable, triggers controller actions from click handlers, and renders state transitions explicitly.
-
-<!-- doc-example: id=client-webauthn-client-compose-readme-kotlin-1; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/platformMain/kotlin/dev/webauthn/documentation/examples/ComposeClientExample.kt#compose-client -->
+<!-- doc-example: id=client-webauthn-client-compose-readme-kotlin-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Snippet is intentionally abbreviated for the Compose integration guide -->
 ```kotlin
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import dev.webauthn.client.PasskeyClient
-import dev.webauthn.client.PasskeyControllerState
-import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.client.compose.rememberPasskeyClient
-import dev.webauthn.client.compose.rememberPasskeyController
-import kotlinx.coroutines.launch
+val flow = rememberPasskeyFlow()
+val state = remember { mutableStateOf<UiState>(UiState.Idle) }
 
-@Composable
-fun <RegisterParams, SignInParams> PasskeyEntryScreen(
-    serverClient: PasskeyServerClient<RegisterParams, SignInParams>,
-    passkeyClient: PasskeyClient = rememberPasskeyClient(),
-    registerParams: RegisterParams,
-    signInParams: SignInParams,
-) {
-    val scope = rememberCoroutineScope()
-    val controller = rememberPasskeyController(
-        serverClient = serverClient,
-        passkeyClient = passkeyClient,
-    )
-    val state by controller.uiState.collectAsState()
-
-    fun onRegisterClick() = scope.launch { controller.register(registerParams) }
-    fun onSignInClick() = scope.launch { controller.signIn(signInParams) }
-
-    when (val current = state) {
-        PasskeyControllerState.Idle -> Unit
-        is PasskeyControllerState.InProgress -> {
-            // Show loading state and disable repeated taps.
-        }
-        is PasskeyControllerState.Success -> {
-            // Navigate or refresh session state.
-        }
-        is PasskeyControllerState.Failure -> {
-            // Surface current.error.message in UI.
+Button(onClick = {
+    scope.launch {
+        state.value = when (val result = flow.signIn(input, backend.authenticationBackend())) {
+            is CeremonyResult.Success -> UiState.Success(result.value)
+            is CeremonyResult.Failure -> UiState.Failure(result.error)
         }
     }
-
-    // Wire onRegisterClick / onSignInClick to your Compose buttons.
+}) {
+    Text("Sign in")
 }
 ```
 
-Usage notes:
+Use `webauthn-client-defaults` when you want the recommended platform/Kotlinx composition, or
+construct `AndroidPasskeyClient`/`IosPasskeyClient` directly when the application owns codec and
+platform configuration.
 
-- Keep `serverClient` stable (for example `remember { ... }` at composition boundary).
-- Keep the platform client stable when you pass one explicitly.
-- Reflect `InProgress`, `Success`, and `Failure` explicitly in UI; avoid silent failures.
-- Call `controller.resetToIdle()` when your UX needs a fresh post-success state.
+For a custom Android codec, construct the platform client outside the no-argument Compose helper and
+pass it explicitly:
 
-## How it fits
+<!-- doc-example: id=client-webauthn-client-compose-readme-kotlin-2; owner=illustrative; verify=illustrative; audience=consumer; reason=Snippet focuses on ownership and omits host-specific dependency injection -->
+```kotlin
+val passkeyClient = remember { applicationPasskeyClient }
+val flow = rememberPasskeyFlow(passkeyClient)
+```
 
-- Sits on top of `webauthn-client-core`.
-- Delegates platform behavior to `webauthn-client-platform` via `rememberPasskeyClient()`.
-- Commonly paired with `webauthn-network-ktor-client` for `/webauthn/*` backends.
+## Result and exception behavior
 
-## Limits
+- `CeremonyResult.Failure.Platform` and `CeremonyFailure.AlreadyInProgress` are deliberate outcomes.
+- Backend start/finish exceptions, phase-callback exceptions, and unexpected custom-client exceptions
+  propagate to the calling coroutine.
+- Coroutine cancellation remains control flow. Rethrow it before mapping other exceptions into
+  application UI errors.
 
-- Not a full authentication UI kit.
-- Does not replace backend ceremony verification/policy decisions.
-- Does not own networking retry/session policy.
+## Lifecycle and state ownership
 
-## iOS targets
-
-- Published Apple targets are `iosArm64` and `iosSimulatorArm64`.
-- `iosX64` support was removed to align with upstream dependency artifacts and current CI target compatibility.
+- Android resolves the current resumed activity for each prompt so a retained client does not hold a
+  destroyed activity after recreation.
+- iOS uses the platform client's presentation-anchor policy; construct an anchored client directly
+  when the default lookup is not appropriate.
+- `rememberPasskeyFlow` remembers by `PasskeyClient` identity. Supplying a new client creates a new
+  flow and therefore a new concurrency boundary.
+- Do not store screens, messages, or backend exceptions inside `PasskeyFlow`; keep them in the
+  application's state holder.
 
 ## Status
 
-Beta, stable helper layer for Compose-first passkey flows.
+Beta. Common helper behavior is compiled with the sample, and Android activity recreation is covered
+by an instrumentation regression in `webauthn-client-platform`.

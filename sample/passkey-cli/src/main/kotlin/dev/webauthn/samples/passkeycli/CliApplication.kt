@@ -1,6 +1,6 @@
 package dev.webauthn.samples.passkeycli
 
-import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.kotlinx.KotlinxKtorPasskeyBackend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -40,7 +40,7 @@ internal class CliApplication(
     private suspend fun runCeremony(invocation: CliInvocation.Ceremony): Int {
         val httpClient = createHttpClient()
         return try {
-            val serverClient = KtorPasskeyServerClient(
+            val backend = KotlinxKtorPasskeyBackend(
                 httpClient = httpClient,
                 endpointBase = invocation.common.endpointBase,
             )
@@ -57,7 +57,8 @@ internal class CliApplication(
             }
             val runner = PasskeyCeremonyRunner(
                 authenticatorAdapter = adapter,
-                serverClient = serverClient,
+                registrationBackend = backend.registrationBackend(),
+                authenticationBackend = backend.authenticationBackend(),
                 stdout = stdout,
                 stderr = stderr,
             )

@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-08-01
+Last updated: 2026-08-19
 
 ## Status Legend
 
@@ -45,12 +45,12 @@ Last updated: 2026-08-01
 - Client architecture moved typed platform-operation validation and error mapping into `webauthn-client-core` (`DefaultPasskeyClient`) with thin Android/iOS platform bridges that preserve raw responses.
 - Generic ceremony sequencing lives in `webauthn-client-flow`; it forwards opaque backend state, returns application-defined output, and deliberately propagates backend/callback exceptions.
 - Client typed APIs are isolated in `webauthn-client-core`; raw JSON client APIs are optional via `webauthn-client-json-core`.
-- Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and `rememberPasskeyController` for retained-VM-safe prompt usage.
+- Compose integration helpers now exist in `webauthn-client-compose` with `rememberPasskeyClient` and `rememberPasskeyFlow` for retained-VM-safe prompt usage.
 - Model/serialization transport now includes authenticator attachment, attestation conveyance preference, and authenticator transports.
 - Shared model contracts now use `Base64UrlBytes` plus domain-specific fixed-size wrappers (`RpIdHash`, `Aaguid`) instead of public raw `ByteArray` properties.
 - Shared byte/domain wrappers now use redacted `toString()` output, add named `ClientDataHash` and `CosePublicKey` values where the semantics matter, and keep the JVM signature verifier on typed COSE-key inputs.
 - Packed attestation now derives flags and AAGUID from `authData` with explicit truncated-input rejection, and MDS trust lookup normalizes hyphenated AAGUID metadata entries.
-- Network interop now has a codec-neutral `webauthn-client-ktor` contract and opt-in `webauthn-client-ktor-kotlinx` default `/webauthn/*` adapter; the old controller transport remains only for the staged consumer migration.
+- Network interop uses the codec-neutral `webauthn-client-ktor` contract, with the opt-in Kotlinx implementation in `webauthn-client-ktor-kotlinx`, default `/webauthn/*` route wiring, and first-party sample backend routes under `sample/backend-ktor`.
 - PRF client crypto module (`webauthn-client-prf-crypto`) is now published with Signum-backed HKDF/AES-GCM helpers plus a high-level PRF session facade.
 - Samples include a Compose Multiplatform client-readiness app with committed Android and iOS hosts (`sample/compose-passkey-android`, `sample/compose-passkey-ios`) and shared `MainViewController` entrypoint wiring against the default `/webauthn/*` backend contract.
 - Compose sample now includes a PRF crypto demo (`Sign In + PRF`, caller-owned salt load/generation, encrypt/decrypt, and explicit key clear) with unrecoverable-data warning when passkeys are removed.
@@ -76,8 +76,8 @@ Last updated: 2026-08-01
 - Sample recording docs update (2026-03-26): root README now embeds Android and iOS sample recordings; deferred tracker item `P6-001` is closed.
 - Release preflight hardening (2026-03-25): CI release-preflight now includes an external-consumer smoke check after `publishToMavenLocal` to verify published artifact transitive resolution from a clean project.
 - MDS integration docs now call out the required initial `refreshIfStale(...)` load so `FidoMdsTrustSource` is populated before attestation verification begins.
-- Public API hardening follow-up #59 is implemented in code: core validator boundaries now use typed wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), request-options `rpId` is optional in model/DTO ABI, sensitive network payload `toString()` values are redacted, and client finish calls now return structured `PasskeyFinishResult`.
-- Snapshot adopter note: recompile and update call sites for nullable request-options `rpId`, typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), and `PasskeyFinishResult` handling; sensitive payload `toString()` output is now redacted.
+- Public API hardening follow-up #59 is implemented in code: core validator boundaries now use typed wrappers (`WebAuthnClientDataType`, `Challenge`, `CredentialId`), request-options `rpId` is optional in model/DTO ABI, and sensitive network payload `toString()` values are redacted.
+- Snapshot adopter note: recompile and update call sites for nullable request-options `rpId` and typed validator inputs (`WebAuthnClientDataType`, `Challenge`, `CredentialId`); sensitive payload `toString()` output is now redacted.
 - Review hardening follow-up (PR #53): CBOR byte scanner now rejects negative offsets and applies overflow-safe bounds checks before string/byte reads, request-options DTO mapping now rejects unknown `userVerification` values consistently, and JSON-core top-level mapper extensions are emitted in the legacy JVM owner class (`JsonPasskeyClientKt`) to preserve binary compatibility.
 - Extension validation hardening (2026-03-29): PRF authentication validation now only checks global `eval.second` requirement instead of incorrectly validating per-credential `evalByCredential` entries without knowing which credential was selected; this prevents false-positive validation failures when multiple credentials have different PRF requirements.
 - Client capability model simplification (2026-03-29): `PasskeyCapability` now uses two explicit variants only (`Extension`, `PlatformFeature`), `PasskeyCapabilities` stores supported values as a set with normalized key-based lookup, and duplicate capability keys now fail fast to keep integrator capability checks deterministic and unambiguous.
@@ -110,13 +110,12 @@ Last updated: 2026-08-01
 | `webauthn-client-core` | Beta | Typed passkey operations (`DefaultPasskeyClient`) that validate shared inputs, delegate to platform bridges, preserve byte-faithful raw responses, classify platform failures, propagate cancellation, and expose typed capabilities | More extension-focused policy helpers and fixture coverage |
 | `webauthn-client-flow` | Beta | Generic registration/authentication start-prompt-finish sequencing, opaque backend-state forwarding, application-defined output, explicit concurrent-use rejection, and deliberate backend/callback exception propagation | Broader application integration patterns and runtime stress coverage |
 | `webauthn-client-json-core` | Beta | Optional raw JSON client APIs (`JsonPasskeyClient`) using a caller-supplied replaceable `WebAuthnJsonCodec`, with JVM-side Yubico JSON interop tests for options/response payload compatibility and no published Kotlinx implementation dependency | Additional fixture depth and profile-oriented JSON interop coverage |
-| `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyController`) for controller-driven state and retained-VM-safe prompt resolution | Broader UI/runtime lifecycle coverage across host app patterns |
+| `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyFlow`) for flow-driven orchestration and retained-VM-safe prompt resolution | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-platform` | Beta | KMP platform module: Android Credential Manager bridge with replaceable JSON codec injection and iOS AuthenticationServices bridge without a JSON implementation dependency; both preserve raw responses, map platform errors deterministically, report capabilities, and delegate orchestration to shared core | OEM/provider and iOS runtime/device matrix hardening |
 | `webauthn-client-prf-crypto` | Beta | Signum-backed PRF helpers (request/response extraction), HKDF-SHA256 key derivation, AES-GCM helpers, and zeroizable in-memory session facade | Additional interop vectors and long-term key-management guidance |
 | `webauthn-client-ktor` | Beta | Codec-neutral Ktor transport contract with caller-owned engine/serialization, configurable routes, and exact opaque continuation-state forwarding | Broader contract fixtures and retry/error policy guidance |
-| `webauthn-client-ktor-kotlinx` | Beta | Opt-in Kotlinx implementation of the default `/webauthn/*` contract, including typed start payloads and finish outcomes | Additional backend contract profiles and error-policy guidance |
+| `webauthn-client-ktor-kotlinx` | Production-leaning | Opt-in Kotlinx implementation of the default `/webauthn/*` contract, including typed start payloads and finish outcomes | Additional backend contract profiles and error-policy guidance |
 | `webauthn-client-defaults` | Beta | Recommended Android/iOS platform factories that select the Kotlinx Android codec while preserving explicit codec and iOS presentation-anchor overrides | Broader host/runtime lifecycle coverage |
-| `webauthn-network-ktor-client` | Production-leaning | Transport helper client + payload tests, Related Origins fetcher, default `/webauthn/*` route wiring plus `KtorPasskeyRoutes` path overrides, optional extension transport fields on start payloads | Retry/error policy hardening and broader contract fixtures |
 | `webauthn-attestation-mds` | Beta | Optional trust source module and tests, normalized AAGUID lookup across hyphenated metadata and raw-byte authenticator values | Full attestation format/trust-chain verification depth |
 | `sample:*` | Beta | Runnable backend/android/ios structure and Compose KMP readiness sample wired to default `/webauthn/*` contract via `sample/backend-ktor` | More real-device matrix coverage and extension-focused end-to-end examples |
 

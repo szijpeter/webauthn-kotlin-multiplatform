@@ -8,7 +8,7 @@ import dev.webauthn.client.PasskeyClient
 import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
-import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyServerClient
+import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
 import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
@@ -27,7 +27,7 @@ internal class MainViewModel(
     private val sessionStore: AppSessionStore,
     private val saltStore: PrfSaltStore,
     passkeyClient: PasskeyClient,
-    serverClient: DemoPasskeyServerClient,
+    backend: DemoPasskeyBackend,
 ) : ViewModel() {
     val uiState: StateFlow<MainUiState> field =
         MutableStateFlow<MainUiState>(MainUiState(userName = config.userName))
@@ -35,7 +35,7 @@ internal class MainViewModel(
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
     private val prfDemoController = PrfCryptoDemoController(
         passkeyClient = passkeyClient,
-        serverClient = serverClient,
+        backend = backend,
         saltStore = saltStore,
     )
 

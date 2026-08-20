@@ -8,26 +8,32 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.
-5. Compose-first auth wiring via `rememberPasskeyController(...)`, with `PasskeyControllerState` driving UI status and action enablement.
-6. Direct sample wiring to `KtorPasskeyServerClient` against the default backend contract.
+5. Compose-first auth wiring via `rememberPasskeyFlow(...)`, with sample-owned state and errors driving UI status and action enablement.
+6. Direct sample wiring to `KotlinxKtorPasskeyBackend` against the default backend contract.
 7. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
 8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
-Build-time config is shared across Android and iOS (not platform-specific). These env vars are baked into the app during build:
+These values are baked into the shared app during build:
 
 - `WEBAUTHN_DEMO_ENDPOINT` (default: `http://127.0.0.1:8080`)
 - `WEBAUTHN_DEMO_RP_ID` (default: `localhost`)
-- `WEBAUTHN_DEMO_ORIGIN` (default: `https://localhost`)
+- `WEBAUTHN_DEMO_ORIGIN` (iOS/web origin; default: `https://localhost`)
 - `WEBAUTHN_DEMO_USER_ID` (default: `demo-user-1`)
 - `WEBAUTHN_DEMO_USER_NAME` (default: `demo@local`)
+- `WEBAUTHN_DEMO_UNSAFE_HTTP_BODY_LOGGING` (default: `false`)
 - Android host only: `WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION` (default: `false`)
+
+The Android host does not use `WEBAUTHN_DEMO_ORIGIN`. Credential Manager sets an
+Android app origin from the SHA-256 fingerprint of the installed app's signing
+certificate, so the host derives the matching `android:apk-key-hash:...` value at
+runtime and injects it into the shared sample.
 
 Examples:
 
 - Android Emulator host alias: `WEBAUTHN_DEMO_ENDPOINT=http://10.0.2.2:8080`
 - Physical phone on LAN: `WEBAUTHN_DEMO_ENDPOINT=http://<laptop-lan-ip>:8080`
-- ngrok tunnel: `WEBAUTHN_DEMO_ENDPOINT=https://<domain>` and set `WEBAUTHN_DEMO_RP_ID/WEBAUTHN_DEMO_ORIGIN` to the same HTTPS domain
+- ngrok tunnel: `WEBAUTHN_DEMO_ENDPOINT=https://<domain>` and set `WEBAUTHN_DEMO_RP_ID/WEBAUTHN_DEMO_ORIGIN` to the same HTTPS domain for the iOS/web association; Android derives its app origin from its signing certificate
 
 ## Run (Android)
 
@@ -47,7 +53,10 @@ For physical devices, prefer tunnel mode:
 ./sample/backend-ktor/start-server.sh
 ```
 
-This updates root `local.properties` (`WEBAUTHN_DEMO_ENDPOINT`, `WEBAUTHN_DEMO_RP_ID`, `WEBAUTHN_DEMO_ORIGIN`) to match the active ngrok domain.
+This updates root `local.properties` (`WEBAUTHN_DEMO_ENDPOINT`,
+`WEBAUTHN_DEMO_RP_ID`, `WEBAUTHN_DEMO_ORIGIN`) to match the active ngrok domain.
+It also synchronizes the Android signing fingerprint used by Digital Asset Links;
+the Android app derives its ceremony origin from the installed signing certificate.
 
 Android 17 note: the Android host targets SDK 37, so direct private-network endpoints
 such as `10.0.2.2`, `192.168.x.x`, or `172.16-31.x.x` require the platform
@@ -106,8 +115,14 @@ The sample emits structured logs with tag `PasskeyDemo` and uses the same entrie
 - `capabilities`: probe start/success/failure
 - `action`: register/sign-in taps
 - `prf`: PRF sign-in/session/encrypt/decrypt outcomes
-- `controller`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
-- `http`: raw Ktor engine lines
+- `flow`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
+- `http`: Ktor request/response metadata (method, URL, and status)
+
+HTTP bodies are excluded by default because WebAuthn responses and PRF extension
+values contain sensitive material. For an explicit local debugging session, build
+with `WEBAUTHN_DEMO_UNSAFE_HTTP_BODY_LOGGING=true` to switch the Ktor logger to
+`LogLevel.BODY`. This escape hatch performs no redaction; disable it before sharing
+logs or distributing a build.
 
 To inspect logs:
 
@@ -121,13 +136,14 @@ The auth screen is intentionally the cleanest API example in the repo:
 
 <!-- doc-example: id=sample-compose-passkey-readme-kotlin-1; owner=sample; verify=sample-build; audience=consumer; source=sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route -->
 ```kotlin
-    val controller = rememberPasskeyController(
-        serverClient = serverClient,
-        passkeyClient = passkeyClient,
-    )
-    val controllerState by controller.uiState.collectAsState()
+    val flow = rememberPasskeyFlow(passkeyClient)
+    val scope = rememberCoroutineScope()
+    val coordinator = remember(config, debugLogs, sessionStore) {
+        AuthDemoCoordinator(config, debugLogs, sessionStore)
+    }
+    var state by remember { mutableStateOf<DemoCeremonyState>(DemoCeremonyState.Idle) }
     val canRegister by coordinator.canRegister.collectAsState()
-    val actionsEnabled = areCeremonyActionsEnabled(controllerState)
+    val actionsEnabled = areCeremonyActionsEnabled(state)
 ```
 
 Sample-only side effects stay outside the library API surface:
@@ -151,9 +167,9 @@ Preview limitations and constraints:
 
 ## Test layering (fake vs real client)
 
-- `sample:compose-passkey` `commonTest` validates flow behavior with `FakePasskeyClient` and `FakeServerClient` (`PasskeyServerClient`) so orchestration is deterministic across KMP targets.
-- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyController()`).
-- Runtime server wiring uses `webauthn-network-ktor-client` (`KtorPasskeyServerClient`).
+- Generic flow behavior is covered in `webauthn-client-flow`; the sample owns its presentation/error union.
+- Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyFlow()`).
+- Runtime server wiring uses `webauthn-client-ktor-kotlinx` (`KotlinxKtorPasskeyBackend`).
 - Final readiness still requires the live register/sign-in checklist run on a real/emulated Android device with provider dependencies present.
 
 ## Android provider prerequisite

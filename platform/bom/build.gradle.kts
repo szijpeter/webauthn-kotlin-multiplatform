@@ -30,7 +30,6 @@ dependencies {
         api("${project.group}:webauthn-client-json-core:${project.version}")
         api("${project.group}:webauthn-client-compose:${project.version}")
         api("${project.group}:webauthn-client-platform:${project.version}")
-        api("${project.group}:webauthn-network-ktor-client:${project.version}")
         api("${project.group}:webauthn-attestation-mds:${project.version}")
     }
 }

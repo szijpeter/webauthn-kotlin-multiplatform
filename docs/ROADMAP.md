@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-04-17
+Last updated: 2026-08-19
 
 ## North-Star Exit Criteria
 

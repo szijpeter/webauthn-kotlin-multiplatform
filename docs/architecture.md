@@ -97,12 +97,10 @@ flowchart TB
     DEFAULTS["webauthn-client-defaults<br/>(recommended composition)"]
     KTOR_KOTLINX["webauthn-client-ktor-kotlinx<br/>(default JSON contract)"]
     KTOR["webauthn-client-ktor<br/>(codec-neutral transport)"]
-    NETWORK["webauthn-network-ktor-client<br/>(legacy default transport)"]
     FLOW["webauthn-client-flow"]
     CLIENT_CORE["webauthn-client-core"]
     JSON_API["webauthn-json-api"]
     JSON_KOTLINX["webauthn-json-kotlinx"]
-    CORE["webauthn-core"]
     RUNTIME["webauthn-runtime-core"]
     MODEL["webauthn-model"]
 
@@ -123,11 +121,6 @@ flowchart TB
 
     PRF --> CLIENT_CORE
     PRF --> RUNTIME
-
-    NETWORK --> CLIENT_CORE
-    NETWORK --> CORE
-    NETWORK --> JSON_KOTLINX
-    NETWORK --> RUNTIME
 
     KTOR_KOTLINX --> KTOR
     KTOR_KOTLINX --> JSON_KOTLINX

@@ -1,6 +1,6 @@
 # Status And Roadmap
 
-Last reviewed: 2026-04-17
+Last reviewed: 2026-08-19
 
 This page compresses the current project maturity into a quick scan. For exact wording and deeper detail, follow the canonical source links below.
 
@@ -8,14 +8,14 @@ This page compresses the current project maturity into a quick scan. For exact w
 
 - Core protocol model and validation baselines are implemented and heavily tested.
 - JVM server ceremony flow is implemented and comparatively mature.
-- Client-side shared orchestration plus Android and iOS bridges are in place and usable.
+- Typed raw-response clients, generic opaque-state flow orchestration, and Android/iOS bridges are in place and usable.
 - Publication, compatibility baselines, and Maven Central workflow are active.
 - The project is publicly released but still pre-1.0.
 - Roadmap execution focus is now Phase 6 (discoverable credentials, `credProps`, account lifecycle/signaling); earlier Phase 1 and Phase 5 baselines are treated as completed/maintenance.
 
 ## Maturity Pattern
 
-- Production-leaning: core validation paths and `webauthn-network-ktor-client`
+- Production-leaning: core validation paths and the default Ktor contract adapter
 - Beta: most server, client, crypto, and adapter modules
 - Scaffold: not the dominant status right now; most major module families already exceed scaffold level
 

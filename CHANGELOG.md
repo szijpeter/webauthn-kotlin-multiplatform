@@ -6,6 +6,14 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ## Unreleased
 
+### Changed
+
+- **BREAKING**: client ceremonies now use raw platform responses and the generic `PasskeyFlow` with opaque backend state and application-defined finish output. Replace the removed controller/server-client APIs with `PasskeyFlow`, `RegistrationBackend`, and `AuthenticationBackend`.
+- **BREAKING**: JSON and Ktor transport seams are implementation-neutral. Depend on `webauthn-json-api`/`webauthn-client-ktor` and provide a codec; add `webauthn-json-kotlinx` or `webauthn-client-ktor-kotlinx` only when choosing the Kotlinx defaults.
+- **BREAKING**: `webauthn-client-android` and `webauthn-client-ios` are replaced by the source-set-first `webauthn-client-platform`; use `webauthn-client-defaults` for recommended platform construction.
+- **BREAKING**: `webauthn-network-ktor-client` is replaced by `webauthn-client-ktor-kotlinx` for the default contract or `webauthn-client-ktor` plus an application codec for custom contracts.
+- Server finish requests now derive signed client data from the raw credential response, preventing separately supplied challenge, origin, or type values from bypassing the trust boundary.
+
 ## 0.3.0 - 2026-03-31
 
 ### Added

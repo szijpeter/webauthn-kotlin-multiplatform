@@ -47,8 +47,9 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kermit)
                 implementation(project(":client:webauthn-client-compose"))
+                implementation(project(":client:webauthn-client-flow"))
+                implementation(project(":client:webauthn-client-ktor-kotlinx"))
                 implementation(project(":client:webauthn-client-prf-crypto"))
-                implementation(project(":client:webauthn-network-ktor-client"))
                 implementation(project(":core:webauthn-runtime-core"))
             }
         }

@@ -14,7 +14,6 @@ The client side separates typed platform operations from generic ceremony orches
 - `webauthn-client-platform` bridges into Credential Manager from `androidMain` and AuthenticationServices from `iosMain`.
 - `webauthn-client-compose` provides remembered helpers for Compose-driven apps.
 - `webauthn-client-json-core` is an optional raw JSON interop layer.
-- `webauthn-network-ktor-client` is retained only for the staged legacy-controller migration.
 - `webauthn-client-prf-crypto` adds PRF-derived application crypto helpers on top of passkey flows.
 
 ## Practical Flow
