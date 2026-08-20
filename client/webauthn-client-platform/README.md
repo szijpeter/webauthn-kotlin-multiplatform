@@ -6,6 +6,7 @@ Manager; its iOS source set uses AuthenticationServices.
 ## What it provides
 
 - `AndroidPasskeyClient`
+- `AndroidCredentialSignalClient`
 - `AndroidRestoreCredentialClient`
 - `IosPasskeyClient`
 - Android and iOS `PasskeyClient` implementations that return byte-preserving raw registration and authentication responses
@@ -14,6 +15,7 @@ Manager; its iOS source set uses AuthenticationServices.
 - Conditional passkey creation on Android and iOS 18+ through the shared
   `PasskeyCreateOptions.Conditional` contract
 - Android Restore Credentials create/get/clear operations with raw WebAuthn responses
+- Android credential-state signals for server/provider reconciliation
 
 ## When to use
 
@@ -76,6 +78,42 @@ Create the restore credential after a successful sign-in, attempt retrieval duri
 or first launch, and clear it during sign-out. Registration and authentication results stay raw and
 must pass through the same backend trust boundary as ordinary passkey responses.
 
+For provider-side credential reconciliation, send best-effort signals only after the server has
+made the authoritative account-state decision:
+
+<!-- doc-example: id=client-webauthn-client-platform-readme-kotlin-4; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidCredentialSignalExample.kt#android-credential-signals -->
+```kotlin
+import android.app.Activity
+import dev.webauthn.client.PasskeyResult
+import dev.webauthn.client.android.AndroidCredentialSignalClient
+import dev.webauthn.model.CredentialId
+import dev.webauthn.model.RpId
+import dev.webauthn.model.UserHandle
+
+suspend fun reconcileCredentialManager(
+    activity: Activity,
+    rpId: RpId,
+    userHandle: UserHandle,
+    acceptedCredentialIds: List<CredentialId>,
+    unknownCredentialId: CredentialId,
+): Triple<PasskeyResult<Unit>, PasskeyResult<Unit>, PasskeyResult<Unit>> {
+    val signals = AndroidCredentialSignalClient(activity.applicationContext)
+    return Triple(
+        signals.signalAllAcceptedCredentialIds(rpId, userHandle, acceptedCredentialIds),
+        signals.signalUnknownCredential(rpId, unknownCredentialId),
+        signals.signalCurrentUserDetails(
+            rpId = rpId,
+            userId = userHandle,
+            name = "demo@example.com",
+            displayName = "Demo User",
+        ),
+    )
+}
+```
+
+Signal success means Credential Manager accepted and dispatched well-formed parameters. It does not
+prove that any provider applied the update, so server-side credential enforcement remains required.
+
 ### iOS
 
 <!-- doc-example: id=client-webauthn-client-platform-readme-kotlin-2; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/IosClientExample.kt#ios-client -->
@@ -96,9 +134,11 @@ fun iosPasskeyClient(anchorProvider: PasskeyPresentationAnchorProvider): Passkey
 flowchart LR
     UI["Android or iOS UI"] --> CORE["webauthn-client-core raw client"]
     CORE --> ANDROID["AndroidPasskeyClient"]
+    CORE --> SIGNALS["AndroidCredentialSignalClient"]
     CORE --> RESTORE["AndroidRestoreCredentialClient"]
     CORE --> IOS["IosPasskeyClient"]
     ANDROID --> CM["Credential Manager"]
+    SIGNALS --> CM
     RESTORE --> CM
     IOS --> AS["AuthenticationServices"]
 ```
@@ -129,6 +169,14 @@ flowchart LR
 - Restore keys can use the same WebAuthn verification path as passkeys, but the application server
   should record their restore purpose separately from user-managed passkeys so lifecycle and UI
   policy cannot confuse the two credential types.
+- Credential signals are best-effort provider hints. Rate-limit application orchestration: Android
+  documents a maximum of 10 relying-party signal calls in a 120-second window.
+- Credential-signal `origin` values are only for browsers or privileged apps acting on behalf of
+  another application. Ordinary apps should leave `origin` null. On Android 14+, a non-null origin
+  also requires `android.permission.CREDENTIAL_MANAGER_SET_ORIGIN`; otherwise the request fails.
+- Apple exposes analogous reports through Swift `ASCredentialDataManager`, but the type is not
+  available in the current Kotlin/Native AuthenticationServices bindings. The Compose iOS host
+  demonstrates a sample-owned Swift bridge rather than adding an uncallable shared library API.
 - Android maps conditional creation to Credential Manager's `isConditional` and
   `preferImmediatelyAvailableCredentials` flags. A provider may report that no create option is
   available; this is a valid conditional outcome, not permission to show an explicit prompt.

@@ -10,10 +10,12 @@
 		285CB960E67F5D7493B47868 /* ComposePasskeyIosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */; };
 		729ECCE037B334E608061C3B /* ComposePasskeyShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020E8BEC08EDAB193162C8F0 /* ComposePasskeyShared.framework */; };
 		EEA0A397E433A3BC1D8E6F51 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D05536FE2830CD3C83D94EDF /* Assets.xcassets */; };
+		F2EC0E427B8EA5AE159C950D /* IosCredentialSignalBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0213E5FA8F185AD766C9B2D /* IosCredentialSignalBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		020E8BEC08EDAB193162C8F0 /* ComposePasskeyShared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposePasskeyShared.framework; path = "$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/ComposePasskeyShared.framework"; sourceTree = "<group>"; };
+		A0213E5FA8F185AD766C9B2D /* IosCredentialSignalBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosCredentialSignalBridge.swift; sourceTree = "<group>"; };
 		D05536FE2830CD3C83D94EDF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC8470A115D06D044F4D7D79 /* ComposePasskeyIos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComposePasskeyIos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposePasskeyIosApp.swift; sourceTree = "<group>"; };
@@ -45,6 +47,7 @@
 			children = (
 				D05536FE2830CD3C83D94EDF /* Assets.xcassets */,
 				F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */,
+				A0213E5FA8F185AD766C9B2D /* IosCredentialSignalBridge.swift */,
 			);
 			path = ComposePasskeyIos;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				285CB960E67F5D7493B47868 /* ComposePasskeyIosApp.swift in Sources */,
+				F2EC0E427B8EA5AE159C950D /* IosCredentialSignalBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
