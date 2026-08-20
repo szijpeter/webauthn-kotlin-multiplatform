@@ -61,6 +61,12 @@ android {
         buildConfig = true
         compose = true
     }
+
+    packaging {
+        resources {
+            merges += "META-INF/LICENSE.md"
+        }
+    }
 }
 
 dependencies {
