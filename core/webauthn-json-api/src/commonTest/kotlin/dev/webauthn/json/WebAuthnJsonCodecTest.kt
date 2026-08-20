@@ -1,6 +1,7 @@
 package dev.webauthn.json
 
 import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RawAuthenticationResponse
@@ -20,7 +21,8 @@ class WebAuthnJsonCodecTest {
             override fun decodeRegistrationResponse(value: String): ValidationResult<RawRegistrationResponse> = error("unused")
             override fun encodeAuthenticationResponse(value: RawAuthenticationResponse): String = "{}"
             override fun decodeAuthenticationResponse(value: String): ValidationResult<RawAuthenticationResponse> = error("unused")
-            override fun decodeCollectedClientData(value: ByteArray): ValidationResult<CollectedClientData> = error("unused")
+            override fun decodeCollectedClientData(value: Base64UrlBytes): ValidationResult<CollectedClientData> =
+                error("unused")
         }
 
     }

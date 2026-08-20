@@ -18,6 +18,7 @@ import dev.webauthn.model.RpId
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
@@ -42,6 +43,7 @@ class ServiceSmokeTest {
             userAccountStore = InMemoryUserAccountStore(),
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.Strict,
         )
 
@@ -72,6 +74,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.Strict,
         )
 
@@ -97,14 +100,14 @@ class ServiceSmokeTest {
 
         val finish = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -148,6 +151,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.Strict,
             extensionHooks = [hook],
         )
@@ -174,14 +178,14 @@ class ServiceSmokeTest {
 
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -205,6 +209,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.Strict,
         )
         val authenticationService = AuthenticationService(
@@ -213,6 +218,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -236,14 +242,14 @@ class ServiceSmokeTest {
         )
         val registrationResult = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = registrationOptions.challenge,
@@ -269,7 +275,7 @@ class ServiceSmokeTest {
         )
         val authFinish = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -278,7 +284,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authChallenge,
@@ -299,6 +305,7 @@ class ServiceSmokeTest {
             userAccountStore = InMemoryUserAccountStore(),
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val result = authenticationService.start(
@@ -339,6 +346,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val result = authenticationService.start(
@@ -381,6 +389,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val result = authenticationService.start(
@@ -433,6 +442,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             nowEpochMs = { 2_000 },
         )
 
@@ -443,7 +453,7 @@ class ServiceSmokeTest {
         )
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -452,7 +462,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = challenge,
@@ -492,12 +502,13 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
             nowEpochMs = { 2_000 },
         )
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = unknownCredentialId.value.encoded(),
                     rawId = unknownCredentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -506,7 +517,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = challenge,
@@ -571,6 +582,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             nowEpochMs = { 2_000 },
         )
 
@@ -581,7 +593,7 @@ class ServiceSmokeTest {
         )
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = bobCredential.value.encoded(),
                     rawId = bobCredential.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -590,7 +602,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = challenge,
@@ -616,6 +628,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.Strict,
         )
 
@@ -641,14 +654,14 @@ class ServiceSmokeTest {
 
         val finish = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -674,6 +687,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.Strict,
             nowEpochMs = { currentTime },
         )
@@ -705,14 +719,14 @@ class ServiceSmokeTest {
 
         val result = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -737,6 +751,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -762,14 +777,14 @@ class ServiceSmokeTest {
 
         val result = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -803,6 +818,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -829,14 +845,14 @@ class ServiceSmokeTest {
 
         val result = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -862,6 +878,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -886,14 +903,14 @@ class ServiceSmokeTest {
         )
 
         val finishRequest = RegistrationFinishRequest(
-            responseDto = RegistrationResponseDto(
+            rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                 id = credentialId.value.encoded(),
                 rawId = credentialId.value.encoded(),
                 response = RegistrationResponsePayloadDto(
                     clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                     attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                 ),
-            ),
+            )).getOrThrow(),
             clientData = CollectedClientData(
                 type = "webauthn.create",
                 challenge = options.challenge,
@@ -923,6 +940,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             nowEpochMs = { currentTime },
         )
         val authenticationService = AuthenticationService(
@@ -931,6 +949,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             nowEpochMs = { currentTime },
         )
 
@@ -956,14 +975,14 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = regOptions.challenge,
@@ -995,7 +1014,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -1004,7 +1023,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authChallenge,
@@ -1029,6 +1048,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1036,6 +1056,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         // Register
@@ -1059,13 +1080,13 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
                 ),
@@ -1084,7 +1105,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
@@ -1092,7 +1113,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authStart.value.challenge,
@@ -1117,6 +1138,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1124,6 +1146,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         // Register with one credential
@@ -1147,13 +1170,13 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
                 ),
@@ -1174,7 +1197,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = unknownCredId.value.encoded(), rawId = unknownCredId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
@@ -1182,7 +1205,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authStart.value.challenge,
@@ -1207,6 +1230,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1214,6 +1238,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> false }, // always fails
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -1236,13 +1261,13 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
                 ),
@@ -1260,7 +1285,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
@@ -1268,7 +1293,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authStart.value.challenge,
@@ -1293,6 +1318,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1302,6 +1328,7 @@ class ServiceSmokeTest {
                 algorithm == CoseAlgorithm.RS256
             },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -1324,13 +1351,13 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
                 ),
@@ -1348,7 +1375,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
@@ -1356,7 +1383,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authStart.value.challenge,
@@ -1378,7 +1405,9 @@ class ServiceSmokeTest {
     @Test
     fun authenticationFinishSupportsCapturedAndroidAssertionVector() = runBlocking {
         val rpId = RpId.parseOrThrow("nella-intercrinal-cryptically.ngrok-free.dev")
-        val origin = Origin.parseOrThrow("https://nella-intercrinal-cryptically.ngrok-free.dev")
+        val origin = Origin.parseOrThrow(
+            "android:apk-key-hash:Vbj-mPe9x0NEiHDGG3EOi04ETGT5SIoEc3f2zpc7qC8",
+        )
         val userName = "Zaphod Beeblebrox"
         val parsedUserHandle = UserHandle.parse("NDI")
         assertTrue(parsedUserHandle is ValidationResult.Valid)
@@ -1430,6 +1459,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = JvmSignatureVerifier(),
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val authenticationVector = AuthenticationResponseDto(
@@ -1444,12 +1474,7 @@ class ServiceSmokeTest {
         )
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = authenticationVector,
-                clientData = CollectedClientData(
-                    type = "webauthn.get",
-                    challenge = challenge,
-                    origin = origin,
-                ),
+                response = WebAuthnDtoMapper.toRawModel(authenticationVector).getOrThrow(),
             ),
         )
 
@@ -1508,6 +1533,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1515,6 +1541,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
 
         val startRequest = RegistrationStartRequest(
@@ -1537,13 +1564,13 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create", challenge = regOptions.challenge, origin = startRequest.origin,
                 ),
@@ -1560,7 +1587,7 @@ class ServiceSmokeTest {
         )
 
         val authFinishRequest = AuthenticationFinishRequest(
-            responseDto = AuthenticationResponseDto(
+            rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                 id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                 response = AuthenticationResponsePayloadDto(
                     clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
@@ -1568,7 +1595,7 @@ class ServiceSmokeTest {
                     signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                     userHandle = null,
                 ),
-            ),
+            )).getOrThrow(),
             clientData = CollectedClientData(
                 type = "webauthn.get",
                 challenge = authStart.value.challenge,
@@ -1606,6 +1633,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             originMetadataProvider = metadataProvider
         )
 
@@ -1635,14 +1663,14 @@ class ServiceSmokeTest {
 
         val finish = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -1676,6 +1704,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             originMetadataProvider = metadataProvider,
         )
 
@@ -1702,14 +1731,14 @@ class ServiceSmokeTest {
 
         val finish = registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = options.challenge,
@@ -1743,6 +1772,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1750,6 +1780,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             originMetadataProvider = metadataProvider
         )
 
@@ -1774,13 +1805,13 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create", challenge = regOptions.challenge, origin = primaryOrigin,
                 ),
@@ -1806,7 +1837,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(), rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(7, 7, 7)).encoded(),
@@ -1814,7 +1845,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authStart.value.challenge,
@@ -1848,6 +1879,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         val authenticationService = AuthenticationService(
             challengeStore = challengeStore,
@@ -1855,6 +1887,7 @@ class ServiceSmokeTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _: CoseAlgorithm, _: ByteArray, _: ByteArray, _: ByteArray -> true },
             rpIdHasher = rpIdHasher,
+            clientDataDecoder = TestCollectedClientDataDecoder,
             originMetadataProvider = metadataProvider,
         )
 
@@ -1879,14 +1912,14 @@ class ServiceSmokeTest {
         )
         registrationService.finish(
             RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = regOptions.challenge,
@@ -1912,7 +1945,7 @@ class ServiceSmokeTest {
 
         val result = authenticationService.finish(
             AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -1921,7 +1954,7 @@ class ServiceSmokeTest {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = authStart.value.challenge,

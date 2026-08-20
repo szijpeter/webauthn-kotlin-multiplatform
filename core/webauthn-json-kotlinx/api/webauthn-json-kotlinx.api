@@ -174,7 +174,7 @@ public final class dev/webauthn/serialization/KotlinxWebAuthnJsonCodec : dev/web
 	public fun <init> (Lkotlinx/serialization/json/Json;)V
 	public synthetic fun <init> (Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun decodeAuthenticationResponse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
-	public fun decodeCollectedClientData ([B)Ldev/webauthn/model/ValidationResult;
+	public fun decodeCollectedClientData-UlGSvtQ (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public fun decodeCreationOptions (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public fun decodeRegistrationResponse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
 	public fun decodeRequestOptions (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;

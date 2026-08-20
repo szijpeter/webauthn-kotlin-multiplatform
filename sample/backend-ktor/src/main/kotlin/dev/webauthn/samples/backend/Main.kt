@@ -48,6 +48,7 @@ public fun main(): Unit {
         userAccountStore = userStore,
         attestationVerifier = StrictAttestationVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = dev.webauthn.serialization.KotlinxWebAuthnJsonCodec(),
         attestationPolicy = config.attestationPolicy,
     )
 
@@ -57,6 +58,7 @@ public fun main(): Unit {
         userAccountStore = userStore,
         signatureVerifier = JvmSignatureVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = dev.webauthn.serialization.KotlinxWebAuthnJsonCodec(),
     )
 
     embeddedServer(Netty, port = config.port) {

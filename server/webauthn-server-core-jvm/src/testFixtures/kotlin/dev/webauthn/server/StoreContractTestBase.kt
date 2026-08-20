@@ -11,10 +11,12 @@ import dev.webauthn.model.Origin
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
 import dev.webauthn.serialization.AuthenticationResponseDto
 import dev.webauthn.serialization.AuthenticationResponsePayloadDto
 import dev.webauthn.serialization.RegistrationResponseDto
 import dev.webauthn.serialization.RegistrationResponsePayloadDto
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -53,6 +55,7 @@ abstract class StoreContractTestBase {
                 userAccountStore = fixture.userStore,
                 attestationVerifier = { ValidationResult.Valid(Unit) },
                 rpIdHasher = rpIdHasher,
+                clientDataDecoder = TestCollectedClientDataDecoder,
                 nowEpochMs = { now },
             )
 
@@ -84,14 +87,14 @@ abstract class StoreContractTestBase {
             )
 
             val request = RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
                         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)).encoded(),
                         attestationObject = Base64UrlBytes.fromBytes(attestationObject).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.create",
                     challenge = challenge,
@@ -126,6 +129,7 @@ abstract class StoreContractTestBase {
                 userAccountStore = fixture.userStore,
                 signatureVerifier = SignatureVerifier { _, _, _, _ -> true },
                 rpIdHasher = rpIdHasher,
+                clientDataDecoder = TestCollectedClientDataDecoder,
                 nowEpochMs = { now },
             )
 
@@ -156,7 +160,7 @@ abstract class StoreContractTestBase {
             )
 
             val request = AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -165,7 +169,7 @@ abstract class StoreContractTestBase {
                         signature = Base64UrlBytes.fromBytes(byteArrayOf(1, 1, 1)).encoded(),
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData(
                     type = "webauthn.get",
                     challenge = challenge,
@@ -200,6 +204,7 @@ abstract class StoreContractTestBase {
                 userAccountStore = fixture.userStore,
                 attestationVerifier = { ValidationResult.Valid(Unit) },
                 rpIdHasher = rpIdHasher,
+                clientDataDecoder = TestCollectedClientDataDecoder,
                 nowEpochMs = { now },
             )
 
@@ -220,7 +225,7 @@ abstract class StoreContractTestBase {
             val credentialIdBytes = byteArrayOf(1)
             val credentialId = CredentialId.fromBytes(credentialIdBytes)
             val request = RegistrationFinishRequest(
-                responseDto = RegistrationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(RegistrationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = RegistrationResponsePayloadDto(
@@ -237,7 +242,7 @@ abstract class StoreContractTestBase {
                             ),
                         ).encoded(),
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData("webauthn.create", challenge, origin),
             )
 
@@ -260,6 +265,7 @@ abstract class StoreContractTestBase {
                 userAccountStore = fixture.userStore,
                 signatureVerifier = SignatureVerifier { _, _, _, _ -> true },
                 rpIdHasher = rpIdHasher,
+                clientDataDecoder = TestCollectedClientDataDecoder,
                 nowEpochMs = { now },
             )
 
@@ -283,7 +289,7 @@ abstract class StoreContractTestBase {
             )
 
             val request = AuthenticationFinishRequest(
-                responseDto = AuthenticationResponseDto(
+                rawResponse = WebAuthnDtoMapper.toRawModel(AuthenticationResponseDto(
                     id = credentialId.value.encoded(),
                     rawId = credentialId.value.encoded(),
                     response = AuthenticationResponsePayloadDto(
@@ -294,7 +300,7 @@ abstract class StoreContractTestBase {
                         signature = "YWFh",
                         userHandle = null,
                     ),
-                ),
+                )).getOrThrow(),
                 clientData = CollectedClientData("webauthn.get", challenge, origin),
             )
 

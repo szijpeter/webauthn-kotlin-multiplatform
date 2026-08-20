@@ -9,6 +9,7 @@ application {
 }
 
 dependencies {
+    implementation(project(":core:webauthn-json-kotlinx"))
     implementation(project(":server:webauthn-server-ktor"))
     implementation(project(":server:webauthn-server-jvm-crypto"))
     implementation(libs.ktor.server.netty)

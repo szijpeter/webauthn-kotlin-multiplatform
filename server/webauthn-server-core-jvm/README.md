@@ -29,6 +29,7 @@ import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 /** Registration and authentication services sharing the same stores. */
 data class PasskeyServices(
@@ -48,6 +49,7 @@ fun passkeyServices(): PasskeyServices {
         userAccountStore = userStore,
         attestationVerifier = StrictAttestationVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = KotlinxWebAuthnJsonCodec(),
     )
 
     val authenticationService = AuthenticationService(
@@ -56,6 +58,7 @@ fun passkeyServices(): PasskeyServices {
         userAccountStore = userStore,
         signatureVerifier = JvmSignatureVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = KotlinxWebAuthnJsonCodec(),
     )
     return PasskeyServices(registrationService, authenticationService)
 }
@@ -69,6 +72,8 @@ Real-world scenario: run start/finish ceremonies in your backend service layer, 
 ```mermaid
 flowchart LR
     CORE["webauthn-core"] --> SVC["webauthn-server-core-jvm"]
+    PROTOCOL["webauthn-protocol"] --> SVC
+    JSON["webauthn-json-api decoder"] --> SVC
     CRYPTO["webauthn-server-jvm-crypto or custom crypto-api impl"] --> SVC
     STORE["In-memory or Exposed stores"] --> SVC
     KTOR["webauthn-server-ktor (optional)"] --> SVC
@@ -80,6 +85,7 @@ flowchart LR
 - Registration and authentication keep shared fail-fast origin/session handling internally, so callers should expect matching origin-mismatch behavior across both ceremony types.
 - `RegistrationService.finish()` now returns a typed validation error when the user disappears between start and finish instead of throwing from the user store lookup.
 - Authentication challenge sessions allow nullable `userName` for discoverable ceremonies, while named-mode finish still enforces credential ownership for the resolved account.
+- Finish requests carry only a byte-preserving `RawRegistrationResponse` or `RawAuthenticationResponse`. The service derives `CollectedClientData` from that response's signed `clientDataJSON` through the injected neutral decoder, so custom transports cannot supply conflicting challenge, origin, or type values.
 - This module does not define your HTTP contract by itself.
 
 ## Status

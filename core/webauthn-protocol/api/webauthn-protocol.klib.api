@@ -27,5 +27,7 @@ final class dev.webauthn.protocol/ParsedAuthenticatorData { // dev.webauthn.prot
 
 final object dev.webauthn.protocol/WebAuthnProtocolParser { // dev.webauthn.protocol/WebAuthnProtocolParser|null[0]
     final fun extractAuthenticatorData(kotlin/ByteArray, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.model/Base64UrlBytes> // dev.webauthn.protocol/WebAuthnProtocolParser.extractAuthenticatorData|extractAuthenticatorData(kotlin.ByteArray;kotlin.String){}[0]
+    final fun parseAuthenticationResponse(dev.webauthn.model/RawAuthenticationResponse): dev.webauthn.model/ValidationResult<dev.webauthn.model/AuthenticationResponse> // dev.webauthn.protocol/WebAuthnProtocolParser.parseAuthenticationResponse|parseAuthenticationResponse(dev.webauthn.model.RawAuthenticationResponse){}[0]
     final fun parseAuthenticatorData(kotlin/ByteArray, kotlin/String = ...): dev.webauthn.model/ValidationResult<dev.webauthn.protocol/ParsedAuthenticatorData> // dev.webauthn.protocol/WebAuthnProtocolParser.parseAuthenticatorData|parseAuthenticatorData(kotlin.ByteArray;kotlin.String){}[0]
+    final fun parseRegistrationResponse(dev.webauthn.model/RawRegistrationResponse): dev.webauthn.model/ValidationResult<dev.webauthn.model/RegistrationResponse> // dev.webauthn.protocol/WebAuthnProtocolParser.parseRegistrationResponse|parseRegistrationResponse(dev.webauthn.model.RawRegistrationResponse){}[0]
 }

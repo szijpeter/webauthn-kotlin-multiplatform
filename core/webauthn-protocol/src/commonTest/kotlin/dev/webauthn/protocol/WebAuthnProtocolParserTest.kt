@@ -1,5 +1,8 @@
 package dev.webauthn.protocol
 
+import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.CredentialId
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.ValidationResult
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -42,6 +45,23 @@ class WebAuthnProtocolParserTest {
 
         assertTrue(result is ValidationResult.Invalid)
         assertEquals("Unexpected trailing bytes after authenticator data", result.errors.single().message)
+    }
+
+    @Test
+    fun parsesRawAuthenticationResponseWithoutDependingOnJsonRepresentation() {
+        val authenticatorData = ByteArray(37).also { it[32] = 0x01 }
+        val raw = RawAuthenticationResponse(
+            credentialId = CredentialId.fromBytes(byteArrayOf(1, 2, 3)),
+            clientDataJson = Base64UrlBytes.fromBytes("{}".encodeToByteArray()),
+            authenticatorData = Base64UrlBytes.fromBytes(authenticatorData),
+            signature = Base64UrlBytes.fromBytes(byteArrayOf(9)),
+        )
+
+        val result = WebAuthnProtocolParser.parseAuthenticationResponse(raw)
+
+        assertTrue(result is ValidationResult.Valid)
+        assertEquals(raw.credentialId, result.value.credentialId)
+        assertContentEquals(authenticatorData, result.value.rawAuthenticatorData.bytes())
     }
 
     private fun cborMap(vararg entries: Pair<ByteArray, ByteArray>): ByteArray {

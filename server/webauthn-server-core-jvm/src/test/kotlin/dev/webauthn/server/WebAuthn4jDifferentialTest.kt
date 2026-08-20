@@ -24,6 +24,8 @@ import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import kotlinx.coroutines.runBlocking
@@ -196,15 +198,11 @@ class WebAuthn4jDifferentialTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         return service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = CollectedClientData(
-                    type = "webauthn.create",
-                    challenge = Challenge.parseOrThrow(fixture.relyingParty.challenge),
-                    origin = dev.webauthn.model.Origin.parseOrThrow(fixture.relyingParty.origin),
-                ),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
     }
@@ -244,15 +242,11 @@ class WebAuthn4jDifferentialTest {
             userAccountStore = userStore,
             signatureVerifier = JvmSignatureVerifier(),
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         return service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = CollectedClientData(
-                    type = "webauthn.get",
-                    challenge = Challenge.parseOrThrow(fixture.relyingParty.challenge),
-                    origin = dev.webauthn.model.Origin.parseOrThrow(fixture.relyingParty.origin),
-                ),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
     }

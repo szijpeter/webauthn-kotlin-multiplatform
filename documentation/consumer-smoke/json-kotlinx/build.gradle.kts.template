@@ -5,7 +5,7 @@ plugins {
 apply(from = "../repositories.gradle.kts")
 
 dependencies {
-    implementation("io.github.szijpeter:webauthn-serialization-kotlinx:<version>")
+    implementation("io.github.szijpeter:webauthn-json-kotlinx:<version>")
 }
 
 kotlin {

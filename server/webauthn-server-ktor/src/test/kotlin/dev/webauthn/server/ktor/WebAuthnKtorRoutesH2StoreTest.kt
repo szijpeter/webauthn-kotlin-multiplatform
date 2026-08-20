@@ -36,6 +36,7 @@ class WebAuthnKtorRoutesH2StoreTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
             attestationPolicy = AttestationPolicy.None,
         )
 
@@ -45,6 +46,7 @@ class WebAuthnKtorRoutesH2StoreTest {
             userAccountStore = userStore,
             signatureVerifier = byteArraySignatureVerifier { _, _, _, _ -> true },
             rpIdHasher = JvmRpIdHasher(),
+            clientDataDecoder = dev.webauthn.server.TestCollectedClientDataDecoder,
         )
 
         application {

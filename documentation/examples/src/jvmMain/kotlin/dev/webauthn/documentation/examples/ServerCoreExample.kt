@@ -10,6 +10,7 @@ import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 /** Registration and authentication services sharing the same stores. */
 data class PasskeyServices(
@@ -29,6 +30,7 @@ fun passkeyServices(): PasskeyServices {
         userAccountStore = userStore,
         attestationVerifier = StrictAttestationVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = KotlinxWebAuthnJsonCodec(),
     )
 
     val authenticationService = AuthenticationService(
@@ -37,6 +39,7 @@ fun passkeyServices(): PasskeyServices {
         userAccountStore = userStore,
         signatureVerifier = JvmSignatureVerifier(),
         rpIdHasher = JvmRpIdHasher(),
+        clientDataDecoder = KotlinxWebAuthnJsonCodec(),
     )
     return PasskeyServices(registrationService, authenticationService)
 }

@@ -20,6 +20,8 @@ import com.yubico.webauthn.exception.RegistrationFailedException
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.ValidationResult
+import dev.webauthn.model.getOrThrow
+import dev.webauthn.serialization.WebAuthnDtoMapper
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -168,11 +170,11 @@ class YubicoDifferentialTest {
             userAccountStore = userStore,
             attestationVerifier = { ValidationResult.Valid(Unit) },
             rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         return service.finish(
             RegistrationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.registrationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
     }
@@ -235,11 +237,11 @@ class YubicoDifferentialTest {
             userAccountStore = userStore,
             signatureVerifier = dev.webauthn.server.crypto.JvmSignatureVerifier(),
             rpIdHasher = dev.webauthn.server.crypto.JvmRpIdHasher(),
+            clientDataDecoder = TestCollectedClientDataDecoder,
         )
         return service.finish(
             AuthenticationFinishRequest(
-                responseDto = fixture.response.toDto(),
-                clientData = fixture.authenticationClientData(),
+                response = WebAuthnDtoMapper.toRawModel(fixture.response.toDto()).getOrThrow(),
             ),
         )
     }

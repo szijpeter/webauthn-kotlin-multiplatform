@@ -1,5 +1,6 @@
 package dev.webauthn.json
 
+import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
@@ -7,13 +8,18 @@ import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 
+/** Decodes the signed client data carried inside a raw WebAuthn response. */
+public fun interface CollectedClientDataDecoder {
+    public fun decodeCollectedClientData(value: Base64UrlBytes): ValidationResult<CollectedClientData>
+}
+
 /**
  * Codec contract for WebAuthn JSON values.
  *
  * The interface deliberately contains no JSON implementation dependency, so applications can provide
  * their preferred serializer while retaining the shared typed/raw boundary.
  */
-public interface WebAuthnJsonCodec {
+public interface WebAuthnJsonCodec : CollectedClientDataDecoder {
     public fun encodeCreationOptions(value: PublicKeyCredentialCreationOptions): String
 
     public fun decodeCreationOptions(value: String): ValidationResult<PublicKeyCredentialCreationOptions>
@@ -30,5 +36,4 @@ public interface WebAuthnJsonCodec {
 
     public fun decodeAuthenticationResponse(value: String): ValidationResult<RawAuthenticationResponse>
 
-    public fun decodeCollectedClientData(value: ByteArray): ValidationResult<CollectedClientData>
 }

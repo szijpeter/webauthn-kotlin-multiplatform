@@ -14,7 +14,7 @@ dependencies {
         api("${project.group}:webauthn-json-api:${project.version}")
         api("${project.group}:webauthn-protocol:${project.version}")
         api("${project.group}:webauthn-runtime-core:${project.version}")
-        api("${project.group}:webauthn-serialization-kotlinx:${project.version}")
+        api("${project.group}:webauthn-json-kotlinx:${project.version}")
         api("${project.group}:webauthn-core:${project.version}")
         api("${project.group}:webauthn-crypto-api:${project.version}")
         api("${project.group}:webauthn-server-jvm-crypto:${project.version}")

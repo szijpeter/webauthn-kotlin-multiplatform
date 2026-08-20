@@ -9,10 +9,14 @@ import dev.webauthn.cbor.readUint32
 import dev.webauthn.cbor.skipCborItem
 import dev.webauthn.model.Aaguid
 import dev.webauthn.model.AttestedCredentialData
+import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorData
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
+import dev.webauthn.model.RegistrationResponse
 import dev.webauthn.model.RpIdHash
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
@@ -27,6 +31,61 @@ public data class ParsedAuthenticatorData(
 /** Strict, serialization-library-neutral WebAuthn binary protocol parser. */
 @MustUseReturnValues
 public object WebAuthnProtocolParser {
+    /** Interprets a byte-preserving registration response without depending on its JSON representation. */
+    public fun parseRegistrationResponse(value: RawRegistrationResponse): ValidationResult<RegistrationResponse> {
+        val authDataBytes = when (val result = extractAuthenticatorData(value.attestationObject.bytes())) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
+        }
+        val parsedAuthData = when (
+            val result = parseAuthenticatorData(authDataBytes.bytes(), "attestationObject.authData")
+        ) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
+        }
+        val attestedCredentialData = parsedAuthData.attestedCredentialData
+            ?: return invalidFormat(
+                "attestationObject.authData",
+                "Attested credential data flag is not set or is malformed",
+            )
+        if (attestedCredentialData.credentialId != value.credentialId) {
+            return invalidFormat("id/rawId", "id/rawId must match attested credential ID")
+        }
+        return ValidationResult.Valid(
+            RegistrationResponse(
+                credentialId = attestedCredentialData.credentialId,
+                clientDataJson = value.clientDataJson,
+                attestationObject = value.attestationObject,
+                rawAuthenticatorData = parsedAuthData.authenticatorData,
+                attestedCredentialData = attestedCredentialData,
+                authenticatorAttachment = value.authenticatorAttachment,
+                extensions = value.extensions,
+            ),
+        )
+    }
+
+    /** Interprets a byte-preserving assertion response without depending on its JSON representation. */
+    public fun parseAuthenticationResponse(value: RawAuthenticationResponse): ValidationResult<AuthenticationResponse> {
+        val parsedAuthData = when (
+            val result = parseAuthenticatorData(value.authenticatorData.bytes(), "response.authenticatorData")
+        ) {
+            is ValidationResult.Valid -> result.value
+            is ValidationResult.Invalid -> return result
+        }
+        return ValidationResult.Valid(
+            AuthenticationResponse(
+                credentialId = value.credentialId,
+                clientDataJson = value.clientDataJson,
+                rawAuthenticatorData = value.authenticatorData,
+                authenticatorData = parsedAuthData.authenticatorData,
+                signature = value.signature,
+                userHandle = value.userHandle,
+                authenticatorAttachment = value.authenticatorAttachment,
+                extensions = value.extensions,
+            ),
+        )
+    }
+
     /** Parses an authenticator-data byte sequence according to WebAuthn L3 §6.1. */
     @Suppress("MagicNumber")
     public fun parseAuthenticatorData(

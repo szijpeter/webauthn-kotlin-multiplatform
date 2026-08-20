@@ -6,9 +6,12 @@
 // - Show declarations: true
 
 // Library unique name: <io.github.szijpeter:webauthn-json-api>
-abstract interface dev.webauthn.json/WebAuthnJsonCodec { // dev.webauthn.json/WebAuthnJsonCodec|null[0]
+abstract fun interface dev.webauthn.json/CollectedClientDataDecoder { // dev.webauthn.json/CollectedClientDataDecoder|null[0]
+    abstract fun decodeCollectedClientData(dev.webauthn.model/Base64UrlBytes): dev.webauthn.model/ValidationResult<dev.webauthn.model/CollectedClientData> // dev.webauthn.json/CollectedClientDataDecoder.decodeCollectedClientData|decodeCollectedClientData(dev.webauthn.model.Base64UrlBytes){}[0]
+}
+
+abstract interface dev.webauthn.json/WebAuthnJsonCodec : dev.webauthn.json/CollectedClientDataDecoder { // dev.webauthn.json/WebAuthnJsonCodec|null[0]
     abstract fun decodeAuthenticationResponse(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.json/WebAuthnJsonCodec.decodeAuthenticationResponse|decodeAuthenticationResponse(kotlin.String){}[0]
-    abstract fun decodeCollectedClientData(kotlin/ByteArray): dev.webauthn.model/ValidationResult<dev.webauthn.model/CollectedClientData> // dev.webauthn.json/WebAuthnJsonCodec.decodeCollectedClientData|decodeCollectedClientData(kotlin.ByteArray){}[0]
     abstract fun decodeCreationOptions(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialCreationOptions> // dev.webauthn.json/WebAuthnJsonCodec.decodeCreationOptions|decodeCreationOptions(kotlin.String){}[0]
     abstract fun decodeRegistrationResponse(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.json/WebAuthnJsonCodec.decodeRegistrationResponse|decodeRegistrationResponse(kotlin.String){}[0]
     abstract fun decodeRequestOptions(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.model/PublicKeyCredentialRequestOptions> // dev.webauthn.json/WebAuthnJsonCodec.decodeRequestOptions|decodeRequestOptions(kotlin.String){}[0]

@@ -34,7 +34,7 @@ The caller remains responsible for ceremony policy and attestation verification.
 flowchart LR
     PROTOCOL["webauthn-protocol"] --> CBOR["webauthn-cbor-core"]
     PROTOCOL --> MODEL["webauthn-model"]
-    SERIALIZATION["webauthn-serialization-kotlinx"] --> PROTOCOL
+    SERIALIZATION["webauthn-json-kotlinx"] --> PROTOCOL
 ```
 
 Arrows point from a consuming module to its direct dependency. JSON implementations may use the
