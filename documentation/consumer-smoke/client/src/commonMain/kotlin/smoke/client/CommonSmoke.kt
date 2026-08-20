@@ -1,5 +1,5 @@
 package smoke.client
 
-import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.KtorPasskeyRoutes
 
-fun commonSmoke(client: KtorPasskeyServerClient): String = client::class.simpleName.orEmpty()
+fun commonSmoke(routes: KtorPasskeyRoutes = KtorPasskeyRoutes()): String = routes.registerOptionsPath

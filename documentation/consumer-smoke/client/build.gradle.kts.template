@@ -28,12 +28,13 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-core:<version>")
-            implementation("io.github.szijpeter:webauthn-network-ktor-client:<version>")
+            implementation("io.github.szijpeter:webauthn-client-flow:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor:<version>")
+            implementation("io.github.szijpeter:webauthn-json-api:<version>")
         }
 
         androidMain.dependencies {
             implementation("io.github.szijpeter:webauthn-client-platform:<version>")
-            implementation("io.github.szijpeter:webauthn-json-kotlinx:<version>")
         }
 
         iosMain.dependencies {
@@ -42,3 +43,15 @@ kotlin {
     }
 }
 // docs-endregion consumer-client-kmp-dependencies
+
+// Keep test dependencies in the KMP commonTest source set so the published
+// consumer compiles on every target represented by this fixture.
+kotlin {
+    sourceSets {
+        commonTest.dependencies {
+            implementation("io.ktor:ktor-client-mock:<ktor-version>")
+            implementation("org.jetbrains.kotlin:kotlin-test:<kotlin-version>")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:<coroutines-version>")
+        }
+    }
+}

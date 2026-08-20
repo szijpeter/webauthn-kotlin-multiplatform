@@ -1,11 +1,11 @@
 package dev.webauthn.documentation.examples
 
 // docs-region network-client
-import dev.webauthn.network.KtorPasskeyServerClient
+import dev.webauthn.network.kotlinx.KotlinxKtorPasskeyBackend
 import io.ktor.client.HttpClient
 
-fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
-    return KtorPasskeyServerClient(
+fun serverBackend(httpClient: HttpClient): KotlinxKtorPasskeyBackend {
+    return KotlinxKtorPasskeyBackend(
         httpClient = httpClient,
         endpointBase = "https://example.com",
     )

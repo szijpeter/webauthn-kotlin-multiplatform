@@ -48,6 +48,8 @@ kotlin {
             implementation(project(":client:webauthn-client-core"))
             implementation(project(":client:webauthn-client-flow"))
             implementation(project(":client:webauthn-client-json-core"))
+            implementation(project(":client:webauthn-client-ktor"))
+            implementation(project(":client:webauthn-client-ktor-kotlinx"))
             implementation(project(":client:webauthn-client-prf-crypto"))
             implementation(project(":client:webauthn-network-ktor-client"))
             implementation(libs.compose.runtime)

@@ -1,0 +1,131 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-client-ktor-kotlinx>
+sealed interface dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult { // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult|null[0]
+    final class Rejected : dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult { // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected|null[0]
+        constructor <init>(kotlin/String? = ...) // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.<init>|<init>(kotlin.String?){}[0]
+
+        final val message // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.message|{}message[0]
+            final fun <get-message>(): kotlin/String? // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.message.<get-message>|<get-message>(){}[0]
+
+        final fun component1(): kotlin/String? // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.component1|component1(){}[0]
+        final fun copy(kotlin/String? = ...): dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.copy|copy(kotlin.String?){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Rejected.toString|toString(){}[0]
+    }
+
+    final object Verified : dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult { // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Verified|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Verified.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Verified.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult.Verified.toString|toString(){}[0]
+    }
+}
+
+final class dev.webauthn.network.kotlinx/AuthenticationStartPayload { // dev.webauthn.network.kotlinx/AuthenticationStartPayload|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network.kotlinx/AuthenticationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+
+    final val extensions // dev.webauthn.network.kotlinx/AuthenticationStartPayload.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network.kotlinx/AuthenticationStartPayload.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val origin // dev.webauthn.network.kotlinx/AuthenticationStartPayload.origin|{}origin[0]
+        final fun <get-origin>(): kotlin/String // dev.webauthn.network.kotlinx/AuthenticationStartPayload.origin.<get-origin>|<get-origin>(){}[0]
+    final val rpId // dev.webauthn.network.kotlinx/AuthenticationStartPayload.rpId|{}rpId[0]
+        final fun <get-rpId>(): kotlin/String // dev.webauthn.network.kotlinx/AuthenticationStartPayload.rpId.<get-rpId>|<get-rpId>(){}[0]
+    final val userName // dev.webauthn.network.kotlinx/AuthenticationStartPayload.userName|{}userName[0]
+        final fun <get-userName>(): kotlin/String? // dev.webauthn.network.kotlinx/AuthenticationStartPayload.userName.<get-userName>|<get-userName>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.network.kotlinx/AuthenticationStartPayload.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.network.kotlinx/AuthenticationStartPayload.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // dev.webauthn.network.kotlinx/AuthenticationStartPayload.component3|component3(){}[0]
+    final fun component4(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network.kotlinx/AuthenticationStartPayload.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.network.kotlinx/AuthenticationStartPayload // dev.webauthn.network.kotlinx/AuthenticationStartPayload.copy|copy(kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.network.kotlinx/AuthenticationStartPayload.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.network.kotlinx/AuthenticationStartPayload.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.network.kotlinx/AuthenticationStartPayload.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.network.kotlinx/AuthenticationStartPayload> { // dev.webauthn.network.kotlinx/AuthenticationStartPayload.$serializer|null[0]
+        final val descriptor // dev.webauthn.network.kotlinx/AuthenticationStartPayload.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.network.kotlinx/AuthenticationStartPayload.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.network.kotlinx/AuthenticationStartPayload.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.network.kotlinx/AuthenticationStartPayload // dev.webauthn.network.kotlinx/AuthenticationStartPayload.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.network.kotlinx/AuthenticationStartPayload) // dev.webauthn.network.kotlinx/AuthenticationStartPayload.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.network.kotlinx.AuthenticationStartPayload){}[0]
+    }
+
+    final object Companion { // dev.webauthn.network.kotlinx/AuthenticationStartPayload.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.network.kotlinx/AuthenticationStartPayload> // dev.webauthn.network.kotlinx/AuthenticationStartPayload.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class dev.webauthn.network.kotlinx/KotlinxKtorPasskeyBackend { // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyBackend|null[0]
+    constructor <init>(io.ktor.client/HttpClient, kotlin/String, dev.webauthn.network/KtorPasskeyRoutes = ...) // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyBackend.<init>|<init>(io.ktor.client.HttpClient;kotlin.String;dev.webauthn.network.KtorPasskeyRoutes){}[0]
+
+    final fun authenticationBackend(): dev.webauthn.client/AuthenticationBackend<dev.webauthn.network.kotlinx/AuthenticationStartPayload, kotlin/Unit, dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult> // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyBackend.authenticationBackend|authenticationBackend(){}[0]
+    final fun registrationBackend(): dev.webauthn.client/RegistrationBackend<dev.webauthn.network.kotlinx/RegistrationStartPayload, kotlin/Unit, dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult> // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyBackend.registrationBackend|registrationBackend(){}[0]
+}
+
+final class dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec : dev.webauthn.network/KtorPasskeyContractCodec<dev.webauthn.network.kotlinx/RegistrationStartPayload, kotlin/Unit, dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult, dev.webauthn.network.kotlinx/AuthenticationStartPayload, kotlin/Unit, dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult> { // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec|null[0]
+    constructor <init>() // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.<init>|<init>(){}[0]
+
+    final fun decodeAuthenticationFinish(kotlin/String): dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.decodeAuthenticationFinish|decodeAuthenticationFinish(kotlin.String){}[0]
+    final fun decodeAuthenticationStart(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.client/CeremonyStart<kotlin/Unit, dev.webauthn.model/PublicKeyCredentialRequestOptions>> // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.decodeAuthenticationStart|decodeAuthenticationStart(kotlin.String){}[0]
+    final fun decodeError(kotlin/String): kotlin/String? // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.decodeError|decodeError(kotlin.String){}[0]
+    final fun decodeRegistrationFinish(kotlin/String): dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.decodeRegistrationFinish|decodeRegistrationFinish(kotlin.String){}[0]
+    final fun decodeRegistrationStart(kotlin/String): dev.webauthn.model/ValidationResult<dev.webauthn.client/CeremonyStart<kotlin/Unit, dev.webauthn.model/PublicKeyCredentialCreationOptions>> // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.decodeRegistrationStart|decodeRegistrationStart(kotlin.String){}[0]
+    final fun encodeAuthenticationFinish(kotlin/Unit, dev.webauthn.model/RawAuthenticationResponse): kotlin/String // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.encodeAuthenticationFinish|encodeAuthenticationFinish(kotlin.Unit;dev.webauthn.model.RawAuthenticationResponse){}[0]
+    final fun encodeAuthenticationStart(dev.webauthn.network.kotlinx/AuthenticationStartPayload): kotlin/String // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.encodeAuthenticationStart|encodeAuthenticationStart(dev.webauthn.network.kotlinx.AuthenticationStartPayload){}[0]
+    final fun encodeRegistrationFinish(kotlin/Unit, dev.webauthn.model/RawRegistrationResponse): kotlin/String // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.encodeRegistrationFinish|encodeRegistrationFinish(kotlin.Unit;dev.webauthn.model.RawRegistrationResponse){}[0]
+    final fun encodeRegistrationStart(dev.webauthn.network.kotlinx/RegistrationStartPayload): kotlin/String // dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec.encodeRegistrationStart|encodeRegistrationStart(dev.webauthn.network.kotlinx.RegistrationStartPayload){}[0]
+}
+
+final class dev.webauthn.network.kotlinx/RegistrationStartPayload { // dev.webauthn.network.kotlinx/RegistrationStartPayload|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String, kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...) // dev.webauthn.network.kotlinx/RegistrationStartPayload.<init>|<init>(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+
+    final val extensions // dev.webauthn.network.kotlinx/RegistrationStartPayload.extensions|{}extensions[0]
+        final fun <get-extensions>(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network.kotlinx/RegistrationStartPayload.extensions.<get-extensions>|<get-extensions>(){}[0]
+    final val origin // dev.webauthn.network.kotlinx/RegistrationStartPayload.origin|{}origin[0]
+        final fun <get-origin>(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.origin.<get-origin>|<get-origin>(){}[0]
+    final val residentKey // dev.webauthn.network.kotlinx/RegistrationStartPayload.residentKey|{}residentKey[0]
+        final fun <get-residentKey>(): kotlin/String? // dev.webauthn.network.kotlinx/RegistrationStartPayload.residentKey.<get-residentKey>|<get-residentKey>(){}[0]
+    final val rpId // dev.webauthn.network.kotlinx/RegistrationStartPayload.rpId|{}rpId[0]
+        final fun <get-rpId>(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.rpId.<get-rpId>|<get-rpId>(){}[0]
+    final val rpName // dev.webauthn.network.kotlinx/RegistrationStartPayload.rpName|{}rpName[0]
+        final fun <get-rpName>(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.rpName.<get-rpName>|<get-rpName>(){}[0]
+    final val userDisplayName // dev.webauthn.network.kotlinx/RegistrationStartPayload.userDisplayName|{}userDisplayName[0]
+        final fun <get-userDisplayName>(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.userDisplayName.<get-userDisplayName>|<get-userDisplayName>(){}[0]
+    final val userHandle // dev.webauthn.network.kotlinx/RegistrationStartPayload.userHandle|{}userHandle[0]
+        final fun <get-userHandle>(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.userHandle.<get-userHandle>|<get-userHandle>(){}[0]
+    final val userName // dev.webauthn.network.kotlinx/RegistrationStartPayload.userName|{}userName[0]
+        final fun <get-userName>(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.userName.<get-userName>|<get-userName>(){}[0]
+
+    final fun component1(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.component2|component2(){}[0]
+    final fun component3(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.component3|component3(){}[0]
+    final fun component4(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.component4|component4(){}[0]
+    final fun component5(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.component5|component5(){}[0]
+    final fun component6(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.component6|component6(){}[0]
+    final fun component7(): kotlin/String? // dev.webauthn.network.kotlinx/RegistrationStartPayload.component7|component7(){}[0]
+    final fun component8(): dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? // dev.webauthn.network.kotlinx/RegistrationStartPayload.component8|component8(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String = ..., kotlin/String? = ..., dev.webauthn.serialization/AuthenticationExtensionsClientInputsDto? = ...): dev.webauthn.network.kotlinx/RegistrationStartPayload // dev.webauthn.network.kotlinx/RegistrationStartPayload.copy|copy(kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String;kotlin.String?;dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.network.kotlinx/RegistrationStartPayload.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.network.kotlinx/RegistrationStartPayload.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.network.kotlinx/RegistrationStartPayload.toString|toString(){}[0]
+
+    final object $serializer : kotlinx.serialization.internal/GeneratedSerializer<dev.webauthn.network.kotlinx/RegistrationStartPayload> { // dev.webauthn.network.kotlinx/RegistrationStartPayload.$serializer|null[0]
+        final val descriptor // dev.webauthn.network.kotlinx/RegistrationStartPayload.$serializer.descriptor|{}descriptor[0]
+            final fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // dev.webauthn.network.kotlinx/RegistrationStartPayload.$serializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+        final fun childSerializers(): kotlin/Array<kotlinx.serialization/KSerializer<*>> // dev.webauthn.network.kotlinx/RegistrationStartPayload.$serializer.childSerializers|childSerializers(){}[0]
+        final fun deserialize(kotlinx.serialization.encoding/Decoder): dev.webauthn.network.kotlinx/RegistrationStartPayload // dev.webauthn.network.kotlinx/RegistrationStartPayload.$serializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+        final fun serialize(kotlinx.serialization.encoding/Encoder, dev.webauthn.network.kotlinx/RegistrationStartPayload) // dev.webauthn.network.kotlinx/RegistrationStartPayload.$serializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;dev.webauthn.network.kotlinx.RegistrationStartPayload){}[0]
+    }
+
+    final object Companion { // dev.webauthn.network.kotlinx/RegistrationStartPayload.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<dev.webauthn.network.kotlinx/RegistrationStartPayload> // dev.webauthn.network.kotlinx/RegistrationStartPayload.Companion.serializer|serializer(){}[0]
+    }
+}

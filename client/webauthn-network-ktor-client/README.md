@@ -17,12 +17,12 @@ Use this when your backend follows the default `/webauthn/*` contract and your a
 
 ## How to use
 
-<!-- doc-example: id=client-webauthn-network-ktor-client-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client -->
+<!-- doc-example: id=client-webauthn-network-ktor-client-readme-kotlin-1; owner=source; verify=compile; audience=consumer; source=documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/LegacyNetworkClientExample.kt#legacy-network-client -->
 ```kotlin
 import dev.webauthn.network.KtorPasskeyServerClient
 import io.ktor.client.HttpClient
 
-fun serverClient(httpClient: HttpClient): KtorPasskeyServerClient {
+fun legacyServerClient(httpClient: HttpClient): KtorPasskeyServerClient {
     return KtorPasskeyServerClient(
         httpClient = httpClient,
         endpointBase = "https://example.com",

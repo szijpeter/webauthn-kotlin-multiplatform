@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **106**
+Managed blocks: **109**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -23,23 +23,26 @@ Managed blocks: **106**
 | contributing-bash-4 | CONTRIBUTING.md:39 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | readme-mermaid-1 | README.md:50 | WebAuthn Core Concepts | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | readme-mermaid-2 | README.md:85 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-kotlin-1 | README.md:148 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
-| readme-kotlin-2 | README.md:160 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-3 | README.md:183 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
-| readme-bash-1 | README.md:204 | Install | bash | maintainer | markdown | Markdown block | syntax |  |
-| readme-bash-2 | README.md:293 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-kotlin-1 | README.md:150 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
+| readme-kotlin-2 | README.md:162 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-3 | README.md:186 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
+| readme-bash-1 | README.md:207 | Install | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-bash-2 | README.md:300 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
 | client-webauthn-client-compose-readme-mermaid-1 | client/webauthn-client-compose/README.md:12 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-compose-readme-kotlin-1 | client/webauthn-client-compose/README.md:32 | How to use | kotlin | consumer | source | documentation/examples/src/platformMain/kotlin/dev/webauthn/documentation/examples/ComposeClientExample.kt#compose-client | platform-compile |  |
 | client-webauthn-client-flow-readme-kotlin-1 | client/webauthn-client-flow/README.md:30 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PasskeyFlowExample.kt#passkey-flow | compile |  |
 | client-webauthn-client-flow-readme-mermaid-1 | client/webauthn-client-flow/README.md:86 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-json-core-readme-kotlin-1 | client/webauthn-client-json-core/README.md:18 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/JsonClientExample.kt#json-client | compile |  |
 | client-webauthn-client-json-core-readme-mermaid-1 | client/webauthn-client-json-core/README.md:34 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| client-webauthn-client-ktor-kotlinx-readme-kotlin-1 | client/webauthn-client-ktor-kotlinx/README.md:27 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/KtorClientExample.kt#kotlinx-ktor-backend | compile |  |
+| client-webauthn-client-ktor-readme-kotlin-1 | client/webauthn-client-ktor/README.md:28 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/KtorClientExample.kt#neutral-ktor-backend | compile |  |
+| client-webauthn-client-ktor-readme-mermaid-1 | client/webauthn-client-ktor/README.md:84 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-platform-readme-kotlin-1 | client/webauthn-client-platform/README.md:23 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client | platform-compile |  |
 | client-webauthn-client-platform-readme-kotlin-2 | client/webauthn-client-platform/README.md:39 | iOS | kotlin | consumer | source | documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/IosClientExample.kt#ios-client | platform-compile |  |
 | client-webauthn-client-platform-readme-mermaid-1 | client/webauthn-client-platform/README.md:52 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-prf-crypto-readme-mermaid-1 | client/webauthn-client-prf-crypto/README.md:14 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-prf-crypto-readme-kotlin-1 | client/webauthn-client-prf-crypto/README.md:36 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PrfCryptoExample.kt#prf-crypto | compile |  |
-| client-webauthn-network-ktor-client-readme-kotlin-1 | client/webauthn-network-ktor-client/README.md:21 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client | compile |  |
+| client-webauthn-network-ktor-client-readme-kotlin-1 | client/webauthn-network-ktor-client/README.md:21 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/LegacyNetworkClientExample.kt#legacy-network-client | compile |  |
 | client-webauthn-network-ktor-client-readme-mermaid-1 | client/webauthn-network-ktor-client/README.md:38 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-cbor-core-readme-mermaid-1 | core/webauthn-cbor-core/README.md:17 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-core-readme-mermaid-1 | core/webauthn-core/README.md:15 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
@@ -56,10 +59,10 @@ Managed blocks: **106**
 | core-webauthn-protocol-readme-mermaid-1 | core/webauthn-protocol/README.md:33 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-runtime-core-readme-kotlin-1 | core/webauthn-runtime-core/README.md:28 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/RuntimeExample.kt#runtime-cancellation | unit |  |
 | docs-client-first-execution-kotlin-1 | docs/CLIENT_FIRST_EXECUTION.md:27 | Option A: First-party default backend contract | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/NetworkClientExample.kt#network-client | compile |  |
-| docs-client-first-execution-bash-1 | docs/CLIENT_FIRST_EXECUTION.md:63 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
-| docs-client-first-execution-bash-2 | docs/CLIENT_FIRST_EXECUTION.md:70 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
-| docs-client-first-execution-kotlin-2 | docs/CLIENT_FIRST_EXECUTION.md:117 | `webauthn-client-json-core` (optional) | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidJsonClientExample.kt#android-json-client | platform-compile |  |
-| docs-maven-central-bash-1 | docs/MAVEN_CENTRAL.md:67 | Local Validation | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-client-first-execution-bash-1 | docs/CLIENT_FIRST_EXECUTION.md:65 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
+| docs-client-first-execution-bash-2 | docs/CLIENT_FIRST_EXECUTION.md:72 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
+| docs-client-first-execution-kotlin-2 | docs/CLIENT_FIRST_EXECUTION.md:132 | `webauthn-client-json-core` (optional) | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidJsonClientExample.kt#android-json-client | platform-compile |  |
+| docs-maven-central-bash-1 | docs/MAVEN_CENTRAL.md:69 | Local Validation | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-1 | docs/ai/WORKFLOWS.md:10 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-2 | docs/ai/WORKFLOWS.md:17 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-3 | docs/ai/WORKFLOWS.md:24 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
@@ -74,7 +77,7 @@ Managed blocks: **106**
 | docs-architecture-mermaid-1 | docs/architecture.md:32 | Reference integration | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-2 | docs/architecture.md:58 | Shared foundation | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-3 | docs/architecture.md:91 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| docs-architecture-mermaid-4 | docs/architecture.md:150 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-4 | docs/architecture.md:157 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-unused-return-value-checker-bash-1 | docs/unused-return-value-checker.md:20 | Audit coverage | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-wiki-quality-and-release-bash-1 | docs/wiki/quality-and-release.md:12 | Default Quality Gates | bash | contributor | markdown | Markdown block | syntax |  |
 | platform-bom-readme-kotlin-1 | platform/bom/README.md:25 | How to use | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
