@@ -19,6 +19,9 @@ internal fun MainRoute() {
         onEncrypt = viewModel::onEncryptClicked,
         onDecrypt = viewModel::onDecryptClicked,
         onClearPrfSession = viewModel::onClearSessionClicked,
+        onCreateRestoreCredential = viewModel.restoreCredentialActions::createRestoreCredential,
+        onGetRestoreCredential = viewModel.restoreCredentialActions::getRestoreCredential,
+        onClearRestoreCredential = viewModel.restoreCredentialActions::clearRestoreCredential,
         onPlaintextChange = viewModel::onPlaintextChanged,
         onLogout = viewModel::onLogoutClicked,
     )
