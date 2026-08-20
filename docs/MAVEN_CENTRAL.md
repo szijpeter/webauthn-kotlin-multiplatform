@@ -33,6 +33,7 @@ Published:
 - `webauthn-client-flow`
 - `webauthn-client-ktor`
 - `webauthn-client-ktor-kotlinx`
+- `webauthn-client-defaults`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
 - `webauthn-client-platform`

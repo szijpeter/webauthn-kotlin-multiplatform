@@ -40,6 +40,7 @@ include(
     ":client:webauthn-client-flow",
     ":client:webauthn-client-ktor",
     ":client:webauthn-client-ktor-kotlinx",
+    ":client:webauthn-client-defaults",
     ":client:webauthn-client-prf-crypto",
     ":client:webauthn-client-json-core",
     ":client:webauthn-client-compose",

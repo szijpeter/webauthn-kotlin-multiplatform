@@ -120,6 +120,7 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-client-flow`](./client/webauthn-client-flow/README.md): state-free ceremony flow with opaque backend state.
 - [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md): codec-neutral Ktor backend transport with caller-owned engine and wire contract.
 - [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md): opt-in default `/webauthn/*` Kotlinx contract.
+- [`webauthn-client-defaults`](./client/webauthn-client-defaults/README.md): recommended platform composition with an explicit Kotlinx codec override seam.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
 
@@ -156,7 +157,45 @@ repositories {
 
 Use only the modules your app actually wires in. In Kotlin Multiplatform projects, shared modules belong in `commonMain`, while concrete platform bridges belong in the matching platform source set.
 
-Client-side KMP example:
+### Recommended client setup
+
+For the default Kotlinx backend contract and recommended Android/iOS platform composition, use
+`webauthn-client-flow` plus `webauthn-client-ktor-kotlinx` in common code and
+`webauthn-client-defaults` in each platform source set:
+
+<!-- doc-example: id=readme-kotlin-4; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/defaults/build.gradle.kts.template#consumer-defaults-kmp-dependencies -->
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-flow:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor-kotlinx:<version>")
+        }
+
+        androidMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-defaults:<version>")
+        }
+
+        iosMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-defaults:<version>")
+        }
+    }
+}
+```
+
+The app still creates its own Ktor `HttpClient` and engine. The defaults artifact selects the
+Android JSON implementation and platform construction only; `PasskeyFlow` leaves presentation state
+and backend exception policy application-owned.
+
+Android hosts must also add a Credential Manager provider such as
+`androidx.credentials:credentials-play-services-auth`; the WebAuthn client modules provide the API
+bridge but deliberately leave provider-runtime selection to the application.
+
+### Compose your stack
+
+Use the lower-level modules when you supply your own `WebAuthnJsonCodec`, Ktor contract codec, or
+platform construction. This dependency-pure consumer fixture deliberately does not resolve
+`webauthn-json-kotlinx` through the neutral client modules:
 
 <!-- doc-example: id=readme-kotlin-2; owner=configuration; verify=consumer-compile; audience=consumer; source=documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies -->
 ```kotlin
@@ -193,7 +232,7 @@ dependencies {
 }
 ```
 
-Notes:
+Composition notes:
 
 - Client apps do not need `webauthn-server-*` dependencies.
 - Add `webauthn-client-platform` to each platform source set that instantiates a concrete platform client.
@@ -230,6 +269,7 @@ Use:
 - [`webauthn-client-flow`](./client/webauthn-client-flow/README.md) for generic start/prompt/finish orchestration
 - [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) if you exchange raw JSON with a host/backend
 - [`webauthn-client-platform`](./client/webauthn-client-platform/README.md)
+- [`webauthn-client-defaults`](./client/webauthn-client-defaults/README.md) for the recommended batteries-included platform setup
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) for Compose helpers
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
 - [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) for codec-neutral Ktor backends
@@ -271,6 +311,7 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
 | [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
 | [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |
+| [`webauthn-client-defaults`](./client/webauthn-client-defaults/README.md) | Apps that want the recommended platform setup with Kotlinx defaults and an explicit codec override |
 | [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) | Client apps deriving crypto sessions from WebAuthn PRF extension outputs |
 | [`webauthn-network-ktor-client`](./client/webauthn-network-ktor-client/README.md) | Clients talking to a `/webauthn/*` backend contract over Ktor (`HttpClient` contract + caller-selected engine) |
 | [`webauthn-attestation-mds`](./server/webauthn-attestation-mds/README.md) | Backends that want optional FIDO Metadata Service trust anchors |

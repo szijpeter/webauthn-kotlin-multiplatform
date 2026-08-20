@@ -94,6 +94,7 @@ flowchart TB
     PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
+    DEFAULTS["webauthn-client-defaults<br/>(recommended composition)"]
     KTOR_KOTLINX["webauthn-client-ktor-kotlinx<br/>(default JSON contract)"]
     KTOR["webauthn-client-ktor<br/>(codec-neutral transport)"]
     NETWORK["webauthn-network-ktor-client<br/>(legacy default transport)"]
@@ -109,6 +110,10 @@ flowchart TB
     COMPOSE --> FLOW
     COMPOSE --> PLATFORM
     COMPOSE -->|androidMain| JSON_KOTLINX
+
+    DEFAULTS -->|androidMain and iosMain| PLATFORM
+    DEFAULTS --> JSON_API
+    DEFAULTS --> JSON_KOTLINX
 
     PLATFORM --> CLIENT_CORE
     PLATFORM --> JSON_API
@@ -203,6 +208,7 @@ reusable library architecture.
 - `webauthn-client-core` owns typed platform-operation validation and error classification; Android and iOS source sets remain thin bridges that return raw output.
 - `webauthn-client-flow` depends only on client-core and keeps backend state/output generic; transport and UI modules build over it.
 - `webauthn-client-ktor` adapts flow backends to caller-owned Ktor transport without choosing an engine or serializer; `webauthn-client-ktor-kotlinx` is the opt-in default JSON contract.
+- `webauthn-client-defaults` selects the recommended Kotlinx/platform composition without changing the replaceable lower-level seams.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
 - Optional adapters must not become hidden prerequisites of core modules.

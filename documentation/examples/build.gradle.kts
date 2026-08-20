@@ -63,6 +63,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(project(":client:webauthn-client-defaults"))
             implementation(project(":client:webauthn-client-platform"))
             implementation(project(":client:webauthn-client-json-core"))
             implementation(project(":client:webauthn-client-compose"))
@@ -71,6 +72,7 @@ kotlin {
         }
 
         getByName("iosMain").dependencies {
+            implementation(project(":client:webauthn-client-defaults"))
             implementation(project(":client:webauthn-client-platform"))
             implementation(project(":client:webauthn-client-compose"))
             implementation(libs.compose.runtime)

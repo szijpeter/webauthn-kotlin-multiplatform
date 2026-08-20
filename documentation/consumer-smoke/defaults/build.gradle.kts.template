@@ -1,0 +1,40 @@
+plugins {
+    kotlin("multiplatform")
+    id("com.android.kotlin.multiplatform.library")
+}
+
+apply(from = "../repositories.gradle.kts")
+
+kotlin {
+    android {
+        namespace = "smoke.defaults"
+        compileSdk = 37
+        minSdk = 26
+    }
+
+    iosSimulatorArm64()
+
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xreturn-value-checker=check")
+    }
+}
+
+// docs-region consumer-defaults-kmp-dependencies
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-flow:<version>")
+            implementation("io.github.szijpeter:webauthn-client-ktor-kotlinx:<version>")
+        }
+
+        androidMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-defaults:<version>")
+        }
+
+        iosMain.dependencies {
+            implementation("io.github.szijpeter:webauthn-client-defaults:<version>")
+        }
+    }
+}
+// docs-endregion consumer-defaults-kmp-dependencies

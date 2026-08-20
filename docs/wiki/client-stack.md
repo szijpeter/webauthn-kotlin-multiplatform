@@ -10,6 +10,7 @@ The client side separates typed platform operations from generic ceremony orches
 - `webauthn-client-flow` owns state-free ceremony orchestration with opaque backend state and application-defined output.
 - `webauthn-client-ktor` adapts that flow to HTTP without choosing serialization.
 - `webauthn-client-ktor-kotlinx` is the opt-in default `/webauthn/...` contract composition.
+- `webauthn-client-defaults` is the batteries-included platform composition; it owns the Kotlinx implementation choice while leaving lower-level seams replaceable.
 - `webauthn-client-platform` bridges into Credential Manager from `androidMain` and AuthenticationServices from `iosMain`.
 - `webauthn-client-compose` provides remembered helpers for Compose-driven apps.
 - `webauthn-client-json-core` is an optional raw JSON interop layer.
