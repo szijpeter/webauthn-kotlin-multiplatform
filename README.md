@@ -113,6 +113,8 @@ reference integration and focused core, client, and server dependency views.
 
 - [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md): shared coroutine/failure boundary helpers for adapters.
 - [`webauthn-model`](./core/webauthn-model/README.md): typed protocol/value contracts.
+- [`webauthn-json-api`](./core/webauthn-json-api/README.md): replaceable JSON codec boundary.
+- [`webauthn-protocol`](./core/webauthn-protocol/README.md): strict codec-neutral protocol interpretation.
 - [`webauthn-core`](./core/webauthn-core/README.md): standards-first ceremony validation.
 - [`webauthn-client-core`](./client/webauthn-client-core/README.md): shared client orchestration.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
@@ -244,6 +246,8 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`platform:bom`](./platform/bom/README.md) | Consumers who want aligned versions across published artifacts |
 | [`webauthn-cbor-core`](./core/webauthn-cbor-core/README.md) | Parser/crypto modules needing strict low-level CBOR byte scanning primitives |
 | [`webauthn-model`](./core/webauthn-model/README.md) | Teams that want typed WebAuthn models and value wrappers |
+| [`webauthn-json-api`](./core/webauthn-json-api/README.md) | Teams selecting a JSON implementation without exposing serializer-specific types |
+| [`webauthn-protocol`](./core/webauthn-protocol/README.md) | Teams interpreting raw WebAuthn binary protocol data without selecting a codec |
 | [`webauthn-runtime-core`](./core/webauthn-runtime-core/README.md) | Shared coroutine-safe error/cancellation boundary helpers for adapter modules |
 | [`webauthn-serialization-kotlinx`](./core/webauthn-serialization-kotlinx/README.md) | Teams mapping JSON/CBOR DTOs to typed models |
 | [`webauthn-core`](./core/webauthn-core/README.md) | Teams validating ceremonies and authenticator data |

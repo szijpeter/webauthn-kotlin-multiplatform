@@ -26,14 +26,16 @@ import dev.webauthn.model.PublicKeyCredentialRpEntity
 import dev.webauthn.model.PublicKeyCredentialType
 import dev.webauthn.model.PublicKeyCredentialUserEntity
 import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ResidentKeyRequirement
 import dev.webauthn.model.RpId
 import dev.webauthn.model.UserHandle
 import dev.webauthn.model.UserVerificationRequirement
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.model.WebAuthnValidationError
+import dev.webauthn.protocol.WebAuthnProtocolParser
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.cbor.Cbor
 
 private const val PUBLIC_KEY_CREDENTIAL_TYPE = "public-key"
 
@@ -363,18 +365,16 @@ public object WebAuthnDtoMapper {
                 if (attestation is ValidationResult.Invalid) {
                     return attestation
                 }
-                val authDataBytes = extractAuthDataFromAttestationObject((attestation as ValidationResult.Valid).value.bytes())
-                if (authDataBytes == null) {
-                    return ValidationResult.Invalid(
-                        [
-                            WebAuthnValidationError.InvalidFormat(
-                                field = "attestationObject",
-                                message = "Attestation object does not contain a valid authData field",
-                            ),
-                        ],
-                    )
+                val authDataBytes = WebAuthnProtocolParser.extractAuthenticatorData(
+                    (attestation as ValidationResult.Valid).value.bytes(),
+                )
+                if (authDataBytes is ValidationResult.Invalid) {
+                    return authDataBytes
                 }
-                val parsedAuthData = parseAuthenticatorData(authDataBytes, field = "attestationObject.authData")
+                val parsedAuthData = WebAuthnProtocolParser.parseAuthenticatorData(
+                    (authDataBytes as ValidationResult.Valid).value.bytes(),
+                    field = "attestationObject.authData",
+                )
                 if (parsedAuthData is ValidationResult.Invalid) {
                     return parsedAuthData
                 }
@@ -450,6 +450,55 @@ public object WebAuthnDtoMapper {
         )
     }
 
+    /** Maps raw, untrusted registration output without interpreting authenticator-data bytes. */
+    public fun fromModel(value: RawRegistrationResponse): RegistrationResponseDto {
+        return RegistrationResponseDto(
+            id = value.credentialId.value.encoded(),
+            rawId = value.credentialId.value.encoded(),
+            response = RegistrationResponsePayloadDto(
+                clientDataJson = value.clientDataJson.encoded(),
+                attestationObject = value.attestationObject.encoded(),
+            ),
+            authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
+            clientExtensionResults = value.extensions?.let(::fromModel) ?: AuthenticationExtensionsClientOutputsDto(),
+            type = PUBLIC_KEY_CREDENTIAL_TYPE,
+        )
+    }
+
+    /** Validates wire fields while preserving registration response bytes as raw protocol input. */
+    public fun toRawModel(value: RegistrationResponseDto): ValidationResult<RawRegistrationResponse> {
+        val credentialId = parseMatchingCredentialId(value.id, value.rawId)
+        if (credentialId is ValidationResult.Invalid) return credentialId
+        val clientData = Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
+        if (clientData is ValidationResult.Invalid) return clientData
+        val attestationObject = Base64UrlBytes.parse(value.response.attestationObject, "attestationObject")
+        if (attestationObject is ValidationResult.Invalid) return attestationObject
+        if (value.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
+            return invalidPublicKeyCredentialType()
+        }
+        val attachment = value.authenticatorAttachment?.let {
+            when (val parsed = parseAuthenticatorAttachment(it, "authenticatorAttachment")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> return parsed
+            }
+        }
+        val extensions = value.clientExtensionResults?.let {
+            when (val parsed = toModelValidated(it, fieldPrefix = "clientExtensionResults")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> return parsed
+            }
+        }
+        return ValidationResult.Valid(
+            RawRegistrationResponse(
+                credentialId = (credentialId as ValidationResult.Valid).value,
+                clientDataJson = (clientData as ValidationResult.Valid).value,
+                attestationObject = (attestationObject as ValidationResult.Valid).value,
+                authenticatorAttachment = attachment,
+                extensions = extensions,
+            ),
+        )
+    }
+
     @Suppress("CyclomaticComplexMethod", "LongMethod")
     public fun toModel(value: AuthenticationResponseDto): ValidationResult<AuthenticationResponse> {
         val credentialId = parseMatchingCredentialId(value.id, value.rawId)
@@ -474,7 +523,7 @@ public object WebAuthnDtoMapper {
                 val clientDataValue = (clientData as ValidationResult.Valid).value
                 val signatureValue = (signature as ValidationResult.Valid).value
                 val authenticatorDataValue = (authenticatorData as ValidationResult.Valid).value
-                val parsedAuthData = parseAuthenticatorData(
+                val parsedAuthData = WebAuthnProtocolParser.parseAuthenticatorData(
                     bytes = authenticatorDataValue.bytes(),
                     field = "response.authenticatorData",
                 )
@@ -547,6 +596,67 @@ public object WebAuthnDtoMapper {
         )
     }
 
+    /** Maps raw, untrusted authentication output without interpreting authenticator-data bytes. */
+    public fun fromModel(value: RawAuthenticationResponse): AuthenticationResponseDto {
+        return AuthenticationResponseDto(
+            id = value.credentialId.value.encoded(),
+            rawId = value.credentialId.value.encoded(),
+            response = AuthenticationResponsePayloadDto(
+                clientDataJson = value.clientDataJson.encoded(),
+                authenticatorData = value.authenticatorData.encoded(),
+                signature = value.signature.encoded(),
+                userHandle = value.userHandle?.value?.encoded(),
+            ),
+            authenticatorAttachment = value.authenticatorAttachment?.toDtoValue(),
+            clientExtensionResults = value.extensions?.let(::fromModel) ?: AuthenticationExtensionsClientOutputsDto(),
+            type = PUBLIC_KEY_CREDENTIAL_TYPE,
+        )
+    }
+
+    /** Validates wire fields while preserving authentication response bytes as raw protocol input. */
+    public fun toRawModel(value: AuthenticationResponseDto): ValidationResult<RawAuthenticationResponse> {
+        val credentialId = parseMatchingCredentialId(value.id, value.rawId)
+        if (credentialId is ValidationResult.Invalid) return credentialId
+        val clientData = Base64UrlBytes.parse(value.response.clientDataJson, "clientDataJSON")
+        if (clientData is ValidationResult.Invalid) return clientData
+        val authenticatorData = Base64UrlBytes.parse(value.response.authenticatorData, "response.authenticatorData")
+        if (authenticatorData is ValidationResult.Invalid) return authenticatorData
+        val signature = Base64UrlBytes.parse(value.response.signature, "signature")
+        if (signature is ValidationResult.Invalid) return signature
+        if (value.type != PUBLIC_KEY_CREDENTIAL_TYPE) {
+            return invalidPublicKeyCredentialType()
+        }
+        val userHandle = value.response.userHandle?.let {
+            when (val parsed = UserHandle.parse(it)) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> return parsed
+            }
+        }
+        val attachment = value.authenticatorAttachment?.let {
+            when (val parsed = parseAuthenticatorAttachment(it, "authenticatorAttachment")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> return parsed
+            }
+        }
+        val extensions = value.clientExtensionResults?.let {
+            when (val parsed = toModelValidated(it, fieldPrefix = "clientExtensionResults")) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> return parsed
+            }
+        }
+        return ValidationResult.Valid(
+            RawAuthenticationResponse(
+                credentialId = (credentialId as ValidationResult.Valid).value,
+                clientDataJson = (clientData as ValidationResult.Valid).value,
+                authenticatorData = (authenticatorData as ValidationResult.Valid).value,
+                signature = (signature as ValidationResult.Valid).value,
+                userHandle = userHandle,
+                authenticatorAttachment = attachment,
+                extensions = extensions,
+            ),
+        )
+    }
+
     // --- Extension Mapping Helpers ---
 
     public fun fromModel(value: AuthenticationExtensionsClientInputs): AuthenticationExtensionsClientInputsDto {
@@ -611,6 +721,17 @@ public object WebAuthnDtoMapper {
                 ],
             )
         }
+    }
+
+    private fun <T> invalidPublicKeyCredentialType(): ValidationResult<T> {
+        return ValidationResult.Invalid(
+            [
+                WebAuthnValidationError.InvalidValue(
+                    field = "type",
+                    message = "Only $PUBLIC_KEY_CREDENTIAL_TYPE is supported",
+                ),
+            ],
+        )
     }
 
     private fun parseAttestationConveyancePreference(

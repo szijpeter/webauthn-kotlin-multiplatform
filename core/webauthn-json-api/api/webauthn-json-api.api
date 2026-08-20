@@ -1,0 +1,12 @@
+public abstract interface class dev/webauthn/json/WebAuthnJsonCodec {
+	public abstract fun decodeAuthenticationResponse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun decodeCollectedClientData ([B)Ldev/webauthn/model/ValidationResult;
+	public abstract fun decodeCreationOptions (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun decodeRegistrationResponse (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun decodeRequestOptions (Ljava/lang/String;)Ldev/webauthn/model/ValidationResult;
+	public abstract fun encodeAuthenticationResponse (Ldev/webauthn/model/RawAuthenticationResponse;)Ljava/lang/String;
+	public abstract fun encodeCreationOptions (Ldev/webauthn/model/PublicKeyCredentialCreationOptions;)Ljava/lang/String;
+	public abstract fun encodeRegistrationResponse (Ldev/webauthn/model/RawRegistrationResponse;)Ljava/lang/String;
+	public abstract fun encodeRequestOptions (Ldev/webauthn/model/PublicKeyCredentialRequestOptions;)Ljava/lang/String;
+}
+

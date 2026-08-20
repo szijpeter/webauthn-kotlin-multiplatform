@@ -25,6 +25,8 @@ include(
     ":platform:constraints",
     ":core:webauthn-cbor-core",
     ":core:webauthn-model",
+    ":core:webauthn-json-api",
+    ":core:webauthn-protocol",
     ":core:webauthn-runtime-core",
     ":core:webauthn-serialization-kotlinx",
     ":core:webauthn-core",

@@ -128,6 +128,36 @@ public data class AttestedCredentialData(
     public val cosePublicKey: CosePublicKey,
 )
 
+/**
+ * Byte-preserving credential-creation output before protocol interpretation.
+ *
+ * `Raw` marks values obtained from a platform or transport boundary. It does not imply that the
+ * contained bytes, credential type, or extension results have been validated for a ceremony.
+ */
+public data class RawRegistrationResponse(
+    public val credentialId: CredentialId,
+    public val clientDataJson: Base64UrlBytes,
+    public val attestationObject: Base64UrlBytes,
+    public val authenticatorAttachment: AuthenticatorAttachment? = null,
+    public val extensions: AuthenticationExtensionsClientOutputs? = null,
+)
+
+/**
+ * Byte-preserving assertion output before protocol interpretation.
+ *
+ * `Raw` marks values obtained from a platform or transport boundary. It does not imply that the
+ * contained bytes, credential type, or extension results have been validated for a ceremony.
+ */
+public data class RawAuthenticationResponse(
+    public val credentialId: CredentialId,
+    public val clientDataJson: Base64UrlBytes,
+    public val authenticatorData: Base64UrlBytes,
+    public val signature: Base64UrlBytes,
+    public val userHandle: UserHandle? = null,
+    public val authenticatorAttachment: AuthenticatorAttachment? = null,
+    public val extensions: AuthenticationExtensionsClientOutputs? = null,
+)
+
 /** W3C WebAuthn L3: §5.2. AuthenticatorAttestationResponse Interface */
 public data class RegistrationResponse(
     public val credentialId: CredentialId,
