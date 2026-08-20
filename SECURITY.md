@@ -36,6 +36,7 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - Java/Kotlin CodeQL scanning is temporarily disabled while the current CodeQL CLI toolchain does not support Kotlin `2.3.10`.
 - Dependency risk is enforced on pull requests via `actions/dependency-review-action`.
 - CI checkout steps disable persisted Git credentials before Gradle executes repository code.
+- The privileged PR change-profile workflow loads executable code and configuration only from the trusted default branch. It never checks out or executes a pull request head; untrusted PR content is consumed only as GitHub API metadata, with `contents: read` and `pull-requests: write` permissions.
 - Renovate manages dependency and GitHub Actions updates.
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
 - Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.
