@@ -105,7 +105,7 @@ reference integration and focused core, client, and server dependency views.
 ### Repository areas
 
 - `core/` contains reusable protocol, validation, runtime, serialization, and crypto contracts.
-- `client/` contains shared client orchestration, platform bridges, Compose helpers, and client transport.
+- `client/` contains typed platform operations, generic ceremony flow, platform bridges, Compose helpers, and client transport.
 - `server/` contains JVM server services, Ktor/store adapters, JVM crypto, and optional trust metadata.
 - `sample/` contains runnable samples and demo entry points; these modules are not published.
 
@@ -117,6 +117,7 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-protocol`](./core/webauthn-protocol/README.md): strict codec-neutral protocol interpretation.
 - [`webauthn-core`](./core/webauthn-core/README.md): standards-first ceremony validation.
 - [`webauthn-client-core`](./client/webauthn-client-core/README.md): typed platform operations, raw responses, and shared error mapping.
+- [`webauthn-client-flow`](./client/webauthn-client-flow/README.md): state-free ceremony flow with opaque backend state.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
 
@@ -134,7 +135,7 @@ Most module READMEs follow this baseline structure (adapted per module when need
 Recommended adoption paths:
 
 - Start server-side with `model -> core -> crypto-api -> server-core-jvm` (+ `server-ktor` if you want HTTP adapters).
-- Start client-side with `client-core -> platform bridge` (+ `client-compose` for Compose UI).
+- Start client-side with `client-core -> client-flow -> platform bridge` (+ `client-compose` for Compose UI).
 - Add `client-prf-crypto` only when you need PRF-derived application crypto.
 
 ## Install
@@ -223,6 +224,7 @@ Use:
 Use:
 
 - [`webauthn-client-core`](./client/webauthn-client-core/README.md)
+- [`webauthn-client-flow`](./client/webauthn-client-flow/README.md) for generic start/prompt/finish orchestration
 - [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) if you exchange raw JSON with a host/backend
 - [`webauthn-client-platform`](./client/webauthn-client-platform/README.md)
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) for Compose helpers
@@ -258,6 +260,7 @@ Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY
 | [`webauthn-server-ktor`](./server/webauthn-server-ktor/README.md) | Ktor backends that want ready-made WebAuthn routes |
 | [`webauthn-server-store-exposed`](./server/webauthn-server-store-exposed/README.md) | JVM backends storing WebAuthn state through Exposed |
 | [`webauthn-client-core`](./client/webauthn-client-core/README.md) | Apps and adapters that need typed platform operations, raw credential responses, capabilities, and shared error mapping |
+| [`webauthn-client-flow`](./client/webauthn-client-flow/README.md) | Apps coordinating backend start/finish with opaque continuation state and application-defined output |
 | [`webauthn-client-json-core`](./client/webauthn-client-json-core/README.md) | Apps or SDKs that need raw JSON interoperability on top of typed clients |
 | [`webauthn-client-compose`](./client/webauthn-client-compose/README.md) | Compose apps that want remembered client/controller helpers |
 | [`webauthn-client-platform`](./client/webauthn-client-platform/README.md) | Android apps using Credential Manager or iOS apps using AuthenticationServices |

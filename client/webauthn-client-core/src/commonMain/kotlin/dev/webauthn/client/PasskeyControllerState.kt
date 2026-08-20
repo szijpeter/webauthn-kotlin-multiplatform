@@ -10,7 +10,7 @@ public sealed interface PasskeyControllerState {
     /** A ceremony is running with the provided [action] and [phase]. */
     public data class InProgress(
         public val action: PasskeyAction,
-        public val phase: PasskeyPhase,
+        public val phase: ControllerPhase,
     ) : PasskeyControllerState
 
     /** A ceremony completed successfully for [action]. */

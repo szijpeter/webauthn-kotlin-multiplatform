@@ -67,7 +67,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         }
 
         try {
-            emitProgress(action, PasskeyPhase.STARTING)
+            emitProgress(action, ControllerPhase.STARTING)
 
             val options = when (val result = getOptions()) {
                 is ValidationResult.Valid -> result.value
@@ -78,13 +78,13 @@ public class PasskeyController<RegisterParams, SignInParams>(
             }
             val challenge = extractChallenge(options)
 
-            emitProgress(action, PasskeyPhase.PLATFORM_PROMPT)
+            emitProgress(action, ControllerPhase.PLATFORM_PROMPT)
             val response = when (val result = interactWithPlatform(options)) {
                 is PasskeyResult.Success -> result.value
                 is PasskeyResult.Failure -> return fail(action, result.error)
             }
 
-            emitProgress(action, PasskeyPhase.FINISHING)
+            emitProgress(action, ControllerPhase.FINISHING)
             when (val result = finish(response, challenge)) {
                 PasskeyFinishResult.Verified -> uiState.value = PasskeyControllerState.Success(action)
                 is PasskeyFinishResult.Rejected -> {
@@ -108,7 +108,7 @@ public class PasskeyController<RegisterParams, SignInParams>(
         }
     }
 
-    private fun emitProgress(action: PasskeyAction, phase: PasskeyPhase) {
+    private fun emitProgress(action: PasskeyAction, phase: ControllerPhase) {
         uiState.value = PasskeyControllerState.InProgress(action, phase)
     }
 

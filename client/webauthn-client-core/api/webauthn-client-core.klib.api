@@ -18,6 +18,18 @@ final enum class dev.webauthn.client/CapabilitySupport : kotlin/Enum<dev.webauth
     final fun values(): kotlin/Array<dev.webauthn.client/CapabilitySupport> // dev.webauthn.client/CapabilitySupport.values|values#static(){}[0]
 }
 
+final enum class dev.webauthn.client/ControllerPhase : kotlin/Enum<dev.webauthn.client/ControllerPhase> { // dev.webauthn.client/ControllerPhase|null[0]
+    enum entry FINISHING // dev.webauthn.client/ControllerPhase.FINISHING|null[0]
+    enum entry PLATFORM_PROMPT // dev.webauthn.client/ControllerPhase.PLATFORM_PROMPT|null[0]
+    enum entry STARTING // dev.webauthn.client/ControllerPhase.STARTING|null[0]
+
+    final val entries // dev.webauthn.client/ControllerPhase.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.client/ControllerPhase> // dev.webauthn.client/ControllerPhase.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.webauthn.client/ControllerPhase // dev.webauthn.client/ControllerPhase.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.webauthn.client/ControllerPhase> // dev.webauthn.client/ControllerPhase.values|values#static(){}[0]
+}
+
 final enum class dev.webauthn.client/PasskeyAction : kotlin/Enum<dev.webauthn.client/PasskeyAction> { // dev.webauthn.client/PasskeyAction|null[0]
     enum entry REGISTER // dev.webauthn.client/PasskeyAction.REGISTER|null[0]
     enum entry SIGN_IN // dev.webauthn.client/PasskeyAction.SIGN_IN|null[0]
@@ -27,18 +39,6 @@ final enum class dev.webauthn.client/PasskeyAction : kotlin/Enum<dev.webauthn.cl
 
     final fun valueOf(kotlin/String): dev.webauthn.client/PasskeyAction // dev.webauthn.client/PasskeyAction.valueOf|valueOf#static(kotlin.String){}[0]
     final fun values(): kotlin/Array<dev.webauthn.client/PasskeyAction> // dev.webauthn.client/PasskeyAction.values|values#static(){}[0]
-}
-
-final enum class dev.webauthn.client/PasskeyPhase : kotlin/Enum<dev.webauthn.client/PasskeyPhase> { // dev.webauthn.client/PasskeyPhase|null[0]
-    enum entry FINISHING // dev.webauthn.client/PasskeyPhase.FINISHING|null[0]
-    enum entry PLATFORM_PROMPT // dev.webauthn.client/PasskeyPhase.PLATFORM_PROMPT|null[0]
-    enum entry STARTING // dev.webauthn.client/PasskeyPhase.STARTING|null[0]
-
-    final val entries // dev.webauthn.client/PasskeyPhase.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.client/PasskeyPhase> // dev.webauthn.client/PasskeyPhase.entries.<get-entries>|<get-entries>#static(){}[0]
-
-    final fun valueOf(kotlin/String): dev.webauthn.client/PasskeyPhase // dev.webauthn.client/PasskeyPhase.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<dev.webauthn.client/PasskeyPhase> // dev.webauthn.client/PasskeyPhase.values|values#static(){}[0]
 }
 
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> dev.webauthn.client/PasskeyServerClient { // dev.webauthn.client/PasskeyServerClient|null[0]
@@ -218,16 +218,16 @@ sealed interface dev.webauthn.client/PasskeyControllerState { // dev.webauthn.cl
     }
 
     final class InProgress : dev.webauthn.client/PasskeyControllerState { // dev.webauthn.client/PasskeyControllerState.InProgress|null[0]
-        constructor <init>(dev.webauthn.client/PasskeyAction, dev.webauthn.client/PasskeyPhase) // dev.webauthn.client/PasskeyControllerState.InProgress.<init>|<init>(dev.webauthn.client.PasskeyAction;dev.webauthn.client.PasskeyPhase){}[0]
+        constructor <init>(dev.webauthn.client/PasskeyAction, dev.webauthn.client/ControllerPhase) // dev.webauthn.client/PasskeyControllerState.InProgress.<init>|<init>(dev.webauthn.client.PasskeyAction;dev.webauthn.client.ControllerPhase){}[0]
 
         final val action // dev.webauthn.client/PasskeyControllerState.InProgress.action|{}action[0]
             final fun <get-action>(): dev.webauthn.client/PasskeyAction // dev.webauthn.client/PasskeyControllerState.InProgress.action.<get-action>|<get-action>(){}[0]
         final val phase // dev.webauthn.client/PasskeyControllerState.InProgress.phase|{}phase[0]
-            final fun <get-phase>(): dev.webauthn.client/PasskeyPhase // dev.webauthn.client/PasskeyControllerState.InProgress.phase.<get-phase>|<get-phase>(){}[0]
+            final fun <get-phase>(): dev.webauthn.client/ControllerPhase // dev.webauthn.client/PasskeyControllerState.InProgress.phase.<get-phase>|<get-phase>(){}[0]
 
         final fun component1(): dev.webauthn.client/PasskeyAction // dev.webauthn.client/PasskeyControllerState.InProgress.component1|component1(){}[0]
-        final fun component2(): dev.webauthn.client/PasskeyPhase // dev.webauthn.client/PasskeyControllerState.InProgress.component2|component2(){}[0]
-        final fun copy(dev.webauthn.client/PasskeyAction = ..., dev.webauthn.client/PasskeyPhase = ...): dev.webauthn.client/PasskeyControllerState.InProgress // dev.webauthn.client/PasskeyControllerState.InProgress.copy|copy(dev.webauthn.client.PasskeyAction;dev.webauthn.client.PasskeyPhase){}[0]
+        final fun component2(): dev.webauthn.client/ControllerPhase // dev.webauthn.client/PasskeyControllerState.InProgress.component2|component2(){}[0]
+        final fun copy(dev.webauthn.client/PasskeyAction = ..., dev.webauthn.client/ControllerPhase = ...): dev.webauthn.client/PasskeyControllerState.InProgress // dev.webauthn.client/PasskeyControllerState.InProgress.copy|copy(dev.webauthn.client.PasskeyAction;dev.webauthn.client.ControllerPhase){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyControllerState.InProgress.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyControllerState.InProgress.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.webauthn.client/PasskeyControllerState.InProgress.toString|toString(){}[0]

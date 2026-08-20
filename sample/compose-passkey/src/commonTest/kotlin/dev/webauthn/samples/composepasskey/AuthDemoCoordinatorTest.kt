@@ -2,7 +2,7 @@ package dev.webauthn.samples.composepasskey
 
 import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyControllerState
-import dev.webauthn.client.PasskeyPhase
+import dev.webauthn.client.ControllerPhase
 import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
@@ -28,7 +28,7 @@ class AuthDemoCoordinatorTest {
         coordinator.onControllerStateChanged(
             PasskeyControllerState.InProgress(
                 action = PasskeyAction.REGISTER,
-                phase = PasskeyPhase.STARTING,
+                phase = ControllerPhase.STARTING,
             ),
         )
         coordinator.onControllerStateChanged(PasskeyControllerState.Success(PasskeyAction.REGISTER))

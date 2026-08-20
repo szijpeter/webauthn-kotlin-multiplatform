@@ -1,12 +1,13 @@
 # Client Stack
 
-Last reviewed: 2026-04-06
+Last reviewed: 2026-08-19
 
-The client side is organized around shared orchestration in common Kotlin code, with thin platform bridges on Android and iOS.
+The client side separates typed platform operations from generic ceremony orchestration, with thin platform bridges on Android and iOS.
 
 ## Core Shape
 
-- `webauthn-client-core` owns the shared ceremony logic and typed client APIs.
+- `webauthn-client-core` owns the raw typed client contract and platform-independent client rules.
+- `webauthn-client-flow` owns state-free ceremony orchestration with opaque backend state and application-defined output.
 - `webauthn-client-platform` bridges into Credential Manager from `androidMain` and AuthenticationServices from `iosMain`.
 - `webauthn-client-compose` provides remembered helpers for Compose-driven apps.
 - `webauthn-client-json-core` is an optional raw JSON interop layer.
@@ -16,16 +17,16 @@ The client side is organized around shared orchestration in common Kotlin code, 
 ## Practical Flow
 
 1. The host app asks the backend for start options.
-2. Shared client orchestration validates/maps those inputs into a platform-ready flow.
+2. `PasskeyFlow` carries backend state and hands typed options to `PasskeyClient`.
 3. Android or iOS platform APIs perform the passkey prompt.
-4. Shared client code maps the platform result back into a typed finish payload.
-5. The app sends the finish payload to the backend.
+4. The platform client returns a byte-faithful raw credential response.
+5. `PasskeyFlow` returns the opaque state and raw response to the application backend contract.
 
-Compose apps can keep most of the view-facing wiring in `rememberPasskeyClient(...)` and `rememberPasskeyController(...)`.
+Compose apps can keep most of the view-facing wiring in `rememberPasskeyClient(...)` and `rememberPasskeyFlow(...)`; presentation state remains application-owned.
 
 ## Important Boundaries
 
-- Shared business logic belongs in `webauthn-client-core`.
+- Typed platform operations belong in `webauthn-client-core`; start/prompt/finish sequencing belongs in `webauthn-client-flow`.
 - Platform modules should stay narrow and mostly concerned with OS API translation and error mapping.
 - JSON interop is optional and separate from the typed core.
 - Transport is optional and should not be mistaken for the client core itself.
@@ -34,9 +35,9 @@ Compose apps can keep most of the view-facing wiring in `rememberPasskeyClient(.
 
 From the current implementation/status docs:
 
-- shared typed client orchestration is in place
+- typed platform operations and generic ceremony orchestration are in place
 - Android and iOS bridges are usable and deliberately thin
-- Compose helpers exist for retained-controller usage
+- Compose helpers remember platform clients and `PasskeyFlow`; presentation state remains application-owned
 - PRF helpers are available for apps that need post-auth crypto material
 - more device/provider/runtime matrix hardening is still expected, especially around platform-specific behavior
 

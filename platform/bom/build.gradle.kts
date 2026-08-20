@@ -22,6 +22,7 @@ dependencies {
         api("${project.group}:webauthn-server-ktor:${project.version}")
         api("${project.group}:webauthn-server-store-exposed:${project.version}")
         api("${project.group}:webauthn-client-core:${project.version}")
+        api("${project.group}:webauthn-client-flow:${project.version}")
         api("${project.group}:webauthn-client-prf-crypto:${project.version}")
         api("${project.group}:webauthn-client-json-core:${project.version}")
         api("${project.group}:webauthn-client-compose:${project.version}")

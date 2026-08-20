@@ -3,7 +3,7 @@ package dev.webauthn.samples.composepasskey.domain.passkey
 import dev.webauthn.client.PasskeyAction
 import dev.webauthn.client.PasskeyClientError
 import dev.webauthn.client.PasskeyControllerState
-import dev.webauthn.client.PasskeyPhase
+import dev.webauthn.client.ControllerPhase
 import dev.webauthn.samples.composepasskey.PasskeyDemoBuildConfig
 import dev.webauthn.samples.composepasskey.data.network.resolveDefaultOrigin
 import dev.webauthn.samples.composepasskey.data.network.resolveDefaultRpId
@@ -38,9 +38,9 @@ internal fun PasskeyControllerState.toDemoStatus(): PasskeyDemoStatus {
                 PasskeyAction.SIGN_IN -> "Sign In in progress"
             },
             detail = when (phase) {
-                PasskeyPhase.STARTING -> "Loading server options."
-                PasskeyPhase.PLATFORM_PROMPT -> "Waiting for the platform passkey prompt."
-                PasskeyPhase.FINISHING -> "Verifying the passkey response."
+                ControllerPhase.STARTING -> "Loading server options."
+                ControllerPhase.PLATFORM_PROMPT -> "Waiting for the platform passkey prompt."
+                ControllerPhase.FINISHING -> "Verifying the passkey response."
             },
         )
 
@@ -143,11 +143,11 @@ private fun PasskeyAction.label(): String {
     }
 }
 
-private fun PasskeyPhase.logLabel(): String {
+private fun ControllerPhase.logLabel(): String {
     return when (this) {
-        PasskeyPhase.STARTING -> "starting"
-        PasskeyPhase.PLATFORM_PROMPT -> "platform_prompt"
-        PasskeyPhase.FINISHING -> "finishing"
+        ControllerPhase.STARTING -> "starting"
+        ControllerPhase.PLATFORM_PROMPT -> "platform_prompt"
+        ControllerPhase.FINISHING -> "finishing"
     }
 }
 

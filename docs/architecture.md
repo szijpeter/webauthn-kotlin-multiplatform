@@ -34,7 +34,7 @@ flowchart LR
     USER([End user])
 
     subgraph APPLICATION["Reference passkey application"]
-        CLIENT["Client application<br/>webauthn-client-core plus an Android or iOS bridge"]
+        CLIENT["Client application<br/>webauthn-client-flow over client-core and an Android or iOS bridge"]
         BACKEND["Relying-party backend<br/>webauthn-server-core-jvm plus optional adapters"]
         STORE[("Credential store")]
     end
@@ -82,9 +82,10 @@ no internal project dependencies without inventing an edge.
 ## Client stack
 
 `webauthn-client-core` owns typed platform-operation contracts, shared input validation, and error
-classification. JSON, Android, iOS, Compose, PRF, and network modules build around that boundary.
-Platform bridges use the neutral codec API only where an OS integration requires JSON and return
-byte-preserving raw responses without performing protocol interpretation.
+classification. `webauthn-client-flow` owns application-neutral start/prompt/finish orchestration,
+opaque backend-state forwarding, and concurrency rejection. JSON, Android, iOS, Compose, PRF, and
+network modules build around those boundaries. Platform bridges use the neutral codec API only where
+an OS integration requires JSON and return byte-preserving raw responses.
 
 <!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
@@ -94,6 +95,7 @@ flowchart TB
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
     NETWORK["webauthn-network-ktor-client<br/>(legacy default transport)"]
+    FLOW["webauthn-client-flow"]
     CLIENT_CORE["webauthn-client-core"]
     JSON_API["webauthn-json-api"]
     JSON_KOTLINX["webauthn-json-kotlinx"]
@@ -102,6 +104,7 @@ flowchart TB
     MODEL["webauthn-model"]
 
     COMPOSE --> CLIENT_CORE
+    COMPOSE --> FLOW
     COMPOSE --> PLATFORM
     COMPOSE -->|androidMain| JSON_KOTLINX
 
@@ -118,6 +121,8 @@ flowchart TB
     NETWORK --> CORE
     NETWORK --> JSON_KOTLINX
     NETWORK --> RUNTIME
+
+    FLOW --> CLIENT_CORE
 
     CLIENT_CORE --> RUNTIME
     CLIENT_CORE --> MODEL
@@ -189,6 +194,7 @@ reusable library architecture.
 - `webauthn-json-api` is the serialization-library-neutral JSON contract; implementations such as `webauthn-json-kotlinx` depend on it.
 - `webauthn-protocol` interprets raw WebAuthn binary data using only the model and strict CBOR scanner; codecs depend on it rather than owning protocol parsing.
 - `webauthn-client-core` owns typed platform-operation validation and error classification; Android and iOS source sets remain thin bridges that return raw output.
+- `webauthn-client-flow` depends only on client-core and keeps backend state/output generic; transport and UI modules build over it.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
 - Optional adapters must not become hidden prerequisites of core modules.

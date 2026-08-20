@@ -94,6 +94,13 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 - `kotlinx-coroutines-core`
 - Typed-only ceremony API surface (no JSON codec requirement)
 
+### `webauthn-client-flow`
+
+- `:client:webauthn-client-core`
+- Generic registration/authentication start-prompt-finish sequencing.
+- Carries backend-defined opaque state unchanged and returns backend-defined output.
+- Classifies platform and concurrent-use failures; backend and callback exceptions propagate.
+
 ### `webauthn-client-json-core` (optional)
 
 - `:client:webauthn-client-core`
