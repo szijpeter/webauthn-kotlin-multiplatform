@@ -6,12 +6,14 @@ Manager; its iOS source set uses AuthenticationServices.
 ## What it provides
 
 - `AndroidPasskeyClient`
+- `AndroidRestoreCredentialClient`
 - `IosPasskeyClient`
 - Android and iOS `PasskeyClient` implementations that return byte-preserving raw registration and authentication responses
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
 - Typed capability reporting via `PasskeyCapabilities.supportOf(...)` and `CapabilitySupport`
 - Conditional passkey creation on Android and iOS 18+ through the shared
   `PasskeyCreateOptions.Conditional` contract
+- Android Restore Credentials create/get/clear operations with raw WebAuthn responses
 
 ## When to use
 
@@ -35,6 +37,45 @@ fun androidPasskeyClient(activity: Activity): PasskeyClient {
 
 Real-world scenario: your shared app logic receives the raw response and sends it to its server trust boundary, while `AndroidPasskeyClient` performs the platform call into Credential Manager.
 
+For Android restore-after-transfer flows, use the same explicit codec boundary:
+
+<!-- doc-example: id=client-webauthn-client-platform-readme-kotlin-3; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidRestoreCredentialExample.kt#android-restore-client -->
+```kotlin
+import android.app.Activity
+import dev.webauthn.client.PasskeyResult
+import dev.webauthn.client.android.AndroidRestoreCredentialClient
+import dev.webauthn.model.PublicKeyCredentialCreationOptions
+import dev.webauthn.model.PublicKeyCredentialRequestOptions
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
+
+suspend fun exerciseRestoreCredentials(
+    activity: Activity,
+    creationOptions: PublicKeyCredentialCreationOptions,
+    requestOptions: PublicKeyCredentialRequestOptions,
+): Triple<
+    PasskeyResult<RawRegistrationResponse>,
+    PasskeyResult<RawAuthenticationResponse>,
+    PasskeyResult<Unit>,
+> {
+    val restoreCredentials = AndroidRestoreCredentialClient(
+        context = activity.applicationContext,
+        codec = KotlinxWebAuthnJsonCodec(),
+    )
+
+    return Triple(
+        restoreCredentials.createRestoreCredential(creationOptions),
+        restoreCredentials.getRestoreCredential(requestOptions),
+        restoreCredentials.clearRestoreCredential(),
+    )
+}
+```
+
+Create the restore credential after a successful sign-in, attempt retrieval during app-data restore
+or first launch, and clear it during sign-out. Registration and authentication results stay raw and
+must pass through the same backend trust boundary as ordinary passkey responses.
+
 ### iOS
 
 <!-- doc-example: id=client-webauthn-client-platform-readme-kotlin-2; owner=source; verify=platform-compile; audience=consumer; source=documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/IosClientExample.kt#ios-client -->
@@ -55,8 +96,10 @@ fun iosPasskeyClient(anchorProvider: PasskeyPresentationAnchorProvider): Passkey
 flowchart LR
     UI["Android or iOS UI"] --> CORE["webauthn-client-core raw client"]
     CORE --> ANDROID["AndroidPasskeyClient"]
+    CORE --> RESTORE["AndroidRestoreCredentialClient"]
     CORE --> IOS["IosPasskeyClient"]
     ANDROID --> CM["Credential Manager"]
+    RESTORE --> CM
     IOS --> AS["AuthenticationServices"]
 ```
 
@@ -77,6 +120,15 @@ flowchart LR
   - `PasskeyCapability.Platform(PlatformCapability.ConditionalCreate)` when conditional creation is supported.
 - Conditional creation is intended for automatic passkey upgrades after a successful non-passkey
   sign-in or sign-up. Keep explicit user-initiated registration on `createCredential(options)`.
+- Restore Credentials are Android-only and system-managed. Keep them separate from user-managed
+  passkeys in product UI, prefer cloud backup unless local-only recovery is intentional, and do not
+  claim device-transfer coverage without exercising Android backup/restore or restored first launch.
+- Restore Credentials require Android 9+, Google Play services core 24220000+, and
+  `androidx.credentials` 1.5+ (this repository uses 1.6). The platform supports one restore account
+  per application, so multi-account products must select a single primary or most-recent account.
+- Restore keys can use the same WebAuthn verification path as passkeys, but the application server
+  should record their restore purpose separately from user-managed passkeys so lifecycle and UI
+  policy cannot confuse the two credential types.
 - Android maps conditional creation to Credential Manager's `isConditional` and
   `preferImmediatelyAvailableCredentials` flags. A provider may report that no create option is
   available; this is a valid conditional outcome, not permission to show an explicit prompt.

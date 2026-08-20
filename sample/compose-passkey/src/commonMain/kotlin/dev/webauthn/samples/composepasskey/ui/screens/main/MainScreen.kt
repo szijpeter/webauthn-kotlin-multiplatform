@@ -16,6 +16,7 @@ import dev.webauthn.samples.composepasskey.domain.model.StatusTone
 import dev.webauthn.samples.composepasskey.ui.components.CapabilitiesCard
 import dev.webauthn.samples.composepasskey.ui.components.Header
 import dev.webauthn.samples.composepasskey.ui.components.PrfCryptoCard
+import dev.webauthn.samples.composepasskey.ui.components.RestoreCredentialCard
 import dev.webauthn.samples.composepasskey.ui.components.SessionActionsCard
 
 @Composable
@@ -26,6 +27,9 @@ internal fun MainScreen(
     onEncrypt: () -> Unit,
     onDecrypt: () -> Unit,
     onClearPrfSession: () -> Unit,
+    onCreateRestoreCredential: () -> Unit,
+    onGetRestoreCredential: () -> Unit,
+    onClearRestoreCredential: () -> Unit,
     onPlaintextChange: (String) -> Unit,
     onLogout: () -> Unit,
 ) {
@@ -61,6 +65,15 @@ internal fun MainScreen(
             onEncrypt = onEncrypt,
             onDecrypt = onDecrypt,
             onClearSession = onClearPrfSession,
+        )
+
+        RestoreCredentialCard(
+            available = state.restoreCredentialAvailable,
+            actionsEnabled = !state.busy,
+            statusMessage = state.restoreStatusMessage,
+            onCreateRestoreCredential = onCreateRestoreCredential,
+            onGetRestoreCredential = onGetRestoreCredential,
+            onClearRestoreCredential = onClearRestoreCredential,
         )
 
         SessionActionsCard(
