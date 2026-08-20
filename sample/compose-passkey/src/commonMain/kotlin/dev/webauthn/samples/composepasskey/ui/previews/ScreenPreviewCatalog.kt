@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.CapabilitySupport
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.model.WebAuthnExtension
 import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
 import dev.webauthn.samples.composepasskey.domain.model.StatusTone
@@ -62,11 +64,10 @@ private fun MainScreenPreview() {
             state = MainUiState(
                 userName = "demo@local",
                 capabilities = PasskeyCapabilities(
-                    supported = setOf(
-                        PasskeyCapability.Extension(WebAuthnExtension.Prf),
-                        PasskeyCapability.PlatformFeature("securityKey"),
+                    support = mapOf(
+                        PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
+                        PasskeyCapability.Platform(PlatformCapability.SecurityKey) to CapabilitySupport.SUPPORTED,
                     ),
-                    platformVersionHints = listOf("android sdk=36", "play-services:available"),
                 ),
                 supportsPrf = true,
                 sessionState = PrfCryptoDemoSessionState.SessionReady,

@@ -2,10 +2,10 @@ package dev.webauthn.network
 
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
 import dev.webauthn.serialization.AuthenticationResponseDto
@@ -54,16 +54,13 @@ public class KtorPasskeyServerClient(
 
     override suspend fun finishRegister(
         params: RegistrationStartPayload,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         return postForFinish(
             path = routes.registerFinishPath,
             payload = RegistrationFinishPayload(
                 response = WebAuthnDtoMapper.fromModel(response),
-                clientDataType = "webauthn.create",
-                challenge = challengeAsBase64Url,
-                origin = params.origin,
             ),
             operation = "Registration finish",
         )
@@ -82,16 +79,13 @@ public class KtorPasskeyServerClient(
 
     override suspend fun finishSignIn(
         params: AuthenticationStartPayload,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
         challengeAsBase64Url: String,
     ): PasskeyFinishResult {
         return postForFinish(
             path = routes.signInFinishPath,
             payload = AuthenticationFinishPayload(
                 response = WebAuthnDtoMapper.fromModel(response),
-                clientDataType = "webauthn.get",
-                challenge = challengeAsBase64Url,
-                origin = params.origin,
             ),
             operation = "Authentication finish",
         )
@@ -205,17 +199,11 @@ public data class AuthenticationStartPayload(
 @Serializable
 private data class RegistrationFinishPayload(
     val response: RegistrationResponseDto,
-    val clientDataType: String,
-    val challenge: String,
-    val origin: String,
 )
 
 @Serializable
 private data class AuthenticationFinishPayload(
     val response: AuthenticationResponseDto,
-    val clientDataType: String,
-    val challenge: String,
-    val origin: String,
 )
 
 @Serializable

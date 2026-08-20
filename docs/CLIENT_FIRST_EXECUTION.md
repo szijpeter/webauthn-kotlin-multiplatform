@@ -97,9 +97,12 @@ The shared Compose module still exposes `MainViewController()` for custom host i
 ### `webauthn-client-json-core` (optional)
 
 - `:client:webauthn-client-core`
-- `:core:webauthn-json-kotlinx`
-- `kotlinx-serialization-json`
-- Provides `JsonPasskeyClient`, `PasskeyJsonMapper`, and `KotlinxPasskeyJsonMapper`
+- `:core:webauthn-json-api`
+- Provides `JsonPasskeyClient`, `DefaultJsonPasskeyClient`, and `withJsonSupport(...)` over a caller-supplied `WebAuthnJsonCodec`.
+- Does not select or transitively resolve a JSON implementation.
+
+Add `:core:webauthn-json-kotlinx` explicitly when you want `KotlinxWebAuthnJsonCodec`; otherwise
+supply your own `WebAuthnJsonCodec` implementation.
 
 JSON interop wrapper example for a typed client:
 
@@ -109,14 +112,16 @@ import android.content.Context
 import dev.webauthn.client.JsonPasskeyClient
 import dev.webauthn.client.android.AndroidPasskeyClient
 import dev.webauthn.client.withJsonSupport
+import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 
 fun androidJsonClient(context: Context): JsonPasskeyClient {
-    val typedClient = AndroidPasskeyClient(context)
-    return typedClient.withJsonSupport()
+    val codec = KotlinxWebAuthnJsonCodec()
+    val typedClient = AndroidPasskeyClient(context, codec)
+    return typedClient.withJsonSupport(codec)
 }
 ```
 
-### `webauthn-client-android`
+### `webauthn-client-platform` Android source set
 
 - `:client:webauthn-client-core`
 - `:client:webauthn-client-json-core`
@@ -124,7 +129,7 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 - `androidx.credentials:credentials-play-services-auth` (required for Google Play provider integration on Android)
 - `androidx.core:core-ktx`
 
-### `webauthn-client-ios`
+### `webauthn-client-platform` iOS source set
 
 - `:client:webauthn-client-core`
 - `:client:webauthn-client-json-core`
@@ -134,8 +139,7 @@ fun androidJsonClient(context: Context): JsonPasskeyClient {
 
 - `:client:webauthn-client-core`
 - `org.jetbrains.compose.runtime:runtime`
-- Android actual: `:client:webauthn-client-android`
-- iOS actual: `:client:webauthn-client-ios`
+- Android and iOS actuals: `:client:webauthn-client-platform`
 
 ## Association File Requirement
 

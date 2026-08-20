@@ -59,10 +59,10 @@ public final class dev/webauthn/network/KtorPasskeyRoutes {
 public final class dev/webauthn/network/KtorPasskeyServerClient : dev/webauthn/client/PasskeyServerClient {
 	public fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyRoutes;)V
 	public synthetic fun <init> (Lio/ktor/client/HttpClient;Ljava/lang/String;Ldev/webauthn/network/KtorPasskeyRoutes;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun finishRegister (Ldev/webauthn/network/RegistrationStartPayload;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public synthetic fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun finishSignIn (Ldev/webauthn/network/AuthenticationStartPayload;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public synthetic fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/AuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun finishRegister (Ldev/webauthn/network/RegistrationStartPayload;Ldev/webauthn/model/RawRegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public synthetic fun finishRegister (Ljava/lang/Object;Ldev/webauthn/model/RawRegistrationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun finishSignIn (Ldev/webauthn/network/AuthenticationStartPayload;Ldev/webauthn/model/RawAuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public synthetic fun finishSignIn (Ljava/lang/Object;Ldev/webauthn/model/RawAuthenticationResponse;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getRegisterOptions (Ldev/webauthn/network/RegistrationStartPayload;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public synthetic fun getRegisterOptions (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getSignInOptions (Ldev/webauthn/network/AuthenticationStartPayload;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

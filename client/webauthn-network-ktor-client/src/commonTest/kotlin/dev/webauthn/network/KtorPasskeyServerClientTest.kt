@@ -1,16 +1,11 @@
 package dev.webauthn.network
 
 import dev.webauthn.client.PasskeyFinishResult
-import dev.webauthn.model.AttestedCredentialData
-import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorAttachment
-import dev.webauthn.model.AuthenticatorData
-import dev.webauthn.model.Aaguid
 import dev.webauthn.model.Base64UrlBytes
-import dev.webauthn.model.CosePublicKey
 import dev.webauthn.model.CredentialId
-import dev.webauthn.model.RegistrationResponse
-import dev.webauthn.model.RpIdHash
+import dev.webauthn.model.RawAuthenticationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.serialization.AuthenticationExtensionsClientInputsDto
 import dev.webauthn.serialization.PrfExtensionInputDto
@@ -106,8 +101,7 @@ class KtorPasskeyServerClientTest {
         assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/registration/finish")).jsonObject
-        assertEquals("webauthn.create", finishBody["clientDataType"]?.jsonPrimitive?.content)
-        assertEquals("https://example.com", finishBody["origin"]?.jsonPrimitive?.content)
+        assertTrue(finishBody["response"] != null)
     }
 
     @Test
@@ -171,8 +165,7 @@ class KtorPasskeyServerClientTest {
         assertTrue("extensions" !in startBody)
 
         val finishBody = Json.parseToJsonElement(requestBodies.getValue("/webauthn/authentication/finish")).jsonObject
-        assertEquals("webauthn.get", finishBody["clientDataType"]?.jsonPrimitive?.content)
-        assertEquals("https://example.com", finishBody["origin"]?.jsonPrimitive?.content)
+        assertTrue(finishBody["response"] != null)
     }
 
     @Test
@@ -636,42 +629,23 @@ class KtorPasskeyServerClientTest {
     }
 }
 
-private fun validRegistrationResponse(): RegistrationResponse {
-    return RegistrationResponse(
+private fun validRegistrationResponse(): RawRegistrationResponse {
+    return RawRegistrationResponse(
         credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
         attestationObject = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-        rawAuthenticatorData = AuthenticatorData(
-            rpIdHash = rpIdHash(1),
-            flags = 0x41,
-            signCount = 1,
-        ),
-        attestedCredentialData = AttestedCredentialData(
-            aaguid = aaguid(2),
-            credentialId = CredentialId.fromBytes(byteArrayOf(9, 9, 9)),
-            cosePublicKey = CosePublicKey.fromBytes(byteArrayOf(1, 2, 3)),
-        ),
         authenticatorAttachment = AuthenticatorAttachment.PLATFORM,
     )
 }
 
-private fun validAuthenticationResponse(): AuthenticationResponse {
-    return AuthenticationResponse(
+private fun validAuthenticationResponse(): RawAuthenticationResponse {
+    return RawAuthenticationResponse(
         credentialId = CredentialId.fromBytes(byteArrayOf(7, 7, 7)),
         clientDataJson = Base64UrlBytes.fromBytes(byteArrayOf(1, 2, 3)),
-        rawAuthenticatorData = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
-        authenticatorData = AuthenticatorData(
-            rpIdHash = rpIdHash(1),
-            flags = 0x01,
-            signCount = 2,
-        ),
+        authenticatorData = Base64UrlBytes.fromBytes(byteArrayOf(4, 5, 6)),
         signature = Base64UrlBytes.fromBytes(byteArrayOf(9, 9, 9)),
     )
 }
-
-private fun rpIdHash(seed: Int): RpIdHash = RpIdHash.fromBytes(ByteArray(32) { seed.toByte() })
-
-private fun aaguid(seed: Int): Aaguid = Aaguid.fromBytes(ByteArray(16) { seed.toByte() })
 
 private fun base64UrlBytes(vararg value: Int): Base64UrlBytes =
     Base64UrlBytes.fromBytes(ByteArray(value.size) { index -> value[index].toByte() })

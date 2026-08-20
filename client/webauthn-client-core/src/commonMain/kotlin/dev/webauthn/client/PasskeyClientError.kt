@@ -11,12 +11,20 @@ public sealed interface PasskeyClientError {
         override val message: String = "The user cancelled the passkey prompt",
     ) : PasskeyClientError
 
+    /** The selected provider had no credential available for the requested assertion. */
+    public data class NoCredential(
+        override val message: String = "No passkey credential was available",
+    ) : PasskeyClientError
+
     /** The caller supplied invalid inputs, or the platform rejected options before prompting. */
     public data class InvalidOptions(override val message: String) : PasskeyClientError
 
     /** The ceremony could not be completed because a backend or other transport dependency failed. */
-    public data class Transport(override val message: String, public val cause: Throwable? = null) : PasskeyClientError
+    public data class Transport(override val message: String) : PasskeyClientError
 
     /** The platform passkey provider failed for a non-transport reason. */
-    public data class Platform(override val message: String, public val cause: Throwable? = null) : PasskeyClientError
+    public data class Platform(override val message: String) : PasskeyClientError
+
+    /** The configured integration codec could not encode or decode a ceremony value. */
+    public data class Codec(override val message: String) : PasskeyClientError
 }

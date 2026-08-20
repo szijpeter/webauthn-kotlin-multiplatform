@@ -32,11 +32,12 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("io.github.szijpeter:webauthn-client-android:<version>")
+            implementation("io.github.szijpeter:webauthn-client-platform:<version>")
+            implementation("io.github.szijpeter:webauthn-json-kotlinx:<version>")
         }
 
         iosMain.dependencies {
-            implementation("io.github.szijpeter:webauthn-client-ios:<version>")
+            implementation("io.github.szijpeter:webauthn-client-platform:<version>")
         }
     }
 }

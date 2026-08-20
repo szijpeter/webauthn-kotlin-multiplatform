@@ -1,0 +1,32 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-client-platform>
+abstract fun interface dev.webauthn.client.ios/PasskeyPresentationAnchorProvider { // dev.webauthn.client.ios/PasskeyPresentationAnchorProvider|null[0]
+    abstract fun currentAnchorOrNull(): platform.UIKit/UIWindow? // dev.webauthn.client.ios/PasskeyPresentationAnchorProvider.currentAnchorOrNull|currentAnchorOrNull(){}[0]
+}
+
+final class dev.webauthn.client.ios/IosPasskeyClient : dev.webauthn.client/PasskeyClient { // dev.webauthn.client.ios/IosPasskeyClient|null[0]
+    constructor <init>(dev.webauthn.client.ios/PasskeyPresentationAnchorProvider = ...) // dev.webauthn.client.ios/IosPasskeyClient.<init>|<init>(dev.webauthn.client.ios.PasskeyPresentationAnchorProvider){}[0]
+
+    final suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client.ios/IosPasskeyClient.capabilities|capabilities(){}[0]
+    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client.ios/IosPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client.ios/IosPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
+}
+
+final class dev.webauthn.client.ios/MutablePasskeyPresentationAnchorProvider : dev.webauthn.client.ios/PasskeyPresentationAnchorProvider { // dev.webauthn.client.ios/MutablePasskeyPresentationAnchorProvider|null[0]
+    constructor <init>(platform.UIKit/UIWindow? = ...) // dev.webauthn.client.ios/MutablePasskeyPresentationAnchorProvider.<init>|<init>(platform.UIKit.UIWindow?){}[0]
+
+    final fun currentAnchorOrNull(): platform.UIKit/UIWindow? // dev.webauthn.client.ios/MutablePasskeyPresentationAnchorProvider.currentAnchorOrNull|currentAnchorOrNull(){}[0]
+    final fun update(platform.UIKit/UIWindow?) // dev.webauthn.client.ios/MutablePasskeyPresentationAnchorProvider.update|update(platform.UIKit.UIWindow?){}[0]
+}
+
+final class dev.webauthn.client.ios/StaticPasskeyPresentationAnchorProvider : dev.webauthn.client.ios/PasskeyPresentationAnchorProvider { // dev.webauthn.client.ios/StaticPasskeyPresentationAnchorProvider|null[0]
+    constructor <init>(platform.UIKit/UIWindow) // dev.webauthn.client.ios/StaticPasskeyPresentationAnchorProvider.<init>|<init>(platform.UIKit.UIWindow){}[0]
+
+    final fun currentAnchorOrNull(): platform.UIKit/UIWindow // dev.webauthn.client.ios/StaticPasskeyPresentationAnchorProvider.currentAnchorOrNull|currentAnchorOrNull(){}[0]
+}

@@ -7,8 +7,7 @@ The client side is organized around shared orchestration in common Kotlin code, 
 ## Core Shape
 
 - `webauthn-client-core` owns the shared ceremony logic and typed client APIs.
-- `webauthn-client-android` bridges into Credential Manager.
-- `webauthn-client-ios` bridges into AuthenticationServices.
+- `webauthn-client-platform` bridges into Credential Manager from `androidMain` and AuthenticationServices from `iosMain`.
 - `webauthn-client-compose` provides remembered helpers for Compose-driven apps.
 - `webauthn-client-json-core` is an optional raw JSON interop layer.
 - `webauthn-network-ktor-client` is the default transport helper for `/webauthn/*` backends.

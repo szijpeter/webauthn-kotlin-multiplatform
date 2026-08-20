@@ -13,7 +13,7 @@ Examples:
 
 - `io.github.szijpeter:webauthn-model`
 - `io.github.szijpeter:webauthn-server-core-jvm`
-- `io.github.szijpeter:webauthn-client-android`
+- `io.github.szijpeter:webauthn-client-platform`
 
 ## Published Surface
 
@@ -32,8 +32,7 @@ Published:
 - `webauthn-client-core`
 - `webauthn-client-json-core`
 - `webauthn-client-compose`
-- `webauthn-client-android`
-- `webauthn-client-ios`
+- `webauthn-client-platform`
 - `webauthn-client-prf-crypto`
 - `webauthn-network-ktor-client`
 - `webauthn-attestation-mds`

@@ -21,11 +21,12 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
         }
         androidMain.dependencies {
-            implementation(project(":client:webauthn-client-android"))
+            implementation(project(":client:webauthn-client-platform"))
+            implementation(project(":core:webauthn-json-kotlinx"))
             implementation(libs.compose.ui)
         }
         iosMain.dependencies {
-            implementation(project(":client:webauthn-client-ios"))
+            implementation(project(":client:webauthn-client-platform"))
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

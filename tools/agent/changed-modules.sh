@@ -216,12 +216,9 @@ for file in "${changed_files[@]}"; do
             mark_module "client:webauthn-client-prf-crypto"
             mark_category "client"
             ;;
-        client/webauthn-client-android/*)
-            mark_module "client:webauthn-client-android"
+        client/webauthn-client-platform/*)
+            mark_module "client:webauthn-client-platform"
             mark_category "android"
-            ;;
-        client/webauthn-client-ios/*)
-            mark_module "client:webauthn-client-ios"
             mark_category "ios"
             ;;
         sample/android-passkey/*)

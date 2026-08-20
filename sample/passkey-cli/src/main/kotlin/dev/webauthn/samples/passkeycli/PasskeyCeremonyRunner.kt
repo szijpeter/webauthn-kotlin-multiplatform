@@ -2,10 +2,10 @@ package dev.webauthn.samples.passkeycli
 
 import dev.webauthn.client.PasskeyFinishResult
 import dev.webauthn.client.PasskeyServerClient
-import dev.webauthn.model.AuthenticationResponse
+import dev.webauthn.model.RawAuthenticationResponse
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
-import dev.webauthn.model.RegistrationResponse
+import dev.webauthn.model.RawRegistrationResponse
 import dev.webauthn.model.ValidationResult
 import dev.webauthn.network.AuthenticationStartPayload
 import dev.webauthn.network.RegistrationStartPayload
@@ -83,14 +83,14 @@ internal class PasskeyCeremonyRunner(
     private suspend fun resolveRegistrationResponse(
         origin: String,
         options: PublicKeyCredentialCreationOptions,
-    ): RegistrationResponse? {
+    ): RawRegistrationResponse? {
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runSuspendCatching { authenticatorAdapter.createCredential(origin, optionsDto) }
             .getOrElse { error ->
                 stderr.appendLine("Authenticator registration failed: ${error.displayMessage()}")
                 return null
             }
-        return when (val parsed = WebAuthnDtoMapper.toModel(responseDto)) {
+        return when (val parsed = WebAuthnDtoMapper.toRawModel(responseDto)) {
             is ValidationResult.Valid -> parsed.value
             is ValidationResult.Invalid -> {
                 stderr.appendLine("Native registration response failed validation: ${parsed.formatErrors()}")
@@ -102,14 +102,14 @@ internal class PasskeyCeremonyRunner(
     private suspend fun resolveAuthenticationResponse(
         origin: String,
         options: PublicKeyCredentialRequestOptions,
-    ): AuthenticationResponse? {
+    ): RawAuthenticationResponse? {
         val optionsDto = WebAuthnDtoMapper.fromModel(options)
         val responseDto = runSuspendCatching { authenticatorAdapter.getAssertion(origin, optionsDto) }
             .getOrElse { error ->
                 stderr.appendLine("Authenticator authentication failed: ${error.displayMessage()}")
                 return null
             }
-        return when (val parsed = WebAuthnDtoMapper.toModel(responseDto)) {
+        return when (val parsed = WebAuthnDtoMapper.toRawModel(responseDto)) {
             is ValidationResult.Valid -> parsed.value
             is ValidationResult.Invalid -> {
                 stderr.appendLine("Native authentication response failed validation: ${parsed.formatErrors()}")
@@ -121,7 +121,7 @@ internal class PasskeyCeremonyRunner(
     private suspend fun finishRegistration(
         payload: RegistrationStartPayload,
         options: PublicKeyCredentialCreationOptions,
-        response: RegistrationResponse,
+        response: RawRegistrationResponse,
     ): Int {
         val challenge = options.challenge.value.encoded()
         val finish = runSuspendCatching {
@@ -150,7 +150,7 @@ internal class PasskeyCeremonyRunner(
     private suspend fun finishAuthentication(
         payload: AuthenticationStartPayload,
         options: PublicKeyCredentialRequestOptions,
-        response: AuthenticationResponse,
+        response: RawAuthenticationResponse,
     ): Int {
         val challenge = options.challenge.value.encoded()
         val finish = runSuspendCatching {

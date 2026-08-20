@@ -81,42 +81,45 @@ no internal project dependencies without inventing an edge.
 
 ## Client stack
 
-`webauthn-client-core` owns shared orchestration. JSON, Android, iOS, Compose,
-PRF, and network modules build around that shared boundary.
+`webauthn-client-core` owns typed platform-operation contracts, shared input validation, and error
+classification. JSON, Android, iOS, Compose, PRF, and network modules build around that boundary.
+Platform bridges use the neutral codec API only where an OS integration requires JSON and return
+byte-preserving raw responses without performing protocol interpretation.
 
 <!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TB
     COMPOSE["webauthn-client-compose"]
-    ANDROID["webauthn-client-android"]
-    IOS["webauthn-client-ios"]
+    PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
     PRF["webauthn-client-prf-crypto<br/>(optional)"]
-    NETWORK["webauthn-network-ktor-client<br/>(optional)"]
+    NETWORK["webauthn-network-ktor-client<br/>(legacy default transport)"]
     CLIENT_CORE["webauthn-client-core"]
-    FOUNDATION["Shared foundation"]
-    MODEL["Protocol model"]
+    JSON_API["webauthn-json-api"]
+    JSON_KOTLINX["webauthn-json-kotlinx"]
+    CORE["webauthn-core"]
+    RUNTIME["webauthn-runtime-core"]
+    MODEL["webauthn-model"]
 
     COMPOSE --> CLIENT_CORE
-    COMPOSE --> ANDROID
-    COMPOSE --> IOS
+    COMPOSE --> PLATFORM
+    COMPOSE -->|androidMain| JSON_KOTLINX
 
-    ANDROID --> CLIENT_CORE
-    ANDROID --> JSON
-
-    IOS --> CLIENT_CORE
-    IOS --> JSON
+    PLATFORM --> CLIENT_CORE
+    PLATFORM --> JSON_API
 
     JSON --> CLIENT_CORE
-    JSON --> FOUNDATION
+    JSON --> JSON_API
 
     PRF --> CLIENT_CORE
-    PRF --> FOUNDATION
+    PRF --> RUNTIME
 
     NETWORK --> CLIENT_CORE
-    NETWORK --> FOUNDATION
+    NETWORK --> CORE
+    NETWORK --> JSON_KOTLINX
+    NETWORK --> RUNTIME
 
-    CLIENT_CORE --> FOUNDATION
+    CLIENT_CORE --> RUNTIME
     CLIENT_CORE --> MODEL
 ```
 
@@ -124,8 +127,8 @@ External libraries, platform APIs, source-set details, and samples are
 intentionally omitted from this module dependency view.
 
 The view focuses on direct project dependencies among published client modules.
-Platform adapters remain separate from shared orchestration, and optional
-features remain outside the core path.
+Platform adapters remain separate from shared typed behavior, and optional features remain outside
+the core path. Target-labelled edges represent source-set-specific project dependencies.
 
 For platform-specific behavior, see the reference integration and module
 READMEs. For runnable adoption paths, see the sample documentation.
@@ -135,7 +138,7 @@ READMEs. For runnable adoption paths, see the sample documentation.
 ## JVM server stack
 
 The server core remains framework-agnostic and depends on the neutral protocol
-and JSON-decoder contracts rather than a JSON implementation. Ktor, Exposed, and metadata support
+layer rather than a JSON implementation. Ktor, Exposed, and metadata support
 are optional adapters around the core and cryptographic boundaries.
 
 <!-- doc-example: id=docs-architecture-mermaid-4; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
@@ -146,7 +149,6 @@ flowchart TB
     MDS["webauthn-attestation-mds<br/>(optional adapter)"]
     SERVER_CORE["webauthn-server-core-jvm"]
     PROTOCOL["webauthn-protocol"]
-    JSON_API["webauthn-json-api"]
     JVM_CRYPTO["webauthn-server-jvm-crypto"]
     FOUNDATION["Shared foundation"]
     CRYPTO["Cryptography boundary"]
@@ -161,7 +163,6 @@ flowchart TB
 
     SERVER_CORE --> FOUNDATION
     SERVER_CORE --> PROTOCOL
-    SERVER_CORE --> JSON_API
     SERVER_CORE --> CRYPTO
 
     JVM_CRYPTO --> FOUNDATION
@@ -187,8 +188,8 @@ reusable library architecture.
 - `webauthn-model` remains independent of the rest of the repository.
 - `webauthn-json-api` is the serialization-library-neutral JSON contract; implementations such as `webauthn-json-kotlinx` depend on it.
 - `webauthn-protocol` interprets raw WebAuthn binary data using only the model and strict CBOR scanner; codecs depend on it rather than owning protocol parsing.
-- `webauthn-client-core` owns shared client business logic; Android and iOS modules remain platform bridges.
-- `webauthn-server-core-jvm` remains framework-agnostic and derives signed client data from its raw finish response through `webauthn-json-api`; Ktor and Exposed are adapters.
+- `webauthn-client-core` owns typed platform-operation validation and error classification; Android and iOS source sets remain thin bridges that return raw output.
+- `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
 - Optional adapters must not become hidden prerequisites of core modules.
 - Direct project dependencies shown here must be checked against the owning `build.gradle.kts` whenever the module graph changes.
