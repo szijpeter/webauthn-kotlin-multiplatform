@@ -60,7 +60,7 @@ sequenceDiagram
     RP-->>App: registration/start response (challenge + options)
     App->>Auth: navigator.credentials.create / platform create
     Auth-->>App: RegistrationResponse
-    App->>RP: registration/finish (response + echoed challenge)
+    App->>RP: registration/finish (credential response)
     RP-->>App: verified registration
 
     note over RP,App: Authentication ceremony
@@ -68,11 +68,14 @@ sequenceDiagram
     RP-->>App: authentication/start response (challenge + options)
     App->>Auth: navigator.credentials.get / platform get
     Auth-->>App: AuthenticationResponse
-    App->>RP: authentication/finish (response + echoed challenge)
+    App->>RP: authentication/finish (credential response)
     RP-->>App: verified sign-in
 ```
 
-Validation and trust decisions are server responsibilities: challenge/origin/type checks, authenticator data rules, signature/attestation verification, counter handling, and policy decisions.
+The finish payload carries each credential response once. The server derives ceremony type, challenge,
+and origin from its signed `clientDataJSON`; clients must not echo those values as independent claims.
+Validation and trust decisions are server responsibilities: challenge/origin/type checks, authenticator
+data rules, signature/attestation verification, counter handling, and policy decisions.
 
 ## Repository structure
 

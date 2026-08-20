@@ -1,7 +1,6 @@
 package dev.webauthn.server.ktor
 
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
-import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.Origin
 import dev.webauthn.model.ResidentKeyRequirement
@@ -57,18 +56,12 @@ public data class AuthenticationStartPayload(
 /** Request payload for registration-finish HTTP endpoint. */
 public data class RegistrationFinishPayload(
     public val response: RegistrationResponseDto,
-    public val clientDataType: String,
-    public val challenge: String,
-    public val origin: String,
 )
 
 @Serializable
 /** Request payload for authentication-finish HTTP endpoint. */
 public data class AuthenticationFinishPayload(
     public val response: AuthenticationResponseDto,
-    public val clientDataType: String,
-    public val challenge: String,
-    public val origin: String,
 )
 
 public fun Application.installWebAuthnRoutes(
@@ -127,13 +120,16 @@ public fun Route.webAuthnRoutes(
 
         post("/registration/finish") {
             val payload = call.receive<RegistrationFinishPayload>()
+            val clientData = when (val parsed = parseClientData(payload.response)) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    call.respondValidationFailure("webauthn.registration.finish", parsed.errors)
+                    return@post
+                }
+            }
             val request = RegistrationFinishRequest(
                 responseDto = payload.response,
-                clientData = CollectedClientData(
-                    type = payload.clientDataType,
-                    challenge = Challenge.parseOrThrow(payload.challenge),
-                    origin = Origin.parseOrThrow(payload.origin),
-                ),
+                clientData = clientData,
             )
             call.respondValidationResult(
                 operation = "webauthn.registration.finish",
@@ -174,13 +170,16 @@ public fun Route.webAuthnRoutes(
 
         post("/authentication/finish") {
             val payload = call.receive<AuthenticationFinishPayload>()
+            val clientData = when (val parsed = parseClientData(payload.response)) {
+                is ValidationResult.Valid -> parsed.value
+                is ValidationResult.Invalid -> {
+                    call.respondValidationFailure("webauthn.authentication.finish", parsed.errors)
+                    return@post
+                }
+            }
             val request = AuthenticationFinishRequest(
                 responseDto = payload.response,
-                clientData = CollectedClientData(
-                    type = payload.clientDataType,
-                    challenge = Challenge.parseOrThrow(payload.challenge),
-                    origin = Origin.parseOrThrow(payload.origin),
-                ),
+                clientData = clientData,
             )
 
             call.respondValidationResult(
@@ -193,6 +192,20 @@ public fun Route.webAuthnRoutes(
                 )
             }
         }
+    }
+}
+
+private fun parseClientData(response: RegistrationResponseDto): ValidationResult<CollectedClientData> {
+    return when (val parsed = WebAuthnDtoMapper.toModel(response)) {
+        is ValidationResult.Valid -> WebAuthnDtoMapper.parseCollectedClientData(parsed.value.clientDataJson)
+        is ValidationResult.Invalid -> parsed
+    }
+}
+
+private fun parseClientData(response: AuthenticationResponseDto): ValidationResult<CollectedClientData> {
+    return when (val parsed = WebAuthnDtoMapper.toModel(response)) {
+        is ValidationResult.Valid -> WebAuthnDtoMapper.parseCollectedClientData(parsed.value.clientDataJson)
+        is ValidationResult.Invalid -> parsed
     }
 }
 

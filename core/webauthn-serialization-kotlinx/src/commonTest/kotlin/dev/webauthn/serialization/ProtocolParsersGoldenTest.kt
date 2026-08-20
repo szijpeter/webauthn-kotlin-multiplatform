@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 
 class ProtocolParsersGoldenTest {
     @Test
-    fun parseCollectedClientDataJsonExtractsExpectedFields() {
+    fun publicClientDataParserExtractsExpectedSignedFields() {
         val rawJson = """
             {
               "type": "webauthn.get",
@@ -24,7 +24,7 @@ class ProtocolParsersGoldenTest {
             }
         """.trimIndent().encodeToByteArray()
 
-        val result = parseCollectedClientDataJson(rawJson)
+        val result = WebAuthnDtoMapper.parseCollectedClientData(Base64UrlBytes.fromBytes(rawJson))
 
         assertTrue(result is ValidationResult.Valid)
         assertEquals("webauthn.get", result.value.type)

@@ -7,12 +7,13 @@ import dev.webauthn.model.AttestationConveyancePreference
 import dev.webauthn.model.AuthenticationResponse
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.AuthenticatorTransport
-import dev.webauthn.model.Challenge
-import dev.webauthn.model.CredentialId
-import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.AuthenticationExtensionsClientInputs
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
+import dev.webauthn.model.Base64UrlBytes
+import dev.webauthn.model.Challenge
+import dev.webauthn.model.CollectedClientData
+import dev.webauthn.model.CredentialId
 import dev.webauthn.model.LargeBlobExtensionInput
 import dev.webauthn.model.LargeBlobExtensionOutput
 import dev.webauthn.model.PrfExtensionInput
@@ -41,6 +42,16 @@ private const val PUBLIC_KEY_CREDENTIAL_TYPE = "public-key"
  */
 @Suppress("LargeClass", "TooManyFunctions")
 public object WebAuthnDtoMapper {
+    /**
+     * Parses the signed `clientDataJSON` carried by a WebAuthn credential response.
+     *
+     * Ceremony services must use this value rather than accepting equivalent fields from an
+     * enclosing transport payload.
+     */
+    public fun parseCollectedClientData(value: Base64UrlBytes): ValidationResult<CollectedClientData> {
+        return parseCollectedClientDataJson(value.bytes())
+    }
+
     public fun fromModel(value: PublicKeyCredentialCreationOptions): PublicKeyCredentialCreationOptionsDto {
         return PublicKeyCredentialCreationOptionsDto(
             rp = RpEntityDto(id = value.rp.id.value, name = value.rp.name),
