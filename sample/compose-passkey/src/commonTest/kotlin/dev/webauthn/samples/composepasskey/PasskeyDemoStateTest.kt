@@ -6,6 +6,9 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyPhase
 import dev.webauthn.client.PlatformCapability
+import dev.webauthn.client.PasskeyResult
+import dev.webauthn.model.RpId
+import dev.webauthn.model.UserHandle
 import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
@@ -22,6 +25,8 @@ import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.ui.screens.auth.canStartConditionalRegistration
 import dev.webauthn.samples.composepasskey.ui.screens.auth.canStartExplicitRegistration
 import dev.webauthn.samples.composepasskey.ui.screens.auth.supportsConditionalCreate
+import dev.webauthn.samples.composepasskey.domain.signals.CredentialSignalDemoClient
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -117,9 +122,10 @@ class PasskeyDemoStateTest {
     }
 
     @Test
-    fun coordinator_logs_actions_and_promotes_sign_in_to_app_session() {
+    fun coordinator_logs_actions_promotes_session_and_signals_current_user() = runTest {
         val logs = DebugLogStore()
         val sessions = AppSessionStore()
+        val credentialSignals = FakeCredentialSignalDemoClient()
         val coordinator = AuthDemoCoordinator(
             config = PasskeyDemoConfig(
                 endpointBase = "https://example.test",
@@ -130,6 +136,7 @@ class PasskeyDemoStateTest {
             ),
             debugLogs = logs,
             sessionStore = sessions,
+            credentialSignalClient = credentialSignals,
         )
 
         coordinator.onSignInClicked()
@@ -138,5 +145,29 @@ class PasskeyDemoStateTest {
         assertEquals(AppSessionState.SignedIn("demo@local"), sessions.state.value)
         assertTrue(logs.entries.any { it.source == "action" && it.message.contains("Sign In tapped") })
         assertTrue(logs.entries.any { it.source == "flow" && it.message.contains("Sign In success") })
+        assertTrue(logs.entries.any { it.source == "signals" && it.message.contains("accepted") })
+        assertEquals(1, credentialSignals.currentUserDetailsCalls)
+        assertEquals("example.test", credentialSignals.lastRpId?.value)
+        assertEquals("ZGVtby11c2Vy", credentialSignals.lastUserId?.value?.encoded())
+    }
+}
+
+private class FakeCredentialSignalDemoClient : CredentialSignalDemoClient {
+    var currentUserDetailsCalls: Int = 0
+    var lastRpId: RpId? = null
+    var lastUserId: UserHandle? = null
+
+    override val isAvailable: Boolean = true
+
+    override suspend fun signalCurrentUserDetails(
+        rpId: RpId,
+        userId: UserHandle,
+        name: String,
+        displayName: String,
+    ): PasskeyResult<Unit> {
+        currentUserDetailsCalls += 1
+        lastRpId = rpId
+        lastUserId = userId
+        return PasskeyResult.Success(Unit)
     }
 }

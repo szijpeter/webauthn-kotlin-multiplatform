@@ -14,6 +14,7 @@ A Compose Multiplatform app for a minimal end-to-end passkey flow against `sampl
 8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 10. Android Restore Credentials demo card: create a restore key with the normal registration options, test retrieval through the normal sign-in finish path, and clear the restore key during local sign-out.
+11. Credential-manager signal demo: after successful sign-in, the sample sends a current-user-details signal through Android Credential Manager or the iOS host bridge and logs the outcome.
 
 These values are baked into the shared app during build:
 
@@ -121,6 +122,7 @@ The sample emits structured logs with tag `PasskeyDemo` and uses the same entrie
 - `capabilities`: probe start/success/failure
 - `action`: register/auto-create/sign-in taps
 - `prf`: PRF sign-in/session/encrypt/decrypt outcomes
+- `signals`: platform credential-manager signal outcomes
 - `flow`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
 - `http`: Ktor request/response metadata (method, URL, and status)
 
@@ -144,8 +146,13 @@ The auth screen is intentionally the cleanest API example in the repo:
 ```kotlin
     val flow = rememberPasskeyFlow(passkeyClient)
     val scope = rememberCoroutineScope()
-    val coordinator = remember(config, debugLogs, sessionStore) {
-        AuthDemoCoordinator(config, debugLogs, sessionStore)
+    val coordinator = remember(config, debugLogs, sessionStore, credentialSignalClient) {
+        AuthDemoCoordinator(
+            config = config,
+            debugLogs = debugLogs,
+            sessionStore = sessionStore,
+            credentialSignalClient = credentialSignalClient,
+        )
     }
     var state by remember { mutableStateOf<DemoCeremonyState>(DemoCeremonyState.Idle) }
     val canRegister by coordinator.canRegister.collectAsState()
@@ -155,6 +162,7 @@ The auth screen is intentionally the cleanest API example in the repo:
 Sample-only side effects stay outside the library API surface:
 
 - `AuthDemoCoordinator` logs taps/state transitions.
+- `AuthDemoCoordinator` sends the platform current-user-details signal after successful sign-in when the platform client is available.
 - `AppSessionStore` handles local signed-in navigation state.
 
 ## Android Restore Credentials showcase
@@ -179,6 +187,27 @@ This card is a development harness for the create/get/clear API shape. A true de
 validation still needs Android backup/restore or first-launch testing on a restored device. iOS shows
 the card as unavailable because Apple passkeys sync through iCloud Keychain, but AuthenticationServices
 does not expose an app-managed Restore Credentials equivalent.
+
+## Credential signal showcase
+
+After successful sign-in, the sample can send a current-user-details signal to the platform
+credential manager and log whether the platform accepted well-formed parameters. Android uses the
+published `AndroidCredentialSignalClient`; the iOS host injects a sample-owned Swift bridge. Neither
+path replaces server-side credential-state enforcement.
+
+The sample only exercises `SignalCurrentUserDetailsRequest` because it already has the RP ID, stable
+user handle, and display name during sign-in. `SignalAllAcceptedCredentialIdsRequest` and
+`SignalUnknownCredentialRequest` require a real server-side credential inventory or an unknown
+credential failure path. Those operations remain available through the Android platform API but are
+not exercised by this sample until its backend exposes authoritative credential inventory state.
+
+On iOS, Apple exposes the analogous `ASCredentialDataManager` sync reports from Swift, but the
+current Kotlin/Native SDK bindings do not expose that Swift-only type under
+`platform.AuthenticationServices`. The committed iOS host app therefore injects a tiny Swift
+`IosCredentialSignalBridge` implementation into `MainViewController(...)`; Kotlin owns the sample
+flow, while Swift owns the iOS 26.2+ AuthenticationServices call.
+Apple's update API accepts the RP ID, user handle, and new account name; it has no separate display
+name parameter, so the sample bridge deliberately ignores the common display-name value on iOS.
 
 ## Compose previews
 
