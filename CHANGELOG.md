@@ -43,7 +43,7 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ### Security
 
-- Server finish processing now derives challenge, origin, and ceremony type exclusively from signed `clientDataJSON` in the raw credential response. Regression coverage rejects mismatched claims and replaying an old response against a fresh ceremony.
+- Server finish processing now derives challenge, origin, and ceremony type exclusively from the exact raw `clientDataJSON` bytes in the credential response. Authentication verifies `authenticatorData || SHA-256(clientDataJSON)` against the assertion signature, and signed registration attestation formats hash those same bytes during verification; `none` attestation remains unsigned. Regression coverage rejects mismatched claims and replaying an old response against a fresh ceremony.
 
 ## 0.3.0 - 2026-03-31
 

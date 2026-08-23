@@ -7,7 +7,7 @@ Status: release candidate preparation in progress; publication requires explicit
 - Latest official GitHub and Maven Central release: `v0.3.0` / `0.3.0`.
 - Target release: `0.4.0`, a coordinated minor release across the complete published artifact surface.
 - Release-prep base: `origin/main` at `476871db5eeb018ec8ae22a78622cdec17e6e060`; the final release SHA will be the merged release-prep commit after its current-head CI succeeds.
-- Included: all commits on `main` since `v0.3.0`, including the signed-client-data security fix, raw/protocol/JSON foundation, server trust-boundary correction, final client/platform/flow/Ktor/default composition, dependency upgrades, documentation verification, and PR change-profile automation.
+- Included: all commits on `main` since `v0.3.0`, including the single-authoritative-client-data security fix, raw/protocol/JSON foundation, server trust-boundary correction, final client/platform/flow/Ktor/default composition, dependency upgrades, documentation verification, and PR change-profile automation.
 - Excluded unless merged and this plan/changelog are refreshed before publication: open PRs #170, #172, #171, and draft #202.
 
 ## Readiness Evidence
