@@ -115,7 +115,8 @@ tools/agent/quality-gate.sh --mode strict --scope full --block true
 ## Release-Prep Workflow
 
 1. For complex release initiatives, keep a temporary release execution-map doc under `docs/ai/` current while the effort is active.
-2. Validate compatibility and publishing preflight:
+2. Add a versioned `CHANGELOG.md` section containing the curated GitHub Release notes. The publish workflow validates this section before Central publication.
+3. Validate compatibility and publishing preflight:
 
 <!-- doc-example: id=docs-ai-workflows-bash-11; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
@@ -123,5 +124,7 @@ tools/agent/quality-gate.sh --mode strict --scope full --block true
 bash tools/agent/check-published-consumer-smoke.sh
 ```
 
-3. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`.
-4. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
+On a workstation without a release signing key, use the credential-free Maven Local preflight documented in `docs/MAVEN_CENTRAL.md`; the approval-gated live workflow must still sign every publication.
+
+4. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`. Its Central job has read-only repository access and no persisted Git credentials; only the post-publication GitHub Release job receives `contents:write`.
+5. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.

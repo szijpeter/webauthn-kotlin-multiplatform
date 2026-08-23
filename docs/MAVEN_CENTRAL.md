@@ -21,6 +21,8 @@ Published:
 
 - `webauthn-cbor-core`
 - `webauthn-model`
+- `webauthn-json-api`
+- `webauthn-protocol`
 - `webauthn-runtime-core`
 - `webauthn-json-kotlinx`
 - `webauthn-core`
@@ -73,6 +75,8 @@ tools/agent/quality-gate.sh --mode strict --scope full --block true
 bash tools/agent/check-published-consumer-smoke.sh
 ```
 
+If the workstation intentionally has no release signing key, `publishToMavenLocal` may be repeated with `-PsignAllPublications=false` after confirming that the only failure was a missing signatory. This validates publication metadata and consumer resolution but does not replace the live workflow's mandatory signed publication.
+
 ## Workflow
 
 Use [`.github/workflows/publish.yml`](../.github/workflows/publish.yml).
@@ -86,7 +90,8 @@ Inputs:
 Guardrails:
 
 - `publish-and-release` is blocked for snapshot versions.
-- `publish-and-release` creates the matching GitHub release tag (`vX.Y.Z`) after successful Central publication.
+- `publish-and-release` requires a matching versioned `CHANGELOG.md` section and creates the GitHub release/tag (`vX.Y.Z`) from those curated notes after successful Central publication.
+- The Central job has read-only repository contents and no persisted Git credentials; only the separate GitHub-release job receives `contents:write`.
 - Publishing remains manual; merges to `main` do not auto-publish.
 
 ## Release Runbook

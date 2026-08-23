@@ -64,7 +64,7 @@ Managed blocks: **111**
 | docs-client-first-execution-bash-1 | docs/CLIENT_FIRST_EXECUTION.md:94 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
 | docs-client-first-execution-bash-2 | docs/CLIENT_FIRST_EXECUTION.md:101 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
 | docs-client-first-execution-kotlin-2 | docs/CLIENT_FIRST_EXECUTION.md:173 | `webauthn-client-json-core` (optional) | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidJsonClientExample.kt#android-json-client | platform-compile |  |
-| docs-maven-central-bash-1 | docs/MAVEN_CENTRAL.md:69 | Local Validation | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-maven-central-bash-1 | docs/MAVEN_CENTRAL.md:71 | Local Validation | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-1 | docs/ai/WORKFLOWS.md:10 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-2 | docs/ai/WORKFLOWS.md:17 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-3 | docs/ai/WORKFLOWS.md:24 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
@@ -75,7 +75,7 @@ Managed blocks: **111**
 | docs-ai-workflows-bash-8 | docs/ai/WORKFLOWS.md:92 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-9 | docs/ai/WORKFLOWS.md:99 | Public Security Hygiene Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-10 | docs/ai/WORKFLOWS.md:111 | Full Validation Workflow | bash | contributor | markdown | Markdown block | syntax |  |
-| docs-ai-workflows-bash-11 | docs/ai/WORKFLOWS.md:121 | Release-Prep Workflow | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-ai-workflows-bash-11 | docs/ai/WORKFLOWS.md:122 | Release-Prep Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-architecture-mermaid-1 | docs/architecture.md:32 | Reference integration | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-2 | docs/architecture.md:58 | Shared foundation | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-3 | docs/architecture.md:91 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
