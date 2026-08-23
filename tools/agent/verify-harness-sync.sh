@@ -26,6 +26,8 @@ required_files=(
   ".gemini/workflows/fast-pr-check.md"
   "tools/agent/quality-gate.sh"
   "tools/agent/check-published-consumer-smoke.sh"
+  "tools/agent/extract-release-notes.sh"
+  "tools/agent/extract-release-notes-test.sh"
   "tools/agent/modern-bash.sh"
   "tools/agent/changed-modules.sh"
   "tools/agent/spec-trace-check.sh"

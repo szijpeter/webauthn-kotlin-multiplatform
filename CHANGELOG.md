@@ -6,13 +6,44 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ## Unreleased
 
+## 0.4.0 - 2026-08-23
+
+### Added
+
+- Codec-neutral `webauthn-json-api` and binary `webauthn-protocol` artifacts, plus byte-preserving `RawRegistrationResponse` and `RawAuthenticationResponse` models for untrusted platform/transport data.
+- Generic `PasskeyFlow` orchestration with typed registration/authentication backends, opaque continuation state, application-defined finish output, explicit concurrent-use failure, and application-owned presentation state.
+- Replaceable client composition artifacts: `webauthn-client-ktor`, opt-in `webauthn-client-ktor-kotlinx`, `webauthn-client-defaults`, and the source-set-first `webauthn-client-platform` bridge for Android and iOS.
+- Username-optional authentication start for discoverable-credential sign-in.
+- Compiled documentation examples, dependency-purity consumer checks, WebAuthn compliance cross-checks, an experimental desktop passkey CLI, and configurable PR change-profile automation.
+
 ### Changed
 
-- **BREAKING**: client ceremonies now use raw platform responses and the generic `PasskeyFlow` with opaque backend state and application-defined finish output. Replace the removed controller/server-client APIs with `PasskeyFlow`, `RegistrationBackend`, and `AuthenticationBackend`.
-- **BREAKING**: JSON and Ktor transport seams are implementation-neutral. Depend on `webauthn-json-api`/`webauthn-client-ktor` and provide a codec; add `webauthn-json-kotlinx` or `webauthn-client-ktor-kotlinx` only when choosing the Kotlinx defaults.
-- **BREAKING**: `webauthn-client-android` and `webauthn-client-ios` are replaced by the source-set-first `webauthn-client-platform`; use `webauthn-client-defaults` for recommended platform construction.
-- **BREAKING**: `webauthn-network-ktor-client` is replaced by `webauthn-client-ktor-kotlinx` for the default contract or `webauthn-client-ktor` plus an application codec for custom contracts.
-- Server finish requests now derive signed client data from the raw credential response, preventing separately supplied challenge, origin, or type values from bypassing the trust boundary.
+- **BREAKING**: `PasskeyClient` now returns raw platform responses, and ceremonies use `PasskeyFlow`, `RegistrationBackend`, and `AuthenticationBackend`. Replace the removed controller/server-client APIs and keep UI state in the application. See the [client-first migration map](https://github.com/szijpeter/webauthn-kotlin-multiplatform/blob/v0.4.0/docs/CLIENT_FIRST_EXECUTION.md).
+- **BREAKING**: `RegistrationFinishRequest` and `AuthenticationFinishRequest` now accept only the raw credential response. Custom server adapters must supply a neutral collected-client-data decoder; callers can no longer provide separate challenge, origin, or ceremony-type claims.
+- **BREAKING**: JSON and Ktor seams are implementation-neutral. Supply a `WebAuthnJsonCodec` and, for custom HTTP contracts, a `KtorPasskeyContractCodec`; add the Kotlinx artifacts only when selecting the repository defaults.
+- **BREAKING**: capability reporting is now tri-state: `PasskeyCapabilities.support` maps typed `PasskeyCapability` values to `CapabilitySupport`. Replace `supported`, `platformVersionHints`, `supports(String)`, and `PlatformFeature` with `supportOf`/`supports` and `PasskeyCapability.Platform(PlatformCapability)`.
+- **BREAKING**: `PasskeyClientError.Platform` no longer retains a `Throwable`, and the low-level `Transport` error is removed; backend and HTTP failures belong to the flow/contract layers.
+- **BREAKING**: `webauthn-serialization-kotlinx` is replaced by `webauthn-json-kotlinx`; `webauthn-client-android` and `webauthn-client-ios` are replaced by `webauthn-client-platform`; and `webauthn-network-ktor-client` is replaced by `webauthn-client-ktor-kotlinx` or `webauthn-client-ktor` with an application codec.
+- **BREAKING**: `iosX64` artifacts are no longer published because upstream cryptography dependencies removed Apple X64 support. Supported Apple targets are `iosArm64` and `iosSimulatorArm64`.
+- Project modules now use `core/`, `client/`, `server/`, and `sample/` source-set-oriented directories without changing retained Maven coordinates.
+- Security-critical validation, parsing, conversion, cryptography, and trust APIs are marked for Kotlin's unused-return-value checker; repository builds treat ignored marked results as errors.
+- The build baseline now uses Kotlin 2.4.10, Gradle 9.7, Android Gradle Plugin 9.3.1/compile SDK 37, Ktor 3.5.2, Signum 0.16.0, and Signum Indispensable 3.26.0.
+
+### Fixed
+
+- Platform prompt ownership and Android rotation handling now keep activity-bound UI context explicit and avoid retaining stale hosts.
+- Flow failures no longer misclassify application callbacks or unexpected platform exceptions as backend failures; backend and callback exceptions follow the application's own policy.
+- Codec-neutral Ktor backends preserve caller-defined continuation state from start through finish instead of assuming server-side `Unit` state.
+- Public protocol return values retain immutable byte-value types rather than exposing mutable `ByteArray` results.
+
+### Removed
+
+- Legacy `PasskeyController`, `PasskeyServerClient`, `PasskeyFinishResult`, controller-owned Compose state, and the old Ktor server client.
+- Published artifacts `webauthn-client-android`, `webauthn-client-ios`, `webauthn-network-ktor-client`, and `webauthn-serialization-kotlinx`. Use the replacements listed above.
+
+### Security
+
+- Server finish processing now derives challenge, origin, and ceremony type exclusively from signed `clientDataJSON` in the raw credential response. Regression coverage rejects mismatched claims and replaying an old response against a fresh ceremony.
 
 ## 0.3.0 - 2026-03-31
 
