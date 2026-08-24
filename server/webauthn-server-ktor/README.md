@@ -36,7 +36,7 @@ Real-world scenario: ship passkey backend endpoints quickly, while keeping polic
 <!-- doc-example: id=server-webauthn-server-ktor-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
-    CLIENT["Mobile/Web client"] --> ROUTES["webauthn-server-ktor routes"]
+    CLIENT["Mobile or web client"] --> ROUTES["webauthn-server-ktor routes"]
     ROUTES --> SVC["webauthn-server-core-jvm services"]
     SVC --> STORES["Store implementations"]
 ```
@@ -50,7 +50,7 @@ flowchart LR
 - Authentication-start payloads intentionally do not include `userHandle`.
 - Registration-start payloads accept optional `residentKey` (`discouraged`, `preferred`, `required`) and pass it through to server-core options assembly.
 - Finish payloads contain only the credential response. The routes map it to a byte-preserving raw response; server-core derives `type`, `challenge`, and `origin` from that same response's signed `clientDataJSON` through its injected decoder.
-- Security still depends on your deployment controls (TLS, auth/session, CSRF posture).
+- Security still depends on your deployment controls (TLS, authentication and session policy, and CSRF posture).
 
 ## Status
 

@@ -1,7 +1,7 @@
 # webauthn-client-flow
 
-Generic, state-free passkey ceremony orchestration over `PasskeyClient` and application-owned
-backend contracts.
+Generic passkey ceremony orchestration over `PasskeyClient` and application-owned backend
+contracts, without library-owned product state.
 
 ## What it provides
 

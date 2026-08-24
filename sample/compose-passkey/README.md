@@ -1,6 +1,6 @@
-# sample:compose-passkey
+# Compose Multiplatform passkey sample
 
-Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/backend-ktor`.
+A Compose Multiplatform app for a minimal end-to-end passkey flow against `sample/backend-ktor`.
 
 ## What this demonstrates
 
@@ -8,9 +8,9 @@ Compose Multiplatform sample app for a minimal passkey E2E flow against `sample/
 2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.
-5. Compose-first auth wiring via `rememberPasskeyFlow(...)`, with sample-owned state and errors driving UI status and action enablement.
+5. Compose-first authentication wiring via `rememberPasskeyFlow(...)`, with sample-owned state and errors driving UI status and action availability.
 6. Direct sample wiring to `KotlinxKtorPasskeyBackend` against the default backend contract.
-7. PRF crypto demo flow: caller-owned salt load/generation, `Sign In + PRF`, session key derivation, AES-GCM encrypt/decrypt, and explicit session clear.
+7. PRF crypto demo flow: caller-owned salt loading or generation, `Sign In + PRF`, session-key derivation, AES-GCM encryption and decryption, and explicit session clearing.
 8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
@@ -90,8 +90,8 @@ Use the committed iOS host project:
 Quick start:
 
 1. Open `sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj` in Xcode.
-2. Set your signing team and a unique bundle id.
-3. Connect your iPhone and run.
+2. Set your signing team and a unique bundle ID.
+3. Connect your iPhone and run the app.
 
 This shared module still exports the Compose entrypoint used by the host app:
 
@@ -100,11 +100,11 @@ This shared module still exports the Compose entrypoint used by the host app:
 Free-account expectation:
 
 - App install/launch is supported.
-- Real passkey register/sign-in may fail when Associated Domains entitlement/domain association is unavailable.
+- Passkey registration and sign-in may fail when the Associated Domains entitlement or domain association is unavailable.
 
 Full E2E expectation:
 
-- Use HTTPS domain + Associated Domains + matching `IOS_APP_ID`/bundle identity.
+- Use an HTTPS domain, Associated Domains, and a matching `IOS_APP_ID` and bundle identity.
 - `sample/backend-ktor/start-server.sh` (ngrok helper) remains the default physical-device setup path.
 
 ## Debug logging
@@ -170,7 +170,7 @@ Preview limitations and constraints:
 - Generic flow behavior is covered in `webauthn-client-flow`; the sample owns its presentation/error union.
 - Runtime client wiring uses `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyFlow()`).
 - Runtime server wiring uses `webauthn-client-ktor-kotlinx` (`KotlinxKtorPasskeyBackend`).
-- Final readiness still requires the live register/sign-in checklist run on a real/emulated Android device with provider dependencies present.
+- Final readiness still requires the live registration and sign-in checklist on a physical Android device or emulator with provider dependencies present.
 
 ## Android provider prerequisite
 
@@ -180,7 +180,7 @@ The Android host includes `androidx.credentials:credentials-play-services-auth`,
 2. Screen lock configured.
 3. A passkey-capable account/provider on the device.
 
-If provider wiring is missing at runtime, the sample surfaces an actionable hint in status + debug log.
+If provider wiring is missing at runtime, the sample surfaces an actionable hint in the status UI and debug log.
 
 ## Practical passkey note
 

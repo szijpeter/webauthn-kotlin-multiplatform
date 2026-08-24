@@ -5,7 +5,7 @@ Optional FIDO Metadata Service trust-source integration for attestation verifica
 ## What it provides
 
 - `FidoMdsTrustSource`
-- Metadata fetch + cache refresh workflow
+- Metadata fetching and cache refresh workflow
 - `TrustAnchorSource` implementation that can plug into attestation verification
 
 ## When to use

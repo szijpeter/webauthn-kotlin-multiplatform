@@ -54,6 +54,13 @@ Update the relevant docs in the same change when you touch:
 
 Use Mermaid for new or updated architecture/flow diagrams.
 
+The public documentation site is authored under `docs/site/content`, stages public module/sample
+READMEs through an explicit allowlist, and adds the aggregated Dokka reference at build time. Read
+`docs/site/README.md` before changing its navigation, toolchain, staging rules, or deployment workflow.
+Run `./gradlew docsSiteCheck --stacktrace` for any public-site change; this includes the existing
+documentation example checks, staging tests, strict static-site build, Dokka generation, and local
+link/anchor validation.
+
 While the first public release effort is active, keep `docs/ai/FIRST_PUBLIC_RELEASE_PLAN.md` current. Remove it in the final cleanup PR after the full effort is complete.
 
 ## Documentation examples

@@ -1,6 +1,6 @@
 # webauthn-core
 
-Audience: teams validating WebAuthn ceremonies before crypto verification and persistence updates.
+Audience: teams validating WebAuthn ceremonies before cryptographic verification and persistence updates.
 
 ## What it provides
 
@@ -139,4 +139,4 @@ fun validatePrfOnly(
 
 ## Status
 
-Production-leaning validation engine.
+Beta, core validation engine.

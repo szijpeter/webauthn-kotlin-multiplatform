@@ -11,7 +11,7 @@ Default JVM crypto backend for the server stack.
 
 ## When to use
 
-Use this when you want production-leaning JVM defaults instead of implementing `webauthn-crypto-api` yourself.
+Use this when you want tested JVM defaults instead of implementing `webauthn-crypto-api` yourself.
 
 ## How to use
 

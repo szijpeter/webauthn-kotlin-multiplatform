@@ -1,6 +1,6 @@
 # webauthn-client-core
 
-Platform-neutral passkey operations and result/error contracts at the raw platform boundary.
+Platform-neutral passkey operations and result and error contracts at the raw platform boundary.
 
 ## What it provides
 

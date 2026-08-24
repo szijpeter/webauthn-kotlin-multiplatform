@@ -1,6 +1,6 @@
 # webauthn-client-compose
 
-Compose helpers for lifecycle-aware platform clients and the generic, state-free `PasskeyFlow` API.
+Compose helpers for lifecycle-aware platform clients and the generic `PasskeyFlow` API, which owns no product UI state.
 
 ## What it provides
 
@@ -9,12 +9,12 @@ Compose helpers for lifecycle-aware platform clients and the generic, state-free
 
 The common API exports `webauthn-client-core` and `webauthn-client-flow`. Platform actuals use
 `webauthn-client-platform`; Android's no-argument `rememberPasskeyClient()` deliberately selects
-`KotlinxWebAuthnJsonCodec`, while iOS uses AuthenticationServices directly.
+`KotlinxWebAuthnJsonCodec`, while iOS uses Authentication Services directly.
 
 ## When to use
 
-Use this module when Compose should retain a platform client across recomposition and activity/view
-recreation. The application still owns backend construction, navigation, dialogs, retry policy, and
+Use this module when Compose should retain a platform client across recomposition and host lifecycle
+changes. The application still owns backend construction, navigation, dialogs, retry policy, and
 all visible ceremony state.
 
 ## How to use

@@ -1,7 +1,7 @@
 # webauthn-client-platform
 
 Kotlin Multiplatform platform bridge for passkey operations. Its Android source set uses Credential
-Manager; its iOS source set uses AuthenticationServices.
+Manager; its iOS source set uses Authentication Services.
 
 ## What it provides
 
@@ -55,7 +55,7 @@ flowchart LR
     CORE --> ANDROID["AndroidPasskeyClient"]
     CORE --> IOS["IosPasskeyClient"]
     ANDROID --> CM["Credential Manager"]
-    IOS --> AS["AuthenticationServices"]
+    IOS --> AS["Authentication Services"]
 ```
 
 ## Pitfalls and limits
@@ -72,7 +72,7 @@ flowchart LR
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
   - `PasskeyCapability.Platform(PlatformCapability.SecurityKey)` when cross-platform security keys are supported.
-- Keep backend contract alignment with your chosen server client implementation.
+- Keep the backend contract aligned with your chosen client and server implementations.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.
   - `/.well-known/assetlinks.json` availability.

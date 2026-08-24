@@ -10,7 +10,7 @@ JSON interoperability layer on top of raw-response client orchestration.
 
 ## When to use
 
-Use this when your host/backend boundary exchanges WebAuthn JSON payloads and your app wants the platform response to remain raw until the backend trust boundary.
+Use this when your host and backend exchange WebAuthn JSON payloads and your app needs the platform response to remain raw until it reaches the backend trust boundary.
 
 ## How to use
 
@@ -41,8 +41,8 @@ flowchart LR
 ## Pitfalls and limits
 
 - JSON convenience does not remove trust-boundary validation needs on the server.
-- JSON entrypoints use a replaceable WebAuthn-specific codec; malformed request JSON still fails as `InvalidOptions`.
-- Keep mapper and model versions aligned with BOM to avoid shape drift.
+- JSON entry points use a replaceable WebAuthn-specific codec; malformed request JSON still fails as `InvalidOptions`.
+- Keep mapper and model versions aligned to avoid shape drift.
 
 ## iOS targets
 

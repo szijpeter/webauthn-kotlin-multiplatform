@@ -15,6 +15,13 @@ plugins {
     alias(libs.plugins.detekt) apply false
 }
 
+dokka {
+    dokkaPublications.html {
+        moduleName.set("WebAuthn Kotlin Multiplatform API")
+        outputDirectory.set(layout.buildDirectory.dir("docs-site/api"))
+    }
+}
+
 group = providers.gradleProperty("GROUP").get()
 version = providers.gradleProperty("VERSION_NAME").get()
 
@@ -97,6 +104,10 @@ subprojects {
             )
         }
     }
+
+    pluginManager.withPlugin("webauthn.published-library") {
+        rootProject.dependencies.add("dokka", project)
+    }
 }
 
 val docsCatalogCheck = tasks.register("docsCatalogCheck") {
@@ -124,4 +135,35 @@ tasks.register("docsCheck") {
         ":sample:compose-passkey:compileAndroidMain",
         ":sample:compose-passkey:compileKotlinIosSimulatorArm64",
     )
+}
+
+val docsSiteStage = tasks.register<Exec>("docsSiteStage") {
+    group = "documentation"
+    description = "Stages authored and canonical public documentation for the static site."
+    commandLine("python3", "tools/docs/public_site.py", "stage")
+}
+
+val docsSiteUnitTest = tasks.register<Exec>("docsSiteUnitTest") {
+    group = "verification"
+    description = "Tests public documentation staging, containment, and catalog discovery."
+    commandLine("python3", "tools/docs/test_public_site.py")
+}
+
+val docsSiteBuild = tasks.register<Exec>("docsSiteBuild") {
+    group = "documentation"
+    description = "Builds the strict public documentation site and aggregated API reference."
+    dependsOn(docsSiteStage, tasks.named("dokkaGenerate"))
+    commandLine("tools/docs/site.sh", "build")
+}
+
+tasks.register("docsSiteUpdate") {
+    group = "documentation"
+    description = "Updates source-backed examples used by the public documentation site."
+    dependsOn("docsUpdate")
+}
+
+tasks.register("docsSiteCheck") {
+    group = "verification"
+    description = "Runs documentation verification and builds the complete public site."
+    dependsOn("docsCheck", docsSiteUnitTest, docsSiteBuild)
 }

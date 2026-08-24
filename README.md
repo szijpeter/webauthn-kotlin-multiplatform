@@ -11,6 +11,9 @@ Standards-first Kotlin Multiplatform building blocks for WebAuthn and passkey in
 
 This project helps teams implement passwordless login without rebuilding the hardest parts from scratch. It gives you typed protocol models, strict validation, backend ceremony services, platform passkey clients, and optional transport/adaptation modules that stay close to the WebAuthn specification.
 
+Start with the [mobile-first public documentation](./docs/site/content/index.md) for Android, iOS,
+Compose, full-stack examples, and generated API reference entry points.
+
 ## Why This Project Exists
 
 - WebAuthn is security-sensitive and protocol-heavy.
@@ -108,6 +111,8 @@ reference integration and focused core, client, and server dependency views.
 - `client/` contains typed platform operations, generic ceremony flow, platform bridges, Compose helpers, and client transport.
 - `server/` contains JVM server services, Ktor/store adapters, JVM crypto, and optional trust metadata.
 - `sample/` contains runnable samples and demo entry points; these modules are not published.
+- `docs/site/` contains the authored public documentation and site-specific assets; the build stages
+  verified repository docs and generated API reference alongside it.
 
 ### Common entry points
 
