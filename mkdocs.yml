@@ -1,0 +1,130 @@
+site_name: WebAuthn Kotlin Multiplatform
+site_description: Standards-first passkeys for Android, iOS, Compose Multiplatform, and JVM/Ktor.
+site_url: https://szijpeter.github.io/webauthn-kotlin-multiplatform/
+repo_url: https://github.com/szijpeter/webauthn-kotlin-multiplatform
+repo_name: szijpeter/webauthn-kotlin-multiplatform
+edit_uri: edit/main/docs/site/content/
+docs_dir: build/docs-site/staged
+site_dir: build/docs-site/site
+use_directory_urls: true
+strict: true
+
+theme:
+  name: material
+  language: en
+  logo: assets/images/mark.svg
+  favicon: assets/images/mark.svg
+  font: false
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Use dark theme
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Use light theme
+  features:
+    - content.code.copy
+    - content.code.select
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.expand
+    - navigation.path
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+
+nav:
+  - Home: index.md
+  - Mobile:
+      - Choose your path: mobile/index.md
+      - Mobile quickstart: mobile/quickstart.md
+      - Compose Multiplatform: mobile/compose.md
+      - Android: mobile/android.md
+      - iOS: mobile/ios.md
+      - Full mobile + backend sample: mobile/full-stack.md
+      - Capabilities and extensions: mobile/capabilities.md
+      - Production checklist: mobile/production.md
+      - Troubleshooting: mobile/troubleshooting.md
+  - Backend:
+      - Ktor quickstart: backend/index.md
+      - Default endpoint contract: backend/default-contract.md
+      - Ceremony state and storage: backend/storage.md
+      - Production checklist: backend/production.md
+  - Understand WebAuthn:
+      - Registration and authentication: concepts/ceremonies.md
+      - Mobile-to-server trust boundary: concepts/trust-boundary.md
+      - RP IDs, origins, and app association: concepts/origins.md
+      - Attestation and metadata: concepts/attestation.md
+  - Guides:
+      - Choose modules: guides/choose-modules.md
+      - Custom codecs and transport: guides/custom-codecs.md
+      - Compose lifecycle and UI state: guides/compose-lifecycle.md
+      - PRF application crypto: guides/prf.md
+      - Migration from removed client APIs: guides/migration.md
+  - Reference:
+      - Artifact catalog: reference/modules.md
+      - Platform support: reference/platform-support.md
+      - Result and error model: reference/results.md
+      - Architecture: reference/architecture.md
+      - API reference: reference/api.md
+  - Project:
+      - Status and compatibility: project/status.md
+      - Security: project/security.md
+      - Contributing: project/contributing.md
+      - Changelog: project/changelog.md
+
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.]+'
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/szijpeter/webauthn-kotlin-multiplatform
+      name: WebAuthn Kotlin Multiplatform on GitHub
+
+copyright: Apache-2.0 licensed open-source software

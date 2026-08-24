@@ -2,9 +2,12 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-08-19
+Last updated: 2026-08-24
 
 ## Status Legend
+
+Maturity labels describe implementation readiness, not compatibility guarantees. All published artifacts
+remain subject to the repository's coordinated pre-1.0 compatibility policy.
 
 - `Production-leaning`: core behavior implemented and tested; hardening continues.
 - `Beta`: usable for development/testing; behavior surface still evolving.
@@ -12,6 +15,12 @@ Last updated: 2026-08-19
 
 ## Overall Snapshot
 
+- Mobile-first public documentation site (2026-08-24): a generated MkDocs site now presents 30 authored
+  guides, 23 published-module pages, runnable sample guidance, and aggregate API reference behind a
+  vertical, responsive navigation shell. The build stages an explicit public source map, validates local
+  links and anchors, and keeps documentation examples under the existing `docsCheck` contract. Module and
+  sample README wording was refreshed for the public catalog; this is documentation/build tooling only and
+  does not change runtime behavior or public API.
 - Repository-wide documentation verification (2026-07-24): all 103 user-facing Markdown and KDoc code
   blocks have generated ownership and verification metadata. Source-backed Kotlin examples compile through
   JVM, Android, and iOS project targets; behavior-sensitive examples have deterministic tests; dependency

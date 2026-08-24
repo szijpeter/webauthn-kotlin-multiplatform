@@ -8,7 +8,7 @@ Audience: teams implementing client-side encryption flows derived from WebAuthn 
 - PRF result extraction from `AuthenticationResponse`.
 - HKDF-SHA256 deterministic AES-256 key derivation.
 - AES-GCM encrypt/decrypt helpers and zeroizable `PrfCryptoSession`.
-- `PrfCryptoClient.authenticateWithPrf(...)` for assertion + session derivation in one call.
+- `PrfCryptoClient.authenticateWithPrf(...)` for assertion and session derivation in one call.
 
 <!-- doc-example: id=client-webauthn-client-prf-crypto-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
@@ -98,7 +98,7 @@ Important usage notes:
 - Built on top of `webauthn-client-core` (`PasskeyClient` contract).
 - Uses `webauthn-runtime-core` coroutine-boundary helpers so cancellation propagation is consistent with other client adapters.
 - Complements `webauthn-client-compose` and platform modules when app-level encryption is required.
-- Independent from server-side crypto verification; this is client-side data protection utility.
+- Independent of server-side crypto verification; this is a client-side data-protection utility.
 
 ## Pitfalls and limits
 

@@ -187,11 +187,19 @@ flowchart TB
 | `platform:constraints` | Internal dependency constraints used by the build. It is not published. |
 | `sample:*` | Runnable backend, client, Android, iOS, Compose, and CLI examples. Samples are not published runtime libraries. |
 | `documentation:*` | Documentation example and verification tooling. These projects are not part of the published SDK surface. |
+| `docs/site` | Mobile-first public documentation authored for the generated site. The staging task adds allowlisted repository guides, sample pages, module indexes, and Dokka output without changing the published SDK surface. |
 
 The published modules remain grouped under `core/`, `client/`, and `server/` by
 responsibility. Distribution projects and samples are intentionally omitted
 from the overview because they explain packaging and adoption rather than the
 reusable library architecture.
+
+The public documentation pipeline is a distribution layer over those sources. `docsSiteStage`
+selects and rewrites allowlisted content, the root Dokka task aggregates published modules, and
+`docsSiteBuild` assembles both into one validated static site. Generated site files remain build
+artifacts; authored content and the source allowlist stay reviewable in the repository. The root
+build owns these tasks and resolves their scripts and inputs from the repository root, so their
+behavior does not depend on the directory from which Gradle was invoked.
 
 ## Dependency rules
 

@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **111**
+Managed blocks: **135**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -21,14 +21,14 @@ Managed blocks: **111**
 | contributing-bash-2 | CONTRIBUTING.md:25 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | contributing-bash-3 | CONTRIBUTING.md:32 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | contributing-bash-4 | CONTRIBUTING.md:39 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
-| readme-mermaid-1 | README.md:50 | WebAuthn Core Concepts | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-mermaid-2 | README.md:85 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-kotlin-1 | README.md:151 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
-| readme-kotlin-4 | README.md:167 | Recommended client setup | kotlin | consumer | configuration | documentation/consumer-smoke/defaults/build.gradle.kts.template#consumer-defaults-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-2 | README.md:201 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-3 | README.md:226 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
-| readme-bash-1 | README.md:247 | Compose your stack | bash | maintainer | markdown | Markdown block | syntax |  |
-| readme-bash-2 | README.md:340 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-mermaid-1 | README.md:53 | WebAuthn Core Concepts | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| readme-mermaid-2 | README.md:88 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| readme-kotlin-1 | README.md:156 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
+| readme-kotlin-4 | README.md:172 | Recommended client setup | kotlin | consumer | configuration | documentation/consumer-smoke/defaults/build.gradle.kts.template#consumer-defaults-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-2 | README.md:206 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-3 | README.md:231 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
+| readme-bash-1 | README.md:252 | Compose your stack | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-bash-2 | README.md:345 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
 | client-webauthn-client-compose-readme-kotlin-1 | client/webauthn-client-compose/README.md:23 | How to use | kotlin | consumer | illustrative | Markdown illustration | illustrative | Snippet is intentionally abbreviated for the Compose integration guide |
 | client-webauthn-client-compose-readme-kotlin-2 | client/webauthn-client-compose/README.md:47 | How to use | kotlin | consumer | illustrative | Markdown illustration | illustrative | Snippet focuses on ownership and omits host-specific dependency injection |
 | client-webauthn-client-defaults-readme-kotlin-1 | client/webauthn-client-defaults/README.md:26 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/DefaultAndroidClientExample.kt#default-android-client | platform-compile |  |
@@ -80,14 +80,38 @@ Managed blocks: **111**
 | docs-architecture-mermaid-2 | docs/architecture.md:58 | Shared foundation | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-3 | docs/architecture.md:91 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-4 | docs/architecture.md:155 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| site-maintenance-bash-1 | docs/site/README.md:21 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
+| site-maintenance-bash-2 | docs/site/README.md:28 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
+| site-maintenance-bash-3 | docs/site/README.md:35 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
+| site-maintenance-bash-4 | docs/site/README.md:42 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
+| site-backend-kotlin-1 | docs/site/content/backend/index.md:10 | 1. Add the coordinated server stack | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
+| site-backend-kotlin-2 | docs/site/content/backend/index.md:29 | 3. Install the default routes | kotlin | consumer | source | documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/KtorServerExample.kt#ktor-routes | compile |  |
+| site-ceremonies-registration-1 | docs/site/content/concepts/ceremonies.md:8 | Registration | mermaid | consumer | illustrative | Markdown illustration | illustrative | Conceptual WebAuthn registration sequence |
+| site-prf-ownership-1 | docs/site/content/guides/prf.md:8 | Ownership model | mermaid | consumer | illustrative | Markdown illustration | illustrative | Shows application ownership around the PRF crypto helper |
+| site-home-flow-1 | docs/site/content/index.md:66 | The shortest production-shaped path | mermaid | consumer | illustrative | Markdown illustration | illustrative | Conceptual path from a mobile action through the server ceremony boundary |
+| site-compose-lifecycle-1 | docs/site/content/mobile/compose.md:8 | Lifecycle model | mermaid | consumer | illustrative | Markdown illustration | illustrative | Shows the lifecycle ownership split between Compose UI and passkey libraries |
+| site-compose-kotlin-1 | docs/site/content/mobile/compose.md:29 | Minimal state wiring | kotlin | consumer | sample | sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route | sample-build |  |
+| site-full-stack-topology-1 | docs/site/content/mobile/full-stack.md:8 | Topology | mermaid | consumer | illustrative | Markdown illustration | illustrative | Shows the runnable sample components and network flow |
+| site-full-stack-bash-1 | docs/site/content/mobile/full-stack.md:23 | Local Android path | bash | consumer | markdown | Markdown block | syntax |  |
+| site-full-stack-bash-2 | docs/site/content/mobile/full-stack.md:30 | Local Android path | bash | consumer | markdown | Markdown block | syntax |  |
+| site-full-stack-bash-3 | docs/site/content/mobile/full-stack.md:43 | Physical-device path | bash | consumer | markdown | Markdown block | syntax |  |
+| site-mobile-quickstart-kotlin-1 | docs/site/content/mobile/quickstart.md:10 | 1. Add the mobile artifacts | kotlin | consumer | configuration | documentation/consumer-smoke/defaults/build.gradle.kts.template#consumer-defaults-kmp-dependencies | consumer-compile |  |
+| site-mobile-quickstart-kotlin-2 | docs/site/content/mobile/quickstart.md:36 | 2. Construct the platform clients | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/DefaultAndroidClientExample.kt#default-android-client | platform-compile |  |
+| site-mobile-quickstart-kotlin-3 | docs/site/content/mobile/quickstart.md:55 | 2. Construct the platform clients | kotlin | consumer | source | documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/DefaultIosClientExample.kt#default-ios-client | platform-compile |  |
+| site-mobile-quickstart-kotlin-4 | docs/site/content/mobile/quickstart.md:72 | 3. Connect the default backend contract | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/KtorClientExample.kt#kotlinx-ktor-backend | compile |  |
+| site-troubleshooting-flow-1 | docs/site/content/mobile/troubleshooting.md:8 | Boundary-first flow | mermaid | consumer | illustrative | Markdown illustration | illustrative | Decision flow for locating a mobile passkey failure |
+| site-contributing-bash-1 | docs/site/content/project/contributing.md:8 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
+| site-contributing-bash-2 | docs/site/content/project/contributing.md:16 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
+| site-contributing-bash-3 | docs/site/content/project/contributing.md:29 | Documentation contract | bash | contributor | markdown | Markdown block | syntax |  |
+| site-architecture-1 | docs/site/content/reference/architecture.md:6 | Architecture | mermaid | consumer | illustrative | Markdown illustration | illustrative | Public module-layer architecture with mobile-first reading order |
 | docs-unused-return-value-checker-bash-1 | docs/unused-return-value-checker.md:20 | Audit coverage | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-wiki-quality-and-release-bash-1 | docs/wiki/quality-and-release.md:12 | Default Quality Gates | bash | contributor | markdown | Markdown block | syntax |  |
 | platform-bom-readme-kotlin-1 | platform/bom/README.md:25 | How to use | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
 | platform-bom-readme-mermaid-1 | platform/bom/README.md:38 | Fit in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | sample-backend-ktor-readme-bash-1 | sample/backend-ktor/README.md:20 | Run | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:45 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-ios-readme-bash-1 | sample/compose-passkey-ios/README.md:20 | Quick run on device (free Apple account) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-ios-readme-bash-2 | sample/compose-passkey-ios/README.md:46 | Full passkey E2E path (Associated Domains capable setup) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-ios-readme-bash-1 | sample/compose-passkey-ios/README.md:20 | Quick run on a device with a free Apple account | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-ios-readme-bash-2 | sample/compose-passkey-ios/README.md:46 | Complete passkey path with Associated Domains | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-3 | sample/compose-passkey-ios/README.md:102 | Maintaining this project | bash | contributor | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-1 | sample/compose-passkey/READINESS_CHECKLIST.md:10 | 1. Build and automated checks | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-2 | sample/compose-passkey/READINESS_CHECKLIST.md:31 | 2. Local sample backend | bash | consumer | markdown | Markdown block | syntax |  |

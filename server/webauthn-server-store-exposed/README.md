@@ -57,7 +57,7 @@ flowchart LR
 
 ## Pitfalls and limits
 
-- You still own migrations, backup, and operational DB concerns.
+- You still own migrations, backups, and operational database concerns.
 - Schema/bootstrap is not a substitute for full lifecycle migration tooling in mature deployments.
 
 ## Status

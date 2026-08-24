@@ -45,7 +45,7 @@ flowchart LR
 ## Pitfalls and limits
 
 - Contract ownership stays here; concrete security posture is in your implementation.
-- Returning invalid hashes, signature checks, or trust anchors will weaken validation guarantees.
+- Incorrect hashing, signature-verification, or trust-anchor implementations weaken validation guarantees.
 - Kotlin consumers that enable `-Xreturn-value-checker=check` are warned when crypto or trust results are ignored.
 
 ## Status

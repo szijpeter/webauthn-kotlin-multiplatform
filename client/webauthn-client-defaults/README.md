@@ -1,12 +1,12 @@
 # webauthn-client-defaults
 
-Batteries-included platform-client composition over the same replaceable seams exposed by the lower
-level modules.
+Batteries-included platform-client composition over the same replaceable seams exposed by the
+lower-level modules.
 
 ## What it provides
 
 - `defaultPasskeyClient(context)` on Android, composed with `KotlinxWebAuthnJsonCodec`.
-- `defaultPasskeyClient()` on iOS, composed with AuthenticationServices.
+- `defaultPasskeyClient()` on iOS, composed with Authentication Services.
 - Android codec override through `DefaultPasskeyClientConfiguration`.
 - iOS presentation-anchor override through `PasskeyPresentationAnchorProvider`.
 

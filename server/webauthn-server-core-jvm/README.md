@@ -6,7 +6,7 @@ Typed JVM ceremony services and store contracts for WebAuthn registration and au
 
 - `RegistrationService` and `AuthenticationService`
 - Challenge, credential, and user-account store interfaces
-- In-memory store implementations for development/testing
+- In-memory store implementations for development and testing
 - Ceremony orchestration decoupled from web framework concerns
 - Unified authentication start semantics:
   - `AuthenticationStartRequest.userName != null`: identified-account flow with populated `allowCredentials`
@@ -14,7 +14,7 @@ Typed JVM ceremony services and store contracts for WebAuthn registration and au
 
 ## When to use
 
-Use this when you want to implement WebAuthn server flows in JVM/Kotlin, with or without Ktor adapters.
+Use this when you want to implement WebAuthn server flows in Kotlin/JVM, with or without Ktor adapters.
 
 ## How to use
 
@@ -71,12 +71,14 @@ Real-world scenario: run start/finish ceremonies in your backend service layer, 
 <!-- doc-example: id=server-webauthn-server-core-jvm-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
-    CORE["webauthn-core"] --> SVC["webauthn-server-core-jvm"]
-    PROTOCOL["webauthn-protocol"] --> SVC
-    JSON["webauthn-json-api decoder"] --> SVC
-    CRYPTO["webauthn-server-jvm-crypto or custom crypto-api impl"] --> SVC
-    STORE["In-memory or Exposed stores"] --> SVC
-    KTOR["webauthn-server-ktor (optional)"] --> SVC
+    KTOR["webauthn-server-ktor (optional)"] --> SVC["webauthn-server-core-jvm"]
+    SVC --> CORE["webauthn-core"]
+    SVC --> PROTOCOL["webauthn-protocol"]
+    SVC --> JSON_API["webauthn-json-api<br/>codec interface"]
+    JSON_KOTLINX["webauthn-json-kotlinx<br/>KotlinxWebAuthnJsonCodec"] --> JSON_API
+    SVC --> CRYPTO["webauthn-server-jvm-crypto or custom crypto-api implementation"]
+    SVC --> STORE["Challenge, credential, and account store contracts"]
+    IMPLEMENTATION["In-memory or Exposed store implementations"] --> STORE
 ```
 
 ## Pitfalls and limits
@@ -90,4 +92,4 @@ flowchart LR
 
 ## Status
 
-Beta, production-leaning ceremony orchestration.
+Beta ceremony orchestration with contract-tested behavior.

@@ -1,6 +1,6 @@
-# sample:compose-passkey-ios
+# iOS host sample
 
-Ready-to-run iOS host app for the shared `sample:compose-passkey` Compose UI.
+A ready-to-run iOS host app for the shared `sample:compose-passkey` Compose UI.
 
 Use this sample when you want to run the passkey demo on a connected iPhone from Xcode with minimal setup.
 
@@ -10,7 +10,7 @@ Use this sample when you want to run the passkey demo on a connected iPhone from
 - SwiftUI app shell that mounts Kotlin `MainViewController()` from `sample:compose-passkey`.
 - Build phase script that runs `:sample:compose-passkey:embedAndSignAppleFrameworkForXcode`.
 
-## Quick run on device (free Apple account)
+## Quick run on a device with a free Apple account
 
 This path verifies the app is runnable on a real phone without a paid Apple Developer Program membership.
 
@@ -22,7 +22,7 @@ open sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj
 ```
 
 2. In Xcode target settings (`ComposePasskeyIos`):
-- Set a unique bundle id (for example `dev.webauthn.samples.composepasskey.ios.<yourname>`).
+- Set a unique bundle ID (for example `dev.webauthn.samples.composepasskey.ios.<yourname>`).
 - Set `Signing & Capabilities` to your personal team.
 - Keep automatic signing enabled.
 
@@ -34,11 +34,11 @@ Expected result:
 - Signed-in debug logs remain hidden unless the title is double-tapped.
 
 Note:
-- Real passkey register/sign-in may fail on free accounts if Associated Domains entitlement/domain association is unavailable.
+- Passkey registration and sign-in may fail with a free account when the Associated Domains entitlement or domain association is unavailable.
 
-## Full passkey E2E path (Associated Domains capable setup)
+## Complete passkey path with Associated Domains
 
-Use this path when your signing setup supports Associated Domains and you want real register/sign-in success.
+Use this path when your signing setup supports Associated Domains and you want successful registration and sign-in.
 
 1. Start backend with tunnel helper:
 
@@ -52,7 +52,7 @@ IOS_BUNDLE_ID=<BUNDLE_ID> \
 2. Ensure app identity matches backend AASA config:
 - Canonical value is `IOS_APP_ID`.
 - If `IOS_APP_ID` is unset, backend derives it from `IOS_TEAM_ID.IOS_BUNDLE_ID`.
-- `IOS_APP_ID` must match your signed app id (`<TEAM_ID>.<BUNDLE_ID>`).
+- `IOS_APP_ID` must match your signed app ID (`<TEAM_ID>.<BUNDLE_ID>`).
 
 3. In Xcode, add capability:
 - `Signing & Capabilities` -> `Associated Domains`
@@ -84,11 +84,11 @@ Backend iOS association identity:
 
 ## Troubleshooting
 
-- Signing error about provisioning/profile:
-  - Re-select your personal/team signing identity and unique bundle id.
+- Signing error about provisioning or the profile:
+  - Re-select your personal or team signing identity and unique bundle ID.
 - Build phase cannot find Gradle task:
   - Run from repo root and ensure `sample:compose-passkey` iOS framework targets are configured.
-- Register/Sign In fails with domain/association style errors:
+- Registration or sign-in fails with domain or association errors:
   - Check `IOS_APP_ID` alignment and `webcredentials:<domain>` entry.
   - Verify backend serves `/.well-known/apple-app-site-association` for the exact HTTPS domain.
 - Simulator works but device passkey flow fails:

@@ -6,7 +6,7 @@ Audience: teams that need typed WebAuthn values and protocol models as the share
 
 - Domain wrappers for protocol-critical values (`RpId`, `Origin`, `Challenge`, `CredentialId`, `Base64UrlBytes`, fixed-size byte types).
 - Typed protocol models for registration/authentication options and responses.
-- Shared `ValidationResult` + `WebAuthnValidationError` contracts used across client/server orchestration.
+- Shared `ValidationResult` and `WebAuthnValidationError` contracts used across client and server orchestration.
 - L3 extension model types (`prf`, `largeBlob`, related origins).
 
 <!-- doc-example: id=core-webauthn-model-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
@@ -90,4 +90,5 @@ API notes:
 
 ## Status
 
-Production-leaning foundational contract module.
+Beta public compatibility, with production-leaning internal implementation maturity. This remains a
+foundational contract module, and the pre-1.0 compatibility policy still applies to consumers.

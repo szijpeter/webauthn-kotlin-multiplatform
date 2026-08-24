@@ -1,6 +1,6 @@
 # webauthn-runtime-core
 
-Audience: module authors who need consistent coroutine-safe failure handling helpers across client/network adapters.
+Audience: module authors who need consistent coroutine-safe failure handling helpers across client and network adapters.
 
 ## What it provides
 
@@ -47,14 +47,14 @@ suspend fun loadAndTransform(
 
 ## Background
 
-Kotlin's stdlib `runCatching` and `mapCatching` catch **all** `Throwable` including `CancellationException`, which breaks structured concurrency. See [kotlinx.coroutines#1814](https://github.com/Kotlin/kotlinx.coroutines/issues/1814).
+Kotlin's standard-library `runCatching` and `mapCatching` catch every `Throwable`, including `CancellationException`, which breaks structured concurrency. See [kotlinx.coroutines#1814](https://github.com/Kotlin/kotlinx.coroutines/issues/1814).
 
 This module provides coroutine-safe alternatives that rethrow `CancellationException` before wrapping other exceptions in `Result`.
 
 ## How it fits in the system
 
 - Shared by client orchestration and network adapter modules.
-- Keeps cancellation policy aligned with steering/docs dependency decisions.
+- Keeps cancellation policy aligned across client and network adapters.
 
 ## Limits
 

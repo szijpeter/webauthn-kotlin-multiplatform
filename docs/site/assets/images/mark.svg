@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title description">
+  <title id="title">WebAuthn Kotlin Multiplatform</title>
+  <desc id="description">A mobile device connected to a verified credential.</desc>
+  <rect width="64" height="64" rx="16" fill="#334155"/>
+  <rect x="15" y="10" width="28" height="44" rx="7" fill="none" stroke="#82b5e8" stroke-width="4"/>
+  <path d="M23 21h12M23 29h12" stroke="#efc45b" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="48" cy="42" r="11" fill="#316da8" stroke="#efc45b" stroke-width="2"/>
+  <path d="m43 42 3 3 6-7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="29" cy="47" r="2" fill="#efc45b"/>
+</svg>

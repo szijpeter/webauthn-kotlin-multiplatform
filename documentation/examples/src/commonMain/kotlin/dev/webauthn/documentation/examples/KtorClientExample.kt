@@ -55,6 +55,7 @@ fun appKtorBackend(
 suspend fun authenticateWithDefaultContract(
     httpClient: HttpClient,
     passkeyClient: PasskeyClient,
+    expectedOrigin: String,
 ): CeremonyResult<DefaultPasskeyFinishResult> {
     val backend = KotlinxKtorPasskeyBackend(
         httpClient = httpClient,
@@ -63,7 +64,7 @@ suspend fun authenticateWithDefaultContract(
     return PasskeyFlow(passkeyClient).signIn(
         input = AuthenticationStartPayload(
             rpId = "example.com",
-            origin = "https://example.com",
+            origin = expectedOrigin,
             userName = "alice",
         ),
         backend = backend.authenticationBackend(),

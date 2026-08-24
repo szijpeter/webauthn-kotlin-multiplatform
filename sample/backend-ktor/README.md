@@ -1,6 +1,6 @@
-# sample:backend-ktor
+# Ktor backend sample
 
-Ktor sample backend for local/mobile passkey end-to-end flows.
+A Ktor backend for local and mobile end-to-end passkey flows.
 
 ## Routes
 
@@ -27,7 +27,7 @@ Environment variables:
 - `WEBAUTHN_SAMPLE_ATTESTATION` (`STRICT` default, set `NONE` to explicitly disable strict attestation verification for local bring-up)
 - `ANDROID_PACKAGE_NAME` (default `dev.webauthn.samples.composepasskey.android`)
 - `ANDROID_SHA256` (default placeholder; set for real-device app-link verification)
-- `IOS_APP_ID` (canonical iOS app id for AASA `webcredentials.apps`, default placeholder)
+- `IOS_APP_ID` (canonical iOS app ID for AASA `webcredentials.apps`, default placeholder)
 - `IOS_TEAM_ID` (optional helper input, used to derive `IOS_APP_ID` when `IOS_APP_ID` is unset)
 - `IOS_BUNDLE_ID` (optional helper input, used to derive `IOS_APP_ID` when `IOS_APP_ID` is unset)
 
