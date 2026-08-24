@@ -8,7 +8,7 @@ Use this checklist when moving from private to public operation.
 2. CI workflows use least-privilege `permissions`, explicit versioned action references, and
    `persist-credentials: false` on every checkout before repository code executes.
    - Central publication runs with read-only repository contents and no persisted Git credentials; a separate `publish-and-release`-only job requires `contents:write` solely to create the release tag from curated changelog notes.
-   - Any privileged `pull_request_target` workflow checks out executable code and configuration only from the trusted default branch, never a pull request head, and treats pull request content as API metadata only.
+   - Any privileged `pull_request_target` workflow loads executable code only from trusted, explicitly versioned references. Data-only configuration may come from the trusted default branch or the exact pull-request base commit, never the pull-request head; pull-request content is treated as API metadata only.
 3. Dependency automation exists and is current: `.github/renovate.json`.
 4. Local/sensitive files are ignored (`.env*`, `local.properties`, build outputs, IDE state).
 5. Required quality and release-preflight gates pass:
