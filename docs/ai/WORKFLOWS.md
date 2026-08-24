@@ -54,24 +54,25 @@ Only when the API change is intentional, regenerate baselines and re-check:
 ./gradlew publishToMavenLocal --stacktrace
 ```
 
-## PR Change Profile Workflow
+## Diff Breakdown Workflow
 
-`.github/workflows/pr-change-profile.yml` maintains one marker comment that
+`.github/workflows/diff-breakdown.yml` maintains one marker comment that
 summarizes changed-file churn by review-oriented category, module, and platform
-source set. The profile is descriptive review context, not a test-coverage
+source set. The breakdown is descriptive review context, not a test-coverage
 metric or a quality gate.
 
 Repository path classification is customized in
-`.github/pr-change-profile.config.json`. Source-like files that do not match a
+`.github/diff-breakdown.yml`. Source-like files that do not match a
 known layout remain visible as `Unclassified source` instead of being silently
-folded into another category. Changes to the profiler, its configuration, or its
-workflow are covered by the unprivileged
-`.github/workflows/pr-change-profile-selftest.yml` workflow.
+folded into another category. The reusable
+[Diff Breakdown](https://github.com/szijpeter/diff-breakdown) Action owns the
+implementation and tests; this repository retains only its layout-specific
+configuration and workflow wiring.
 
 The commenting workflow uses `pull_request_target` only to support fork pull
-requests. It loads the profiler and configuration from the trusted default
-branch, never checks out or executes the pull request head, and renders pull
-request file data obtained through the GitHub API.
+requests. It pins the reusable action to an immutable commit, loads configuration
+from the exact pull-request base commit, never checks out or executes the
+pull-request head, and renders file metadata obtained through the GitHub API.
 
 ## Docs-Only Workflow
 
