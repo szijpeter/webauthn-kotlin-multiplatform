@@ -140,20 +140,23 @@ tasks.register("docsCheck") {
 val docsSiteStage = tasks.register<Exec>("docsSiteStage") {
     group = "documentation"
     description = "Stages authored and canonical public documentation for the static site."
-    commandLine("python3", "tools/docs/public_site.py", "stage")
+    workingDir = rootDir
+    commandLine("python3", rootDir.resolve("tools/docs/public_site.py").absolutePath, "stage")
 }
 
 val docsSiteUnitTest = tasks.register<Exec>("docsSiteUnitTest") {
     group = "verification"
     description = "Tests public documentation staging, containment, and catalog discovery."
-    commandLine("python3", "tools/docs/test_public_site.py")
+    workingDir = rootDir
+    commandLine("python3", rootDir.resolve("tools/docs/test_public_site.py").absolutePath)
 }
 
 val docsSiteBuild = tasks.register<Exec>("docsSiteBuild") {
     group = "documentation"
     description = "Builds the strict public documentation site and aggregated API reference."
     dependsOn(docsSiteStage, tasks.named("dokkaGenerate"))
-    commandLine("tools/docs/site.sh", "build")
+    workingDir = rootDir
+    commandLine("bash", rootDir.resolve("tools/docs/site.sh").absolutePath, "build")
 }
 
 tasks.register("docsSiteUpdate") {

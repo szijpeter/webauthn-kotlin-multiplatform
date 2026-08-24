@@ -90,4 +90,5 @@ API notes:
 
 ## Status
 
-Beta, foundational contract module.
+Beta public compatibility, with production-leaning internal implementation maturity. This remains a
+foundational contract module, and the pre-1.0 compatibility policy still applies to consumers.

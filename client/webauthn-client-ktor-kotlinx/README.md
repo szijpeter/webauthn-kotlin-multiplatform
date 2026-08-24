@@ -28,6 +28,7 @@ Create and configure the `HttpClient` in your application, then pass the typed b
 suspend fun authenticateWithDefaultContract(
     httpClient: HttpClient,
     passkeyClient: PasskeyClient,
+    expectedOrigin: String,
 ): CeremonyResult<DefaultPasskeyFinishResult> {
     val backend = KotlinxKtorPasskeyBackend(
         httpClient = httpClient,
@@ -36,13 +37,16 @@ suspend fun authenticateWithDefaultContract(
     return PasskeyFlow(passkeyClient).signIn(
         input = AuthenticationStartPayload(
             rpId = "example.com",
-            origin = "https://example.com",
+            origin = expectedOrigin,
             userName = "alice",
         ),
         backend = backend.authenticationBackend(),
     )
 }
 ```
+
+Pass the HTTPS relying-party origin on iOS. On Android, pass the `android:apk-key-hash:...`
+origin derived from the installed app's signing certificate.
 
 The default paths are registration/authentication `start` and `finish` below `/webauthn`. Supply
 `KtorPasskeyRoutes` when only the paths differ.

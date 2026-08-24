@@ -11,8 +11,8 @@ Standards-first Kotlin Multiplatform building blocks for WebAuthn and passkey in
 
 This project helps teams implement passwordless login without rebuilding the hardest parts from scratch. It gives you typed protocol models, strict validation, backend ceremony services, platform passkey clients, and optional transport/adaptation modules that stay close to the WebAuthn specification.
 
-Start with the [mobile-first public documentation](./docs/site/content/index.md) for Android, iOS,
-Compose, full-stack examples, and generated API reference entry points.
+Start with the [mobile-first public documentation](https://szijpeter.github.io/webauthn-kotlin-multiplatform/) for
+Android, iOS, Compose, full-stack examples, and generated API reference entry points.
 
 ## Why This Project Exists
 

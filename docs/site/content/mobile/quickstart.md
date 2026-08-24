@@ -73,6 +73,7 @@ The backend start response supplies WebAuthn options. The platform prompt return
 suspend fun authenticateWithDefaultContract(
     httpClient: HttpClient,
     passkeyClient: PasskeyClient,
+    expectedOrigin: String,
 ): CeremonyResult<DefaultPasskeyFinishResult> {
     val backend = KotlinxKtorPasskeyBackend(
         httpClient = httpClient,
@@ -81,7 +82,7 @@ suspend fun authenticateWithDefaultContract(
     return PasskeyFlow(passkeyClient).signIn(
         input = AuthenticationStartPayload(
             rpId = "example.com",
-            origin = "https://example.com",
+            origin = expectedOrigin,
             userName = "alice",
         ),
         backend = backend.authenticationBackend(),
@@ -90,6 +91,8 @@ suspend fun authenticateWithDefaultContract(
 ```
 
 Imports are omitted from the focused excerpt; the source-linked example is compiled in this repository.
+Pass the HTTPS relying-party origin for iOS. On Android, pass the `android:apk-key-hash:...` origin
+derived from the installed app's signing certificate; do not reuse the web origin.
 
 ## 4. Handle results deliberately
 

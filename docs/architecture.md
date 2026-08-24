@@ -197,7 +197,9 @@ reusable library architecture.
 The public documentation pipeline is a distribution layer over those sources. `docsSiteStage`
 selects and rewrites allowlisted content, the root Dokka task aggregates published modules, and
 `docsSiteBuild` assembles both into one validated static site. Generated site files remain build
-artifacts; authored content and the source allowlist stay reviewable in the repository.
+artifacts; authored content and the source allowlist stay reviewable in the repository. The root
+build owns these tasks and resolves their scripts and inputs from the repository root, so their
+behavior does not depend on the directory from which Gradle was invoked.
 
 ## Dependency rules
 

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import html.parser
 import json
 import os
@@ -43,16 +44,26 @@ LINK_PATTERN = re.compile(
     r"(?P<prefix>!?\[[^\]]*\]\()(?P<target>[^)\s]+)(?P<suffix>(?:\s+[^)]*)?\))",
 )
 EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel", "data", "javascript"}
+UNRESOLVED_TOKEN_PATTERN = re.compile(r"@@[A-Z][A-Z0-9_]*@@")
+EXPECTED_ANDROID_SUPPORT = {
+    "androidMinSdk": "26",
+    "androidCompileSdk": "37",
+    "androidPrfMinSdk": "30",
+    "androidPrfCompileSdk": "37",
+    "sampleMinSdk": "30",
+}
 
 
 def run(*args: str) -> str:
     return subprocess.check_output(args, cwd=ROOT, text=True).strip()
 
 
+@functools.cache
 def source_ref() -> str:
     return os.environ.get("GITHUB_SHA") or run("git", "rev-parse", "HEAD")
 
 
+@functools.cache
 def latest_stable_version() -> str:
     tags = run("git", "tag", "--list", "v[0-9]*").splitlines()
     versions: list[tuple[tuple[int, ...], str]] = []
@@ -235,7 +246,7 @@ def require_number(path: str, pattern: str, label: str) -> str:
     return match.group(1)
 
 
-def write_platform_support() -> dict[str, str]:
+def platform_support_values() -> dict[str, str]:
     values = {
         "androidMinSdk": require_number(
             "client/webauthn-client-platform/build.gradle.kts",
@@ -246,6 +257,16 @@ def write_platform_support() -> dict[str, str]:
             "client/webauthn-client-platform/build.gradle.kts",
             r"compileSdk\s*=\s*(\d+)",
             "Android compile SDK",
+        ),
+        "androidPrfMinSdk": require_number(
+            "client/webauthn-client-prf-crypto/build.gradle.kts",
+            r"minSdk\s*=\s*(\d+)",
+            "Android PRF minimum SDK",
+        ),
+        "androidPrfCompileSdk": require_number(
+            "client/webauthn-client-prf-crypto/build.gradle.kts",
+            r"compileSdk\s*=\s*(\d+)",
+            "Android PRF compile SDK",
         ),
         "sampleMinSdk": require_number(
             "sample/compose-passkey-android/build.gradle.kts",
@@ -263,6 +284,18 @@ def write_platform_support() -> dict[str, str]:
             "iOS PRF minimum",
         ),
     }
+    mismatches = {
+        key: {"expected": expected, "actual": values[key]}
+        for key, expected in EXPECTED_ANDROID_SUPPORT.items()
+        if values[key] != expected
+    }
+    if mismatches:
+        raise ValueError(f"Android support expectations changed; review public documentation: {mismatches}")
+    return values
+
+
+def write_platform_support() -> dict[str, str]:
+    values = platform_support_values()
     platform_build = (ROOT / "client/webauthn-client-platform/build.gradle.kts").read_text()
     for target in ("iosArm64()", "iosSimulatorArm64()"):
         if target not in platform_build:
@@ -277,9 +310,10 @@ def write_platform_support() -> dict[str, str]:
         "",
         "| Surface | Current support | Evidence boundary |",
         "| --- | --- | --- |",
-        f"| Android client libraries | `minSdk {values['androidMinSdk']}`, compiled with SDK {values['androidCompileSdk']} | Compilation and host tests do not prove a provider-backed ceremony |",
+        f"| Base Android passkey client | `minSdk {values['androidMinSdk']}`, compiled with SDK {values['androidCompileSdk']} | Compilation and host tests do not prove a provider-backed ceremony |",
+        f"| Optional Android PRF crypto | `minSdk {values['androidPrfMinSdk']}`, compiled with SDK {values['androidPrfCompileSdk']} | This optional module has a higher minimum than the base client |",
         f"| Compose PRF sample | `minSdk {values['sampleMinSdk']}` | The sample minimum is not the base library minimum |",
-        f"| iOS targets | `iosArm64`, `iosSimulatorArm64`; no `iosX64` | Simulator compilation does not prove device entitlements or iCloud Keychain behavior |",
+        "| iOS targets | `iosArm64`, `iosSimulatorArm64`; no `iosX64` | Simulator compilation does not prove device entitlements or iCloud Keychain behavior |",
         f"| Committed iOS host | iOS {values['iosSampleTarget']} deployment target | Optional APIs can require newer systems |",
         f"| iOS PRF | iOS {values['iosPrfMinimum']}+ | Runtime capability still must be checked |",
         "",
@@ -354,10 +388,10 @@ def install_api() -> None:
 
 def remove_omitted_internal_dokka_links(destination: Path) -> None:
     """Render a known internal serializer annotation as text, not a broken public symbol link."""
-    link = (
-        '<a href="../../../../core/webauthn-json-kotlinx/dev.webauthn.serialization/'
-        '-null-as-empty-credential-descriptor-list-serializer/index.html">'
-        'NullAsEmptyCredentialDescriptorListSerializer::class</a>'
+    link = re.compile(
+        r'<a href="(?:\.\./)+core/webauthn-json-kotlinx/dev\.webauthn\.serialization/'
+        r'-null-as-empty-credential-descriptor-list-serializer/index\.html">'
+        r'NullAsEmptyCredentialDescriptorListSerializer::class</a>',
     )
     replacement = (
         '<span data-omitted-internal-symbol="true">'
@@ -366,9 +400,9 @@ def remove_omitted_internal_dokka_links(destination: Path) -> None:
     replacements = 0
     for path in destination.rglob("*.html"):
         content = path.read_text()
-        count = content.count(link)
+        content, count = link.subn(replacement, content)
         if count:
-            path.write_text(content.replace(link, replacement))
+            path.write_text(content)
             replacements += count
     if replacements != 2:
         raise ValueError(
@@ -421,6 +455,10 @@ def check_html() -> None:
     parsed_files = {path.resolve(): parse_html(path) for path in html_files}
     failures: list[str] = []
     checked = 0
+    for source in html_files:
+        unresolved = sorted(set(UNRESOLVED_TOKEN_PATTERN.findall(source.read_text(errors="replace"))))
+        for token in unresolved:
+            failures.append(f"{source.relative_to(SITE_ROOT)}: unresolved token {token}")
     for source, parser in parsed_files.items():
         for attribute, target in parser.targets:
             parsed = urlsplit(target)

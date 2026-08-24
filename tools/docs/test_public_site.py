@@ -7,6 +7,7 @@ import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 SCRIPT = Path(__file__).with_name("public_site.py")
@@ -71,6 +72,52 @@ class PublicSiteTest(unittest.TestCase):
             f"release={stable_version} artifact={artifact_version} coordinate={artifact_version}",
             rendered,
         )
+
+    def test_platform_support_values_keep_base_and_prf_minimums_distinct(self) -> None:
+        values = public_site.platform_support_values()
+
+        self.assertEqual("26", values["androidMinSdk"])
+        self.assertEqual("37", values["androidCompileSdk"])
+        self.assertEqual("30", values["androidPrfMinSdk"])
+        self.assertEqual("37", values["androidPrfCompileSdk"])
+        self.assertEqual("30", values["sampleMinSdk"])
+
+    def test_dokka_omitted_link_matches_different_relative_depths(self) -> None:
+        suffix = (
+            "core/webauthn-json-kotlinx/dev.webauthn.serialization/"
+            "-null-as-empty-credential-descriptor-list-serializer/index.html"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary)
+            first = destination / "first.html"
+            second = destination / "nested" / "second.html"
+            second.parent.mkdir()
+            first.write_text(
+                f'<a href="../../{suffix}">NullAsEmptyCredentialDescriptorListSerializer::class</a>',
+            )
+            second.write_text(
+                f'<a href="../../../../../{suffix}">NullAsEmptyCredentialDescriptorListSerializer::class</a>',
+            )
+
+            public_site.remove_omitted_internal_dokka_links(destination)
+
+            self.assertIn('data-omitted-internal-symbol="true"', first.read_text())
+            self.assertIn('data-omitted-internal-symbol="true"', second.read_text())
+
+    def test_html_check_rejects_unresolved_release_tokens(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            site_root = base / "site"
+            report_root = base / "reports"
+            site_root.mkdir()
+            (site_root / "index.html").write_text("<html><body>@@STABLE_VERSION@@</body></html>")
+
+            with (
+                mock.patch.object(public_site, "SITE_ROOT", site_root),
+                mock.patch.object(public_site, "REPORT_ROOT", report_root),
+                self.assertRaisesRegex(ValueError, "unresolved token @@STABLE_VERSION@@"),
+            ):
+                public_site.check_html()
 
 
 if __name__ == "__main__":

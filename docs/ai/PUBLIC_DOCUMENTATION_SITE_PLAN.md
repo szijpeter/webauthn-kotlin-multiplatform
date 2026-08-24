@@ -77,8 +77,9 @@ All initial content and acceptance tests must reflect the current `origin/main` 
 
 ### 4.2 Android boundaries to state explicitly
 
-- Published Android client libraries currently use `minSdk 26` and `compileSdk 37`.
-- The Compose PRF sample uses `minSdk 30`; that sample requirement must not be presented as the minimum for the base client library.
+- The base Android passkey client currently uses `minSdk 26` and `compileSdk 37`.
+- The optional published `webauthn-client-prf-crypto` module uses `minSdk 30` and `compileSdk 37`.
+- The Compose PRF sample also uses `minSdk 30`; neither PRF minimum may be presented as the minimum for the base client library.
 - The host application must include a Credential Manager provider, normally `androidx.credentials:credentials-play-services-auth`.
 - The library owns the Credential Manager bridge but deliberately does not select the provider runtime for the host application.
 - Android app origins are tied to package identity and the signing certificate. Domain setup must explain `/.well-known/assetlinks.json`, package name, and SHA-256 fingerprint alignment.

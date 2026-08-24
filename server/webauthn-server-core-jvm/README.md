@@ -74,7 +74,8 @@ flowchart LR
     KTOR["webauthn-server-ktor (optional)"] --> SVC["webauthn-server-core-jvm"]
     SVC --> CORE["webauthn-core"]
     SVC --> PROTOCOL["webauthn-protocol"]
-    SVC --> JSON["webauthn-json-api decoder"]
+    SVC --> JSON_API["webauthn-json-api<br/>codec interface"]
+    JSON_KOTLINX["webauthn-json-kotlinx<br/>KotlinxWebAuthnJsonCodec"] --> JSON_API
     SVC --> CRYPTO["webauthn-server-jvm-crypto or custom crypto-api implementation"]
     SVC --> STORE["Challenge, credential, and account store contracts"]
     IMPLEMENTATION["In-memory or Exposed store implementations"] --> STORE

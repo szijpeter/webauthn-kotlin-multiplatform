@@ -6,6 +6,9 @@ Last updated: 2026-08-24
 
 ## Status Legend
 
+Maturity labels describe implementation readiness, not compatibility guarantees. All published artifacts
+remain subject to the repository's coordinated pre-1.0 compatibility policy.
+
 - `Production-leaning`: core behavior implemented and tested; hardening continues.
 - `Beta`: usable for development/testing; behavior surface still evolving.
 - `Scaffold`: structural/API foundation in place; significant implementation remains.

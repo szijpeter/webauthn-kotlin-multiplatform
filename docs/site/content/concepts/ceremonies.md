@@ -12,12 +12,13 @@ sequenceDiagram
     participant OS as Platform credential API
     participant Auth as Authenticator
     App->>Server: registration/start(account context)
-    Server-->>App: creation options + opaque state
+    Server->>Server: store short-lived challenge state
+    Server-->>App: creation options
     App->>OS: create credential(options)
     OS->>Auth: user verification and key creation
     Auth-->>OS: public-key credential response
     OS-->>App: raw registration response
-    App->>Server: registration/finish(raw response + state)
+    App->>Server: registration/finish(raw response)
     Server-->>App: accepted account result or rejection
 ```
 
@@ -29,7 +30,7 @@ The server creates an assertion challenge. The authenticator signs authenticator
 
 ## Identified versus discoverable
 
-An identified flow starts with an account hint and normally restricts `allowCredentials`. A discoverable flow starts without a user name, lets the authenticator select a resident credential, and resolves the authoritative account after receiving the credential. Neither mode permits the client to assert account ownership.
+An identified flow starts with an account hint and normally restricts `allowCredentials`. A discoverable flow starts without a username, lets the authenticator select a resident credential, and resolves the authoritative account after receiving the credential. Neither mode permits the client to assert account ownership.
 
 ## Cancellation and retries
 

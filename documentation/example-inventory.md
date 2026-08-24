@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **134**
+Managed blocks: **135**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -101,7 +101,8 @@ Managed blocks: **134**
 | site-mobile-quickstart-kotlin-4 | docs/site/content/mobile/quickstart.md:72 | 3. Connect the default backend contract | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/KtorClientExample.kt#kotlinx-ktor-backend | compile |  |
 | site-troubleshooting-flow-1 | docs/site/content/mobile/troubleshooting.md:8 | Boundary-first flow | mermaid | consumer | illustrative | Markdown illustration | illustrative | Decision flow for locating a mobile passkey failure |
 | site-contributing-bash-1 | docs/site/content/project/contributing.md:8 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
-| site-contributing-bash-2 | docs/site/content/project/contributing.md:21 | Documentation contract | bash | contributor | markdown | Markdown block | syntax |  |
+| site-contributing-bash-2 | docs/site/content/project/contributing.md:16 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
+| site-contributing-bash-3 | docs/site/content/project/contributing.md:29 | Documentation contract | bash | contributor | markdown | Markdown block | syntax |  |
 | site-architecture-1 | docs/site/content/reference/architecture.md:6 | Architecture | mermaid | consumer | illustrative | Markdown illustration | illustrative | Public module-layer architecture with mobile-first reading order |
 | docs-unused-return-value-checker-bash-1 | docs/unused-return-value-checker.md:20 | Audit coverage | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-wiki-quality-and-release-bash-1 | docs/wiki/quality-and-release.md:12 | Default Quality Gates | bash | contributor | markdown | Markdown block | syntax |  |

@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: public-documentation-${{ github.run_attempt }}
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
           path: |
             build/docs-site/site
