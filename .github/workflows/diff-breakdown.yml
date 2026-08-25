@@ -1,0 +1,34 @@
+name: Diff Breakdown
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: diff-breakdown-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  breakdown:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # This workflow is privileged so it can update fork PR comments. The
+      # action is pinned to an immutable commit, reads configuration from the
+      # exact PR base commit, and never checks out or executes the PR head.
+      - name: Build diff breakdown
+        uses: szijpeter/diff-breakdown@bc613f9011374a65acc55202084142bce3e3cf6a # v0.1.0
+        with:
+          token: ${{ github.token }}
+          pr-number: ${{ github.event.pull_request.number || inputs.pr_number }}

@@ -1,0 +1,45 @@
+$schema: https://raw.githubusercontent.com/szijpeter/diff-breakdown/main/diff-breakdown.schema.json
+version: 1
+title: WebAuthn diff breakdown
+marker: "<!-- webauthn-diff-breakdown:v1 -->"
+presets: [kotlin-gradle, java-gradle, swift-package]
+
+modules:
+  fallback: false
+  roots:
+    - "core/*"
+    - "client/*"
+    - "server/*"
+
+generated:
+  include:
+    - "documentation/example-inventory.md"
+    - "spec-cache/**"
+  exclude:
+    - "spec-cache/README.md"
+
+categories:
+  - id: test
+    label: Tests / verification
+    priority: 200
+    include:
+      - "documentation/consumer-smoke/**"
+
+  - id: tooling
+    label: Build / CI / repository tooling
+    priority: 150
+    include:
+      - ".gemini/**"
+      - ".kiro/**"
+      - "documentation/tooling/**"
+
+  - id: dependencies
+    label: Dependencies / publishing metadata
+    priority: 140
+    include:
+      - "platform/**"
+      - "gradle/dependency-locks/**"
+      - "gradle/libs.versions.toml"
+      - "gradle/verification-metadata.xml"
+
+views: [composition, status, modules, platforms, api]
