@@ -28,7 +28,7 @@ jobs:
       # action is pinned to an immutable commit, reads configuration from the
       # exact PR base commit, and never checks out or executes the PR head.
       - name: Build diff breakdown
-        uses: szijpeter/diff-breakdown@bc613f9011374a65acc55202084142bce3e3cf6a # v0.1.0
+        uses: szijpeter/diff-breakdown@d42c30f746cd204404b321fbae10693d82cd3ce7 # v0.2.0
         with:
           token: ${{ github.token }}
           pr-number: ${{ github.event.pull_request.number || inputs.pr_number }}
