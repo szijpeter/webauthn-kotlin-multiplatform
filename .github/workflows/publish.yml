@@ -11,12 +11,27 @@ on:
         options:
           - publish-only
           - publish-and-release
+          - finalize-release
       version_name:
-        description: "Optional VERSION_NAME override (for example x.y.z)"
+        description: "Optional VERSION_NAME override (required for finalize-release)"
+        required: false
+        type: string
+      swift_device_qualified:
+        description: "A physical iPhone passed the documented Swift release qualification"
+        required: true
+        default: false
+        type: boolean
+      swift_device_qualification_evidence:
+        description: "HTTPS URL of the recorded physical-iPhone evidence for this exact source commit"
+        required: false
+        type: string
+      recovery_run_id:
+        description: "Original publish workflow run ID (required for finalize-release)"
         required: false
         type: string
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -28,8 +43,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     outputs:
       resolved_version: ${{ steps.resolve_version.outputs.resolved_version }}
-    runs-on: macos-latest
-    timeout-minutes: 45
+    runs-on: macos-26
+    timeout-minutes: 75
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      WEBAUTHN_EXPECTED_XCODE_VERSION: '26.6'
     steps:
       - uses: actions/checkout@v7
         with:
@@ -40,99 +58,202 @@ jobs:
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: Assert release Xcode
+        run: |
+          ACTUAL_XCODE_VERSION="$(xcodebuild -version | awk 'NR == 1 { print $2 }')"
+          test "$ACTUAL_XCODE_VERSION" = "$WEBAUTHN_EXPECTED_XCODE_VERSION" || {
+            echo "Expected Xcode $WEBAUTHN_EXPECTED_XCODE_VERSION, found $ACTUAL_XCODE_VERSION."
+            exit 1
+          }
+
+      - name: Resolve and guard release inputs
+        id: resolve_version
+        env:
+          VERSION_NAME_INPUT: ${{ inputs.version_name }}
+          RELEASE_MODE_INPUT: ${{ inputs.release_mode }}
+          SWIFT_DEVICE_QUALIFIED: ${{ inputs.swift_device_qualified }}
+          SWIFT_DEVICE_QUALIFICATION_EVIDENCE: ${{ inputs.swift_device_qualification_evidence }}
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+        run: |
+          RESOLVED_VERSION="$VERSION_NAME_INPUT"
+          if [ -z "$RESOLVED_VERSION" ]; then
+            RESOLVED_VERSION="$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)"
+          fi
+          test -n "$RESOLVED_VERSION" || {
+            echo "Unable to resolve VERSION_NAME."
+            exit 1
+          }
+          if [ "$RELEASE_MODE_INPUT" != "publish-only" ] && [[ "$RESOLVED_VERSION" == *SNAPSHOT* ]]; then
+            echo "Refusing a Swift release for snapshot version: $RESOLVED_VERSION"
+            exit 1
+          fi
+          if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ] && [ "$SWIFT_DEVICE_QUALIFIED" != "true" ]; then
+            echo "Physical iPhone qualification is required for a Swift release."
+            exit 1
+          fi
+          if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ] && [[ ! "$SWIFT_DEVICE_QUALIFICATION_EVIDENCE" =~ ^https://[^[:space:]]+$ ]]; then
+            echo "publish-and-release requires an HTTPS physical-device qualification evidence URL."
+            exit 1
+          fi
+          if [ "$RELEASE_MODE_INPUT" = "finalize-release" ]; then
+            test -n "$VERSION_NAME_INPUT" || {
+              echo "finalize-release requires an explicit version_name."
+              exit 1
+            }
+            [[ "$RECOVERY_RUN_ID" =~ ^[0-9]+$ ]] || {
+              echo "finalize-release requires the numeric run ID that produced the original artifacts."
+              exit 1
+            }
+          elif [ -n "$RECOVERY_RUN_ID" ]; then
+            echo "recovery_run_id is valid only with finalize-release."
+            exit 1
+          fi
+          echo "Resolved VERSION_NAME=$RESOLVED_VERSION"
+          echo "resolved_version=$RESOLVED_VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Validate Maven Central secrets
+        if: ${{ inputs.release_mode != 'finalize-release' }}
         env:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: |
-          test -n "$MAVEN_CENTRAL_USERNAME" || (echo "Missing secret: MAVEN_CENTRAL_USERNAME" && exit 1)
-          test -n "$MAVEN_CENTRAL_PASSWORD" || (echo "Missing secret: MAVEN_CENTRAL_PASSWORD" && exit 1)
-          test -n "$SIGNING_KEY" || (echo "Missing secret: SIGNING_KEY" && exit 1)
-          test -n "$SIGNING_KEY_PASSWORD" || (echo "Missing secret: SIGNING_KEY_PASSWORD" && exit 1)
+          test -n "$MAVEN_CENTRAL_USERNAME" || { echo "Missing secret: MAVEN_CENTRAL_USERNAME"; exit 1; }
+          test -n "$MAVEN_CENTRAL_PASSWORD" || { echo "Missing secret: MAVEN_CENTRAL_PASSWORD"; exit 1; }
+          test -n "$SIGNING_KEY" || { echo "Missing secret: SIGNING_KEY"; exit 1; }
+          test -n "$SIGNING_KEY_PASSWORD" || { echo "Missing secret: SIGNING_KEY_PASSWORD"; exit 1; }
 
-      - name: Guard release mode against snapshot versions
-        id: resolve_version
-        env:
-          VERSION_NAME_INPUT: ${{ inputs.version_name }}
-          RELEASE_MODE_INPUT: ${{ inputs.release_mode }}
-        run: |
-          RESOLVED_VERSION="$VERSION_NAME_INPUT"
-          if [ -z "$RESOLVED_VERSION" ]; then
-            RESOLVED_VERSION="$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)"
-          fi
-
-          test -n "$RESOLVED_VERSION" || (echo "Unable to resolve VERSION_NAME" && exit 1)
-          echo "Resolved VERSION_NAME=$RESOLVED_VERSION"
-          echo "resolved_version=$RESOLVED_VERSION" >> "$GITHUB_OUTPUT"
-
-          if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ] && [[ "$RESOLVED_VERSION" == *SNAPSHOT* ]]; then
-            echo "Refusing publish-and-release for SNAPSHOT version: $RESOLVED_VERSION"
-            exit 1
-          fi
-
-      - name: Validate curated release notes
+      - name: Prepare all Swift release inputs
         if: ${{ inputs.release_mode == 'publish-and-release' }}
         env:
           RELEASE_VERSION: ${{ steps.resolve_version.outputs.resolved_version }}
+          SWIFT_DEVICE_QUALIFICATION_EVIDENCE: ${{ inputs.swift_device_qualification_evidence }}
         run: |
+          SWIFT_RELEASE_DIR="$RUNNER_TEMP/swift-release"
+          mkdir -p "$SWIFT_RELEASE_DIR"
           bash tools/agent/extract-release-notes.sh \
             "$RELEASE_VERSION" \
             CHANGELOG.md \
-            "$RUNNER_TEMP/release-notes.md"
+            "$SWIFT_RELEASE_DIR/release-notes.md"
+          tools/swift/prepare-release.sh "$RELEASE_VERSION" "$SWIFT_RELEASE_DIR"
+          jq -n \
+            --arg version "$RELEASE_VERSION" \
+            --arg sourceCommit "$GITHUB_SHA" \
+            --arg qualificationEvidence "$SWIFT_DEVICE_QUALIFICATION_EVIDENCE" \
+            --arg releaseWorkflowRun "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            '{schemaVersion: 1, version: $version, sourceCommit: $sourceCommit, physicalDeviceQualified: true, qualificationEvidence: $qualificationEvidence, releaseWorkflowRun: $releaseWorkflowRun}' \
+            > "$SWIFT_RELEASE_DIR/release-metadata.json"
+          python3 tools/swift/reconcile_release.py --validate-only "$SWIFT_RELEASE_DIR"
+
+      - name: Restore original Swift release inputs
+        if: ${{ inputs.release_mode == 'finalize-release' }}
+        uses: actions/download-artifact@v8
+        with:
+          name: swift-package-release
+          path: ${{ runner.temp }}/swift-release
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.recovery_run_id }}
+
+      - name: Validate recovered Swift release inputs
+        if: ${{ inputs.release_mode == 'finalize-release' }}
+        env:
+          RELEASE_VERSION: ${{ steps.resolve_version.outputs.resolved_version }}
+        run: |
+          python3 tools/swift/reconcile_release.py --validate-only "$RUNNER_TEMP/swift-release"
+          test "$(jq -r .version "$RUNNER_TEMP/swift-release/release-metadata.json")" = "$RELEASE_VERSION" || {
+            echo "Recovered artifacts belong to another version."
+            exit 1
+          }
+
+      - name: Preflight empty GitHub release target
+        if: ${{ inputs.release_mode == 'publish-and-release' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 tools/swift/reconcile_release.py \
+            --require-empty \
+            --repository "$GITHUB_REPOSITORY" \
+            "$RUNNER_TEMP/swift-release"
+
+      - name: Retain exact Swift release inputs for recovery
+        if: ${{ inputs.release_mode != 'publish-only' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: swift-package-release
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/swift-release/Package.swift
+            ${{ runner.temp }}/swift-release/WebAuthnBridge.xcframework.zip
+            ${{ runner.temp }}/swift-release/WebAuthnBridge.xcframework.zip.sha256
+            ${{ runner.temp }}/swift-release/release-notes.md
+            ${{ runner.temp }}/swift-release/release-metadata.json
+
+      - name: Build and verify Maven publication locally
+        if: ${{ inputs.release_mode != 'finalize-release' }}
+        env:
+          RELEASE_VERSION: ${{ steps.resolve_version.outputs.resolved_version }}
+          VERSION_NAME_OVERRIDE: ${{ steps.resolve_version.outputs.resolved_version }}
+        run: |
+          ./gradlew publishToMavenLocal \
+            -PVERSION_NAME="$RELEASE_VERSION" \
+            -PsignAllPublications=false \
+            --stacktrace
+          bash tools/agent/check-published-consumer-smoke.sh
 
       - name: Publish to Maven Central
+        if: ${{ inputs.release_mode != 'finalize-release' }}
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          VERSION_NAME_INPUT: ${{ inputs.version_name }}
+          RELEASE_VERSION: ${{ steps.resolve_version.outputs.resolved_version }}
           RELEASE_MODE_INPUT: ${{ inputs.release_mode }}
         run: |
-          VERSION_ARG=""
-          if [ -n "$VERSION_NAME_INPUT" ]; then
-            VERSION_ARG="-PVERSION_NAME=$VERSION_NAME_INPUT"
-          fi
-
           if [ "$RELEASE_MODE_INPUT" = "publish-and-release" ]; then
-            ./gradlew publishAndReleaseToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
+            ./gradlew publishAndReleaseToMavenCentral \
+              --no-daemon \
+              -PVERSION_NAME="$RELEASE_VERSION"
           else
-            ./gradlew publishToMavenCentral --no-daemon ${VERSION_ARG:+"$VERSION_ARG"}
+            ./gradlew publishToMavenCentral \
+              --no-daemon \
+              -PVERSION_NAME="$RELEASE_VERSION"
           fi
 
   github-release:
-    if: ${{ inputs.release_mode == 'publish-and-release' }}
+    if: ${{ inputs.release_mode != 'publish-only' }}
     needs: [publish]
     permissions:
+      actions: read
       contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      WEBAUTHN_EXPECTED_XCODE_VERSION: '26.6'
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - name: Extract curated release notes
-        env:
-          RELEASE_VERSION: ${{ needs.publish.outputs.resolved_version }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: swift-package-release
+          path: ${{ runner.temp }}/swift-release
+      - name: Install pinned XcodeGen
         run: |
-          bash tools/agent/extract-release-notes.sh \
-            "$RELEASE_VERSION" \
-            CHANGELOG.md \
-            "$RUNNER_TEMP/release-notes.md"
-      - name: Create GitHub release
+          tools/swift/install-xcodegen.sh "$RUNNER_TEMP/xcodegen"
+          echo "$RUNNER_TEMP/xcodegen/xcodegen/bin" >> "$GITHUB_PATH"
+      - name: Reconcile and verify GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v${{ needs.publish.outputs.resolved_version }}
         run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release $RELEASE_TAG already exists; skipping."
-            exit 0
-          fi
-
-          gh release create "$RELEASE_TAG" \
-            --target "$GITHUB_SHA" \
-            --title "$RELEASE_TAG" \
-            --notes-file "$RUNNER_TEMP/release-notes.md"
+          python3 tools/swift/reconcile_release.py \
+            --repository "$GITHUB_REPOSITORY" \
+            "$RUNNER_TEMP/swift-release"
+      - name: Clean external Swift package consumer smoke
+        env:
+          RELEASE_VERSION: ${{ needs.publish.outputs.resolved_version }}
+        run: tools/swift/check-release-consumer.sh "$RELEASE_VERSION"

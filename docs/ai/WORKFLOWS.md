@@ -127,5 +127,6 @@ bash tools/agent/check-published-consumer-smoke.sh
 
 On a workstation without a release signing key, use the credential-free Maven Local preflight documented in `docs/MAVEN_CENTRAL.md`; the approval-gated live workflow must still sign every publication.
 
-4. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`. Its Central job has read-only repository access and no persisted Git credentials; only the post-publication GitHub Release job receives `contents:write`.
-5. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
+4. For a live release, complete the physical-iPhone qualification, retain its HTTPS evidence URL for the exact source commit, and use `.github/workflows/publish.yml` via `workflow_dispatch` with both qualification inputs. Its Central job has read-only repository access and no persisted Git credentials; only the post-publication GitHub Release job receives `contents:write` to create or reconcile the detached checksum-pinned Swift package manifest commit, coordinated tag/release, and exact Swift assets after Central succeeds.
+5. If Central succeeds but GitHub finalization fails, use `finalize-release` with the exact version and original workflow run ID. This recovery restores the retained immutable inputs and never republishes Maven artifacts.
+6. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
