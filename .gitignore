@@ -49,6 +49,8 @@ temp.server/node_modules/
 
 # Local Python virtual environments
 .venv/
+__pycache__/
+*.py[cod]
 
 # Local standards/spec cache artifacts (keep cache docs tracked)
 spec-cache/**/*

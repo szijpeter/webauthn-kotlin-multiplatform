@@ -1,0 +1,29 @@
+WebAuthn Swift SDK third-party notices
+======================================
+
+The WebAuthnBridge static framework contains code from the components listed
+below. Versions reflect the resolved iOS release compile graph for this
+distribution.
+
+Apache License 2.0 components
+-----------------------------
+
+The Apache License 2.0 text is distributed as LICENSE next to this file.
+
+- Kotlin and the Kotlin/Native runtime 2.4.10
+  https://github.com/JetBrains/kotlin
+- SKIE runtime 0.10.14
+  https://github.com/touchlab/SKIE
+- KMMResult 1.9.3
+  https://github.com/a-sit-plus/KmmResult
+- kotlinx.coroutines 1.11.0
+  https://github.com/Kotlin/kotlinx.coroutines
+- kotlinx.atomicfu 0.32.1
+  https://github.com/Kotlin/kotlinx-atomicfu
+- kotlinx.serialization 1.11.0
+  https://github.com/Kotlin/kotlinx.serialization
+
+The Kotlin compiler distribution provides the following notice:
+
+  Kotlin Compiler
+  Copyright 2010-2024 JetBrains s.r.o and respective authors and developers
