@@ -56,6 +56,20 @@ class PrfCryptoClientTest {
     }
 
     @Test
+    fun deriveAes256Key_matchesSwiftParityVector() = runTest {
+        val session = PrfCrypto.createSession(
+            prfResults = AuthenticationExtensionsPRFValues(
+                first = Base64UrlBytes.fromBytes(ByteArray(32) { it.toByte() }),
+            ),
+            context = "webauthn-prf-parity-v1",
+            hkdfSalt = Base64UrlBytes.fromBytes(ByteArray(32) { (it + 32).toByte() }),
+        )
+
+        assertEquals("a7fb7d362417caf0", session.keyFingerprint)
+        session.clear()
+    }
+
+    @Test
     fun aesGcm_roundtrip_encryptDecrypt_succeeds() = runTest {
         val key = PrfCrypto.deriveAes256Key(bytes(1, 1, 1, 1), context = "roundtrip")
         val plaintext = Base64UrlBytes.fromBytes("hello-prf".encodeToByteArray())

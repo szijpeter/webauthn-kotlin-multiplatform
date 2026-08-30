@@ -1,0 +1,138 @@
+import Foundation
+import Swift
+import UIKit
+@preconcurrency import WebAuthnBridge
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum CapabilitySupport : Swift.String, Swift.Codable, Swift.Sendable {
+  case supported
+  case unsupported
+  case unknown
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum PasskeyCapabilityKind : Swift.String, Swift.Codable, Swift.Sendable {
+  case webAuthnExtension
+  case platform
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct PasskeyCapability : Swift.Hashable, Swift.Codable, Swift.Sendable {
+  public let kind: WebAuthn.PasskeyCapabilityKind
+  public let id: Swift.String
+  public init(kind: WebAuthn.PasskeyCapabilityKind, id: Swift.String)
+  public static let prf: WebAuthn.PasskeyCapability
+  public static let largeBlob: WebAuthn.PasskeyCapability
+  public static let securityKey: WebAuthn.PasskeyCapability
+  public static func == (a: WebAuthn.PasskeyCapability, b: WebAuthn.PasskeyCapability) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct PasskeyCapabilities : Swift.Equatable, Swift.Sendable {
+  public let support: [WebAuthn.PasskeyCapability : WebAuthn.CapabilitySupport]
+  public init(support: [WebAuthn.PasskeyCapability : WebAuthn.CapabilitySupport] = [:])
+  public func support(for capability: WebAuthn.PasskeyCapability) -> WebAuthn.CapabilitySupport
+  public func supports(_ capability: WebAuthn.PasskeyCapability) -> Swift.Bool
+  public var reportedCount: Swift.Int {
+    get
+  }
+  public static func == (a: WebAuthn.PasskeyCapabilities, b: WebAuthn.PasskeyCapabilities) -> Swift.Bool
+}
+@_hasMissingDesignatedInitializers @_Concurrency.MainActor final public class PasskeyClient {
+  public typealias PresentationAnchorProvider = @_Concurrency.MainActor @Sendable () -> UIKit.UIWindow?
+  @_Concurrency.MainActor public init(presentationAnchorProvider: @escaping WebAuthn.PasskeyClient.PresentationAnchorProvider)
+  @_Concurrency.MainActor convenience public init(presentationAnchor: UIKit.UIWindow)
+  @_Concurrency.MainActor final public func createCredential(optionsJSON: Foundation.Data) async throws -> Foundation.Data
+  @_Concurrency.MainActor final public func getAssertion(optionsJSON: Foundation.Data) async throws -> Foundation.Data
+  @_Concurrency.MainActor final public func capabilities() async throws -> WebAuthn.PasskeyCapabilities
+  @objc deinit
+}
+public enum PasskeyClientError : Swift.Error, Swift.Equatable, Foundation.LocalizedError, Swift.Sendable {
+  case userCancelled
+  case noCredential
+  case invalidOptions(message: Swift.String)
+  case platform(message: Swift.String)
+  case codec(message: Swift.String)
+  case invalidUTF8
+  case unavailablePresentationAnchor
+  case operationInProgress
+  case bridgeContract(message: Swift.String)
+  case sessionCleared
+  case crypto(message: Swift.String)
+  public var errorDescription: Swift.String? {
+    get
+  }
+  public static func == (a: WebAuthn.PasskeyClientError, b: WebAuthn.PasskeyClientError) -> Swift.Bool
+}
+public enum PrfOutputSelection : Swift.String, Swift.Sendable {
+  case first
+  case second
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct PrfResults : Swift.Equatable, Swift.Sendable {
+  public let first: Foundation.Data
+  public let second: Foundation.Data?
+  public init(first: Foundation.Data, second: Foundation.Data? = nil)
+  public static func == (a: WebAuthn.PrfResults, b: WebAuthn.PrfResults) -> Swift.Bool
+}
+public struct PrfAuthenticationResult : Swift.Sendable {
+  public let responseJSON: Foundation.Data
+  public let results: WebAuthn.PrfResults
+  public let session: WebAuthn.PrfCryptoSession
+  public init(responseJSON: Foundation.Data, results: WebAuthn.PrfResults, session: WebAuthn.PrfCryptoSession)
+}
+@_Concurrency.MainActor final public class PrfCryptoClient {
+  nonisolated public static let defaultContext: Swift.String
+  @_Concurrency.MainActor public init(passkeyClient: WebAuthn.PasskeyClient)
+  @_Concurrency.MainActor final public func authenticate(optionsJSON: Foundation.Data, firstSalt: Foundation.Data, secondSalt: Foundation.Data? = nil, context: Swift.String = PrfCryptoClient.defaultContext, hkdfSalt: Foundation.Data? = nil, outputSelection: WebAuthn.PrfOutputSelection = .first) async throws -> WebAuthn.PrfAuthenticationResult
+  @objc deinit
+}
+public struct PrfCiphertext : Swift.Equatable, Swift.Sendable {
+  public let nonce: Foundation.Data
+  public let ciphertext: Foundation.Data
+  public let authenticationTag: Foundation.Data
+  public let associatedData: Foundation.Data?
+  public init(nonce: Foundation.Data, ciphertext: Foundation.Data, authenticationTag: Foundation.Data, associatedData: Foundation.Data? = nil)
+  public static func == (a: WebAuthn.PrfCiphertext, b: WebAuthn.PrfCiphertext) -> Swift.Bool
+}
+@_hasMissingDesignatedInitializers public actor PrfCryptoSession {
+  nonisolated final public let keyFingerprint: Swift.String
+  nonisolated final public let context: Swift.String
+  @objc deinit
+  public var isCleared: Swift.Bool {
+    get async
+  }
+  public func encrypt(_ plaintext: Foundation.Data, associatedData: Foundation.Data? = nil) async throws -> WebAuthn.PrfCiphertext
+  public func decrypt(_ ciphertext: WebAuthn.PrfCiphertext) async throws -> Foundation.Data
+  public func clear() async
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
+    get
+  }
+}
+extension WebAuthn.CapabilitySupport : Swift.Equatable {}
+extension WebAuthn.CapabilitySupport : Swift.Hashable {}
+extension WebAuthn.CapabilitySupport : Swift.RawRepresentable {}
+extension WebAuthn.PasskeyCapabilityKind : Swift.Equatable {}
+extension WebAuthn.PasskeyCapabilityKind : Swift.Hashable {}
+extension WebAuthn.PasskeyCapabilityKind : Swift.RawRepresentable {}
+extension WebAuthn.PasskeyClient : Swift.Sendable {}
+extension WebAuthn.PrfOutputSelection : Swift.Equatable {}
+extension WebAuthn.PrfOutputSelection : Swift.Hashable {}
+extension WebAuthn.PrfOutputSelection : Swift.RawRepresentable {}
+extension WebAuthn.PrfCryptoClient : Swift.Sendable {}
