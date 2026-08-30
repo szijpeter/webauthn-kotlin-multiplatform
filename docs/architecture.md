@@ -34,7 +34,7 @@ flowchart LR
     USER([End user])
 
     subgraph APPLICATION["Reference passkey application"]
-        CLIENT["Client application<br/>webauthn-client-flow over client-core and an Android or iOS bridge"]
+        CLIENT["Client application<br/>Kotlin flow/Compose or the native Swift facade over Android/iOS bridges"]
         BACKEND["Relying-party backend<br/>webauthn-server-core-jvm plus optional adapters"]
         STORE[("Credential store")]
     end
@@ -85,11 +85,15 @@ no internal project dependencies without inventing an edge.
 classification. `webauthn-client-flow` owns application-neutral start/prompt/finish orchestration,
 opaque backend-state forwarding, and concurrency rejection. JSON, Android, iOS, Compose, PRF, and
 network modules build around those boundaries. Platform bridges use the neutral codec API only where
-an OS integration requires JSON and return byte-preserving raw responses.
+an OS integration requires JSON and return byte-preserving raw responses. The native `WebAuthn` Swift
+package is a Swift-owned source facade over a narrow internal XCFramework; generated Kotlin types do not
+belong in the public Swift API.
 
 <!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart TB
+    SWIFT["WebAuthn Swift package<br/>(native source facade)"]
+    SWIFT_BRIDGE["webauthn-client-swift-bridge<br/>(internal static XCFramework)"]
     COMPOSE["webauthn-client-compose"]
     PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
     JSON["webauthn-client-json-core"]
@@ -103,6 +107,13 @@ flowchart TB
     JSON_KOTLINX["webauthn-json-kotlinx"]
     RUNTIME["webauthn-runtime-core"]
     MODEL["webauthn-model"]
+
+    SWIFT --> SWIFT_BRIDGE
+    SWIFT_BRIDGE --> PLATFORM
+    SWIFT_BRIDGE --> JSON
+    SWIFT_BRIDGE --> PRF
+    SWIFT_BRIDGE --> JSON_KOTLINX
+    SWIFT_BRIDGE --> RUNTIME
 
     COMPOSE --> CLIENT_CORE
     COMPOSE --> FLOW
@@ -185,7 +196,9 @@ flowchart TB
 | --- | --- |
 | `platform:bom` | Aligns versions across the published WebAuthn artifacts as `webauthn-bom`. |
 | `platform:constraints` | Internal dependency constraints used by the build. It is not published. |
-| `sample:*` | Runnable backend, client, Android, iOS, Compose, and CLI examples. Samples are not published runtime libraries. |
+| `WebAuthn` Swift package | Swift source facade plus a checksum-pinned static XCFramework prepared for the first coordinated GitHub release; it is currently unreleased. |
+| `webauthn-client-swift-bridge` | Internal Kotlin/Native distribution module. Swift consumers must not import it directly. |
+| `sample:*` | Runnable backend, client, Android, native Swift, iOS, Compose, and CLI examples. Samples are not published runtime libraries. |
 | `documentation:*` | Documentation example and verification tooling. These projects are not part of the published SDK surface. |
 | `docs/site` | Mobile-first public documentation authored for the generated site. The staging task adds allowlisted repository guides, sample pages, module indexes, and Dokka output without changing the published SDK surface. |
 
@@ -210,6 +223,11 @@ behavior does not depend on the directory from which Gradle was invoked.
 - `webauthn-client-flow` depends only on client-core and keeps backend state/output generic; transport and UI modules build over it.
 - `webauthn-client-ktor` adapts flow backends to caller-owned Ktor transport without choosing an engine or serializer; `webauthn-client-ktor-kotlinx` is the opt-in default JSON contract.
 - `webauthn-client-defaults` selects the recommended Kotlinx/platform composition without changing the replaceable lower-level seams.
+- The public Swift facade owns Swift values, actors, errors, presentation-window semantics, and CryptoKit
+  PRF sessions; its internal bridge delegates protocol validation, JSON mapping, passkey ceremonies, and
+  PRF request/result mapping to the existing Kotlin modules through primitive boundary values. Deterministic
+  HKDF vectors keep the native and Kotlin derivation contracts aligned.
+- Coordinated Swift package tags and Maven artifacts use one version once published; the release-tag manifest is checksum-pinned to its matching XCFramework asset. Existing Kotlin-only tags are not Swift package releases.
 - `webauthn-server-core-jvm` remains framework-agnostic; Ktor and Exposed are adapters.
 - `webauthn-crypto-api` stays vendor-neutral; implementations belong behind the crypto boundary.
 - Optional adapters must not become hidden prerequisites of core modules.

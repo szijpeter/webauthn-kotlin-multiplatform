@@ -2,13 +2,13 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-08-19
+Last updated: 2026-08-31
 
 ## North-Star Exit Criteria
 
 1. Strong conformance coverage for core WebAuthn L3 semantics and major attestation paths.
 2. Hardened server and client flows with predictable failure behavior and test depth.
-3. Stable, documented module contracts for KMP consumers across JVM/Android/iOS.
+3. Stable, documented contracts for KMP and native Swift consumers across JVM/Android/iOS.
 4. High-signal CI and agent harness with low interruption and low waste.
 
 ## Immediate Execution Strategy (Client First)
@@ -67,6 +67,7 @@ Definition of done:
 1. API surface review and compatibility expectations by module maturity.
 2. Documentation quality pass for integration guidance.
 3. Sample app hardening for reference-quality usage.
+4. Maintain native Swift semantic parity and its compiler-generated API baseline alongside Kotlin BCV.
 
 Definition of done:
 
@@ -112,6 +113,7 @@ Definition of done:
 
 1. This cycle is research-only for new platform families; no new published client platform modules are planned.
 2. Keep current published client posture centered on Android and iOS bridge modules plus shared KMP core.
+   The native Swift facade is an iOS distribution path over that existing bridge, not a new platform family.
 3. Fits this repository now:
    - Web and desktop research/spikes using existing KMP core boundaries and sample-driven validation.
    - CLI experimentation remains valid as a sample-level proving ground.

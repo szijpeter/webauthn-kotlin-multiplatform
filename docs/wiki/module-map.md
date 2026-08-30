@@ -1,6 +1,6 @@
 # Module Map
 
-Last reviewed: 2026-08-19
+Last reviewed: 2026-08-31
 
 The repository uses a layered module model. Core protocol and validation concerns stay separate from crypto, server services, transport adapters, and platform clients.
 
@@ -15,6 +15,7 @@ Physical module folders mirror that model: `core/`, `client/`, `server/`, `platf
 | Crypto | `webauthn-crypto-api`, `webauthn-server-jvm-crypto` | Crypto contracts plus JVM attestation/signature implementation |
 | Server | `webauthn-server-core-jvm`, `webauthn-server-ktor`, `webauthn-server-store-exposed`, `webauthn-attestation-mds` | Ceremony services, route adapters, persistence adapters, optional trust metadata |
 | Client | `webauthn-client-core`, `webauthn-client-flow`, `webauthn-client-ktor`, `webauthn-client-ktor-kotlinx`, `webauthn-client-defaults`, `webauthn-client-json-core`, `webauthn-client-compose`, `webauthn-client-platform`, `webauthn-client-prf-crypto` | Raw client contract, state-free flow, codec-neutral Ktor transport, optional Kotlinx and batteries-included composition, platform bridges, Compose helpers, and PRF crypto helpers |
+| Native Swift distribution | `WebAuthn` source facade, internal `webauthn-client-swift-bridge` | Swift-owned API and checksum-pinned static XCFramework over the existing iOS client stack |
 
 ## Published Surface
 
@@ -28,6 +29,7 @@ The published artifact surface is coordinated as one release train. The main pub
 Not published:
 
 - `platform:constraints`
+- `webauthn-client-swift-bridge` as a direct artifact; it is bundled only behind the public Swift facade
 - `sample:*`
 - `build-logic`
 
@@ -59,6 +61,12 @@ Not published:
 ### Mixed app + backend adoption
 
 Use [`platform/bom/README.md`](../../platform/bom/README.md) to keep versions aligned across published artifacts.
+
+### Native Swift
+
+The native package is not released yet. For repository development, select `WebAuthn` through the local
+manifest and do not import the internal generated bridge. Coordinated Swift releases will use the same version
+as the matching Maven artifacts.
 
 ## Design Rules Worth Remembering
 

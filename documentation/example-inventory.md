@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **141**
+Managed blocks: **145**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -23,12 +23,12 @@ Managed blocks: **141**
 | contributing-bash-4 | CONTRIBUTING.md:39 | Required Local Checks | bash | contributor | markdown | Markdown block | syntax |  |
 | readme-mermaid-1 | README.md:53 | WebAuthn Core Concepts | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | readme-mermaid-2 | README.md:88 | Repository structure | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| readme-kotlin-1 | README.md:156 | Install | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
-| readme-kotlin-4 | README.md:172 | Recommended client setup | kotlin | consumer | configuration | documentation/consumer-smoke/defaults/build.gradle.kts.template#consumer-defaults-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-2 | README.md:206 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
-| readme-kotlin-3 | README.md:231 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
-| readme-bash-1 | README.md:252 | Compose your stack | bash | maintainer | markdown | Markdown block | syntax |  |
-| readme-bash-2 | README.md:345 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-kotlin-1 | README.md:170 | Kotlin and JVM | kotlin | consumer | configuration | documentation/consumer-smoke/repositories.gradle.kts#consumer-repositories | consumer-compile |  |
+| readme-kotlin-4 | README.md:186 | Recommended client setup | kotlin | consumer | configuration | documentation/consumer-smoke/defaults/build.gradle.kts.template#consumer-defaults-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-2 | README.md:220 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
+| readme-kotlin-3 | README.md:245 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
+| readme-bash-1 | README.md:267 | Compose your stack | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-bash-2 | README.md:362 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
 | client-webauthn-client-compose-readme-kotlin-1 | client/webauthn-client-compose/README.md:23 | How to use | kotlin | consumer | illustrative | Markdown illustration | illustrative | Snippet is intentionally abbreviated for the Compose integration guide |
 | client-webauthn-client-compose-readme-kotlin-2 | client/webauthn-client-compose/README.md:47 | How to use | kotlin | consumer | illustrative | Markdown illustration | illustrative | Snippet focuses on ownership and omits host-specific dependency injection |
 | client-webauthn-client-defaults-readme-kotlin-1 | client/webauthn-client-defaults/README.md:26 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/DefaultAndroidClientExample.kt#default-android-client | platform-compile |  |
@@ -80,8 +80,8 @@ Managed blocks: **141**
 | docs-ai-workflows-bash-11 | docs/ai/WORKFLOWS.md:123 | Release-Prep Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-architecture-mermaid-1 | docs/architecture.md:32 | Reference integration | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-2 | docs/architecture.md:58 | Shared foundation | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| docs-architecture-mermaid-3 | docs/architecture.md:91 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| docs-architecture-mermaid-4 | docs/architecture.md:155 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-3 | docs/architecture.md:93 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| docs-architecture-mermaid-4 | docs/architecture.md:166 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | site-maintenance-bash-1 | docs/site/README.md:21 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
 | site-maintenance-bash-2 | docs/site/README.md:28 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
 | site-maintenance-bash-3 | docs/site/README.md:35 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
@@ -149,3 +149,7 @@ Managed blocks: **141**
 | spec-cache-readme-bash-1 | spec-cache/README.md:26 | Update | bash | contributor | markdown | Markdown block | syntax |  |
 | swift-api-parity-bash-1 | swift/API_PARITY.md:38 | Public API compatibility | bash | contributor | markdown | Markdown block | syntax |  |
 | swift-api-parity-bash-2 | swift/API_PARITY.md:68 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
+| swift-readme-swift-1 | swift/README.md:32 | Create the client | swift | consumer | illustrative | Markdown illustration | illustrative | Host window lookup depends on application scene ownership |
+| swift-readme-swift-2 | swift/README.md:55 | Registration and authentication | swift | consumer | illustrative | Markdown illustration | illustrative | Backend methods are application-owned integration points |
+| swift-readme-swift-3 | swift/README.md:78 | Capabilities | swift | consumer | illustrative | Markdown illustration | illustrative | Capability branch omits application-specific fallback UI |
+| swift-readme-swift-4 | swift/README.md:96 | PRF-derived application crypto | swift | consumer | illustrative | Markdown illustration | illustrative | Backend and secret values are application-owned integration points |
