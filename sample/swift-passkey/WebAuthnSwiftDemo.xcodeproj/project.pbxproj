@@ -1,0 +1,772 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0322B2BFF68DCAF60BA29BBC /* WebAuthnSwiftDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */; };
+		0F94504375BCD32394C204EC /* PasskeyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0CE08CCFE74A42BE2C4236 /* PasskeyBackend.swift */; };
+		2856D663BF51DB4EEFC9DFC1 /* PasskeyBackendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A595FFCB0850464B5FE043E8 /* PasskeyBackendTests.swift */; };
+		302E6751C13AD6225AC39842 /* DemoRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */; };
+		36B5CC5D80A1550F17BBF7CD /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF91EA2AFFD99A4C8667B3C /* Components.swift */; };
+		37F328090C66225FB1D432D0 /* WebAuthn in Frameworks */ = {isa = PBXBuildFile; productRef = 05A34B23D3E38B1E371B5771 /* WebAuthn */; };
+		5DC5B730498C58359B3D8CD7 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63EAB6048616424B6654568 /* AuthenticationView.swift */; };
+		62CB3AAF9A8522AFDBBAF4DC /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65CF00BCCF157FB8E092F04 /* RootView.swift */; };
+		765C62D4C3CFC21AFC92DCA9 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C05904A4CD60DD39FADAB83 /* MainView.swift */; };
+		7B3323A55DD807B766354269 /* WebAuthn in Frameworks */ = {isa = PBXBuildFile; productRef = FB7114E1C764C139CC031C65 /* WebAuthn */; };
+		846D604CE7B23976DFA55334 /* PasskeyClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A7094B37BD27AE6DB2C41E /* PasskeyClientTests.swift */; };
+		876979A1A09A9C507E48979C /* PrfSaltStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */; };
+		93200853844BF076CB7DA426 /* DemoModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC00F5F53D557EA9F05726E /* DemoModels.swift */; };
+		986F095DFD9E0A83C4BEFDFC /* DebugLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC079CA590325599A93B0FFB /* DebugLogStore.swift */; };
+		997AC03FAF19B9B54DA3C223 /* WebAuthnSwiftDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE877F7E41F39AC64988C221 /* WebAuthnSwiftDemoApp.swift */; };
+		A6835EA7D8629590045AB265 /* DemoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096AC8E50EDE727B762F5C8C /* DemoViewModelTests.swift */; };
+		B0808C0F90F43BE513253D84 /* PasskeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */; };
+		B7A26AEE131D2EAB2FA8DB4A /* DemoRequestsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */; };
+		CE37ED7CEB87D7593121D1D0 /* DemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */; };
+		E8FF6E12EFF0BDE6E58A7BA2 /* PrfCryptoClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */; };
+		F8B0F7EAE776927F38E5B470 /* DemoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		525A38964DE9C71CEDF6FE55 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 113EAB2AB41FC216269D48D8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B0D4A9ACF8ABC347DCCC5325;
+			remoteInfo = WebAuthnSwiftDemo;
+		};
+		D0473BBD5EB8C7BF89AB0205 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 113EAB2AB41FC216269D48D8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B0D4A9ACF8ABC347DCCC5325;
+			remoteInfo = WebAuthnSwiftDemo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		096AC8E50EDE727B762F5C8C /* DemoViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewModelTests.swift; sourceTree = "<group>"; };
+		0AC00F5F53D557EA9F05726E /* DemoModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoModels.swift; sourceTree = "<group>"; };
+		0C1FB6F935D1C51ABC7B9557 /* WebAuthnSwiftDemoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnSwiftDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		18A7094B37BD27AE6DB2C41E /* PasskeyClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyClientTests.swift; sourceTree = "<group>"; };
+		266711338CF516D0F65ED57E /* WebAuthnSwiftDemoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnSwiftDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoUITests.swift; sourceTree = "<group>"; };
+		3C05904A4CD60DD39FADAB83 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		52DD83E70FB53D79B85FBFBC /* WebAuthnPackageTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnPackageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A595FFCB0850464B5FE043E8 /* PasskeyBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyBackendTests.swift; sourceTree = "<group>"; };
+		A63EAB6048616424B6654568 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
+		A65CF00BCCF157FB8E092F04 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		ACF91EA2AFFD99A4C8667B3C /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		AE0CE08CCFE74A42BE2C4236 /* PasskeyBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyBackend.swift; sourceTree = "<group>"; };
+		C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewModel.swift; sourceTree = "<group>"; };
+		C201194EA529405669EAF87E /* webauthn-kotlin-multiplatform-swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "webauthn-kotlin-multiplatform-swift-sdk"; path = ../..; sourceTree = SOURCE_ROOT; };
+		C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrfCryptoClientTests.swift; sourceTree = "<group>"; };
+		C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyService.swift; sourceTree = "<group>"; };
+		C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequestsTests.swift; sourceTree = "<group>"; };
+		CE877F7E41F39AC64988C221 /* WebAuthnSwiftDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoApp.swift; sourceTree = "<group>"; };
+		CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequests.swift; sourceTree = "<group>"; };
+		D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrfSaltStore.swift; sourceTree = "<group>"; };
+		F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoConfiguration.swift; sourceTree = "<group>"; };
+		FC079CA590325599A93B0FFB /* DebugLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogStore.swift; sourceTree = "<group>"; };
+		FC38348A10BC91A56D1CA409 /* WebAuthnSwiftDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WebAuthnSwiftDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		71C9CA55E7CB23C9F7F08B43 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				37F328090C66225FB1D432D0 /* WebAuthn in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0E09AA9AE9CEE3B2303F8C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B3323A55DD807B766354269 /* WebAuthn in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2AB973CF0D38D0408DF6FE6E /* State */ = {
+			isa = PBXGroup;
+			children = (
+				C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */,
+			);
+			path = State;
+			sourceTree = "<group>";
+		};
+		43BB7C7B27FAE8392413C437 /* WebAuthnSwiftDemo */ = {
+			isa = PBXGroup;
+			children = (
+				CE877F7E41F39AC64988C221 /* WebAuthnSwiftDemoApp.swift */,
+				6B20D9CCB6946A49E0465CBA /* Configuration */,
+				A5C2096571EC9235EFA42559 /* Logging */,
+				43E9D1E35AEDD8ACCD90A6C1 /* Model */,
+				E71D55C48EA312A86846AD3B /* Networking */,
+				C31E68A70F4E48C206D530C3 /* Services */,
+				2AB973CF0D38D0408DF6FE6E /* State */,
+				ADC647CA226C9C2015B09BEF /* Views */,
+			);
+			path = WebAuthnSwiftDemo;
+			sourceTree = "<group>";
+		};
+		43E9D1E35AEDD8ACCD90A6C1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0AC00F5F53D557EA9F05726E /* DemoModels.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		50D5CC9BCF3090F0B37DD407 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C201194EA529405669EAF87E /* webauthn-kotlin-multiplatform-swift-sdk */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		66248CE32C19693DDDD57276 /* WebAuthnSwiftDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */,
+				096AC8E50EDE727B762F5C8C /* DemoViewModelTests.swift */,
+				A595FFCB0850464B5FE043E8 /* PasskeyBackendTests.swift */,
+			);
+			path = WebAuthnSwiftDemoTests;
+			sourceTree = "<group>";
+		};
+		6B20D9CCB6946A49E0465CBA /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		A5C2096571EC9235EFA42559 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				FC079CA590325599A93B0FFB /* DebugLogStore.swift */,
+			);
+			path = Logging;
+			sourceTree = "<group>";
+		};
+		ADC647CA226C9C2015B09BEF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A63EAB6048616424B6654568 /* AuthenticationView.swift */,
+				ACF91EA2AFFD99A4C8667B3C /* Components.swift */,
+				3C05904A4CD60DD39FADAB83 /* MainView.swift */,
+				A65CF00BCCF157FB8E092F04 /* RootView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BBD583679636652D6289DF1B = {
+			isa = PBXGroup;
+			children = (
+				50D5CC9BCF3090F0B37DD407 /* Packages */,
+				43BB7C7B27FAE8392413C437 /* WebAuthnSwiftDemo */,
+				66248CE32C19693DDDD57276 /* WebAuthnSwiftDemoTests */,
+				CCF61654DA45BB573B6CA9F8 /* WebAuthnSwiftDemoUITests */,
+				EBE13D2ED16E92E48895A864 /* WebAuthnTests */,
+				E82B99E3963A78C932A49FF7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C31E68A70F4E48C206D530C3 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */,
+				D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		CCF61654DA45BB573B6CA9F8 /* WebAuthnSwiftDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */,
+			);
+			path = WebAuthnSwiftDemoUITests;
+			sourceTree = "<group>";
+		};
+		E71D55C48EA312A86846AD3B /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */,
+				AE0CE08CCFE74A42BE2C4236 /* PasskeyBackend.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		E82B99E3963A78C932A49FF7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				52DD83E70FB53D79B85FBFBC /* WebAuthnPackageTests.xctest */,
+				FC38348A10BC91A56D1CA409 /* WebAuthnSwiftDemo.app */,
+				266711338CF516D0F65ED57E /* WebAuthnSwiftDemoTests.xctest */,
+				0C1FB6F935D1C51ABC7B9557 /* WebAuthnSwiftDemoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EBE13D2ED16E92E48895A864 /* WebAuthnTests */ = {
+			isa = PBXGroup;
+			children = (
+				18A7094B37BD27AE6DB2C41E /* PasskeyClientTests.swift */,
+				C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */,
+			);
+			name = WebAuthnTests;
+			path = ../../swift/Tests/WebAuthnTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		35AFB5F2E73AA31117071B68 /* WebAuthnSwiftDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9EF6C48DB634966CAB6292E6 /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemoUITests" */;
+			buildPhases = (
+				59E4033754038B098A6EF6B9 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2BB4D9BA89CFD7CD396E2BCC /* PBXTargetDependency */,
+			);
+			name = WebAuthnSwiftDemoUITests;
+			packageProductDependencies = (
+			);
+			productName = WebAuthnSwiftDemoUITests;
+			productReference = 0C1FB6F935D1C51ABC7B9557 /* WebAuthnSwiftDemoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		B0D4A9ACF8ABC347DCCC5325 /* WebAuthnSwiftDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3F45C9D0BD3931CF245859E /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemo" */;
+			buildPhases = (
+				57215396062B6CBA0F7FBFC3 /* Sources */,
+				71C9CA55E7CB23C9F7F08B43 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WebAuthnSwiftDemo;
+			packageProductDependencies = (
+				05A34B23D3E38B1E371B5771 /* WebAuthn */,
+			);
+			productName = WebAuthnSwiftDemo;
+			productReference = FC38348A10BC91A56D1CA409 /* WebAuthnSwiftDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D089527431ECBDD69ACBC158 /* WebAuthnSwiftDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 714C00BCE128DB66B6F255FA /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemoTests" */;
+			buildPhases = (
+				42BB7CE7CCE95743CD952FB6 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				30E280E95B387EFC475BCFC7 /* PBXTargetDependency */,
+			);
+			name = WebAuthnSwiftDemoTests;
+			packageProductDependencies = (
+			);
+			productName = WebAuthnSwiftDemoTests;
+			productReference = 266711338CF516D0F65ED57E /* WebAuthnSwiftDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		FEDB7C1C17C03144BF405BB5 /* WebAuthnPackageTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE4FA9E0DA1E2D1B97092405 /* Build configuration list for PBXNativeTarget "WebAuthnPackageTests" */;
+			buildPhases = (
+				59BE107450756AE483601E8F /* Sources */,
+				C0E09AA9AE9CEE3B2303F8C0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WebAuthnPackageTests;
+			packageProductDependencies = (
+				FB7114E1C764C139CC031C65 /* WebAuthn */,
+			);
+			productName = WebAuthnPackageTests;
+			productReference = 52DD83E70FB53D79B85FBFBC /* WebAuthnPackageTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		113EAB2AB41FC216269D48D8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					35AFB5F2E73AA31117071B68 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = B0D4A9ACF8ABC347DCCC5325;
+					};
+					B0D4A9ACF8ABC347DCCC5325 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					D089527431ECBDD69ACBC158 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					FEDB7C1C17C03144BF405BB5 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 884AEB01D60A1DDD3DC8874C /* Build configuration list for PBXProject "WebAuthnSwiftDemo" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = BBD583679636652D6289DF1B;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3E7BF9B01EA791A7809460D1 /* XCLocalSwiftPackageReference "../.." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E82B99E3963A78C932A49FF7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FEDB7C1C17C03144BF405BB5 /* WebAuthnPackageTests */,
+				B0D4A9ACF8ABC347DCCC5325 /* WebAuthnSwiftDemo */,
+				D089527431ECBDD69ACBC158 /* WebAuthnSwiftDemoTests */,
+				35AFB5F2E73AA31117071B68 /* WebAuthnSwiftDemoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		42BB7CE7CCE95743CD952FB6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7A26AEE131D2EAB2FA8DB4A /* DemoRequestsTests.swift in Sources */,
+				A6835EA7D8629590045AB265 /* DemoViewModelTests.swift in Sources */,
+				2856D663BF51DB4EEFC9DFC1 /* PasskeyBackendTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57215396062B6CBA0F7FBFC3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5DC5B730498C58359B3D8CD7 /* AuthenticationView.swift in Sources */,
+				36B5CC5D80A1550F17BBF7CD /* Components.swift in Sources */,
+				986F095DFD9E0A83C4BEFDFC /* DebugLogStore.swift in Sources */,
+				F8B0F7EAE776927F38E5B470 /* DemoConfiguration.swift in Sources */,
+				93200853844BF076CB7DA426 /* DemoModels.swift in Sources */,
+				302E6751C13AD6225AC39842 /* DemoRequests.swift in Sources */,
+				CE37ED7CEB87D7593121D1D0 /* DemoViewModel.swift in Sources */,
+				765C62D4C3CFC21AFC92DCA9 /* MainView.swift in Sources */,
+				0F94504375BCD32394C204EC /* PasskeyBackend.swift in Sources */,
+				B0808C0F90F43BE513253D84 /* PasskeyService.swift in Sources */,
+				876979A1A09A9C507E48979C /* PrfSaltStore.swift in Sources */,
+				62CB3AAF9A8522AFDBBAF4DC /* RootView.swift in Sources */,
+				997AC03FAF19B9B54DA3C223 /* WebAuthnSwiftDemoApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		59BE107450756AE483601E8F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				846D604CE7B23976DFA55334 /* PasskeyClientTests.swift in Sources */,
+				E8FF6E12EFF0BDE6E58A7BA2 /* PrfCryptoClientTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		59E4033754038B098A6EF6B9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0322B2BFF68DCAF60BA29BBC /* WebAuthnSwiftDemoUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2BB4D9BA89CFD7CD396E2BCC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B0D4A9ACF8ABC347DCCC5325 /* WebAuthnSwiftDemo */;
+			targetProxy = 525A38964DE9C71CEDF6FE55 /* PBXContainerItemProxy */;
+		};
+		30E280E95B387EFC475BCFC7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B0D4A9ACF8ABC347DCCC5325 /* WebAuthnSwiftDemo */;
+			targetProxy = D0473BBD5EB8C7BF89AB0205 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		07F7DB90B01272C3EAE95E0F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WebAuthnSwiftDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = WebAuthnSwiftDemo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WEBAUTHN_DEMO_ENDPOINT = "http://127.0.0.1:8080";
+				WEBAUTHN_DEMO_ORIGIN = "https://localhost";
+				WEBAUTHN_DEMO_RP_ID = localhost;
+				WEBAUTHN_DEMO_USER_ID = 42;
+				WEBAUTHN_DEMO_USER_NAME = "Zaphod Beeblebrox";
+			};
+			name = Release;
+		};
+		0C6041984B30EEC965B96FB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1F680648C91E262E78EEC157 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WebAuthnSwiftDemo.app/WebAuthnSwiftDemo";
+			};
+			name = Debug;
+		};
+		36A6520281EACE72CC10731A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_EXPLICIT_MODULES = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.webauthn.samples.swiftpasskey;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4CD890DFBAA7164E712FA58D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WebAuthnSwiftDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = WebAuthnSwiftDemo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WEBAUTHN_DEMO_ENDPOINT = "http://127.0.0.1:8080";
+				WEBAUTHN_DEMO_ORIGIN = "https://localhost";
+				WEBAUTHN_DEMO_RP_ID = localhost;
+				WEBAUTHN_DEMO_USER_ID = 42;
+				WEBAUTHN_DEMO_USER_NAME = "Zaphod Beeblebrox";
+			};
+			name = Debug;
+		};
+		9B7CF78F129B9F75AB58E870 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9D03999D606D1AFCF1F02782 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_EXPLICIT_MODULES = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.webauthn.samples.swiftpasskey;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A67DB1B258DC003D0185A1F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WebAuthnSwiftDemo;
+			};
+			name = Debug;
+		};
+		CA5C4D069460D41CE54FE75C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WebAuthnSwiftDemo;
+			};
+			name = Release;
+		};
+		E11DAE8ED7D72D6CF8FE8A67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WebAuthnSwiftDemo.app/WebAuthnSwiftDemo";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		714C00BCE128DB66B6F255FA /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F680648C91E262E78EEC157 /* Debug */,
+				E11DAE8ED7D72D6CF8FE8A67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		884AEB01D60A1DDD3DC8874C /* Build configuration list for PBXProject "WebAuthnSwiftDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D03999D606D1AFCF1F02782 /* Debug */,
+				36A6520281EACE72CC10731A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9EF6C48DB634966CAB6292E6 /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A67DB1B258DC003D0185A1F7 /* Debug */,
+				CA5C4D069460D41CE54FE75C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F3F45C9D0BD3931CF245859E /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CD890DFBAA7164E712FA58D /* Debug */,
+				07F7DB90B01272C3EAE95E0F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FE4FA9E0DA1E2D1B97092405 /* Build configuration list for PBXNativeTarget "WebAuthnPackageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9B7CF78F129B9F75AB58E870 /* Debug */,
+				0C6041984B30EEC965B96FB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		3E7BF9B01EA791A7809460D1 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		05A34B23D3E38B1E371B5771 /* WebAuthn */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WebAuthn;
+		};
+		FB7114E1C764C139CC031C65 /* WebAuthn */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WebAuthn;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 113EAB2AB41FC216269D48D8 /* Project object */;
+}
