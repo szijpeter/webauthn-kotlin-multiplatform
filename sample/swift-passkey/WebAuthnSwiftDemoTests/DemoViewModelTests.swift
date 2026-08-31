@@ -60,6 +60,32 @@ final class DemoViewModelTests: XCTestCase {
         XCTAssertEqual(fixture.viewModel.ceremonyState.status.tone, .warning)
     }
 
+    func testConcurrentCeremonyUsesFlowFailureAndFirstOperationCanFinish() async {
+        let passkeys = SuspendingCeremonyPasskeyService()
+        let backend = FakePasskeyBackend()
+        let viewModel = DemoViewModel(
+            config: .testValue,
+            passkeys: passkeys,
+            backend: backend,
+            loadCapabilitiesImmediately: false
+        )
+        let first = Task { @MainActor in await viewModel.signIn() }
+        while !passkeys.assertionIsSuspended {
+            await Task.yield()
+        }
+
+        await viewModel.register()
+        guard case let .failure(_, failure) = viewModel.ceremonyState else {
+            return XCTFail("Expected concurrent-use failure")
+        }
+        XCTAssertEqual(failure.kind, .alreadyInProgress)
+
+        passkeys.resumeAssertion()
+        await first.value
+        XCTAssertEqual(viewModel.ceremonyState, .success(action: .signIn))
+        XCTAssertEqual(viewModel.route, .main)
+    }
+
     func testCapabilitiesAndPrfSessionLifecycle() async throws {
         let fixture = Fixture()
         fixture.passkeys.capabilityValue = PasskeyCapabilities(support: [.prf: .supported])
@@ -251,6 +277,36 @@ private final class SuspendingPasskeyService: PasskeyServing {
                 session: session
             )
         )
+    }
+}
+
+@MainActor
+private final class SuspendingCeremonyPasskeyService: PasskeyServing {
+    private var assertionContinuation: CheckedContinuation<Data, Error>?
+    var assertionIsSuspended: Bool { assertionContinuation != nil }
+
+    func createCredential(optionsJSON: Data) async throws -> Data {
+        Data("{}".utf8)
+    }
+
+    func getAssertion(optionsJSON: Data) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            assertionContinuation = continuation
+        }
+    }
+
+    func capabilities() async throws -> PasskeyCapabilities {
+        PasskeyCapabilities()
+    }
+
+    func authenticateWithPrf(optionsJSON: Data, firstSalt: Data) async throws -> DemoPrfAuthentication {
+        throw PasskeyClientError.noCredential
+    }
+
+    func resumeAssertion() {
+        let continuation = assertionContinuation
+        assertionContinuation = nil
+        continuation?.resume(returning: Data("{}".utf8))
     }
 }
 

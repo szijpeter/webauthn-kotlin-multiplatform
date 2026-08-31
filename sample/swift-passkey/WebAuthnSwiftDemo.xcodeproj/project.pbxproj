@@ -13,6 +13,8 @@
 		302E6751C13AD6225AC39842 /* DemoRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */; };
 		36B5CC5D80A1550F17BBF7CD /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF91EA2AFFD99A4C8667B3C /* Components.swift */; };
 		37F328090C66225FB1D432D0 /* WebAuthn in Frameworks */ = {isa = PBXBuildFile; productRef = 05A34B23D3E38B1E371B5771 /* WebAuthn */; };
+		3E31BA5C4D4F8C91240264AB /* WebAuthnFlow in Frameworks */ = {isa = PBXBuildFile; productRef = 31ED92E09C907717C9BB00FF /* WebAuthnFlow */; };
+		48655D14688D8442594FB00D /* WebAuthn in Frameworks */ = {isa = PBXBuildFile; productRef = 39AF5276C36DF1EDF494F104 /* WebAuthn */; };
 		5DC5B730498C58359B3D8CD7 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63EAB6048616424B6654568 /* AuthenticationView.swift */; };
 		62CB3AAF9A8522AFDBBAF4DC /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65CF00BCCF157FB8E092F04 /* RootView.swift */; };
 		765C62D4C3CFC21AFC92DCA9 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C05904A4CD60DD39FADAB83 /* MainView.swift */; };
@@ -29,6 +31,8 @@
 		CE37ED7CEB87D7593121D1D0 /* DemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */; };
 		E8FF6E12EFF0BDE6E58A7BA2 /* PrfCryptoClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */; };
 		F8B0F7EAE776927F38E5B470 /* DemoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */; };
+		F92D6486B94E46B7E4F03992 /* WebAuthnFlow in Frameworks */ = {isa = PBXBuildFile; productRef = 1C5B4FC76C072B01AA7FD934 /* WebAuthnFlow */; };
+		FBF16061ACC012AA520B0423 /* PasskeyFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6802F24F0623B419E60F86 /* PasskeyFlowTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0107938615798B8C9E36BC62 /* WebAuthnFlowPackageTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnFlowPackageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		096AC8E50EDE727B762F5C8C /* DemoViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewModelTests.swift; sourceTree = "<group>"; };
 		0AC00F5F53D557EA9F05726E /* DemoModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoModels.swift; sourceTree = "<group>"; };
 		0C1FB6F935D1C51ABC7B9557 /* WebAuthnSwiftDemoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnSwiftDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,17 +76,28 @@
 		CE877F7E41F39AC64988C221 /* WebAuthnSwiftDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoApp.swift; sourceTree = "<group>"; };
 		CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequests.swift; sourceTree = "<group>"; };
 		D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrfSaltStore.swift; sourceTree = "<group>"; };
+		EF6802F24F0623B419E60F86 /* PasskeyFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyFlowTests.swift; sourceTree = "<group>"; };
 		F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoConfiguration.swift; sourceTree = "<group>"; };
 		FC079CA590325599A93B0FFB /* DebugLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogStore.swift; sourceTree = "<group>"; };
 		FC38348A10BC91A56D1CA409 /* WebAuthnSwiftDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WebAuthnSwiftDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		602A9DD26CBCE93D72B45489 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48655D14688D8442594FB00D /* WebAuthn in Frameworks */,
+				3E31BA5C4D4F8C91240264AB /* WebAuthnFlow in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		71C9CA55E7CB23C9F7F08B43 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				37F328090C66225FB1D432D0 /* WebAuthn in Frameworks */,
+				F92D6486B94E46B7E4F03992 /* WebAuthnFlow in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				50D5CC9BCF3090F0B37DD407 /* Packages */,
+				E46EF6B4029E47BCDE5FAB56 /* WebAuthnFlowTests */,
 				43BB7C7B27FAE8392413C437 /* WebAuthnSwiftDemo */,
 				66248CE32C19693DDDD57276 /* WebAuthnSwiftDemoTests */,
 				CCF61654DA45BB573B6CA9F8 /* WebAuthnSwiftDemoUITests */,
@@ -201,6 +218,15 @@
 			path = WebAuthnSwiftDemoUITests;
 			sourceTree = "<group>";
 		};
+		E46EF6B4029E47BCDE5FAB56 /* WebAuthnFlowTests */ = {
+			isa = PBXGroup;
+			children = (
+				EF6802F24F0623B419E60F86 /* PasskeyFlowTests.swift */,
+			);
+			name = WebAuthnFlowTests;
+			path = ../../swift/Tests/WebAuthnFlowTests;
+			sourceTree = "<group>";
+		};
 		E71D55C48EA312A86846AD3B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,6 +239,7 @@
 		E82B99E3963A78C932A49FF7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				0107938615798B8C9E36BC62 /* WebAuthnFlowPackageTests.xctest */,
 				52DD83E70FB53D79B85FBFBC /* WebAuthnPackageTests.xctest */,
 				FC38348A10BC91A56D1CA409 /* WebAuthnSwiftDemo.app */,
 				266711338CF516D0F65ED57E /* WebAuthnSwiftDemoTests.xctest */,
@@ -253,6 +280,26 @@
 			productReference = 0C1FB6F935D1C51ABC7B9557 /* WebAuthnSwiftDemoUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		78747DE90656E582043E30FA /* WebAuthnFlowPackageTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6A722254F348255A312E395 /* Build configuration list for PBXNativeTarget "WebAuthnFlowPackageTests" */;
+			buildPhases = (
+				F6E0D9B726916861D2EE9A31 /* Sources */,
+				602A9DD26CBCE93D72B45489 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WebAuthnFlowPackageTests;
+			packageProductDependencies = (
+				39AF5276C36DF1EDF494F104 /* WebAuthn */,
+				31ED92E09C907717C9BB00FF /* WebAuthnFlow */,
+			);
+			productName = WebAuthnFlowPackageTests;
+			productReference = 0107938615798B8C9E36BC62 /* WebAuthnFlowPackageTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B0D4A9ACF8ABC347DCCC5325 /* WebAuthnSwiftDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F3F45C9D0BD3931CF245859E /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemo" */;
@@ -267,6 +314,7 @@
 			name = WebAuthnSwiftDemo;
 			packageProductDependencies = (
 				05A34B23D3E38B1E371B5771 /* WebAuthn */,
+				1C5B4FC76C072B01AA7FD934 /* WebAuthnFlow */,
 			);
 			productName = WebAuthnSwiftDemo;
 			productReference = FC38348A10BC91A56D1CA409 /* WebAuthnSwiftDemo.app */;
@@ -323,6 +371,10 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = B0D4A9ACF8ABC347DCCC5325;
 					};
+					78747DE90656E582043E30FA = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
 					B0D4A9ACF8ABC347DCCC5325 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -354,6 +406,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				78747DE90656E582043E30FA /* WebAuthnFlowPackageTests */,
 				FEDB7C1C17C03144BF405BB5 /* WebAuthnPackageTests */,
 				B0D4A9ACF8ABC347DCCC5325 /* WebAuthnSwiftDemo */,
 				D089527431ECBDD69ACBC158 /* WebAuthnSwiftDemoTests */,
@@ -408,6 +461,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0322B2BFF68DCAF60BA29BBC /* WebAuthnSwiftDemoUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6E0D9B726916861D2EE9A31 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FBF16061ACC012AA520B0423 /* PasskeyFlowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,6 +629,21 @@
 			};
 			name = Debug;
 		};
+		77FB106D5736835F7E352826 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		9B7CF78F129B9F75AB58E870 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -672,6 +748,21 @@
 			};
 			name = Debug;
 		};
+		C5D834719074674731C3AC14 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		CA5C4D069460D41CE54FE75C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -734,6 +825,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		A6A722254F348255A312E395 /* Build configuration list for PBXNativeTarget "WebAuthnFlowPackageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77FB106D5736835F7E352826 /* Debug */,
+				C5D834719074674731C3AC14 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		F3F45C9D0BD3931CF245859E /* Build configuration list for PBXNativeTarget "WebAuthnSwiftDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -763,6 +863,18 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		05A34B23D3E38B1E371B5771 /* WebAuthn */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WebAuthn;
+		};
+		1C5B4FC76C072B01AA7FD934 /* WebAuthnFlow */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WebAuthnFlow;
+		};
+		31ED92E09C907717C9BB00FF /* WebAuthnFlow */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WebAuthnFlow;
+		};
+		39AF5276C36DF1EDF494F104 /* WebAuthn */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WebAuthn;
 		};

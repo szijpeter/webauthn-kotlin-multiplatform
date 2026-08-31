@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import WebAuthn
+import WebAuthnFlow
 
 @MainActor
 final class DemoViewModel: ObservableObject {
@@ -18,6 +19,7 @@ final class DemoViewModel: ObservableObject {
 
     private let passkeys: any PasskeyServing
     private let backend: any PasskeyBackend
+    private let passkeyFlow: PasskeyFlow
     private let saltStore: PrfSaltStore
     private var prfSession: (any DemoCryptoSession)?
     private var ciphertext: DemoPrfCiphertext?
@@ -37,6 +39,7 @@ final class DemoViewModel: ObservableObject {
         self.config = config
         self.passkeys = passkeys
         self.backend = backend
+        self.passkeyFlow = PasskeyFlow(client: passkeys)
         self.logs = logs
         self.saltStore = saltStore
 
@@ -51,17 +54,23 @@ final class DemoViewModel: ObservableObject {
     }
 
     func register() async {
-        guard begin(.register) else { return }
         do {
-            let options = try await backend.startRegistration(config: config)
-            transition(.register, to: .platformPrompt)
-            let response = try await passkeys.createCredential(optionsJSON: options)
-            transition(.register, to: .finishing)
-            switch try await backend.finishRegistration(responseJSON: response) {
-            case .verified:
+            let result = try await passkeyFlow.register(
+                config,
+                backend: RegistrationFlowBackend(backend: backend),
+                onPhaseChanged: { [weak self] phase in
+                    self?.transition(.register, to: CeremonyPhase(phase))
+                }
+            )
+            switch result {
+            case .success(.verified):
                 succeed(.register)
-            case let .rejected(message):
+            case let .success(.rejected(message)):
                 fail(.register, DemoFailure(kind: .rejected, message: message))
+            case let .failure(failure):
+                fail(.register, DemoFailure.flow(failure))
+            @unknown default:
+                fail(.register, DemoFailure.unknownFlowResult())
             }
         } catch is CancellationError {
             ceremonyState = .idle
@@ -71,18 +80,24 @@ final class DemoViewModel: ObservableObject {
     }
 
     func signIn() async {
-        guard begin(.signIn) else { return }
         do {
-            let options = try await backend.startAuthentication(config: config, prfSalt: nil)
-            transition(.signIn, to: .platformPrompt)
-            let response = try await passkeys.getAssertion(optionsJSON: options)
-            transition(.signIn, to: .finishing)
-            switch try await backend.finishAuthentication(responseJSON: response) {
-            case .verified:
+            let result = try await passkeyFlow.signIn(
+                config,
+                backend: AuthenticationFlowBackend(backend: backend),
+                onPhaseChanged: { [weak self] phase in
+                    self?.transition(.signIn, to: CeremonyPhase(phase))
+                }
+            )
+            switch result {
+            case .success(.verified):
                 succeed(.signIn)
                 route = .main
-            case let .rejected(message):
+            case let .success(.rejected(message)):
                 fail(.signIn, DemoFailure(kind: .rejected, message: message))
+            case let .failure(failure):
+                fail(.signIn, DemoFailure.flow(failure))
+            @unknown default:
+                fail(.signIn, DemoFailure.unknownFlowResult())
             }
         } catch is CancellationError {
             ceremonyState = .idle
@@ -254,18 +269,6 @@ final class DemoViewModel: ObservableObject {
         ceremonyState = .idle
         route = .authentication
         logs.info("session", "Signed out")
-    }
-
-    private func begin(_ action: DemoAction) -> Bool {
-        guard ceremonyState.actionsEnabled else {
-            logs.warning(
-                "ceremony",
-                "\(action.rawValue) ignored because another ceremony is already in progress."
-            )
-            return false
-        }
-        transition(action, to: .starting)
-        return true
     }
 
     private func transition(_ action: DemoAction, to phase: CeremonyPhase) {

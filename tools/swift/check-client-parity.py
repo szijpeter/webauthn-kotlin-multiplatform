@@ -98,7 +98,7 @@ def validate_evidence(root: Path, items: Any, label: str) -> None:
 
 def validate_inventory(root: Path, manifest: dict[str, Any], today: date | None = None) -> None:
     root = root.resolve()
-    if manifest.get("schemaVersion") != 1:
+    if manifest.get("schemaVersion") != 2:
         raise ClientParityError("Unsupported client parity inventory schema")
     scope = manifest.get("scope")
     if not isinstance(scope, dict):
@@ -124,12 +124,22 @@ def validate_inventory(root: Path, manifest: dict[str, Any], today: date | None 
     if not isinstance(modules, list) or not modules:
         raise ClientParityError("Client parity inventory requires monitored modules")
 
-    swift_interface_path = repository_path(
-        root,
-        require_nonempty_string(manifest, "swiftInterface", "Client parity inventory"),
-        "Client parity Swift interface",
-    )
-    swift_interface = read(root, swift_interface_path)
+    swift_interface_values = manifest.get("swiftInterfaces")
+    if not isinstance(swift_interface_values, list) or not swift_interface_values:
+        raise ClientParityError("Client parity inventory requires Swift interfaces")
+    if not all(isinstance(value, str) and value.strip() for value in swift_interface_values):
+        raise ClientParityError("Client parity Swift interfaces must be non-empty paths")
+    if len(swift_interface_values) != len(set(swift_interface_values)):
+        raise ClientParityError("Client parity Swift interfaces contain duplicates")
+    swift_interfaces = []
+    for index, relative_path in enumerate(swift_interface_values):
+        swift_interface_path = repository_path(
+            root,
+            relative_path,
+            f"Client parity Swift interface[{index}]",
+        )
+        swift_interfaces.append(read(root, swift_interface_path))
+    swift_interface = "\n".join(swift_interfaces)
     effective_today = today or date.today()
     seen_modules: set[str] = set()
     reviewed_api_dumps: set[str] = set()

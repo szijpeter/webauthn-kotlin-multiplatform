@@ -55,6 +55,7 @@ nav:
       - Android: mobile/android.md
       - iOS: mobile/ios.md
       - Native Swift package: mobile/swift.md
+      - Native Swift ceremony flow: mobile/swift-flow.md
       - Full mobile + backend sample: mobile/full-stack.md
       - Capabilities and extensions: mobile/capabilities.md
       - Production checklist: mobile/production.md

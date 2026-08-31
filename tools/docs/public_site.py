@@ -41,6 +41,7 @@ FORBIDDEN_SOURCE_PREFIXES = (
 )
 REPOSITORY_PAGES = {
     "swift/README.md": "mobile/swift.md",
+    "swift/FLOW.md": "mobile/swift-flow.md",
     "sample/compose-passkey/README.md": "guides/samples/compose-passkey.md",
     "sample/compose-passkey-ios/README.md": "guides/samples/compose-passkey-ios.md",
     "sample/swift-passkey/README.md": "guides/samples/swift-passkey.md",
@@ -100,6 +101,7 @@ def swift_release_manifest_checksum(tag: str, manifest: str) -> str | None:
             '.binaryTarget(',
             f'url: "{expected_url}"',
             'path: "swift/Sources/WebAuthn"',
+            'path: "swift/Sources/WebAuthnFlow"',
             "swiftLanguageModes: [.v6]",
         )
     ):

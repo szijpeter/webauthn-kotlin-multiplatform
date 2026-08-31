@@ -1,0 +1,62 @@
+import Foundation
+import Swift
+import WebAuthn
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public struct CeremonyStart<State> {
+  public let state: State
+  public let optionsJSON: Foundation.Data
+  public init(state: State, optionsJSON: Foundation.Data)
+}
+extension WebAuthnFlow.CeremonyStart : Swift.Equatable where State : Swift.Equatable {
+  public static func == (a: WebAuthnFlow.CeremonyStart<State>, b: WebAuthnFlow.CeremonyStart<State>) -> Swift.Bool
+}
+extension WebAuthnFlow.CeremonyStart : Swift.Sendable where State : Swift.Sendable {
+}
+@_Concurrency.MainActor public protocol RegistrationBackend {
+  associatedtype Input
+  associatedtype State
+  associatedtype Output
+  @_Concurrency.MainActor func start(input: Self.Input) async throws -> WebAuthnFlow.CeremonyStart<Self.State>
+  @_Concurrency.MainActor func finish(state: Self.State, responseJSON: Foundation.Data) async throws -> Self.Output
+}
+@_Concurrency.MainActor public protocol AuthenticationBackend {
+  associatedtype Input
+  associatedtype State
+  associatedtype Output
+  @_Concurrency.MainActor func start(input: Self.Input) async throws -> WebAuthnFlow.CeremonyStart<Self.State>
+  @_Concurrency.MainActor func finish(state: Self.State, responseJSON: Foundation.Data) async throws -> Self.Output
+}
+public enum PasskeyPhase : Swift.Equatable, Swift.Sendable {
+  case starting
+  case platformPrompt
+  case finishing
+  public static func == (a: WebAuthnFlow.PasskeyPhase, b: WebAuthnFlow.PasskeyPhase) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum CeremonyFailure : Swift.Equatable, Swift.Sendable {
+  case alreadyInProgress
+  case platform(WebAuthn.PasskeyClientError)
+  public static func == (a: WebAuthnFlow.CeremonyFailure, b: WebAuthnFlow.CeremonyFailure) -> Swift.Bool
+}
+public enum CeremonyResult<Output> {
+  case success(Output)
+  case failure(WebAuthnFlow.CeremonyFailure)
+}
+extension WebAuthnFlow.CeremonyResult : Swift.Equatable where Output : Swift.Equatable {
+  public static func == (a: WebAuthnFlow.CeremonyResult<Output>, b: WebAuthnFlow.CeremonyResult<Output>) -> Swift.Bool
+}
+extension WebAuthnFlow.CeremonyResult : Swift.Sendable where Output : Swift.Sendable {
+}
+@_Concurrency.MainActor final public class PasskeyFlow {
+  @_Concurrency.MainActor public init(client: any WebAuthn.PasskeyClientProtocol)
+  @_Concurrency.MainActor final public func register<Backend>(_ input: Backend.Input, backend: Backend, onPhaseChanged: (WebAuthnFlow.PasskeyPhase) throws -> Swift.Void = { _ in }) async throws -> WebAuthnFlow.CeremonyResult<Backend.Output> where Backend : WebAuthnFlow.RegistrationBackend
+  @_Concurrency.MainActor final public func signIn<Backend>(_ input: Backend.Input, backend: Backend, onPhaseChanged: (WebAuthnFlow.PasskeyPhase) throws -> Swift.Void = { _ in }) async throws -> WebAuthnFlow.CeremonyResult<Backend.Output> where Backend : WebAuthnFlow.AuthenticationBackend
+  @objc deinit
+}
+extension WebAuthnFlow.PasskeyPhase : Swift.Hashable {}
+extension WebAuthnFlow.PasskeyFlow : Swift.Sendable {}

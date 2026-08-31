@@ -16,10 +16,11 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
 ## Overall Snapshot
 
 - Native Swift SDK distribution (2026-09-01): a Swift-owned `WebAuthn` facade now covers registration,
-  authentication, capabilities, typed failures, a public application-mocking contract, and PRF-derived crypto
-  sessions over a narrow internal Kotlin/Native XCFramework. A feature-parity SwiftUI sample exercises the
-  default backend contract. CI runs strict Swift 6 tests, Release library-evolution compilation, a
-  compiler-generated API baseline, complete Kotlin client-surface disposition accounting, direct semantic
+  authentication, capabilities, typed failures, a public application-mocking contract, optional source-only
+  ceremony orchestration, and PRF-derived crypto sessions over a narrow internal Kotlin/Native XCFramework.
+  A feature-parity SwiftUI sample exercises the default backend contract through the generic flow. CI runs
+  strict Swift 6 tests, Release library-evolution compilation, compiler-generated API baselines for both Swift
+  products, complete Kotlin client-surface disposition accounting, direct semantic
   parity checks, and binary/privacy/path-hygiene validation. Coordinated
   `publish-and-release` runs upload a checksum-pinned XCFramework and tag a remote Swift package manifest;
   Intel simulators remain unsupported because the full crypto dependency graph has no `iosX64` variant.
@@ -130,7 +131,8 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
 | `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyFlow`) for flow-driven orchestration and retained-VM-safe prompt resolution | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-platform` | Beta | KMP platform module: Android Credential Manager bridge with replaceable JSON codec injection and iOS AuthenticationServices bridge without a JSON implementation dependency; both preserve raw responses, map platform errors deterministically, report capabilities, and delegate orchestration to shared core | OEM/provider and iOS runtime/device matrix hardening |
 | `webauthn-client-prf-crypto` | Beta | Signum-backed PRF helpers (request/response extraction), HKDF-SHA256 key derivation, AES-GCM helpers, and zeroizable in-memory session facade | Additional interop vectors and long-term key-management guidance |
-| `WebAuthn` Swift package | Beta | Swift-owned async/actor API for passkeys, capabilities, typed errors, application-owned test fakes, and PRF crypto over a static arm64 XCFramework; compiler API baseline, complete client-surface disposition accounting, direct semantic parity contract, privacy manifest, sample, CI, and coordinated release packaging are implemented | Native ceremony-flow orchestration, physical-device/signing/association release matrix, and wider external-consumer feedback; no Intel simulator slice |
+| `WebAuthn` Swift package | Beta | Swift-owned async/actor API for passkeys, capabilities, typed errors, application-owned test fakes, and PRF crypto over a static arm64 XCFramework; compiler API baseline, complete client-surface disposition accounting, direct semantic parity contract, privacy manifest, sample, CI, and coordinated release packaging are implemented | Physical-device/signing/association release matrix and wider external-consumer feedback; no Intel simulator slice |
+| `WebAuthnFlow` Swift product | Beta | Optional source-only generic registration/authentication sequencing with opaque state, stable phases, typed platform failure, concurrent-use rejection, cancellation propagation, package tests, compiler API baseline, and sample adoption | Broader external-consumer feedback; native transport remains evidence-gated and separate |
 | `webauthn-client-ktor` | Beta | Codec-neutral Ktor transport contract with caller-owned engine/serialization, configurable routes, and exact opaque continuation-state forwarding | Broader contract fixtures and retry/error policy guidance |
 | `webauthn-client-ktor-kotlinx` | Production-leaning | Opt-in Kotlinx implementation of the default `/webauthn/*` contract, including typed start payloads and finish outcomes | Additional backend contract profiles and error-policy guidance |
 | `webauthn-client-defaults` | Beta | Recommended Android/iOS platform factories that select the Kotlinx Android codec while preserving explicit codec and iOS presentation-anchor overrides | Broader host/runtime lifecycle coverage |
