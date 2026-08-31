@@ -25,7 +25,7 @@ fi
 
 temporary="$(mktemp -d "${TMPDIR:-/tmp}/webauthn-swift-consumer.XXXXXX")"
 trap 'rm -rf "$temporary"' EXIT
-mkdir -p "$temporary/Sources"
+mkdir -p "$temporary/Sources/BaseConsumer" "$temporary/Sources/FlowConsumer"
 cat > "$temporary/project.yml" <<EOF
 name: SwiftReleaseConsumer
 options:
@@ -36,10 +36,21 @@ packages:
     url: https://github.com/szijpeter/webauthn-kotlin-multiplatform.git
     exactVersion: "$version"
 targets:
-  SwiftReleaseConsumer:
+  BaseConsumer:
     type: framework
     platform: iOS
-    sources: [Sources]
+    sources: [Sources/BaseConsumer]
+    dependencies:
+      - package: WebAuthn
+        product: WebAuthn
+    settings:
+      base:
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: NO
+  FlowConsumer:
+    type: framework
+    platform: iOS
+    sources: [Sources/FlowConsumer]
     dependencies:
       - package: WebAuthn
         product: WebAuthn
@@ -49,16 +60,24 @@ targets:
       base:
         SWIFT_VERSION: "6.0"
         CODE_SIGNING_ALLOWED: NO
+schemes:
+  SwiftReleaseConsumer:
+    build:
+      targets:
+        BaseConsumer: all
+        FlowConsumer: all
 EOF
-cat > "$temporary/Sources/Consumer.swift" <<'EOF'
-import Foundation
+cat > "$temporary/Sources/BaseConsumer/Consumer.swift" <<'EOF'
 import WebAuthn
-import WebAuthnFlow
 
 @MainActor
 public func makePasskeyClient() -> PasskeyClient {
     PasskeyClient(presentationAnchorProvider: { nil })
 }
+EOF
+cat > "$temporary/Sources/FlowConsumer/Consumer.swift" <<'EOF'
+import WebAuthn
+import WebAuthnFlow
 
 @MainActor
 public func makePasskeyFlow(client: any PasskeyClientProtocol) -> PasskeyFlow {
@@ -86,4 +105,4 @@ xcodebuild \
   SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
   build
 
-echo "Clean external iOS consumer resolved and compiled WebAuthn and WebAuthnFlow $version."
+echo "Clean base-only and flow-enabled iOS consumers resolved and compiled $version."
