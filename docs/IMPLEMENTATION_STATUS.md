@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-08-24
+Last updated: 2026-08-31
 
 ## Status Legend
 
@@ -15,6 +15,13 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
 
 ## Overall Snapshot
 
+- Native Swift SDK distribution (2026-08-31): a Swift-owned `WebAuthn` facade now covers registration,
+  authentication, capabilities, typed failures, and PRF-derived crypto sessions over a narrow internal
+  Kotlin/Native XCFramework. A feature-parity SwiftUI sample exercises the default backend contract. CI
+  runs strict Swift 6 tests, Release library-evolution compilation, a compiler-generated API baseline,
+  Kotlin/bridge/Swift semantic parity checks, and binary/privacy/path-hygiene validation. Coordinated
+  `publish-and-release` runs upload a checksum-pinned XCFramework and tag a remote Swift package manifest;
+  Intel simulators remain unsupported because the full crypto dependency graph has no `iosX64` variant.
 - Mobile-first public documentation site (2026-08-24): a generated MkDocs site now presents 30 authored
   guides, 23 published-module pages, runnable sample guidance, and aggregate API reference behind a
   vertical, responsive navigation shell. The build stages an explicit public source map, validates local
@@ -122,6 +129,7 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
 | `webauthn-client-compose` | Beta | Compose integration helpers (`rememberPasskeyClient`, `rememberPasskeyFlow`) for flow-driven orchestration and retained-VM-safe prompt resolution | Broader UI/runtime lifecycle coverage across host app patterns |
 | `webauthn-client-platform` | Beta | KMP platform module: Android Credential Manager bridge with replaceable JSON codec injection and iOS AuthenticationServices bridge without a JSON implementation dependency; both preserve raw responses, map platform errors deterministically, report capabilities, and delegate orchestration to shared core | OEM/provider and iOS runtime/device matrix hardening |
 | `webauthn-client-prf-crypto` | Beta | Signum-backed PRF helpers (request/response extraction), HKDF-SHA256 key derivation, AES-GCM helpers, and zeroizable in-memory session facade | Additional interop vectors and long-term key-management guidance |
+| `WebAuthn` Swift package | Beta | Swift-owned async/actor API for passkeys, capabilities, typed errors, and PRF crypto over a static arm64 XCFramework; compiler API baseline, semantic parity contract, privacy manifest, sample, CI, and coordinated release packaging are implemented | Physical-device/signing/association release matrix and wider external-consumer feedback; no Intel simulator slice |
 | `webauthn-client-ktor` | Beta | Codec-neutral Ktor transport contract with caller-owned engine/serialization, configurable routes, and exact opaque continuation-state forwarding | Broader contract fixtures and retry/error policy guidance |
 | `webauthn-client-ktor-kotlinx` | Production-leaning | Opt-in Kotlinx implementation of the default `/webauthn/*` contract, including typed start payloads and finish outcomes | Additional backend contract profiles and error-policy guidance |
 | `webauthn-client-defaults` | Beta | Recommended Android/iOS platform factories that select the Kotlinx Android codec while preserving explicit codec and iOS presentation-anchor overrides | Broader host/runtime lifecycle coverage |

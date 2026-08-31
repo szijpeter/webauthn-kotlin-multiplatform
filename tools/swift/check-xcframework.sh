@@ -7,6 +7,7 @@ if [[ ! -d "$xcframework" ]]; then
   echo "Missing XCFramework: $xcframework" >&2
   exit 1
 fi
+xcframework="$(cd "$xcframework" && pwd)"
 deployment_scan="$(mktemp -d "${TMPDIR:-/tmp}/webauthn-xcframework-minos.XXXXXX")"
 trap 'rm -rf "$deployment_scan"' EXIT
 
@@ -91,7 +92,7 @@ PY
     exit 1
   fi
   if nm -u "$binary" 2>/dev/null | grep -E '(^|[[:space:]])(_mach_absolute_time|_stat|_fstat|_lstat|_statfs|_fstatfs|_getattrlist|_getattrlistbulk|_fgetattrlist|_CFPreferencesCopyAppValue|_OBJC_CLASS_\$_NSUserDefaults)$' >/dev/null; then
-    echo "A required-reason API appeared; review and update PrivacyInfo.xcprivacy before release." >&2
+    echo "A reviewed required-reason API symbol appeared; inspect the complete Xcode privacy report and update PrivacyInfo.xcprivacy before release." >&2
     exit 1
   fi
 done
@@ -143,4 +144,4 @@ xcrun --sdk iphonesimulator swiftc \
   -o "$deployment_scan/BridgeLinkSmoke" \
   "$swift_smoke"
 
-echo "XCFramework structure, metadata, path hygiene, and Swift import/link checks passed."
+echo "XCFramework structure, declared metadata, selected required-reason symbols, path hygiene, and Swift import/link checks passed."

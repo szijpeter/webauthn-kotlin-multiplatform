@@ -54,6 +54,7 @@ nav:
       - Compose Multiplatform: mobile/compose.md
       - Android: mobile/android.md
       - iOS: mobile/ios.md
+      - Native Swift package: mobile/swift.md
       - Full mobile + backend sample: mobile/full-stack.md
       - Capabilities and extensions: mobile/capabilities.md
       - Production checklist: mobile/production.md
@@ -74,6 +75,7 @@ nav:
       - Compose lifecycle and UI state: guides/compose-lifecycle.md
       - PRF application crypto: guides/prf.md
       - Migration from removed client APIs: guides/migration.md
+      - Native Swift sample: guides/samples/swift-passkey.md
   - Reference:
       - Artifact catalog: reference/modules.md
       - Platform support: reference/platform-support.md
