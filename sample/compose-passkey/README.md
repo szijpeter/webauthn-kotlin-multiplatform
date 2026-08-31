@@ -4,8 +4,8 @@ A Compose Multiplatform app for a minimal end-to-end passkey flow against `sampl
 
 ## What this demonstrates
 
-1. Runtime capability probing via `PasskeyCapabilities.supports(...)` (PRF extension, Large Blob extension, security key support).
-2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`.
+1. Runtime capability probing via `PasskeyCapabilities.supports(...)` (PRF extension, Large Blob extension, security key support, conditional create support).
+2. End-to-end passkey registration against `POST /webauthn/registration/start` + `/webauthn/registration/finish`, including an `Auto Create` action that passes `PasskeyCreateOptions.Conditional` through `PasskeyFlow`.
 3. End-to-end passkey sign-in against `POST /webauthn/authentication/start` + `/webauthn/authentication/finish`.
 4. Two-screen auth/session flow: `Auth` screen (`Register`, `Sign In`) and signed-in extension demo screen with local logout transition back to `Auth`.
 5. Compose-first authentication wiring via `rememberPasskeyFlow(...)`, with sample-owned state and errors driving UI status and action availability.
@@ -74,6 +74,11 @@ WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
 ./gradlew :sample:compose-passkey-android:installDebug
 ```
 
+The `Auto Create` button is for conditional-create smoke testing after confirming the capabilities
+card advertises it. On Android, a “No credential creation option is available” result is valid when
+no enabled provider can create a passkey opportunistically. The `Register` button remains the
+explicit registration path.
+
 3. Optional UI smoke test (emulator/device connected):
 
 <!-- doc-example: id=sample-compose-passkey-readme-bash-4; owner=markdown; verify=syntax; audience=consumer -->
@@ -113,7 +118,7 @@ The sample emits structured logs with tag `PasskeyDemo` and uses the same entrie
 
 - `app`: startup and configuration
 - `capabilities`: probe start/success/failure
-- `action`: register/sign-in taps
+- `action`: register/auto-create/sign-in taps
 - `prf`: PRF sign-in/session/encrypt/decrypt outcomes
 - `flow`: state transitions (`STARTING`, `PLATFORM_PROMPT`, `FINISHING`, terminal outcomes)
 - `http`: Ktor request/response metadata (method, URL, and status)

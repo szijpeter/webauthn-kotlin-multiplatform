@@ -18,10 +18,22 @@ final enum class dev.webauthn.client/CapabilitySupport : kotlin/Enum<dev.webauth
     final fun values(): kotlin/Array<dev.webauthn.client/CapabilitySupport> // dev.webauthn.client/CapabilitySupport.values|values#static(){}[0]
 }
 
+final enum class dev.webauthn.client/PasskeyCreateMediation : kotlin/Enum<dev.webauthn.client/PasskeyCreateMediation> { // dev.webauthn.client/PasskeyCreateMediation|null[0]
+    enum entry CONDITIONAL // dev.webauthn.client/PasskeyCreateMediation.CONDITIONAL|null[0]
+    enum entry DEFAULT // dev.webauthn.client/PasskeyCreateMediation.DEFAULT|null[0]
+
+    final val entries // dev.webauthn.client/PasskeyCreateMediation.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.webauthn.client/PasskeyCreateMediation> // dev.webauthn.client/PasskeyCreateMediation.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.webauthn.client/PasskeyCreateMediation // dev.webauthn.client/PasskeyCreateMediation.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.webauthn.client/PasskeyCreateMediation> // dev.webauthn.client/PasskeyCreateMediation.values|values#static(){}[0]
+}
+
 abstract interface dev.webauthn.client/PasskeyClient { // dev.webauthn.client/PasskeyClient|null[0]
     abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/PasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
     abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client/PasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
     open suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyClient.capabilities|capabilities(){}[0]
+    open suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions, dev.webauthn.client/PasskeyCreateOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/PasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.client.PasskeyCreateOptions){}[0]
 }
 
 abstract interface dev.webauthn.client/PasskeyPlatformBridge { // dev.webauthn.client/PasskeyPlatformBridge|null[0]
@@ -29,6 +41,7 @@ abstract interface dev.webauthn.client/PasskeyPlatformBridge { // dev.webauthn.c
     abstract suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.model/RawRegistrationResponse // dev.webauthn.client/PasskeyPlatformBridge.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
     abstract suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.model/RawAuthenticationResponse // dev.webauthn.client/PasskeyPlatformBridge.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
     open suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/PasskeyPlatformBridge.capabilities|capabilities(){}[0]
+    open suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions, dev.webauthn.client/PasskeyCreateOptions): dev.webauthn.model/RawRegistrationResponse // dev.webauthn.client/PasskeyPlatformBridge.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.client.PasskeyCreateOptions){}[0]
 }
 
 sealed interface <#A: out kotlin/Any?> dev.webauthn.client/PasskeyResult { // dev.webauthn.client/PasskeyResult|null[0]
@@ -171,6 +184,12 @@ sealed interface dev.webauthn.client/PlatformCapability { // dev.webauthn.client
         final fun toString(): kotlin/String // dev.webauthn.client/PlatformCapability.Custom.toString|toString(){}[0]
     }
 
+    final object ConditionalCreate : dev.webauthn.client/PlatformCapability { // dev.webauthn.client/PlatformCapability.ConditionalCreate|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PlatformCapability.ConditionalCreate.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.webauthn.client/PlatformCapability.ConditionalCreate.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.webauthn.client/PlatformCapability.ConditionalCreate.toString|toString(){}[0]
+    }
+
     final object SecurityKey : dev.webauthn.client/PlatformCapability { // dev.webauthn.client/PlatformCapability.SecurityKey|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PlatformCapability.SecurityKey.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.webauthn.client/PlatformCapability.SecurityKey.hashCode|hashCode(){}[0]
@@ -183,6 +202,7 @@ final class dev.webauthn.client/DefaultPasskeyClient : dev.webauthn.client/Passk
 
     final suspend fun capabilities(): dev.webauthn.client/PasskeyCapabilities // dev.webauthn.client/DefaultPasskeyClient.capabilities|capabilities(){}[0]
     final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/DefaultPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions){}[0]
+    final suspend fun createCredential(dev.webauthn.model/PublicKeyCredentialCreationOptions, dev.webauthn.client/PasskeyCreateOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawRegistrationResponse> // dev.webauthn.client/DefaultPasskeyClient.createCredential|createCredential(dev.webauthn.model.PublicKeyCredentialCreationOptions;dev.webauthn.client.PasskeyCreateOptions){}[0]
     final suspend fun getAssertion(dev.webauthn.model/PublicKeyCredentialRequestOptions): dev.webauthn.client/PasskeyResult<dev.webauthn.model/RawAuthenticationResponse> // dev.webauthn.client/DefaultPasskeyClient.getAssertion|getAssertion(dev.webauthn.model.PublicKeyCredentialRequestOptions){}[0]
 }
 
@@ -197,4 +217,24 @@ final class dev.webauthn.client/PasskeyCapabilities { // dev.webauthn.client/Pas
     final fun supportOf(dev.webauthn.client/PasskeyCapability): dev.webauthn.client/CapabilitySupport // dev.webauthn.client/PasskeyCapabilities.supportOf|supportOf(dev.webauthn.client.PasskeyCapability){}[0]
     final fun supports(dev.webauthn.client/PasskeyCapability): kotlin/Boolean // dev.webauthn.client/PasskeyCapabilities.supports|supports(dev.webauthn.client.PasskeyCapability){}[0]
     final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCapabilities.toString|toString(){}[0]
+}
+
+final class dev.webauthn.client/PasskeyCreateOptions { // dev.webauthn.client/PasskeyCreateOptions|null[0]
+    constructor <init>(dev.webauthn.client/PasskeyCreateMediation = ...) // dev.webauthn.client/PasskeyCreateOptions.<init>|<init>(dev.webauthn.client.PasskeyCreateMediation){}[0]
+
+    final val mediation // dev.webauthn.client/PasskeyCreateOptions.mediation|{}mediation[0]
+        final fun <get-mediation>(): dev.webauthn.client/PasskeyCreateMediation // dev.webauthn.client/PasskeyCreateOptions.mediation.<get-mediation>|<get-mediation>(){}[0]
+
+    final fun component1(): dev.webauthn.client/PasskeyCreateMediation // dev.webauthn.client/PasskeyCreateOptions.component1|component1(){}[0]
+    final fun copy(dev.webauthn.client/PasskeyCreateMediation = ...): dev.webauthn.client/PasskeyCreateOptions // dev.webauthn.client/PasskeyCreateOptions.copy|copy(dev.webauthn.client.PasskeyCreateMediation){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.webauthn.client/PasskeyCreateOptions.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.webauthn.client/PasskeyCreateOptions.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.webauthn.client/PasskeyCreateOptions.toString|toString(){}[0]
+
+    final object Companion { // dev.webauthn.client/PasskeyCreateOptions.Companion|null[0]
+        final val Conditional // dev.webauthn.client/PasskeyCreateOptions.Companion.Conditional|{}Conditional[0]
+            final fun <get-Conditional>(): dev.webauthn.client/PasskeyCreateOptions // dev.webauthn.client/PasskeyCreateOptions.Companion.Conditional.<get-Conditional>|<get-Conditional>(){}[0]
+        final val Default // dev.webauthn.client/PasskeyCreateOptions.Companion.Default|{}Default[0]
+            final fun <get-Default>(): dev.webauthn.client/PasskeyCreateOptions // dev.webauthn.client/PasskeyCreateOptions.Companion.Default.<get-Default>|<get-Default>(){}[0]
+    }
 }
