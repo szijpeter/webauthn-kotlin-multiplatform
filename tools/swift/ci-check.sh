@@ -26,8 +26,10 @@ fi
 "$repo_root/tools/swift/check-xcframework.sh"
 "$repo_root/tools/swift/check-xcodegen.sh"
 python3 "$repo_root/tools/swift/test_check_parity.py"
+python3 "$repo_root/tools/swift/test_check_client_parity.py"
 python3 "$repo_root/tools/swift/test_reconcile_release.py"
 "$repo_root/tools/swift/check-parity.py"
+"$repo_root/tools/swift/check-client-parity.py"
 (cd "$repo_root" && swift package dump-package >/dev/null)
 release_manifest_root="$temporary/ReleaseManifest"
 mkdir -p "$release_manifest_root"
