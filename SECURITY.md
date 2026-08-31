@@ -36,8 +36,10 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - Java/Kotlin CodeQL scanning is temporarily disabled while the current CodeQL CLI toolchain does not support Kotlin `2.3.10`.
 - Dependency risk is enforced on pull requests via `actions/dependency-review-action`.
 - CI checkout steps disable persisted Git credentials before Gradle executes repository code.
+- The Swift CI job has read-only repository access and validates the static XCFramework's slices, privacy
+  manifest, required-reason API boundary, build-path hygiene, public API baseline, and Kotlin/Swift semantic parity.
 - The privileged Diff Breakdown workflow pins executable action code to a full commit SHA and loads data-only configuration from the exact pull-request base commit. It never checks out or executes a pull-request head; untrusted pull-request content is consumed only as GitHub API metadata, with `contents: read` and `pull-requests: write` permissions.
 - Renovate manages dependency and GitHub Actions updates.
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
 - Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.
-- The Central publishing job runs with read-only repository contents and disables persisted Git credentials before executing Gradle. A separate `publish-and-release`-only job receives `contents:write` solely to create the matching GitHub release tag from curated changelog notes.
+- The Central publishing job runs with read-only repository contents and disables persisted Git credentials before executing Gradle. A separate GitHub-release job receives `contents:write` only after Central succeeds or during explicit finalization recovery. It creates or verifies a detached release commit whose only tree change is the checksum-pinned Swift package manifest, reconciles the coordinated tag/release from immutable retained inputs, reads back exact assets, repairs only missing expected assets, and rejects conflicting or extra release state.

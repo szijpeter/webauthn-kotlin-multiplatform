@@ -26,8 +26,17 @@ fi
 "$repo_root/tools/swift/check-xcframework.sh"
 "$repo_root/tools/swift/check-xcodegen.sh"
 python3 "$repo_root/tools/swift/test_check_parity.py"
+python3 "$repo_root/tools/swift/test_reconcile_release.py"
 "$repo_root/tools/swift/check-parity.py"
 (cd "$repo_root" && swift package dump-package >/dev/null)
+release_manifest_root="$temporary/ReleaseManifest"
+mkdir -p "$release_manifest_root"
+"$repo_root/tools/swift/render-release-package.sh" \
+  "0.0.0" \
+  "0000000000000000000000000000000000000000000000000000000000000000" \
+  "$release_manifest_root/Package.swift"
+ln -s "$repo_root/swift" "$release_manifest_root/swift"
+(cd "$release_manifest_root" && swift package dump-package >/dev/null)
 
 simulator_id="$(xcrun simctl list devices available -j | python3 -c '
 import json, sys
