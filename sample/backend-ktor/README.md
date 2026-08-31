@@ -30,12 +30,19 @@ Environment variables:
 - `IOS_APP_ID` (canonical iOS app ID for AASA `webcredentials.apps`, default placeholder)
 - `IOS_TEAM_ID` (optional helper input, used to derive `IOS_APP_ID` when `IOS_APP_ID` is unset)
 - `IOS_BUNDLE_ID` (optional helper input, used to derive `IOS_APP_ID` when `IOS_APP_ID` is unset)
+- `WEBAUTHN_SAMPLE_QUALIFICATION_REJECT_AUTHENTICATION_FINISH_ATTEMPT` (optional positive integer; forces
+  only the selected authentication-finish attempt to return a controlled `400` rejection)
 
 `IOS_APP_ID` resolution:
 
 1. If `IOS_APP_ID` is set, it is used as-is.
 2. Else if both `IOS_TEAM_ID` and `IOS_BUNDLE_ID` are set, backend derives `IOS_APP_ID=${IOS_TEAM_ID}.${IOS_BUNDLE_ID}`.
 3. Else backend uses placeholder `TEAMID.com.example.app` and logs a warning.
+
+The qualification rejection setting exists only to exercise a client's backend-rejection state during a
+physical-device release check. It is disabled by default, rejects exactly one numbered authentication-finish
+attempt, and must never be enabled in production. A normal qualification sequence can set it to `3` so the
+first sign-in and PRF verification succeed before the final controlled rejection check.
 
 ## ngrok helper
 

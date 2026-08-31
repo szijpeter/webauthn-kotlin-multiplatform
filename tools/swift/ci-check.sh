@@ -24,6 +24,7 @@ fi
   :client:webauthn-client-swift-bridge:assembleWebAuthnBridgeReleaseXCFramework \
   --stacktrace
 "$repo_root/tools/swift/check-xcframework.sh"
+"$repo_root/tools/swift/check-xcodegen.sh"
 python3 "$repo_root/tools/swift/test_check_parity.py"
 "$repo_root/tools/swift/check-parity.py"
 (cd "$repo_root" && swift package dump-package >/dev/null)
@@ -41,7 +42,8 @@ raise SystemExit("No available iPhone simulator")
 
 common_arguments=(
   -quiet
-  -scheme WebAuthn
+  -project "$repo_root/sample/swift-passkey/WebAuthnSwiftDemo.xcodeproj"
+  -scheme WebAuthnSwiftDemo
   -destination "platform=iOS Simulator,id=$simulator_id"
   -derivedDataPath "$derived_data"
   ARCHS=arm64
@@ -56,6 +58,8 @@ common_arguments=(
 (
   cd "$repo_root"
   xcodebuild "${common_arguments[@]}" -configuration Debug test
+  "$repo_root/tools/swift/check-sample-app.sh" \
+    "$derived_data/Build/Products/Debug-iphonesimulator/WebAuthnSwiftDemo.app"
   xcodebuild \
     "${common_arguments[@]}" \
     -configuration Release \
@@ -66,4 +70,4 @@ if [[ "${WEBAUTHN_SWIFT_CHECK_API_BASELINE:-true}" == "true" ]]; then
   "$repo_root/tools/swift/check-api.sh" "$derived_data"
 fi
 
-echo "Swift bridge, package tests, Release build, API, and parity checks passed."
+echo "Swift bridge, package/sample tests and configuration, Release build, API, parity, and XcodeGen checks passed."

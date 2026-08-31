@@ -10,7 +10,12 @@ import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -18,6 +23,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -81,6 +88,34 @@ class SampleBackendRoutesTest {
         assertTrue(cliBrowserPage.contains("Passkey CLI Browser Handoff"))
         assertTrue(cliBrowserPage.contains("navigator.credentials.create"))
         assertTrue(cliBrowserPage.contains("navigator.credentials.get"))
+    }
+
+    @Test
+    fun registrationStartAcceptsSwiftSamplesEncodedDefaultUserHandle() = testApplication {
+        application {
+            installSampleBackend(
+                registrationService = registrationService(),
+                authenticationService = authenticationService(),
+                config = SampleBackendConfig(attestationPolicy = AttestationPolicy.None),
+            )
+        }
+
+        val response = client.post("/webauthn/registration/start") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """{
+                    "rpId":"example.test",
+                    "rpName":"Sample",
+                    "origin":"https://example.test",
+                    "userName":"Sample User",
+                    "userDisplayName":"Sample User",
+                    "userHandle":"NDI",
+                    "residentKey":"required"
+                }""".trimIndent(),
+            )
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
     @Test
@@ -150,6 +185,60 @@ class SampleBackendRoutesTest {
         )
         assertEquals("TEAMID.com.example.app", partiallyConfiguredIosAppId.iosAppId)
         assertTrue(partiallyConfiguredIosAppId.iosAppIdWarning?.contains("both IOS_TEAM_ID and IOS_BUNDLE_ID") == true)
+    }
+
+    @Test
+    fun qualificationRejectionConfigIsExplicitAndStrictlyParsed() {
+        assertNull(SampleBackendConfig.fromEnvironment(emptyMap()).qualificationRejectAuthenticationFinishAttempt)
+        assertEquals(
+            3,
+            SampleBackendConfig.fromEnvironment(
+                mapOf(
+                    "WEBAUTHN_SAMPLE_QUALIFICATION_REJECT_AUTHENTICATION_FINISH_ATTEMPT" to "3",
+                ),
+            ).qualificationRejectAuthenticationFinishAttempt,
+        )
+        assertFailsWith<IllegalArgumentException> {
+            SampleBackendConfig.fromEnvironment(
+                mapOf(
+                    "WEBAUTHN_SAMPLE_QUALIFICATION_REJECT_AUTHENTICATION_FINISH_ATTEMPT" to "0",
+                ),
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            SampleBackendConfig.fromEnvironment(
+                mapOf(
+                    "WEBAUTHN_SAMPLE_QUALIFICATION_REJECT_AUTHENTICATION_FINISH_ATTEMPT" to "later",
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun qualificationFixtureRejectsOnlyConfiguredAuthenticationFinishAttempt() = testApplication {
+        application {
+            installSampleBackend(
+                registrationService = registrationService(),
+                authenticationService = authenticationService(),
+                config = SampleBackendConfig(
+                    attestationPolicy = AttestationPolicy.None,
+                    qualificationRejectAuthenticationFinishAttempt = 2,
+                ),
+            )
+        }
+
+        val first = client.post("/webauthn/authentication/finish") {
+            contentType(ContentType.Application.Json)
+            setBody("{}")
+        }
+        val second = client.post("/webauthn/authentication/finish") {
+            contentType(ContentType.Application.Json)
+            setBody("{}")
+        }
+
+        assertFalse(first.bodyAsText().contains("qualification: controlled authentication rejection"))
+        assertEquals(HttpStatusCode.BadRequest, second.status)
+        assertTrue(second.bodyAsText().contains("qualification: controlled authentication rejection"))
     }
 }
 

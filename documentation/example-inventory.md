@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **138**
+Managed blocks: **140**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -110,7 +110,7 @@ Managed blocks: **138**
 | platform-bom-readme-kotlin-1 | platform/bom/README.md:25 | How to use | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
 | platform-bom-readme-mermaid-1 | platform/bom/README.md:38 | Fit in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | sample-backend-ktor-readme-bash-1 | sample/backend-ktor/README.md:20 | Run | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:45 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:52 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-1 | sample/compose-passkey-ios/README.md:20 | Quick run on a device with a free Apple account | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-2 | sample/compose-passkey-ios/README.md:46 | Complete passkey path with Associated Domains | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-3 | sample/compose-passkey-ios/README.md:102 | Maintaining this project | bash | contributor | markdown | Markdown block | syntax |  |
@@ -133,6 +133,8 @@ Managed blocks: **138**
 | sample-passkey-cli-readme-bash-5 | sample/passkey-cli/README.md:74 | Local Smoke Path (opt-in) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-6 | sample/passkey-cli/README.md:81 | Local Smoke Path (opt-in) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-7 | sample/passkey-cli/README.md:88 | Local Smoke Path (opt-in) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-swift-passkey-bash-1 | sample/swift-passkey/README.md:25 | Generate and open | bash | contributor | markdown | Markdown block | syntax |  |
+| sample-swift-passkey-bash-2 | sample/swift-passkey/README.md:73 | Tests | bash | contributor | markdown | Markdown block | syntax |  |
 | server-webauthn-attestation-mds-readme-kotlin-1 | server/webauthn-attestation-mds/README.md:18 | How to use | kotlin | consumer | source | documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/MdsExample.kt#mds-trust-source | compile |  |
 | server-webauthn-attestation-mds-readme-mermaid-1 | server/webauthn-attestation-mds/README.md:43 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | server-webauthn-server-core-jvm-readme-kotlin-1 | server/webauthn-server-core-jvm/README.md:22 | How to use | kotlin | consumer | source | documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ServerCoreExample.kt#server-core-services | compile |  |

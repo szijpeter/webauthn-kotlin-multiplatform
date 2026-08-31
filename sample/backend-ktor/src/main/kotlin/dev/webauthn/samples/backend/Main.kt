@@ -13,18 +13,26 @@ import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
 import dev.webauthn.server.ktor.installWebAuthnRoutes
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.exception
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import io.ktor.util.pipeline.intercept
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -37,6 +45,12 @@ public fun main(): Unit {
     val config = SampleBackendConfig.fromEnvironment()
     config.iosAppIdWarning?.let { warning ->
         println("WARNING: $warning")
+    }
+    config.qualificationRejectAuthenticationFinishAttempt?.let { attempt ->
+        println(
+            "WARNING: qualification-only authentication rejection is enabled for finish attempt $attempt. " +
+                "Never enable this mode in production.",
+        )
     }
     val challengeStore = InMemoryChallengeStore()
     val credentialStore = InMemoryCredentialStore()
@@ -84,6 +98,7 @@ public fun Application.installSampleBackend(
             )
         }
     }
+    installQualificationRejectionFixture(config)
     installWebAuthnRoutes(registrationService, authenticationService)
     routing {
         get("/health") {
@@ -138,6 +153,10 @@ public fun Application.installSampleBackend(
                     appendLine("ANDROID_PACKAGE_NAME=${config.androidPackageName}")
                     appendLine("IOS_APP_ID=${config.iosAppId}")
                     appendLine("AttestationPolicy=${config.attestationPolicy}")
+                    appendLine(
+                        "QualificationRejectAuthenticationFinishAttempt=" +
+                            (config.qualificationRejectAuthenticationFinishAttempt ?: "disabled"),
+                    )
                     config.iosAppIdWarning?.let { warning ->
                         appendLine("WARNING=$warning")
                     }
@@ -166,6 +185,7 @@ public data class SampleBackendConfig(
     val iosAppId: String = DEFAULT_IOS_APP_ID,
     val iosAppIdWarning: String? = null,
     val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
+    val qualificationRejectAuthenticationFinishAttempt: Int? = null,
 ) {
     public companion object {
         public fun fromEnvironment(
@@ -182,6 +202,16 @@ public data class SampleBackendConfig(
                 "NONE" -> AttestationPolicy.None
                 else -> AttestationPolicy.Strict
             }
+            val qualificationRejectAuthenticationFinishAttempt =
+                environment["WEBAUTHN_SAMPLE_QUALIFICATION_REJECT_AUTHENTICATION_FINISH_ATTEMPT"]
+                    ?.trim()
+                    ?.takeIf(String::isNotEmpty)
+                    ?.let { configured ->
+                        requireNotNull(configured.toIntOrNull()?.takeIf { it > 0 }) {
+                            "WEBAUTHN_SAMPLE_QUALIFICATION_REJECT_AUTHENTICATION_FINISH_ATTEMPT " +
+                                "must be a positive integer"
+                        }
+                    }
             return SampleBackendConfig(
                 port = configuredPort,
                 androidPackageName = configuredAndroidPackageName,
@@ -189,6 +219,8 @@ public data class SampleBackendConfig(
                 iosAppId = configuredIosAppId.appId,
                 iosAppIdWarning = configuredIosAppId.warning,
                 attestationPolicy = attestationPolicy,
+                qualificationRejectAuthenticationFinishAttempt =
+                    qualificationRejectAuthenticationFinishAttempt,
             )
         }
 
@@ -220,6 +252,25 @@ public data class SampleBackendConfig(
                 appId = DEFAULT_IOS_APP_ID,
                 warning = warning,
             )
+        }
+    }
+}
+
+private fun Application.installQualificationRejectionFixture(config: SampleBackendConfig) {
+    val rejectedAttempt = config.qualificationRejectAuthenticationFinishAttempt ?: return
+    val authenticationFinishCount = AtomicInteger(0)
+    intercept(ApplicationCallPipeline.Plugins) {
+        val isAuthenticationFinish =
+            call.request.httpMethod == HttpMethod.Post &&
+                call.request.path() == "/webauthn/authentication/finish"
+        if (isAuthenticationFinish && authenticationFinishCount.incrementAndGet() == rejectedAttempt) {
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = mapOf(
+                    "errors" to ["qualification: controlled authentication rejection"],
+                ),
+            )
+            finish()
         }
     }
 }
