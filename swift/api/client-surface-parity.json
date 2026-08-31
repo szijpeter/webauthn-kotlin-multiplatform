@@ -144,18 +144,27 @@
           "rationale": "Swift exposes the same ceremonies and capabilities through a MainActor-isolated native client.",
           "symbolsSha256": "7cb0a91e3fc4dea26ef2c0ef88d8448f3c96c47f94bdbd7cc5554a0716a98fa4",
           "swiftSymbols": [
-            "@_hasMissingDesignatedInitializers @_Concurrency.MainActor final public class PasskeyClient"
+            "@_hasMissingDesignatedInitializers @_Concurrency.MainActor final public class PasskeyClient",
+            "@_Concurrency.MainActor public protocol PasskeyClientProtocol : Swift.Sendable"
           ],
           "tests": [
             {
               "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
               "contains": "class PasskeyClientTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnTests/PasskeyClientProtocolTests.swift",
+              "contains": "class PasskeyClientProtocolTests"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-core/README.md",
               "contains": "# webauthn-client-core"
+            },
+            {
+              "path": "swift/README.md",
+              "contains": "## Testing application code"
             }
           ],
           "adaptation": "Typed Kotlin options and results cross the native boundary as UTF-8 JSON Data and async throws.",

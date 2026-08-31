@@ -129,7 +129,8 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-client-defaults`](./client/webauthn-client-defaults/README.md): recommended platform composition with an explicit Kotlinx codec override seam.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
-- [`WebAuthn` Swift package](./swift/README.md): native Swift passkeys, capabilities, typed errors, and PRF sessions over the shared implementation.
+- [`WebAuthn` Swift package](./swift/README.md): native Swift passkeys, capabilities, typed errors, an
+  application-testable client contract, and PRF sessions over the shared implementation.
 
 ## How To Read Module Docs
 
@@ -157,8 +158,9 @@ Kotlin artifacts only; they do not contain the remote manifest and XCFramework a
 Manager. Do not substitute the latest Kotlin version in a Swift dependency declaration. The first coordinated
 Swift release will publish an exact install version in the [native Swift guide](./swift/README.md).
 
-The SDK supports iOS 16+, arm64 devices, and arm64 simulators. Continue with the
-[native Swift guide](./swift/README.md) and [SwiftUI sample](./sample/swift-passkey/README.md).
+The SDK supports iOS 16+, arm64 devices, and arm64 simulators. Application services and view models can
+depend on the public `PasskeyClientProtocol` while production code injects `PasskeyClient`. Continue with
+the [native Swift guide](./swift/README.md) and [SwiftUI sample](./sample/swift-passkey/README.md).
 
 ### Kotlin and JVM
 

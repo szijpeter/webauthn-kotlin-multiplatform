@@ -75,6 +75,13 @@ public enum PasskeyClientError : Swift.Error, Swift.Equatable, Foundation.Locali
   }
   public static func == (a: WebAuthn.PasskeyClientError, b: WebAuthn.PasskeyClientError) -> Swift.Bool
 }
+@_Concurrency.MainActor public protocol PasskeyClientProtocol : Swift.Sendable {
+  @_Concurrency.MainActor func createCredential(optionsJSON: Foundation.Data) async throws -> Foundation.Data
+  @_Concurrency.MainActor func getAssertion(optionsJSON: Foundation.Data) async throws -> Foundation.Data
+  @_Concurrency.MainActor func capabilities() async throws -> WebAuthn.PasskeyCapabilities
+}
+extension WebAuthn.PasskeyClient : WebAuthn.PasskeyClientProtocol {
+}
 public enum PrfOutputSelection : Swift.String, Swift.Sendable {
   case first
   case second
@@ -131,7 +138,6 @@ extension WebAuthn.CapabilitySupport : Swift.RawRepresentable {}
 extension WebAuthn.PasskeyCapabilityKind : Swift.Equatable {}
 extension WebAuthn.PasskeyCapabilityKind : Swift.Hashable {}
 extension WebAuthn.PasskeyCapabilityKind : Swift.RawRepresentable {}
-extension WebAuthn.PasskeyClient : Swift.Sendable {}
 extension WebAuthn.PrfOutputSelection : Swift.Equatable {}
 extension WebAuthn.PrfOutputSelection : Swift.Hashable {}
 extension WebAuthn.PrfOutputSelection : Swift.RawRepresentable {}
