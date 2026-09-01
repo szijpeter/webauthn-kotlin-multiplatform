@@ -125,6 +125,19 @@ final class PasskeyFlowTests: XCTestCase {
         let retryResult = try await flow.register("next", backend: backend)
         XCTAssertEqual(retryResult, .success("registered"))
     }
+
+    func testActorOwnedNonSendableStateAndOutputRemainSupported() async throws {
+        let backend = NonSendableRegistrationBackend()
+        let flow = PasskeyFlow(client: FakePasskeyClient())
+
+        let result = try await flow.register((), backend: backend)
+
+        guard case let .success(output) = result else {
+            return XCTFail("Expected non-Sendable application output")
+        }
+        XCTAssertIdentical(output, backend.output)
+        XCTAssertIdentical(backend.finishedState, backend.state)
+    }
 }
 
 private enum FixtureError: Error, Equatable {
@@ -222,5 +235,25 @@ private struct ThrowingRegistrationBackend: RegistrationBackend {
         if stage == .finish {
             throw FixtureError.backend
         }
+    }
+}
+
+private final class NonSendableState {}
+
+private final class NonSendableOutput {}
+
+@MainActor
+private final class NonSendableRegistrationBackend: RegistrationBackend {
+    let state = NonSendableState()
+    let output = NonSendableOutput()
+    private(set) var finishedState: NonSendableState?
+
+    func start(input: Void) async throws -> CeremonyStart<NonSendableState> {
+        CeremonyStart(state: state, optionsJSON: Data("registration-options".utf8))
+    }
+
+    func finish(state: NonSendableState, responseJSON: Data) async throws -> NonSendableOutput {
+        finishedState = state
+        return output
     }
 }

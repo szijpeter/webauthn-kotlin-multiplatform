@@ -113,9 +113,9 @@ public final class PasskeyFlow {
     }
 
     private func runCeremony<State, Output>(
-        start: () async throws -> CeremonyStart<State>,
+        start: @MainActor () async throws -> CeremonyStart<State>,
         prompt: (Data) async throws -> Data,
-        finish: (State, Data) async throws -> Output,
+        finish: @MainActor (State, Data) async throws -> Output,
         onPhaseChanged: (PasskeyPhase) throws -> Void
     ) async throws -> CeremonyResult<Output> {
         guard !ceremonyInProgress else {
