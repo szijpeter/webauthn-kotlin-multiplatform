@@ -1,0 +1,1015 @@
+{
+  "schemaVersion": 1,
+  "swiftInterface": "swift/api/WebAuthn.swiftinterface",
+  "scope": {
+    "apiDumpGlob": "client/webauthn-client-*/api/*.klib.api",
+    "apiDumpPathsSha256": "83ea26263dd9f1a76db444424051e1f70bf0553157067c752cb69042e550015a",
+    "monitoredSymbolCount": 416,
+    "exclusions": [
+      {
+        "apiDump": "client/webauthn-client-compose/api/webauthn-client-compose.klib.api",
+        "rationale": "Compose lifecycle helpers are Kotlin UI integration APIs, not native Swift application contracts.",
+        "coveredBy": "Kotlin BCV, Compose sample tests, and the Compose client module documentation.",
+        "tests": [
+          {
+            "path": "sample/compose-passkey/src/commonTest/kotlin/dev/webauthn/samples/composepasskey/PasskeyDemoFlowIntegrationTest.kt",
+            "contains": "class PasskeyDemoFlowIntegrationTest"
+          }
+        ],
+        "documentation": [
+          {
+            "path": "client/webauthn-client-compose/README.md",
+            "contains": "# webauthn-client-compose"
+          }
+        ]
+      },
+      {
+        "apiDump": "client/webauthn-client-swift-bridge/api/webauthn-client-swift-bridge.klib.api",
+        "rationale": "The generated bridge is an internal implementation boundary rather than a supported consumer surface.",
+        "coveredBy": "Its KLIB baseline, bridge tests, XCFramework inspection, and the direct semantic parity contract.",
+        "tests": [
+          {
+            "path": "client/webauthn-client-swift-bridge/src/iosTest/kotlin/dev/webauthn/client/swift/SwiftPasskeyBridgeTest.kt",
+            "contains": "class SwiftPasskeyBridgeTest"
+          }
+        ],
+        "documentation": [
+          {
+            "path": "client/webauthn-client-swift-bridge/README.md",
+            "contains": "# webauthn-client-swift-bridge"
+          }
+        ]
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "webauthn-client-core",
+      "apiDump": "client/webauthn-client-core/api/webauthn-client-core.klib.api",
+      "capability": "Ceremony client, outcomes, errors, and capability reporting.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.client/CapabilitySupport",
+          "disposition": "direct",
+          "rationale": "Swift exposes the same three support states as a native enum.",
+          "symbolsSha256": "bbcf078dc3607da85abc0ee688093e09e00a44d9af2a6b792046d21d9733d583",
+          "swiftSymbols": [
+            "public enum CapabilitySupport"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "symbolCount": 8
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/DefaultPasskeyClient",
+          "disposition": "adapted",
+          "rationale": "Consumers receive default behavior without importing Kotlin construction types.",
+          "symbolsSha256": "610aa3228ff1a3f6a30f6634fd493b830dcf4609f09637d4b2b4b8e43cf29f27",
+          "swiftSymbols": [
+            "@_Concurrency.MainActor public init(presentationAnchorProvider:"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "The Swift initializer constructs the internal default Kotlin iOS client and bridge.",
+          "symbolCount": 5
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyCapabilities",
+          "disposition": "direct",
+          "rationale": "Swift exposes the same capability snapshot and support lookup semantics.",
+          "symbolsSha256": "eb46161090bfdac04786a4d05323e2998c7f09f5bb2aa797478a8024b3915b7e",
+          "swiftSymbols": [
+            "public struct PasskeyCapabilities"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "symbolCount": 9
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyCapability",
+          "disposition": "adapted",
+          "rationale": "The native value preserves capability kind and identifier, including unknown values.",
+          "symbolsSha256": "ea39633c781a72aef2a3900849f7ed6a934b9377e02dacf4234f655c881333b9",
+          "swiftSymbols": [
+            "public struct PasskeyCapability"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "The sealed Kotlin capability namespace becomes a Sendable Swift value with an explicit kind.",
+          "symbolCount": 19
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyClient",
+          "disposition": "adapted",
+          "rationale": "Swift exposes the same ceremonies and capabilities through a MainActor-isolated native client.",
+          "symbolsSha256": "7cb0a91e3fc4dea26ef2c0ef88d8448f3c96c47f94bdbd7cc5554a0716a98fa4",
+          "swiftSymbols": [
+            "@_hasMissingDesignatedInitializers @_Concurrency.MainActor final public class PasskeyClient"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "Typed Kotlin options and results cross the native boundary as UTF-8 JSON Data and async throws.",
+          "symbolCount": 4
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyClientError",
+          "disposition": "adapted",
+          "rationale": "Swift uses a native Error enum while preserving every Kotlin domain failure.",
+          "symbolsSha256": "764ed79792336681f8d8028ee96039546721e83248e8bb255422e8debbda12ce",
+          "swiftSymbols": [
+            "public enum PasskeyClientError"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "Kotlin error subtypes map exhaustively to stable Swift error cases.",
+          "symbolCount": 48
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyPlatformBridge",
+          "disposition": "adapted",
+          "rationale": "The public Swift closure preserves late anchor resolution without exposing Kotlin platform types.",
+          "symbolsSha256": "a2e795e0baf3125746c12b5572182863ecbbc845422ba5d89a0bc7d89bb3e218",
+          "swiftSymbols": [
+            "public typealias PresentationAnchorProvider"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "The Kotlin platform bridge stays internal while Swift owns presentation-anchor lookup.",
+          "symbolCount": 5
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyResult",
+          "disposition": "adapted",
+          "rationale": "Idiomatic async throws preserves the outcome and cancellation semantics without exporting a generic sealed result.",
+          "symbolsSha256": "7129fffb2485b3fc58713acde24913c8743804d1451b7ddd116b5ab42fbb99e2",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "Kotlin success and failure values become Swift return values and thrown typed errors; cancellation remains CancellationError.",
+          "symbolCount": 19
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PlatformCapability",
+          "disposition": "adapted",
+          "rationale": "The namespace prevents collisions with WebAuthn extension identifiers.",
+          "symbolsSha256": "a919496f7f531818e390b88df1fbd893e604e58eeea1fced1165dc3ab3f5159c",
+          "swiftSymbols": [
+            "public enum PasskeyCapabilityKind"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-core/src/commonTest/kotlin/dev/webauthn/client/PasskeyClientTest.kt",
+              "contains": "class PasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-core/README.md",
+              "contains": "# webauthn-client-core"
+            }
+          ],
+          "adaptation": "Platform capability objects become values in the Swift platform capability namespace.",
+          "symbolCount": 14
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-flow",
+      "apiDump": "client/webauthn-client-flow/api/webauthn-client-flow.klib.api",
+      "capability": "Application-neutral registration and authentication orchestration.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.client/AuthenticationBackend",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "d8eb529f3fa0c7dd2be79af637bf0ce93c6be71d62aa9a5d8af33122d3d28ee8",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 3
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/CeremonyFailure",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "6fc18e46e4ff0c15e53762efb3baf9f4f7e0fa2d12df0d99e5bf6373488854fb",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 14
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/CeremonyResult",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "12510eaa0a9c85bd879207b776b8b14fd7fbe30d2fc6d838e7faa4fc57e11052",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 19
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/CeremonyStart",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "c8d61c5db684bc4a173e802f4ab15c3dabd8e656d115b29f4de596b9fb3dc405",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 12
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyFlow",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "41f35debd84acd17d8a99a83161daaf738fda4e41f104663d2f3c90766085710",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 4
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/PasskeyPhase",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "7b00eb8fa0885e1d326877346f2578fa0ac751580f595a790a6453630e5af29b",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 8
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/RegistrationBackend",
+          "disposition": "deferred",
+          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "symbolsSha256": "b5295fc0e2f4065c122fca78bcea9a998379ffa13a43d5c6144ab8fce12bab0c",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
+              "contains": "class PasskeyFlowTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-flow/README.md",
+              "contains": "# webauthn-client-flow"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P3",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 3
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-json-core",
+      "apiDump": "client/webauthn-client-json-core/api/webauthn-client-json-core.klib.api",
+      "capability": "JSON ceremony adaptation over the typed passkey client.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.client/DefaultJsonPasskeyClient",
+          "disposition": "adapted",
+          "rationale": "Swift receives the default normalized JSON behavior through its facade.",
+          "symbolsSha256": "00cda5ff9a60f284f9adb6fd8a0ddacef47b51e02629e896f778371da5a376d1",
+          "swiftSymbols": [
+            "final public func getAssertion(optionsJSON: Foundation.Data) async throws -> Foundation.Data"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-json-core/src/commonTest/kotlin/dev/webauthn/client/JsonPasskeyClientTest.kt",
+              "contains": "class JsonPasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-json-core/README.md",
+              "contains": "# webauthn-client-json-core"
+            }
+          ],
+          "adaptation": "The internal bridge composes the default Kotlin JSON client.",
+          "symbolCount": 4
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/JsonPasskeyClient",
+          "disposition": "adapted",
+          "rationale": "The native Data boundary preserves the Kotlin JSON contract without exporting codec types.",
+          "symbolsSha256": "d8fa03bf66db4a70735b7a0613c3905071485ee06f8235e573402b48c424b428",
+          "swiftSymbols": [
+            "final public func createCredential(optionsJSON: Foundation.Data) async throws -> Foundation.Data"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-json-core/src/commonTest/kotlin/dev/webauthn/client/JsonPasskeyClientTest.kt",
+              "contains": "class JsonPasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-json-core/README.md",
+              "contains": "# webauthn-client-json-core"
+            }
+          ],
+          "adaptation": "Swift ceremony methods accept and return UTF-8 JSON Data.",
+          "symbolCount": 3
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client/withJsonSupport",
+          "disposition": "kotlin-specific",
+          "rationale": "Kotlin codec decoration is a Kotlin composition convenience; native callers use the stable Data boundary.",
+          "symbolsSha256": "265ecee1277e5c6fe33f6aff3ce62427f8470ce7e54d60c19cd462b541e7208b",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-json-core/src/commonTest/kotlin/dev/webauthn/client/JsonPasskeyClientTest.kt",
+              "contains": "class JsonPasskeyClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-json-core/README.md",
+              "contains": "# webauthn-client-json-core"
+            }
+          ],
+          "symbolCount": 1
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-defaults",
+      "apiDump": "client/webauthn-client-defaults/api/webauthn-client-defaults.klib.api",
+      "capability": "Default platform client and codec construction.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.client.defaults/DefaultPasskeyClientConfiguration",
+          "disposition": "kotlin-specific",
+          "rationale": "The mutable Kotlin construction DSL and codec object are not part of the native Swift contract.",
+          "symbolsSha256": "771a11249ccd8145e6959b11917aff5cb910ad46962bb2321dd72d3865f48983",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-defaults/src/commonTest/kotlin/dev/webauthn/client/defaults/DefaultPasskeyClientConfigurationTest.kt",
+              "contains": "class DefaultPasskeyClientConfigurationTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-defaults/README.md",
+              "contains": "# webauthn-client-defaults"
+            }
+          ],
+          "symbolCount": 5
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.defaults/defaultPasskeyClient",
+          "disposition": "adapted",
+          "rationale": "The native construction path preserves the default Kotlin implementation without exporting its factory overloads.",
+          "symbolsSha256": "8dce99074b56ac68e8f75ff3bf11887aabc7cf2bb4fe3d2e1549fd9a353988ea",
+          "swiftSymbols": [
+            "@_Concurrency.MainActor convenience public init(presentationAnchor: UIKit.UIWindow)"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-defaults/src/commonTest/kotlin/dev/webauthn/client/defaults/DefaultPasskeyClientConfigurationTest.kt",
+              "contains": "class DefaultPasskeyClientConfigurationTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-defaults/README.md",
+              "contains": "# webauthn-client-defaults"
+            }
+          ],
+          "adaptation": "Swift initializers select the default iOS implementation and own presentation anchors natively.",
+          "symbolCount": 2
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-platform",
+      "apiDump": "client/webauthn-client-platform/api/webauthn-client-platform.klib.api",
+      "capability": "iOS passkey implementation and presentation-anchor ownership.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.client.ios/IosPasskeyClient",
+          "disposition": "adapted",
+          "rationale": "AuthenticationServices behavior remains Kotlin-owned behind the public Swift facade.",
+          "symbolsSha256": "76f5e4933996be58a84113ca11b0798477cca3fc2a3f798fc2385ed55499560c",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-platform/src/iosTest/kotlin/dev/webauthn/client/ios/IosPasskeyClientImplTest.kt",
+              "contains": "class IosPasskeyClientImplTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-platform/README.md",
+              "contains": "# webauthn-client-platform"
+            }
+          ],
+          "adaptation": "The internal binary bridge constructs and delegates to the Kotlin iOS client.",
+          "symbolCount": 5
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.ios/MutablePasskeyPresentationAnchorProvider",
+          "disposition": "adapted",
+          "rationale": "Late anchor resolution covers mutable scene ownership without a public mutable Kotlin wrapper.",
+          "symbolsSha256": "c1586bff4f2853274ab6ebff6360f966a61b9a668535d8805c2430769ce9c436",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-platform/src/iosTest/kotlin/dev/webauthn/client/ios/IosPasskeyClientImplTest.kt",
+              "contains": "class IosPasskeyClientImplTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-platform/README.md",
+              "contains": "# webauthn-client-platform"
+            }
+          ],
+          "adaptation": "The Swift client reevaluates its presentation-anchor closure and updates the internal provider for every operation.",
+          "symbolCount": 4
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.ios/PasskeyPresentationAnchorProvider",
+          "disposition": "adapted",
+          "rationale": "The native closure matches the iOS anchor lifetime behavior without exporting a Kotlin interface.",
+          "symbolsSha256": "079543409cf6e01df629dfde6d346445182b7f3f2b324a823af1af2f290dba3d",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-platform/src/iosTest/kotlin/dev/webauthn/client/ios/IosPasskeyClientImplTest.kt",
+              "contains": "class IosPasskeyClientImplTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-platform/README.md",
+              "contains": "# webauthn-client-platform"
+            }
+          ],
+          "adaptation": "A MainActor Sendable Swift closure supplies the current UIWindow immediately before each ceremony.",
+          "symbolCount": 2
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.ios/StaticPasskeyPresentationAnchorProvider",
+          "disposition": "adapted",
+          "rationale": "The native initializer covers the static provider use case.",
+          "symbolsSha256": "a5eae7e81ed49453929ebdca63664aa895092bc11825c1b6c6041b3e0330500a",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-platform/src/iosTest/kotlin/dev/webauthn/client/ios/IosPasskeyClientImplTest.kt",
+              "contains": "class IosPasskeyClientImplTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-platform/README.md",
+              "contains": "# webauthn-client-platform"
+            }
+          ],
+          "adaptation": "The fixed-window Swift convenience initializer supplies a stable presentation anchor.",
+          "symbolCount": 3
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-prf-crypto",
+      "apiDump": "client/webauthn-client-prf-crypto/api/webauthn-client-prf-crypto.klib.api",
+      "capability": "PRF authentication, key derivation, and session crypto.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/MissingPrfOutputException",
+          "disposition": "adapted",
+          "rationale": "Swift keeps PRF validation inside the existing public error model.",
+          "symbolsSha256": "c56c2dbe7bb0112e725f41c7b92b06d959dd01a5333a593ca71d96df880adbcd",
+          "swiftSymbols": [
+            "case invalidOptions(message: Swift.String)"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "adaptation": "A missing selected PRF output becomes a typed invalid-options Swift error.",
+          "symbolCount": 2
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/PrfAuthenticationResult",
+          "disposition": "adapted",
+          "rationale": "The Swift result preserves response JSON, both PRF outputs, and session ownership.",
+          "symbolsSha256": "75e49482a2228f956209c1e8221e9b0c413c390023ac9cd8937bacf1a597a61e",
+          "swiftSymbols": [
+            "public struct PrfAuthenticationResult"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "adaptation": "The Kotlin response and PRF values become Swift Data values plus a native crypto session.",
+          "symbolCount": 15
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/PrfCiphertext",
+          "disposition": "direct",
+          "rationale": "Swift exposes the same nonce, ciphertext, authentication tag, and optional associated data.",
+          "symbolsSha256": "2cdfde48fa27e66be0e307288e157d1872212c6f1600487e0eddfbb685a9a6bf",
+          "swiftSymbols": [
+            "public struct PrfCiphertext"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "symbolCount": 18
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/PrfCrypto",
+          "disposition": "adapted",
+          "rationale": "The public native types expose the supported high-level PRF lifecycle while keeping crypto implementation centralized.",
+          "symbolsSha256": "200956062857eab6304aef374d9de08f4845e5be81172a573d751576796cfa4b",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "adaptation": "Low-level Kotlin helpers remain behind the native client and actor instead of becoming free Swift functions.",
+          "symbolCount": 11
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/PrfCryptoClient",
+          "disposition": "adapted",
+          "rationale": "The high-level native API preserves salts, context, HKDF salt, output selection, and ceremony behavior.",
+          "symbolsSha256": "5e654c7eab3186a9a88f0c5576395fdcc6fae810812e7d7e752bdab3c328374e",
+          "swiftSymbols": [
+            "@_Concurrency.MainActor final public class PrfCryptoClient"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "adaptation": "The Swift client owns Data conversion while delegating PRF authentication and derivation to Kotlin.",
+          "symbolCount": 3
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/PrfCryptoSession",
+          "disposition": "direct",
+          "rationale": "The Swift actor exposes the same encrypt, decrypt, clear, context, fingerprint, and cleared-state lifecycle.",
+          "symbolsSha256": "12ea69e7a009e35ad82cb8e00d893bb1d50dbeebc1e9b53ad021aae754630527",
+          "swiftSymbols": [
+            "public actor PrfCryptoSession"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "symbolCount": 12
+        },
+        {
+          "kotlinRoot": "dev.webauthn.client.prf/PrfOutputSelection",
+          "disposition": "direct",
+          "rationale": "Swift exposes the same first or second authenticator-output choice.",
+          "symbolsSha256": "1c25884202d145ae2e29fe8f0b06ee6d5e49ba1aa77bceb9fc58b9e6ba8b4f90",
+          "swiftSymbols": [
+            "public enum PrfOutputSelection"
+          ],
+          "tests": [
+            {
+              "path": "client/webauthn-client-prf-crypto/src/commonTest/kotlin/dev/webauthn/client/prf/PrfCryptoClientTest.kt",
+              "contains": "class PrfCryptoClientTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-prf-crypto/README.md",
+              "contains": "# webauthn-client-prf-crypto"
+            }
+          ],
+          "symbolCount": 7
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-ktor",
+      "apiDump": "client/webauthn-client-ktor/api/webauthn-client-ktor.klib.api",
+      "capability": "Codec-neutral Ktor ceremony transport and route configuration.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.network/KtorPasskeyBackend",
+          "disposition": "deferred",
+          "rationale": "Native transport remains application-owned until the documented consumer-evidence gate justifies an optional URLSession product.",
+          "symbolsSha256": "e7593976623aea9320c710e73993ad33943f23d8649624a3745280945a12e52f",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor/src/commonTest/kotlin/dev/webauthn/network/KtorPasskeyBackendTest.kt",
+              "contains": "class KtorPasskeyBackendTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor/README.md",
+              "contains": "# webauthn-client-ktor"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 4
+        },
+        {
+          "kotlinRoot": "dev.webauthn.network/KtorPasskeyContractCodec",
+          "disposition": "deferred",
+          "rationale": "Native transport remains application-owned until the documented consumer-evidence gate justifies an optional URLSession product.",
+          "symbolsSha256": "2f77fc0705e299a28af9ca8c800d2611fe0f296d8f7c13dce9b3b52e6b286918",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor/src/commonTest/kotlin/dev/webauthn/network/KtorPasskeyBackendTest.kt",
+              "contains": "class KtorPasskeyBackendTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor/README.md",
+              "contains": "# webauthn-client-ktor"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 10
+        },
+        {
+          "kotlinRoot": "dev.webauthn.network/KtorPasskeyRoutes",
+          "disposition": "deferred",
+          "rationale": "Native transport remains application-owned until the documented consumer-evidence gate justifies an optional URLSession product.",
+          "symbolsSha256": "4561191993156a07e354d17248002e4cf20b42384e77d6d3e5ccc88588b4b084",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor/src/commonTest/kotlin/dev/webauthn/network/KtorPasskeyBackendTest.kt",
+              "contains": "class KtorPasskeyBackendTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor/README.md",
+              "contains": "# webauthn-client-ktor"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 18
+        }
+      ]
+    },
+    {
+      "name": "webauthn-client-ktor-kotlinx",
+      "apiDump": "client/webauthn-client-ktor-kotlinx/api/webauthn-client-ktor-kotlinx.klib.api",
+      "capability": "Default Kotlinx serialization contract for the Ktor transport.",
+      "declarations": [
+        {
+          "kotlinRoot": "dev.webauthn.network.kotlinx/AuthenticationStartPayload",
+          "disposition": "deferred",
+          "rationale": "The concrete Kotlin transport contract is reviewed as input to the native transport decision, not mirrored by technology name.",
+          "symbolsSha256": "f3607281056674e0b50662bcc1cb8cf74e41fa895a6768f9b40f7842a23de7b7",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/src/commonTest/kotlin/dev/webauthn/network/kotlinx/KotlinxKtorPasskeyContractCodecTest.kt",
+              "contains": "class KotlinxKtorPasskeyContractCodecTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/README.md",
+              "contains": "# webauthn-client-ktor-kotlinx"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 26
+        },
+        {
+          "kotlinRoot": "dev.webauthn.network.kotlinx/DefaultPasskeyFinishResult",
+          "disposition": "deferred",
+          "rationale": "The concrete Kotlin transport contract is reviewed as input to the native transport decision, not mirrored by technology name.",
+          "symbolsSha256": "6d36b70d642650ba85bc0da69de490f1efcc381fffa5aa0b002dacb52f0df4a5",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/src/commonTest/kotlin/dev/webauthn/network/kotlinx/KotlinxKtorPasskeyContractCodecTest.kt",
+              "contains": "class KotlinxKtorPasskeyContractCodecTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/README.md",
+              "contains": "# webauthn-client-ktor-kotlinx"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 14
+        },
+        {
+          "kotlinRoot": "dev.webauthn.network.kotlinx/KotlinxKtorPasskeyBackend",
+          "disposition": "deferred",
+          "rationale": "The concrete Kotlin transport contract is reviewed as input to the native transport decision, not mirrored by technology name.",
+          "symbolsSha256": "94c56ee21901e2f117c456ef151ea510a44f9a1c6082a171cd04ae07cd43c840",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/src/commonTest/kotlin/dev/webauthn/network/kotlinx/KotlinxKtorPasskeyContractCodecTest.kt",
+              "contains": "class KotlinxKtorPasskeyContractCodecTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/README.md",
+              "contains": "# webauthn-client-ktor-kotlinx"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 4
+        },
+        {
+          "kotlinRoot": "dev.webauthn.network.kotlinx/KotlinxKtorPasskeyContractCodec",
+          "disposition": "deferred",
+          "rationale": "The concrete Kotlin transport contract is reviewed as input to the native transport decision, not mirrored by technology name.",
+          "symbolsSha256": "ef498ff9faa6c4192f221ba74308fc81ea692190ea266b552beb82a5466dbb26",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/src/commonTest/kotlin/dev/webauthn/network/kotlinx/KotlinxKtorPasskeyContractCodecTest.kt",
+              "contains": "class KotlinxKtorPasskeyContractCodecTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/README.md",
+              "contains": "# webauthn-client-ktor-kotlinx"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 11
+        },
+        {
+          "kotlinRoot": "dev.webauthn.network.kotlinx/RegistrationStartPayload",
+          "disposition": "deferred",
+          "rationale": "The concrete Kotlin transport contract is reviewed as input to the native transport decision, not mirrored by technology name.",
+          "symbolsSha256": "3efd2a8b656f1e02d86c97691d44f6d2b7c472c29e64ec1448fdb43538992839",
+          "swiftSymbols": [],
+          "tests": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/src/commonTest/kotlin/dev/webauthn/network/kotlinx/KotlinxKtorPasskeyContractCodecTest.kt",
+              "contains": "class KotlinxKtorPasskeyContractCodecTest"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "client/webauthn-client-ktor-kotlinx/README.md",
+              "contains": "# webauthn-client-ktor-kotlinx"
+            }
+          ],
+          "owner": "Swift SDK maintainers",
+          "targetPhase": "P4",
+          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
+          "reviewBy": "2027-01-31",
+          "symbolCount": 38
+        }
+      ]
+    }
+  ]
+}
