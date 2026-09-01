@@ -171,6 +171,8 @@ The Swift surface is protected by:
 - unit and UI tests in strict Swift 6 mode;
 - compiler-generated public `.swiftinterface` baselines for `WebAuthn` and `WebAuthnFlow`;
 - a machine-readable Kotlin/bridge/Swift semantic parity contract;
+- a machine-checked one-directional package topology and separate clean UIKit `WebAuthn`-only and SwiftUI
+  `WebAuthnFlow` consumers;
 - complete declared Kotlin/bridge/Swift error-code mapping, with explicit exceptions;
 - Release-mode library-evolution compilation;
 - XCFramework slice, legal/privacy metadata, checksum, and build-path hygiene checks.
