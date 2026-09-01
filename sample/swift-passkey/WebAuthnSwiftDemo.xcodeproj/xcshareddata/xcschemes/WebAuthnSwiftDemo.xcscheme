@@ -108,6 +108,17 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "78747DE90656E582043E30FA"
+               BuildableName = "WebAuthnFlowPackageTests.xctest"
+               BlueprintName = "WebAuthnFlowPackageTests"
+               ReferencedContainer = "container:WebAuthnSwiftDemo.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "35AFB5F2E73AA31117071B68"
                BuildableName = "WebAuthnSwiftDemoUITests.xctest"
                BlueprintName = "WebAuthnSwiftDemoUITests"

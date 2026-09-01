@@ -68,6 +68,14 @@ PRF authentication intentionally remains on `PrfCryptoClient` because its result
 crypto session. Application tests that exercise PRF behavior should fake that high-level dependency rather
 than importing internal bridge values.
 
+## Optional ceremony flow
+
+Applications can add the source-only `WebAuthnFlow` product to reuse registration and authentication
+start-prompt-finish sequencing. `PasskeyFlow` accepts application-owned generic backend contracts, forwards
+opaque continuation state unchanged, reports stable phases, rejects concurrent use of the same instance, and
+keeps backend errors and cancellation under application control. It does not add networking, serialization,
+UI state, persistence, or retry policy. See the [ceremony flow guide](FLOW.md).
+
 ## Registration and authentication
 
 The API accepts and returns UTF-8 JSON as `Data`. The shared Kotlin codec remains the single source of truth
@@ -161,7 +169,7 @@ physical-iPhone qualification for the exact source commit and supplies its stabl
 The Swift surface is protected by:
 
 - unit and UI tests in strict Swift 6 mode;
-- a compiler-generated public `.swiftinterface` baseline;
+- compiler-generated public `.swiftinterface` baselines for `WebAuthn` and `WebAuthnFlow`;
 - a machine-readable Kotlin/bridge/Swift semantic parity contract;
 - complete declared Kotlin/bridge/Swift error-code mapping, with explicit exceptions;
 - Release-mode library-evolution compilation;

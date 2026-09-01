@@ -43,17 +43,26 @@ targets:
     dependencies:
       - package: WebAuthn
         product: WebAuthn
+      - package: WebAuthn
+        product: WebAuthnFlow
     settings:
       base:
         SWIFT_VERSION: "6.0"
         CODE_SIGNING_ALLOWED: NO
 EOF
 cat > "$temporary/Sources/Consumer.swift" <<'EOF'
+import Foundation
 import WebAuthn
+import WebAuthnFlow
 
 @MainActor
 public func makePasskeyClient() -> PasskeyClient {
     PasskeyClient(presentationAnchorProvider: { nil })
+}
+
+@MainActor
+public func makePasskeyFlow(client: any PasskeyClientProtocol) -> PasskeyFlow {
+    PasskeyFlow(client: client)
 }
 EOF
 
@@ -77,4 +86,4 @@ xcodebuild \
   SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
   build
 
-echo "Clean external iOS consumer resolved and compiled WebAuthn $version."
+echo "Clean external iOS consumer resolved and compiled WebAuthn and WebAuthnFlow $version."
