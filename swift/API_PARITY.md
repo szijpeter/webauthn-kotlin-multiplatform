@@ -115,8 +115,8 @@ must still fail first so the omission cannot happen accidentally.
 ## Local checks
 
 The macOS check runs Kotlin PRF and bridge tests, XCFramework validation, direct semantic and complete
-client-surface parity checks, modular Swift package validation, Debug tests, a Release library-evolution build,
-and both API baseline comparisons:
+client-surface parity checks, modular Swift package validation, separate clean UIKit base-only and SwiftUI flow
+consumers, Debug tests, a Release library-evolution build, and both API baseline comparisons:
 
 <!-- doc-example: id=swift-api-parity-bash-2; owner=markdown; verify=syntax; audience=contributor -->
 ```bash

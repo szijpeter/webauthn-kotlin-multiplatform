@@ -79,8 +79,9 @@ common_arguments=(
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     build
 )
+"$repo_root/tools/swift/check-package-consumer.sh" --local "$repo_root"
 if [[ "${WEBAUTHN_SWIFT_CHECK_API_BASELINE:-true}" == "true" ]]; then
   "$repo_root/tools/swift/check-api.sh" "$derived_data"
 fi
 
-echo "Swift bridge, modular package/sample tests and configuration, Release build, API, parity, and XcodeGen checks passed."
+echo "Swift bridge, modular package/sample/consumer tests and configuration, Release build, API, parity, and XcodeGen checks passed."
