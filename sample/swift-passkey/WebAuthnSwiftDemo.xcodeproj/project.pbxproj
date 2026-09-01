@@ -25,6 +25,7 @@
 		A6835EA7D8629590045AB265 /* DemoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096AC8E50EDE727B762F5C8C /* DemoViewModelTests.swift */; };
 		B0808C0F90F43BE513253D84 /* PasskeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */; };
 		B7A26AEE131D2EAB2FA8DB4A /* DemoRequestsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */; };
+		BF4E8853FC67CB7598948830 /* PasskeyClientProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E40CE6AB77C76BD7D7AE5A /* PasskeyClientProtocolTests.swift */; };
 		CE37ED7CEB87D7593121D1D0 /* DemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */; };
 		E8FF6E12EFF0BDE6E58A7BA2 /* PrfCryptoClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */; };
 		F8B0F7EAE776927F38E5B470 /* DemoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */; };
@@ -56,13 +57,14 @@
 		31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoUITests.swift; sourceTree = "<group>"; };
 		3C05904A4CD60DD39FADAB83 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		52DD83E70FB53D79B85FBFBC /* WebAuthnPackageTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnPackageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EF79E6317761004F638065A /* webauthn-kotlin-multiplatform-swift-parity */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "webauthn-kotlin-multiplatform-swift-parity"; path = ../..; sourceTree = SOURCE_ROOT; };
+		95E40CE6AB77C76BD7D7AE5A /* PasskeyClientProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyClientProtocolTests.swift; sourceTree = "<group>"; };
 		A595FFCB0850464B5FE043E8 /* PasskeyBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyBackendTests.swift; sourceTree = "<group>"; };
 		A63EAB6048616424B6654568 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		A65CF00BCCF157FB8E092F04 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		ACF91EA2AFFD99A4C8667B3C /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		AE0CE08CCFE74A42BE2C4236 /* PasskeyBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyBackend.swift; sourceTree = "<group>"; };
 		C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewModel.swift; sourceTree = "<group>"; };
-		C201194EA529405669EAF87E /* webauthn-kotlin-multiplatform-swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "webauthn-kotlin-multiplatform-swift-sdk"; path = ../..; sourceTree = SOURCE_ROOT; };
 		C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrfCryptoClientTests.swift; sourceTree = "<group>"; };
 		C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyService.swift; sourceTree = "<group>"; };
 		C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequestsTests.swift; sourceTree = "<group>"; };
@@ -128,7 +130,7 @@
 		50D5CC9BCF3090F0B37DD407 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				C201194EA529405669EAF87E /* webauthn-kotlin-multiplatform-swift-sdk */,
+				5EF79E6317761004F638065A /* webauthn-kotlin-multiplatform-swift-parity */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -222,6 +224,7 @@
 		EBE13D2ED16E92E48895A864 /* WebAuthnTests */ = {
 			isa = PBXGroup;
 			children = (
+				95E40CE6AB77C76BD7D7AE5A /* PasskeyClientProtocolTests.swift */,
 				18A7094B37BD27AE6DB2C41E /* PasskeyClientTests.swift */,
 				C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */,
 			);
@@ -394,6 +397,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF4E8853FC67CB7598948830 /* PasskeyClientProtocolTests.swift in Sources */,
 				846D604CE7B23976DFA55334 /* PasskeyClientTests.swift in Sources */,
 				E8FF6E12EFF0BDE6E58A7BA2 /* PrfCryptoClientTests.swift in Sources */,
 			);

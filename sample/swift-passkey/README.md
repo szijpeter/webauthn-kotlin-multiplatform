@@ -10,6 +10,7 @@ a PRF-derived AES-GCM session without importing generated Kotlin types in applic
 - backend verification before opening an authenticated route;
 - late resolution of the foreground presentation window;
 - typed cancellation, rejection, platform, codec, concurrency, and internal failures;
+- application-owned client fakes through the public `PasskeyClientProtocol`;
 - capability-gated PRF authentication with caller-owned random input;
 - clear-on-rejection, clear-on-sign-out, and explicit crypto-session lifecycle;
 - safe diagnostics that log phases and metadata rather than credential response bodies.
@@ -65,9 +66,10 @@ entitlement in the built app and the live HTTPS response before treating device 
 
 ## Tests
 
-The repository check selects an available iPhone simulator and runs bridge tests, package tests, sample unit
-tests, a launch UI test, built-app configuration inspection, Release-mode library evolution, public API
-compatibility, semantic parity, and binary artifact inspection:
+The repository check selects an available iPhone simulator and runs bridge tests, package tests (including a
+consumer-style fake of `PasskeyClientProtocol`), sample unit tests, a launch UI test, built-app configuration
+inspection, Release-mode library evolution, public API compatibility, semantic parity, and binary artifact
+inspection:
 
 <!-- doc-example: id=sample-swift-passkey-bash-2; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
