@@ -2,20 +2,24 @@ package dev.webauthn.samples.composepasskey.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
+import dev.webauthn.samples.composepasskey.domain.model.StatusTone
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
+import dev.webauthn.samples.composepasskey.ui.theme.DemoLayout
 
 @Composable
 fun PrfCryptoCard(
@@ -34,150 +38,75 @@ fun PrfCryptoCard(
 ) {
     val hasSession = sessionState != PrfCryptoDemoSessionState.NoSession
     val hasCiphertext = sessionState == PrfCryptoDemoSessionState.CiphertextReady
-
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            PrfCryptoHeader(supportsPrf = supportsPrf)
-            PrfCryptoActions(
-                actionsEnabled = actionsEnabled,
-                supportsPrf = supportsPrf,
-                hasSession = hasSession,
-                onSignInWithPrf = onSignInWithPrf,
-                onClearSession = onClearSession,
+    DemoCard(modifier) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                "Passkey-powered encryption",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.semantics { heading() },
             )
-            PrfCryptoInput(
-                plaintext = plaintext,
-                onPlaintextChange = onPlaintextChange,
-                actionsEnabled = actionsEnabled,
-                hasSession = hasSession,
-                hasCiphertext = hasCiphertext,
-                onEncrypt = onEncrypt,
-                onDecrypt = onDecrypt,
-            )
-            PrfCryptoStatus(
-                statusMessage = statusMessage,
-                decryptedText = decryptedText,
+            Text(
+                "Use the PRF extension to unlock a temporary AES-GCM key.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    }
-}
-
-@Composable
-private fun PrfCryptoHeader(supportsPrf: Boolean) {
-    Text("PRF Crypto Demo", style = MaterialTheme.typography.titleMedium)
-    Text(
-        text = "Caller-owned salt is stored in sample-local memory. " +
-            "If the passkey is removed, encrypted data becomes unrecoverable.",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        text = if (supportsPrf) {
-            "Device reports PRF support."
-        } else {
-            "Device does not report PRF support."
-        },
-        style = MaterialTheme.typography.bodySmall,
-        color = if (supportsPrf) {
-            MaterialTheme.colorScheme.tertiary
-        } else {
-            MaterialTheme.colorScheme.error
-        },
-    )
-}
-
-@Composable
-private fun PrfCryptoActions(
-    actionsEnabled: Boolean,
-    supportsPrf: Boolean,
-    hasSession: Boolean,
-    onSignInWithPrf: () -> Unit,
-    onClearSession: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
+        StatusCard(
+            PasskeyDemoStatus(
+                tone = if (!actionsEnabled) StatusTone.WORKING else StatusTone.IDLE,
+                headline = if (!actionsEnabled) "Working on your session" else sessionState.label(),
+                detail = if (!supportsPrf && !hasSession) {
+                    "PRF is unavailable on this platform or provider. You can still use ordinary passkey sign-in."
+                } else {
+                    statusMessage
+                },
+            ),
+        )
         Button(
             onClick = onSignInWithPrf,
             enabled = actionsEnabled && supportsPrf,
-            modifier = Modifier.weight(1f),
-        ) {
-            Text("Sign In + PRF")
+            modifier = Modifier.fillMaxWidth().heightIn(min = DemoLayout.touchTarget),
+        ) { Text("Sign In + PRF") }
+        MessageField(
+            value = plaintext,
+            onValueChange = onPlaintextChange,
+            enabled = actionsEnabled && hasSession,
+            hasSession = hasSession,
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(
+                onClick = onEncrypt,
+                enabled = actionsEnabled && hasSession,
+                modifier = Modifier.heightIn(min = DemoLayout.touchTarget),
+            ) { Text("Encrypt") }
+            OutlinedButton(
+                onClick = onDecrypt,
+                enabled = actionsEnabled && hasCiphertext,
+                modifier = Modifier.heightIn(min = DemoLayout.touchTarget),
+            ) { Text("Decrypt") }
         }
-        FilledTonalButton(
+        if (decryptedText != null) {
+            SelectionContainer {
+                StatusCard(PasskeyDemoStatus(StatusTone.SUCCESS, "Decrypted message", decryptedText))
+            }
+        }
+        TextButton(
             onClick = onClearSession,
             enabled = actionsEnabled && hasSession,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.heightIn(min = DemoLayout.touchTarget),
         ) {
-            Text("Clear Session")
+            Text("Clear encryption session")
         }
-    }
-}
-
-@Composable
-private fun PrfCryptoInput(
-    plaintext: String,
-    onPlaintextChange: (String) -> Unit,
-    actionsEnabled: Boolean,
-    hasSession: Boolean,
-    hasCiphertext: Boolean,
-    onEncrypt: () -> Unit,
-    onDecrypt: () -> Unit,
-) {
-    OutlinedTextField(
-        value = plaintext,
-        onValueChange = onPlaintextChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text("Plaintext") },
-        singleLine = true,
-        enabled = actionsEnabled && hasSession,
-    )
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Button(
-            onClick = onEncrypt,
-            enabled = actionsEnabled && hasSession,
-            modifier = Modifier.weight(1f),
-        ) {
-            Text("Encrypt")
-        }
-        FilledTonalButton(
-            onClick = onDecrypt,
-            enabled = actionsEnabled && hasSession && hasCiphertext,
-            modifier = Modifier.weight(1f),
-        ) {
-            Text("Decrypt")
-        }
-    }
-}
-
-@Composable
-private fun PrfCryptoStatus(
-    statusMessage: String,
-    decryptedText: String?,
-) {
-    Text(
-        text = statusMessage,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    if (decryptedText != null) {
         Text(
-            text = "Decrypted: $decryptedText",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+            "This demo keeps the salt and key in memory. Removing your passkey makes its encrypted data unrecoverable.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+private fun PrfCryptoDemoSessionState.label(): String = when (this) {
+    PrfCryptoDemoSessionState.NoSession -> "No encryption session"
+    PrfCryptoDemoSessionState.SessionReady -> "Session ready"
+    PrfCryptoDemoSessionState.CiphertextReady -> "Encrypted message ready"
 }

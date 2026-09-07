@@ -1,21 +1,14 @@
 package dev.webauthn.samples.composepasskey.ui.screens.auth
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
+import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.ui.components.ActionsCard
-import dev.webauthn.samples.composepasskey.ui.components.Header
+import dev.webauthn.samples.composepasskey.ui.components.AdaptivePanels
+import dev.webauthn.samples.composepasskey.ui.components.ConfigurationCard
+import dev.webauthn.samples.composepasskey.ui.components.DemoScreen
+import dev.webauthn.samples.composepasskey.ui.components.Intro
+import dev.webauthn.samples.composepasskey.ui.components.StatusCard
 
 @Composable
 internal fun AuthScreen(
@@ -25,34 +18,26 @@ internal fun AuthScreen(
     onShowLogs: () -> Unit,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
+    config: PasskeyDemoConfig = PasskeyDemoConfig(),
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        Header(
-            status = status,
-            onShowLogs = onShowLogs,
+    DemoScreen(onShowLogs) {
+        AdaptivePanels(
+            primary = {
+                Intro(
+                    "Your passkey.\nYour way in.",
+                    "A simpler, safer sign-in. Create a passkey and let your device take care of the rest.",
+                )
+                StatusCard(status)
+            },
+            secondary = {
+                ActionsCard(
+                    actionsEnabled = actionsEnabled,
+                    showRegister = canRegister,
+                    onRegister = onRegister,
+                    onSignIn = onSignIn,
+                )
+                ConfigurationCard(config)
+            },
         )
-
-        if (status.detail != null) {
-            Text(
-                text = status.detail,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        ActionsCard(
-            actionsEnabled = actionsEnabled,
-            showRegister = canRegister,
-            onRegister = onRegister,
-            onSignIn = onSignIn,
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
     }
 }

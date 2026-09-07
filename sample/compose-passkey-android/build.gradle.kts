@@ -77,6 +77,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(kotlin("test-junit"))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    // Compose's transitive Espresso 3.5 uses an InputManager API removed on recent Android versions.
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
 }

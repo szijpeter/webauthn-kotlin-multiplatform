@@ -1,25 +1,16 @@
-@file:Suppress("MagicNumber")
-
 package dev.webauthn.samples.composepasskey.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import dev.webauthn.samples.composepasskey.data.logging.formatTimestampForDisplay
 import dev.webauthn.samples.composepasskey.domain.model.DebugLogEntry
@@ -27,63 +18,45 @@ import dev.webauthn.samples.composepasskey.domain.model.DebugLogLevel
 
 @Composable
 fun DebugLogCard(entries: List<DebugLogEntry>) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text("Debug Log", style = MaterialTheme.typography.titleMedium)
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                if (entries.isEmpty()) {
-                    Text(
-                        text = "No events yet.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                } else {
-                    entries.forEach { entry ->
-                        val stripe = when (entry.level) {
-                            DebugLogLevel.DEBUG -> Color(0xFF94A3AF)
-                            DebugLogLevel.INFO -> Color(0xFF4D81A7)
-                            DebugLogLevel.WARN -> Color(0xFFC4804A)
-                            DebugLogLevel.ERROR -> Color(0xFFB54F60)
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(horizontal = 8.dp, vertical = 7.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.Top,
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(width = 3.dp, height = 30.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(stripe),
-                            )
-                            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
-                                Text(
-                                    text = "${entry.formatTimestampForDisplay()} ${entry.level.name}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                Text(
-                                    text = "${entry.source}: ${entry.message}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+    DemoCard {
+        Text("Debug logs", style = MaterialTheme.typography.titleLarge)
+        if (entries.isEmpty()) {
+            Text(
+                "No events yet. Register or sign in to see activity.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        entries.asReversed().forEach { entry ->
+            DebugLogRow(entry)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+    }
+}
+
+@Composable
+internal fun DebugLogRow(entry: DebugLogEntry) {
+    val color = when (entry.level) {
+        DebugLogLevel.ERROR -> MaterialTheme.colorScheme.error
+        DebugLogLevel.WARN -> MaterialTheme.colorScheme.onSecondaryContainer
+        DebugLogLevel.INFO -> MaterialTheme.colorScheme.primary
+        DebugLogLevel.DEBUG -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(entry.level.name, color = color, style = MaterialTheme.typography.labelMedium)
+            Text(
+                entry.source,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium,
+            )
+            Text(
+                entry.formatTimestampForDisplay(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
+        SelectionContainer {
+            Text(entry.message, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
         }
     }
 }
