@@ -9,6 +9,8 @@ Audience: teams that need typed WebAuthn values and protocol models as the share
 - Shared `ValidationResult` and `WebAuthnValidationError` contracts used across client and server orchestration.
 - L3 extension model types (`prf`, `largeBlob`, related origins).
 
+On JVM, `LargeBlobExtensionInput` and `LargeBlobExtensionOutput` expose public no-argument constructors with all properties set to `null`. Kotlin 2.4.20 generates these constructors for their defaulted parameters, including the nullable `Base64UrlBytes` value-class parameters.
+
 <!-- doc-example: id=core-webauthn-model-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
 ```mermaid
 flowchart LR
