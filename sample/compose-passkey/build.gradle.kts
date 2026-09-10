@@ -56,6 +56,8 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
+            implementation(project(":client:webauthn-client-platform"))
+            implementation(project(":core:webauthn-json-kotlinx"))
         }
 
         iosMain.dependencies {
