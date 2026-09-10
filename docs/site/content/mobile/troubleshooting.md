@@ -4,19 +4,28 @@ Diagnose the first failing boundary. A generic “passkey error” often hides w
 
 ## Boundary-first flow
 
-<!-- doc-example: id=site-troubleshooting-flow-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Decision flow for locating a mobile passkey failure -->
-```mermaid
-flowchart TD
-    A[User starts ceremony] --> B{Start endpoint succeeds?}
-    B -- no --> C[Inspect network, auth, and backend start logs]
-    B -- yes --> D{Platform prompt appears?}
-    D -- no --> E[Inspect host lifecycle, provider, entitlement, and association]
-    D -- yes --> F{Platform returns a credential?}
-    F -- no --> G[Classify cancellation, invalid options, or platform error]
-    F -- yes --> H{Finish endpoint accepts?}
-    H -- no --> I[Inspect challenge, origin, RP ID, signature, state, and policy]
-    H -- yes --> J[Update product session]
-```
+<!-- diagram: public-troubleshooting-flow-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-troubleshooting-flow-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-troubleshooting-flow-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-troubleshooting-flow-1-desktop-dark.svg">
+  <img alt="Find the failing boundary. Follow each labelled branch before investigating the next integration boundary." src="../../../diagrams/assets/public-troubleshooting-flow-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Find the failing boundary</summary>
+<p>Follow each labelled branch before investigating the next integration boundary.</p>
+<p>Nodes: User starts ceremony; Start endpoint succeeds?; Inspect network, auth, and backend start logs; Platform prompt appears?; Inspect host lifecycle, provider, entitlement, and association; Platform returns a credential?; Classify cancellation, invalid options, or platform error; Finish endpoint accepts?; Inspect challenge, origin, RP ID, signature, state, and policy; Update product session.</p>
+<p>1. User starts ceremony → Start endpoint succeeds?.</p>
+<p>2. Start endpoint succeeds? → Inspect network, auth, and backend start logs: no.</p>
+<p>3. Start endpoint succeeds? → Platform prompt appears?: yes.</p>
+<p>4. Platform prompt appears? → Inspect host lifecycle, provider, entitlement, and association: no.</p>
+<p>5. Platform prompt appears? → Platform returns a credential?: yes.</p>
+<p>6. Platform returns a credential? → Classify cancellation, invalid options, or platform error: no.</p>
+<p>7. Platform returns a credential? → Finish endpoint accepts?: yes.</p>
+<p>8. Finish endpoint accepts? → Inspect challenge, origin, RP ID, signature, state, and policy: no.</p>
+<p>9. Finish endpoint accepts? → Update product session: yes.</p>
+</details>
+<!-- /diagram -->
 
 ## Collect safe evidence
 

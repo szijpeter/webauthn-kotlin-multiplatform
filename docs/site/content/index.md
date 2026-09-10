@@ -62,16 +62,25 @@ Run registration and authentication across the included app and Ktor service. [R
 
 ## The shortest production-shaped path
 
-<!-- doc-example: id=site-home-flow-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Conceptual path from a mobile action through the server ceremony boundary -->
-```mermaid
-flowchart LR
-    UI[Mobile UI] --> Flow[PasskeyFlow]
-    Flow --> API[Ktor backend contract]
-    API --> Service[Registration or authentication service]
-    Service --> Store[(Credential and ceremony stores)]
-    Flow --> Prompt[Android or iOS platform prompt]
-    Prompt --> Flow
-```
+<!-- diagram: public-home-flow-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../diagrams/assets/public-home-flow-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../diagrams/assets/public-home-flow-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/assets/public-home-flow-1-desktop-dark.svg">
+  <img alt="From user action to verified result. The platform supplies a credential response; the server makes the verification decision." src="../../diagrams/assets/public-home-flow-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: From user action to verified result</summary>
+<p>The platform supplies a credential response; the server makes the verification decision.</p>
+<p>Nodes: Mobile UI; PasskeyFlow; Ktor backend contract; Registration or authentication service; Credential and ceremony stores; Android or iOS platform prompt.</p>
+<p>1. Mobile UI → PasskeyFlow.</p>
+<p>2. PasskeyFlow → Ktor backend contract.</p>
+<p>3. Ktor backend contract → Registration or authentication service.</p>
+<p>4. Registration or authentication service → Credential and ceremony stores.</p>
+<p>5. PasskeyFlow → Android or iOS platform prompt.</p>
+<p>6. Android or iOS platform prompt → PasskeyFlow.</p>
+</details>
+<!-- /diagram -->
 
 1. Add the shared flow and transport artifacts, plus platform defaults.
 2. Construct the platform client at the host lifecycle boundary.

@@ -39,14 +39,23 @@ Real-world scenario: regulated environments can enforce attestation policy from 
 
 ## How it fits
 
-<!-- doc-example: id=server-webauthn-attestation-mds-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    MDS["FIDO MDS endpoint"] --> SOURCE["FidoMdsTrustSource cache"]
-    SOURCE --> API["TrustAnchorSource contract"]
-    API --> VERIFY["Attestation verifier"]
-    VERIFY --> SVC["webauthn-server-core-jvm registration flow"]
-```
+<!-- diagram: server-webauthn-attestation-mds-readme-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/server-webauthn-attestation-mds-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/server-webauthn-attestation-mds-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/server-webauthn-attestation-mds-readme-1-desktop-dark.svg">
+  <img alt="attestation-mds · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/server-webauthn-attestation-mds-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: attestation-mds · How it fits</summary>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: FIDO MDS endpoint; FidoMdsTrustSource cache; TrustAnchorSource contract; Attestation verifier; webauthn-server-core-jvm registration flow.</p>
+<p>1. FIDO MDS endpoint → FidoMdsTrustSource cache.</p>
+<p>2. FidoMdsTrustSource cache → TrustAnchorSource contract.</p>
+<p>3. TrustAnchorSource contract → Attestation verifier.</p>
+<p>4. Attestation verifier → webauthn-server-core-jvm registration flow.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

@@ -13,6 +13,9 @@ The repository overview shows logical responsibility relationships. The focused
 module diagrams show direct internal Gradle project dependencies for a selected
 slice. In module diagrams, arrows point from the consumer to its dependency.
 
+Diagrams are maintained through the [shared diagram pipeline](diagrams/README.md), with
+responsive SVGs and complete expandable text on GitHub and the public site.
+
 External Maven dependencies are omitted. Optional adapters are labelled
 explicitly. The diagrams are intentionally curated rather than exhaustive.
 
@@ -28,53 +31,55 @@ This view shows where the library is used in a typical passkey application. The
 SDK is represented inside the client and backend descriptions rather than as a
 separate runtime system.
 
-<!-- doc-example: id=docs-architecture-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    USER([End user])
-
-    subgraph APPLICATION["Reference passkey application"]
-        CLIENT["Client application<br/>webauthn-client-flow over client-core and an Android or iOS bridge"]
-        BACKEND["Relying-party backend<br/>webauthn-server-core-jvm plus optional adapters"]
-        STORE[("Credential store")]
-    end
-
-    PLATFORM["Platform passkey API<br/>Credential Manager or AuthenticationServices"]
-    MDS["Attestation metadata service<br/>(optional)"]
-
-    USER -->|initiates registration or authentication| CLIENT
-    CLIENT -->|requests ceremony options and submits credential responses| BACKEND; BACKEND -->|returns ceremony options and verification results| CLIENT
-    CLIENT -->|invokes the passkey ceremony| PLATFORM
-    BACKEND -->|stores registered credentials| STORE
-    BACKEND -. optionally obtains attestation metadata .-> MDS
-```
+<!-- diagram: docs-architecture-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-1-desktop-dark.svg">
+  <img alt="Reference integration. Application and platform responsibilities, with optional metadata explicitly marked." src="diagrams/assets/docs-architecture-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Reference integration</summary>
+<p>Application and platform responsibilities, with optional metadata explicitly marked.</p>
+<p>Nodes: End user; Reference passkey application; Client application — webauthn-client-flow over client-core and an Android or iOS bridge; Relying-party backend — webauthn-server-core-jvm plus optional adapters; Credential store; Platform passkey API — Credential Manager or AuthenticationServices; Attestation metadata service — (optional).</p>
+<p>Client application webauthn-client-flow over client-core and an Android or iOS bridge belongs to Reference passkey application.</p>
+<p>Relying-party backend webauthn-server-core-jvm plus optional adapters belongs to Reference passkey application.</p>
+<p>Credential store belongs to Reference passkey application.</p>
+<p>1. End user → Client application webauthn-client-flow over client-core and an Android or iOS bridge: initiates registration or authentication.</p>
+<p>2. Client application webauthn-client-flow over client-core and an Android or iOS bridge → Relying-party backend webauthn-server-core-jvm plus optional adapters: requests ceremony options and submits credential responses.</p>
+<p>3. Relying-party backend webauthn-server-core-jvm plus optional adapters → Client application webauthn-client-flow over client-core and an Android or iOS bridge: returns ceremony options and verification results.</p>
+<p>4. Client application webauthn-client-flow over client-core and an Android or iOS bridge → Platform passkey API Credential Manager or AuthenticationServices: invokes the passkey ceremony.</p>
+<p>5. Relying-party backend webauthn-server-core-jvm plus optional adapters → Credential store: stores registered credentials.</p>
+<p>6. Relying-party backend webauthn-server-core-jvm plus optional adapters → Attestation metadata service (optional): optionally obtains attestation metadata (dashed).</p>
+</details>
+<!-- /diagram -->
 
 ## Shared foundation
 
 The shared foundation keeps protocol contracts, validation, serialization,
 runtime helpers, and cryptographic contracts separated.
 
-<!-- doc-example: id=docs-architecture-mermaid-2; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TB
-    CRYPTO_API["webauthn-crypto-api<br/>Kotlin/JVM"]
-    CORE["webauthn-core"]
-    SERIALIZATION["webauthn-json-kotlinx"]
-    JSON_API["webauthn-json-api"]
-    PROTOCOL["webauthn-protocol"]
-    CBOR["webauthn-cbor-core"]
-    MODEL["webauthn-model"]
-    RUNTIME["webauthn-runtime-core<br/>No internal project dependencies"]
-
-    CRYPTO_API --> CORE
-    CRYPTO_API --> MODEL
-    CORE --> MODEL
-    SERIALIZATION --> JSON_API
-    SERIALIZATION --> PROTOCOL
-    JSON_API --> MODEL
-    PROTOCOL --> MODEL
-    PROTOCOL --> CBOR
-```
+<!-- diagram: docs-architecture-2 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-2-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-2-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-2-desktop-dark.svg">
+  <img alt="Shared foundation. Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated." src="diagrams/assets/docs-architecture-2-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Shared foundation</summary>
+<p>Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated.</p>
+<p>Nodes: webauthn-crypto-api — Kotlin/JVM; webauthn-core; webauthn-json-kotlinx; webauthn-json-api; webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-runtime-core — No internal project dependencies.</p>
+<p>1. webauthn-crypto-api Kotlin/JVM → webauthn-core.</p>
+<p>2. webauthn-crypto-api Kotlin/JVM → webauthn-model.</p>
+<p>3. webauthn-core → webauthn-model.</p>
+<p>4. webauthn-json-kotlinx → webauthn-json-api.</p>
+<p>5. webauthn-json-kotlinx → webauthn-protocol.</p>
+<p>6. webauthn-json-api → webauthn-model.</p>
+<p>7. webauthn-protocol → webauthn-model.</p>
+<p>8. webauthn-protocol → webauthn-cbor-core.</p>
+</details>
+<!-- /diagram -->
 
 The isolated runtime node is intentional. It communicates that this module has
 no internal project dependencies without inventing an edge.
@@ -87,51 +92,38 @@ opaque backend-state forwarding, and concurrency rejection. JSON, Android, iOS, 
 network modules build around those boundaries. Platform bridges use the neutral codec API only where
 an OS integration requires JSON and return byte-preserving raw responses.
 
-<!-- doc-example: id=docs-architecture-mermaid-3; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TB
-    COMPOSE["webauthn-client-compose"]
-    PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
-    JSON["webauthn-client-json-core"]
-    PRF["webauthn-client-prf-crypto<br/>(optional)"]
-    DEFAULTS["webauthn-client-defaults<br/>(recommended composition)"]
-    KTOR_KOTLINX["webauthn-client-ktor-kotlinx<br/>(default JSON contract)"]
-    KTOR["webauthn-client-ktor<br/>(codec-neutral transport)"]
-    FLOW["webauthn-client-flow"]
-    CLIENT_CORE["webauthn-client-core"]
-    JSON_API["webauthn-json-api"]
-    JSON_KOTLINX["webauthn-json-kotlinx"]
-    RUNTIME["webauthn-runtime-core"]
-    MODEL["webauthn-model"]
-
-    COMPOSE --> CLIENT_CORE
-    COMPOSE --> FLOW
-    COMPOSE --> PLATFORM
-    COMPOSE -->|androidMain| JSON_KOTLINX
-
-    DEFAULTS -->|androidMain and iosMain| PLATFORM
-    DEFAULTS --> JSON_API
-    DEFAULTS --> JSON_KOTLINX
-
-    PLATFORM --> CLIENT_CORE
-    PLATFORM --> JSON_API
-
-    JSON --> CLIENT_CORE
-    JSON --> JSON_API
-
-    PRF --> CLIENT_CORE
-    PRF --> RUNTIME
-
-    KTOR_KOTLINX --> KTOR
-    KTOR_KOTLINX --> JSON_KOTLINX
-
-    KTOR --> FLOW
-
-    FLOW --> CLIENT_CORE
-
-    CLIENT_CORE --> RUNTIME
-    CLIENT_CORE --> MODEL
-```
+<!-- diagram: docs-architecture-3 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-3-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-3-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-3-desktop-dark.svg">
+  <img alt="Client stack. Focused dependency views. Repeated modules provide context; each relationship appears once." src="diagrams/assets/docs-architecture-3-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Client stack</summary>
+<p>Focused dependency views. Repeated modules provide context; each relationship appears once.</p>
+<p>Nodes: webauthn-client-compose; webauthn-client-platform — (androidMain and iosMain); webauthn-client-json-core; webauthn-client-prf-crypto — (optional); webauthn-client-defaults — (recommended composition); webauthn-client-ktor-kotlinx — (default JSON contract); webauthn-client-ktor — (codec-neutral transport); webauthn-client-flow; webauthn-client-core; webauthn-json-api; webauthn-json-kotlinx; webauthn-runtime-core; webauthn-model.</p>
+<p>1. webauthn-client-compose → webauthn-client-core.</p>
+<p>2. webauthn-client-compose → webauthn-client-flow.</p>
+<p>3. webauthn-client-compose → webauthn-client-platform (androidMain and iosMain).</p>
+<p>4. webauthn-client-compose → webauthn-json-kotlinx: androidMain.</p>
+<p>5. webauthn-client-defaults (recommended composition) → webauthn-client-platform (androidMain and iosMain): androidMain and iosMain.</p>
+<p>6. webauthn-client-defaults (recommended composition) → webauthn-json-api.</p>
+<p>7. webauthn-client-defaults (recommended composition) → webauthn-json-kotlinx.</p>
+<p>8. webauthn-client-platform (androidMain and iosMain) → webauthn-client-core.</p>
+<p>9. webauthn-client-platform (androidMain and iosMain) → webauthn-json-api.</p>
+<p>10. webauthn-client-json-core → webauthn-client-core.</p>
+<p>11. webauthn-client-json-core → webauthn-json-api.</p>
+<p>12. webauthn-client-prf-crypto (optional) → webauthn-client-core.</p>
+<p>13. webauthn-client-prf-crypto (optional) → webauthn-runtime-core.</p>
+<p>14. webauthn-client-ktor-kotlinx (default JSON contract) → webauthn-client-ktor (codec-neutral transport).</p>
+<p>15. webauthn-client-ktor-kotlinx (default JSON contract) → webauthn-json-kotlinx.</p>
+<p>16. webauthn-client-ktor (codec-neutral transport) → webauthn-client-flow.</p>
+<p>17. webauthn-client-flow → webauthn-client-core.</p>
+<p>18. webauthn-client-core → webauthn-runtime-core.</p>
+<p>19. webauthn-client-core → webauthn-model.</p>
+</details>
+<!-- /diagram -->
 
 External libraries, platform APIs, source-set details, and samples are
 intentionally omitted from this module dependency view.
@@ -151,33 +143,29 @@ The server core remains framework-agnostic and depends on the neutral protocol
 layer rather than a JSON implementation. Ktor, Exposed, and metadata support
 are optional adapters around the core and cryptographic boundaries.
 
-<!-- doc-example: id=docs-architecture-mermaid-4; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TB
-    KTOR["webauthn-server-ktor<br/>(optional adapter)"]
-    STORE["webauthn-server-store-exposed<br/>(optional adapter)"]
-    MDS["webauthn-attestation-mds<br/>(optional adapter)"]
-    SERVER_CORE["webauthn-server-core-jvm"]
-    PROTOCOL["webauthn-protocol"]
-    JVM_CRYPTO["webauthn-server-jvm-crypto"]
-    FOUNDATION["Shared foundation"]
-    CRYPTO["Cryptography boundary"]
-
-    KTOR --> SERVER_CORE
-
-    STORE --> SERVER_CORE
-    STORE --> FOUNDATION
-    STORE --> CRYPTO
-
-    MDS --> CRYPTO
-
-    SERVER_CORE --> FOUNDATION
-    SERVER_CORE --> PROTOCOL
-    SERVER_CORE --> CRYPTO
-
-    JVM_CRYPTO --> FOUNDATION
-    JVM_CRYPTO --> CRYPTO
-```
+<!-- diagram: docs-architecture-4 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-4-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-4-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-4-desktop-dark.svg">
+  <img alt="JVM server stack. Direct internal dependencies. HTTP, storage and metadata remain optional adapters." src="diagrams/assets/docs-architecture-4-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: JVM server stack</summary>
+<p>Direct internal dependencies. HTTP, storage and metadata remain optional adapters.</p>
+<p>Nodes: webauthn-server-ktor — (optional adapter); webauthn-server-store-exposed — (optional adapter); webauthn-attestation-mds — (optional adapter); webauthn-server-core-jvm; webauthn-protocol; webauthn-server-jvm-crypto; Shared foundation; Cryptography boundary.</p>
+<p>1. webauthn-server-ktor (optional adapter) → webauthn-server-core-jvm.</p>
+<p>2. webauthn-server-store-exposed (optional adapter) → webauthn-server-core-jvm.</p>
+<p>3. webauthn-server-store-exposed (optional adapter) → Shared foundation.</p>
+<p>4. webauthn-server-store-exposed (optional adapter) → Cryptography boundary.</p>
+<p>5. webauthn-attestation-mds (optional adapter) → Cryptography boundary.</p>
+<p>6. webauthn-server-core-jvm → Shared foundation.</p>
+<p>7. webauthn-server-core-jvm → webauthn-protocol.</p>
+<p>8. webauthn-server-core-jvm → Cryptography boundary.</p>
+<p>9. webauthn-server-jvm-crypto → Shared foundation.</p>
+<p>10. webauthn-server-jvm-crypto → Cryptography boundary.</p>
+</details>
+<!-- /diagram -->
 
 ## Distribution and samples
 

@@ -4,17 +4,26 @@ The PRF extension can derive stable credential-bound output during an authentica
 
 ## Ownership model
 
-<!-- doc-example: id=site-prf-ownership-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Shows application ownership around the PRF crypto helper -->
-```mermaid
-flowchart LR
-    Salt[(App-persisted salt)] --> Assertion[Passkey assertion with PRF]
-    Assertion --> Output[Credential-bound PRF output]
-    Output --> HKDF[HKDF with stable context]
-    HKDF --> Session[Short-lived crypto session]
-    Session --> AEAD[AES-GCM ciphertext package]
-    Session --> Clear[Explicit key clear]
-    AEAD --> Storage[(App-owned durable storage)]
-```
+<!-- diagram: public-prf-ownership-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-prf-ownership-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-prf-ownership-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-prf-ownership-1-desktop-dark.svg">
+  <img alt="PRF ownership. Local key derivation and server authentication have separate responsibilities." src="../../../diagrams/assets/public-prf-ownership-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: PRF ownership</summary>
+<p>Local key derivation and server authentication have separate responsibilities.</p>
+<p>Nodes: App-persisted salt; Passkey assertion with PRF; Credential-bound PRF output; HKDF with stable context; Short-lived crypto session; AES-GCM ciphertext package; Explicit key clear; App-owned durable storage.</p>
+<p>1. App-persisted salt → Passkey assertion with PRF.</p>
+<p>2. Passkey assertion with PRF → Credential-bound PRF output.</p>
+<p>3. Credential-bound PRF output → HKDF with stable context.</p>
+<p>4. HKDF with stable context → Short-lived crypto session.</p>
+<p>5. Short-lived crypto session → AES-GCM ciphertext package.</p>
+<p>6. Short-lived crypto session → Explicit key clear.</p>
+<p>7. AES-GCM ciphertext package → App-owned durable storage.</p>
+</details>
+<!-- /diagram -->
 
 The application owns salt generation and persistence, stable context naming, associated data, ciphertext storage, key/session lifetime, recovery, credential migration, and fallback behavior. The module does not provide account recovery or a secure enclave policy.
 

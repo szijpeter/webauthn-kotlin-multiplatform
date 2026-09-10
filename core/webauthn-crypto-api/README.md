@@ -33,14 +33,23 @@ Real-world scenario: multi-tenant backends can swap verifier and trust-anchor st
 
 ## How it fits
 
-<!-- doc-example: id=core-webauthn-crypto-api-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    CORE["webauthn-core"] --> API["webauthn-crypto-api contracts"]
-    SERVER["webauthn-server-core-jvm"] --> API
-    JVM["webauthn-server-jvm-crypto"] --> API
-    MDS["webauthn-attestation-mds"] --> API
-```
+<!-- diagram: core-webauthn-crypto-api-readme-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-crypto-api-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/core-webauthn-crypto-api-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-crypto-api-readme-1-desktop-dark.svg">
+  <img alt="crypto-api · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-crypto-api-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: crypto-api · How it fits</summary>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: webauthn-core; webauthn-crypto-api contracts; webauthn-server-core-jvm; webauthn-server-jvm-crypto; webauthn-attestation-mds.</p>
+<p>1. webauthn-core → webauthn-crypto-api contracts.</p>
+<p>2. webauthn-server-core-jvm → webauthn-crypto-api contracts.</p>
+<p>3. webauthn-server-jvm-crypto → webauthn-crypto-api contracts.</p>
+<p>4. webauthn-attestation-mds → webauthn-crypto-api contracts.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

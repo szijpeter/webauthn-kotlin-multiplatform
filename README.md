@@ -49,31 +49,32 @@ WebAuthn has two ceremony pairs:
 
 Each pair has a server start step and a server finish step, with the platform authenticator in the middle.
 
-<!-- doc-example: id=readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User
-    participant App as Client App
-    participant Auth as Platform Authenticator
-    participant RP as Relying Party Server
-
-    note over RP,App: Registration ceremony
-    App->>RP: registration/start request
-    RP-->>App: registration/start response (challenge + options)
-    App->>Auth: navigator.credentials.create / platform create
-    Auth-->>App: RegistrationResponse
-    App->>RP: registration/finish (credential response)
-    RP-->>App: verified registration
-
-    note over RP,App: Authentication ceremony
-    App->>RP: authentication/start request
-    RP-->>App: authentication/start response (challenge + options)
-    App->>Auth: navigator.credentials.get / platform get
-    Auth-->>App: AuthenticationResponse
-    App->>RP: authentication/finish (credential response)
-    RP-->>App: verified sign-in
-```
+<!-- diagram: readme-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="docs/diagrams/assets/readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-1-desktop-dark.svg">
+  <img alt="WebAuthn ceremonies. The server starts and verifies each ceremony; the platform produces the credential response." src="docs/diagrams/assets/readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: WebAuthn ceremonies</summary>
+<p>The server starts and verifies each ceremony; the platform produces the credential response.</p>
+<p>Nodes: User; Client App; Platform Authenticator; Relying Party Server.</p>
+<p>Notes: Registration ceremony; Authentication ceremony.</p>
+<p>1. Client App → Relying Party Server: registration/start request.</p>
+<p>2. Relying Party Server → Client App: registration/start response (challenge + options) (dashed).</p>
+<p>3. Client App → Platform Authenticator: navigator.credentials.create / platform create.</p>
+<p>4. Platform Authenticator → Client App: RegistrationResponse (dashed).</p>
+<p>5. Client App → Relying Party Server: registration/finish (credential response).</p>
+<p>6. Relying Party Server → Client App: verified registration (dashed).</p>
+<p>7. Client App → Relying Party Server: authentication/start request.</p>
+<p>8. Relying Party Server → Client App: authentication/start response (challenge + options) (dashed).</p>
+<p>9. Client App → Platform Authenticator: navigator.credentials.get / platform get.</p>
+<p>10. Platform Authenticator → Client App: AuthenticationResponse (dashed).</p>
+<p>11. Client App → Relying Party Server: authentication/finish (credential response).</p>
+<p>12. Relying Party Server → Client App: verified sign-in (dashed).</p>
+</details>
+<!-- /diagram -->
 
 The finish payload carries each credential response once. The server derives ceremony type, challenge,
 and origin from its signed `clientDataJSON`; clients must not echo those values as independent claims.
@@ -84,22 +85,25 @@ data rules, signature/attestation verification, counter handling, and policy dec
 
 The repository follows a layered model that keeps protocol and validation concerns separate from transport and platform adapters.
 
-<!-- doc-example: id=readme-mermaid-2; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TB
-    CLIENT["Client stack<br/>Shared orchestration and platform bridges"]
-    SERVER["JVM server stack<br/>Ceremonies, storage and HTTP adapters"]
-    CRYPTO["Cryptography boundary<br/>Crypto contracts and implementations"]
-    FOUNDATION["Shared foundation<br/>Validation, serialization and runtime"]
-    MODEL["Protocol model<br/>Typed WebAuthn contracts"]
-
-    CLIENT --> FOUNDATION
-    CLIENT --> MODEL
-    SERVER --> FOUNDATION
-    SERVER --> CRYPTO
-    CRYPTO --> FOUNDATION
-    FOUNDATION --> MODEL
-```
+<!-- diagram: readme-2 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-2-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="docs/diagrams/assets/readme-2-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-2-desktop-dark.svg">
+  <img alt="Repository structure. Logical responsibility areas, with dependencies directed inward." src="docs/diagrams/assets/readme-2-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Repository structure</summary>
+<p>Logical responsibility areas, with dependencies directed inward.</p>
+<p>Nodes: Client stack — Shared orchestration and platform bridges; JVM server stack — Ceremonies, storage and HTTP adapters; Cryptography boundary — Crypto contracts and implementations; Shared foundation — Validation, serialization and runtime; Protocol model — Typed WebAuthn contracts.</p>
+<p>1. Client stack Shared orchestration and platform bridges → Shared foundation Validation, serialization and runtime.</p>
+<p>2. Client stack Shared orchestration and platform bridges → Protocol model Typed WebAuthn contracts.</p>
+<p>3. JVM server stack Ceremonies, storage and HTTP adapters → Shared foundation Validation, serialization and runtime.</p>
+<p>4. JVM server stack Ceremonies, storage and HTTP adapters → Cryptography boundary Crypto contracts and implementations.</p>
+<p>5. Cryptography boundary Crypto contracts and implementations → Shared foundation Validation, serialization and runtime.</p>
+<p>6. Shared foundation Validation, serialization and runtime → Protocol model Typed WebAuthn contracts.</p>
+</details>
+<!-- /diagram -->
 
 The overview shows logical responsibility areas rather than every Gradle
 dependency. See the [architecture guide](docs/architecture.md) for the

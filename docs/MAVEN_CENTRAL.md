@@ -92,6 +92,7 @@ Guardrails:
 - `publish-and-release` is blocked for snapshot versions.
 - `publish-and-release` requires a matching versioned `CHANGELOG.md` section and creates the GitHub release/tag (`vX.Y.Z`) from those curated notes after successful Central publication.
 - The Central job has read-only repository contents and no persisted Git credentials; only the separate GitHub-release job receives `contents:write`.
+- Diagram freshness and safety checks run before Central publication. `publish-and-release` attaches an offline `webauthn-diagrams.zip` snapshot with the release commit and file hashes; see the [diagram release contract](diagrams/README.md). This does not change Maven contents or the protected Pages deployment flow.
 - Publishing remains manual; merges to `main` do not auto-publish.
 
 ## Release Runbook
@@ -100,7 +101,7 @@ Guardrails:
 2. Set `VERSION_NAME=x.y.z` or pass `version_name` to the workflow.
 3. Trigger the `Publish` workflow with `release_mode=publish-and-release`.
 4. Verify Central Portal status and artifact resolution.
-5. Verify GitHub release/tag `vX.Y.Z` exists (auto-created by `publish-and-release`).
+5. Verify GitHub release/tag `vX.Y.Z` exists (auto-created by `publish-and-release`) and its diagram archive contains matching `provenance.json` commit metadata.
 6. Move `main` back to the next snapshot version.
 
 ## Current State

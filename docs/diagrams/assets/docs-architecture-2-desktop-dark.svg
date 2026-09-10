@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="690" viewBox="0 0 960 690" role="img" aria-labelledby="docs-architecture-2-desktop-dark-title docs-architecture-2-desktop-dark-desc" data-diagram="docs-architecture-2">
+<title id="docs-architecture-2-desktop-dark-title">Shared foundation</title>
+<desc id="docs-architecture-2-desktop-dark-desc">Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated.
+Nodes: webauthn-crypto-api — Kotlin/JVM; webauthn-core; webauthn-json-kotlinx; webauthn-json-api; webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-runtime-core — No internal project dependencies.
+1. webauthn-crypto-api Kotlin/JVM → webauthn-core.
+2. webauthn-crypto-api Kotlin/JVM → webauthn-model.
+3. webauthn-core → webauthn-model.
+4. webauthn-json-kotlinx → webauthn-json-api.
+5. webauthn-json-kotlinx → webauthn-protocol.
+6. webauthn-json-api → webauthn-model.
+7. webauthn-protocol → webauthn-model.
+8. webauthn-protocol → webauthn-cbor-core.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="docs-architecture-2-desktop-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >Shared foundation</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Arrows point from a consumer to its direct internal dependency. Runtime is intentionally</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >isolated.</text>
+<path d="M 303.33 331.17 C 316.97 328.86 330.89 326.51 344.63 324.19" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e1" data-from="CRYPTO_API" data-to="CORE"/>
+<path d="M 303.30 368.55 C 404.20 381.37 545.28 399.29 648.32 412.39" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e2" data-from="CRYPTO_API" data-to="MODEL"/>
+<path d="M 578.63 342.88 C 610.22 356.27 645.39 371.17 677.52 384.79" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e3" data-from="CORE" data-to="MODEL"/>
+<path d="M 303.33 491.86 C 316.84 490.29 330.63 488.69 344.25 487.12" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e4" data-from="SERIALIZATION" data-to="JSON_API"/>
+<path d="M 303.33 538.29 C 316.97 541.72 330.89 545.23 344.63 548.69" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e5" data-from="SERIALIZATION" data-to="PROTOCOL"/>
+<path d="M 607.33 453.93 C 620.97 452.03 634.89 450.10 648.63 448.19" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e6" data-from="JSON_API" data-to="MODEL"/>
+<path d="M 576.69 541.01 C 586.98 536.24 597.24 531.34 607.00 526.50 639.25 510.48 674.11 491.61 704.23 474.79" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e7" data-from="PROTOCOL" data-to="MODEL"/>
+<path d="M 607.33 582.50 C 620.84 582.50 634.63 582.50 648.25 582.50" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-2-desktop-dark-arrow)" data-edge="e8" data-from="PROTOCOL" data-to="CBOR"/>
+<g data-node="CBOR">
+<rect x="657.00" y="541.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="590.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-cbor-core</text>
+</g>
+<g data-node="CORE">
+<rect x="353.00" y="260.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="309.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-core</text>
+</g>
+<g data-node="CRYPTO_API">
+<rect x="49.00" y="310.50" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="347.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-crypto-api</text>
+<text x="176.00" y="372.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Kotlin/JVM</text>
+</g>
+<g data-node="JSON_API">
+<rect x="353.00" y="430.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="479.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-api</text>
+</g>
+<g data-node="MODEL">
+<rect x="657.00" y="388.50" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="784.00" y="437.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-model</text>
+</g>
+<g data-node="PROTOCOL">
+<rect x="353.00" y="541.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="590.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-protocol</text>
+</g>
+<g data-node="RUNTIME">
+<rect x="49.00" y="172.00" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="209.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-runtime-core</text>
+<text x="176.00" y="234.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >No internal project</text>
+<text x="176.00" y="259.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >dependencies</text>
+</g>
+<g data-node="SERIALIZATION">
+<rect x="49.00" y="465.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="514.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-kotlinx</text>
+</g>
+</svg>

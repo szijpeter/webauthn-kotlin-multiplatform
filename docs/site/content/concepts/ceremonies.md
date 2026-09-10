@@ -4,23 +4,28 @@ WebAuthn defines two server-authoritative ceremonies. The authenticator creates 
 
 ## Registration
 
-<!-- doc-example: id=site-ceremonies-registration-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Conceptual WebAuthn registration sequence -->
-```mermaid
-sequenceDiagram
-    participant App as Mobile app
-    participant Server as RP server
-    participant OS as Platform credential API
-    participant Auth as Authenticator
-    App->>Server: registration/start(account context)
-    Server->>Server: store short-lived challenge state
-    Server-->>App: creation options
-    App->>OS: create credential(options)
-    OS->>Auth: user verification and key creation
-    Auth-->>OS: public-key credential response
-    OS-->>App: raw registration response
-    App->>Server: registration/finish(raw response)
-    Server-->>App: accepted account result or rejection
-```
+<!-- diagram: public-ceremonies-registration-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-ceremonies-registration-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-ceremonies-registration-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-ceremonies-registration-1-desktop-dark.svg">
+  <img alt="Registration. The private key stays with the authenticator; the server validates the public credential." src="../../../diagrams/assets/public-ceremonies-registration-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Registration</summary>
+<p>The private key stays with the authenticator; the server validates the public credential.</p>
+<p>Nodes: Mobile app; RP server; Platform credential API; Authenticator.</p>
+<p>1. Mobile app → RP server: registration/start(account context).</p>
+<p>2. RP server → RP server: store short-lived challenge state.</p>
+<p>3. RP server → Mobile app: creation options (dashed).</p>
+<p>4. Mobile app → Platform credential API: create credential(options).</p>
+<p>5. Platform credential API → Authenticator: user verification and key creation.</p>
+<p>6. Authenticator → Platform credential API: public-key credential response (dashed).</p>
+<p>7. Platform credential API → Mobile app: raw registration response (dashed).</p>
+<p>8. Mobile app → RP server: registration/finish(raw response).</p>
+<p>9. RP server → Mobile app: accepted account result or rejection (dashed).</p>
+</details>
+<!-- /diagram -->
 
 The private key stays with the authenticator. The server stores the public credential and its account binding after validation.
 

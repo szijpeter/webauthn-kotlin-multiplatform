@@ -80,13 +80,22 @@ bindings belong.
 
 ## How it fits in the system
 
-<!-- doc-example: id=client-webauthn-client-ktor-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    FLOW["webauthn-client-flow"] --> KTOR["webauthn-client-ktor"]
-    KTOR --> CODEC["Application contract codec"]
-    KTOR --> HTTP["Application-owned Ktor HttpClient and engine"]
-```
+<!-- diagram: client-webauthn-client-ktor-readme-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-desktop-dark.svg">
+  <img alt="client-ktor · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: client-ktor · How it fits in the system</summary>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: webauthn-client-flow; webauthn-client-ktor; Application contract codec; Application-owned Ktor HttpClient and engine.</p>
+<p>1. webauthn-client-flow → webauthn-client-ktor.</p>
+<p>2. webauthn-client-ktor → Application contract codec.</p>
+<p>3. webauthn-client-ktor → Application-owned Ktor HttpClient and engine.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

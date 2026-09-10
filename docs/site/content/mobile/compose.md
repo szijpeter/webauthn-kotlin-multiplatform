@@ -4,20 +4,29 @@ The Compose adapter creates and remembers a passkey client and flow without plac
 
 ## Lifecycle model
 
-<!-- doc-example: id=site-compose-lifecycle-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Shows the lifecycle ownership split between Compose UI and passkey libraries -->
-```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Starting: user action
-    Starting --> PlatformPrompt: start response
-    PlatformPrompt --> Finishing: signed response
-    Starting --> Failed: network or contract error
-    PlatformPrompt --> Idle: user cancellation
-    PlatformPrompt --> Failed: platform error
-    Finishing --> SignedIn: server accepts
-    Finishing --> Failed: server rejects
-    SignedIn --> Idle: product logout
-```
+<!-- diagram: public-compose-lifecycle-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-compose-lifecycle-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-compose-lifecycle-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-compose-lifecycle-1-desktop-dark.svg">
+  <img alt="Ceremony lifecycle. Product UI owns state, cancellation and the signed-in session." src="../../../diagrams/assets/public-compose-lifecycle-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: Ceremony lifecycle</summary>
+<p>Product UI owns state, cancellation and the signed-in session.</p>
+<p>Nodes: [start]; Idle; Starting; PlatformPrompt; Finishing; Failed; SignedIn.</p>
+<p>1. [start] → Idle.</p>
+<p>2. Idle → Starting: user action.</p>
+<p>3. Starting → PlatformPrompt: start response.</p>
+<p>4. PlatformPrompt → Finishing: signed response.</p>
+<p>5. Starting → Failed: network or contract error.</p>
+<p>6. PlatformPrompt → Idle: user cancellation.</p>
+<p>7. PlatformPrompt → Failed: platform error.</p>
+<p>8. Finishing → SignedIn: server accepts.</p>
+<p>9. Finishing → Failed: server rejects.</p>
+<p>10. SignedIn → Idle: product logout.</p>
+</details>
+<!-- /diagram -->
 
 Your UI should disable duplicate actions while a ceremony is active, expose cancellation as a normal outcome, and avoid retaining response payloads in logs or saveable UI state.
 

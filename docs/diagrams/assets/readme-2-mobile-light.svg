@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg width="400" height="1000" data-theme="light" class="mobile" viewBox="0 0 400 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="overview-mobile-light-title overview-mobile-light-desc">
+    <title id="overview-mobile-light-title">WebAuthn repository overview</title>
+    <desc id="overview-mobile-light-desc">Client and JVM server stacks share the foundation; the server also uses the cryptography boundary, which uses the foundation; the client and foundation use the protocol model.</desc>
+    <defs><style>:root {
+      color-scheme: light dark;
+      --paper: #ffffff; --ink: #293545; --muted: #667386;
+      --line: #d8dee7; --panel: #f3f5f7; --accent: #316da8; --accent-soft: #e8f0f8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1d242d; --ink: #edf1f5; --muted: #b4bfcc;
+        --line: #3c4755; --panel: #28313d; --accent: #82b5e8; --accent-soft: #263f58;
+      }
+    }
+    [data-theme="light"] {
+      --paper: #ffffff; --ink: #293545; --muted: #667386;
+      --line: #d8dee7; --panel: #f3f5f7; --accent: #316da8; --accent-soft: #e8f0f8;
+    }
+    [data-theme="dark"] {
+      --paper: #1d242d; --ink: #edf1f5; --muted: #b4bfcc;
+      --line: #3c4755; --panel: #28313d; --accent: #82b5e8; --accent-soft: #263f58;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    main { max-width: 960px; margin: 0 auto; }
+    svg { display: block; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, system-ui, Helvetica, Arial, sans-serif; }
+    .paper { fill: var(--paper); }
+    .edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+    .arrow { fill: var(--muted); }
+    .arrow-accent { fill: var(--accent); }
+    .arrow-link { fill: var(--accent); }
+    .node { fill: var(--paper); stroke: var(--line); stroke-width: 1.5; }
+    .foundation { fill: var(--accent-soft); stroke: var(--accent); }
+    .model { fill: var(--panel); }
+    .title { fill: var(--ink); font-size: 28px; font-weight: 720; letter-spacing: -0.5px; }
+    .name { fill: var(--ink); font-size: 20px; font-weight: 650; }
+    .detail { fill: var(--muted); font-size: 16px; }
+    .caption { fill: var(--muted); font-size: 12px; }
+    .rule { stroke: var(--line); stroke-width: 1; }
+    svg.mobile { display: none; max-width: 480px; margin: 0 auto; }
+    @media (max-width: 720px) {
+      svg.desktop { display: none; }
+      svg.mobile { display: block; }
+    }
+svg.desktop, svg.mobile { display: block !important; }
+</style>
+      <marker id="mobile-light-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path class="arrow" d="M0 0 L8 3 L0 6 Z"/></marker>
+      <marker id="mobile-light-arrow-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path class="arrow-accent" d="M0 0 L8 3 L0 6 Z"/></marker>
+      <marker id="mobile-light-arrow-link" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path class="arrow-link" d="M0 0 L8 3 L0 6 Z"/></marker>
+    </defs>
+    <rect class="paper" width="400" height="1000"/>
+    <text class="title" x="24" y="40">Repository overview</text>
+    <text class="caption" x="24" y="64">Five areas · one shared foundation</text>
+    <g class="edge" marker-end="url(#mobile-light-arrow)">
+      <path data-from="CLIENT" data-to="FOUNDATION" d="M96 160 H64 Q56 160 56 168 V656 Q56 664 64 664 H96"/>
+      <path data-from="CLIENT" data-to="MODEL" d="M96 112 H40 Q32 112 32 120 V868 Q32 876 40 876 H96"/>
+      <path data-from="SERVER" data-to="FOUNDATION" d="M360 312 H368 Q376 312 376 320 V632 Q376 640 368 640 H360"/>
+      <path data-from="SERVER" data-to="CRYPTO" d="M224 368 V432"/>
+      <path data-from="CRYPTO" data-to="FOUNDATION" d="M224 544 V608"/>
+      <path data-from="FOUNDATION" data-to="MODEL" d="M224 720 V832"/>
+    </g>
+    <g data-node="CLIENT">
+      <rect class="node" x="96" y="96" width="264" height="96" rx="8"/>
+      <text class="name" x="112" y="128">Client stack</text>
+      <text class="detail" x="112" y="152">Shared orchestration</text><text class="detail" x="112" y="176">and platform bridges</text>
+    </g>
+    <g data-node="SERVER">
+      <rect class="node" x="96" y="256" width="264" height="112" rx="8"/>
+      <text class="name" x="112" y="296">JVM server stack</text>
+      <text class="detail" x="112" y="320">Ceremonies, storage</text><text class="detail" x="112" y="344">and HTTP adapters</text>
+    </g>
+    <g data-node="CRYPTO">
+      <rect class="node" x="96" y="432" width="264" height="112" rx="8"/>
+      <text class="name" x="112" y="472">Cryptography boundary</text>
+      <text class="detail" x="112" y="496">Crypto contracts</text><text class="detail" x="112" y="520">and implementations</text>
+    </g>
+    <g data-node="FOUNDATION">
+      <rect class="node foundation" x="96" y="608" width="264" height="112" rx="8"/>
+      <text class="name" x="112" y="648">Shared foundation</text>
+      <text class="detail" x="112" y="672">Validation, serialization</text><text class="detail" x="112" y="696">and runtime</text>
+    </g>
+    <g data-node="MODEL">
+      <rect class="node model" x="96" y="832" width="264" height="88" rx="8"/>
+      <text class="name" x="112" y="864">Protocol model</text>
+      <text class="detail" x="112" y="888">Typed WebAuthn contracts</text>
+    </g>
+    <line class="rule" x1="24" y1="944" x2="376" y2="944"/>
+    <text class="caption" x="24" y="968">Arrows: logical relationships, not every dependency.</text>
+    <text class="caption" x="24" y="988">Blue: shared foundation.</text>
+  </svg>

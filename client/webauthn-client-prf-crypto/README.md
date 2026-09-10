@@ -10,19 +10,28 @@ Audience: teams implementing client-side encryption flows derived from WebAuthn 
 - AES-GCM encrypt/decrypt helpers and zeroizable `PrfCryptoSession`.
 - `PrfCryptoClient.authenticateWithPrf(...)` for assertion and session derivation in one call.
 
-<!-- doc-example: id=client-webauthn-client-prf-crypto-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TD
-    Salt["Caller-owned persisted salt"] --> Start["PublicKeyCredentialRequestOptions"]
-    Start --> AddPrf["PrfCrypto.withPrfEvaluation"]
-    AddPrf --> Assertion["PasskeyClient.getAssertion"]
-    Assertion --> Extract["PrfCrypto.requirePrfResults"]
-    Extract --> Derive["HKDF-SHA256 deriveAes256Key"]
-    Derive --> Session["PrfCryptoSession (in memory)"]
-    Session --> Encrypt["encrypt / encryptString"]
-    Session --> Decrypt["decrypt / decryptToString"]
-    Session --> Clear["clear() zeroizes key bytes"]
-```
+<!-- diagram: client-webauthn-client-prf-crypto-readme-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-prf-crypto-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/client-webauthn-client-prf-crypto-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-prf-crypto-readme-1-desktop-dark.svg">
+  <img alt="client-prf-crypto · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-prf-crypto-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: client-prf-crypto · What it provides</summary>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Caller-owned persisted salt; PublicKeyCredentialRequestOptions; PrfCrypto.withPrfEvaluation; PasskeyClient.getAssertion; PrfCrypto.requirePrfResults; HKDF-SHA256 deriveAes256Key; PrfCryptoSession (in memory); encrypt / encryptString; decrypt / decryptToString; clear() zeroizes key bytes.</p>
+<p>1. Caller-owned persisted salt → PublicKeyCredentialRequestOptions.</p>
+<p>2. PublicKeyCredentialRequestOptions → PrfCrypto.withPrfEvaluation.</p>
+<p>3. PrfCrypto.withPrfEvaluation → PasskeyClient.getAssertion.</p>
+<p>4. PasskeyClient.getAssertion → PrfCrypto.requirePrfResults.</p>
+<p>5. PrfCrypto.requirePrfResults → HKDF-SHA256 deriveAes256Key.</p>
+<p>6. HKDF-SHA256 deriveAes256Key → PrfCryptoSession (in memory).</p>
+<p>7. PrfCryptoSession (in memory) → encrypt / encryptString.</p>
+<p>8. PrfCryptoSession (in memory) → decrypt / decryptToString.</p>
+<p>9. PrfCryptoSession (in memory) → clear() zeroizes key bytes.</p>
+</details>
+<!-- /diagram -->
 
 ## When to use
 

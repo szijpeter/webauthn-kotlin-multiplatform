@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-09-07
+Last updated: 2026-09-10
 
 ## Status Legend
 
@@ -14,6 +14,13 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
 - `Scaffold`: structural/API foundation in place; significant implementation remains.
 
 ## Overall Snapshot
+
+- Documentation diagram migration (2026-09-10): all 30 public Mermaid diagrams now use the maintained
+  `docs/diagrams` semantic sources, reviewed layouts, 120 responsive/themed SVG exports, and accessible
+  text. Documentation and quality gates check freshness, fidelity and safe assets; site staging reuses
+  the same collection. The manual release workflow verifies it before Central publication and attaches a
+  commit-pinned offline diagram archive to GitHub releases. This changes documentation/build tooling only;
+  runtime behavior, public API, Maven contents and protected Pages deployment remain as before.
 
 - Kotlin 2.4.20: the model JVM API baseline includes compiler-generated no-argument constructors for
   `LargeBlobExtensionInput` and `LargeBlobExtensionOutput`. Both constructors initialize every property

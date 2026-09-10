@@ -1,14 +1,14 @@
 # Architecture diagram comparison
 
-This review-only spike compares the existing README repository overview with a
-refined Mermaid version and a Diagram Design editorial redraw. It does not
-replace the public README, architecture guide, or generated documentation site.
+This is the historical comparison that preceded the full migration in PR #287.
+The approved editorial overview now appears in the root README; all 30 public
+diagrams use the maintained [diagram collection](../../diagrams/README.md).
+The sources and baseline below preserve the original comparison evidence.
 
-The source is the second Mermaid block in [README.md](../../../README.md), at
-base commit `206212b77e8e4f4856dbab64669f7a6034cdb2b9`. The experiment implements
-the requested Diagram Design trial; the repository's Mermaid requirement still
-governs published architecture documentation. Promoting the editorial assets
-would require a separate, explicit policy decision.
+The original overview came from the second Mermaid block in the root README at
+base commit `206212b77e8e4f4856dbab64669f7a6034cdb2b9`. These frozen artifacts are
+not the production authoring pipeline. Current sources, ownership, deterministic
+exports, site staging, and release checks are documented in the collection.
 
 ## Before and after
 
@@ -105,15 +105,24 @@ upstream Diagram Design self-check and label-mask geometry check pass. Rendered
 light/dark desktop and phone views are inspected separately. Repository checks
 are `docsUpdate`, `docsCheck`, and fast/strict changed-scope quality gates.
 
-## Recommendation
+## Migration outcome
 
-The editorial layout gives this small overview clearer hierarchy and deliberate
-routing, plus a useful phone presentation. The Mermaid control improves the
-starting layout with considerably less maintenance. Keep the experiment scoped:
-one successful overview does not validate dense dependency or security-flow
-diagrams. The 13-node client graph needs decomposition before any similar redraw.
+The overview's hand-authored layout was promoted. Dense client and public
+architecture graphs were split into focused views, and sequence/state diagrams
+were migrated with their message order and error/cancellation paths preserved.
+The production collection owns updates and CI checks. This directory remains
+before/after evidence and is excluded from public-site staging.
 
-If the editorial approach is adopted later, retain Mermaid as the semantic
-source, decide which authored assets enter the site, and make explicit who
-updates both layouts and checks exports when the source changes. This experiment
-does not add those responsibilities to normal builds or CI.
+## Dense client graph migration
+
+The client baseline below is rendered from the original 13-node, 19-edge source
+at the same base commit, using Mermaid CLI 11.12.0. The maintained replacement
+splits that graph into three focused panels. Context nodes can repeat across
+panels; all 19 relationships appear exactly once, including source-set labels.
+
+| Original client graph | Maintained client views |
+| --- | --- |
+| ![Original client dependency graph](assets/client-before-light.png) | ![Focused client dependency views](../../diagrams/assets/docs-architecture-3-desktop-light.svg) |
+
+Historical source: [client-before.mmd](client-before.mmd). Current semantics and
+reviewed geometry live in the maintained collection.

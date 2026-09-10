@@ -371,3 +371,13 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Diagram theme follows the site's explicit switch, independently of the OS. */
+.diagram-figure img { display: block; width: 100%; height: auto; }
+.diagram-figure .diagram-dark { display: none; }
+[data-md-color-scheme="slate"] .diagram-figure .diagram-light { display: none; }
+[data-md-color-scheme="slate"] .diagram-figure .diagram-dark { display: block; }
+
+@media (max-width: 720px) {
+  .diagram-figure { max-width: 480px; margin-inline: auto; }
+}

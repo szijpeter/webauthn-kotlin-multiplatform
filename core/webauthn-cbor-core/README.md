@@ -13,12 +13,21 @@ Use this module when a parser/validator needs low-level strict CBOR traversal ut
 
 ## How it fits in the system
 
-<!-- doc-example: id=core-webauthn-cbor-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    CBOR["webauthn-cbor-core"] --> SERIAL["webauthn-json-kotlinx"]
-    CBOR --> JVM["webauthn-server-jvm-crypto"]
-```
+<!-- diagram: core-webauthn-cbor-core-readme-1 -->
+<picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-cbor-core-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/core-webauthn-cbor-core-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-cbor-core-readme-1-desktop-dark.svg">
+  <img alt="cbor-core · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-cbor-core-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture>
+<details>
+<summary>Diagram text: cbor-core · How it fits in the system</summary>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: webauthn-cbor-core; webauthn-json-kotlinx; webauthn-server-jvm-crypto.</p>
+<p>1. webauthn-cbor-core → webauthn-json-kotlinx.</p>
+<p>2. webauthn-cbor-core → webauthn-server-jvm-crypto.</p>
+</details>
+<!-- /diagram -->
 
 ## Stability expectations
 
