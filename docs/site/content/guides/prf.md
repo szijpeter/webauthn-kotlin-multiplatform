@@ -5,14 +5,15 @@ The PRF extension can derive stable credential-bound output during an authentica
 ## Ownership model
 
 <!-- diagram: public-prf-ownership-1 -->
+<a href="../../../diagrams/assets/public-prf-ownership-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-prf-ownership-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-prf-ownership-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-prf-ownership-1-desktop-dark.svg">
-  <img alt="PRF ownership. Local key derivation and server authentication have separate responsibilities." src="../../../diagrams/assets/public-prf-ownership-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="PRF ownership. Local key derivation and server authentication have separate responsibilities." src="../../../diagrams/assets/public-prf-ownership-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: PRF ownership</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-prf-ownership-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-prf-ownership-1-mobile-dark.svg">dark</a>.</p>
 <p>Local key derivation and server authentication have separate responsibilities.</p>
 <p>Nodes: App-persisted salt; Passkey assertion with PRF; Credential-bound PRF output; HKDF with stable context; Short-lived crypto session; AES-GCM ciphertext package; Explicit key clear; App-owned durable storage.</p>
 <p>1. App-persisted salt → Passkey assertion with PRF.</p>

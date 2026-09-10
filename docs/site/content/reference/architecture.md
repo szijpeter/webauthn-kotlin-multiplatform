@@ -3,14 +3,15 @@
 The repository uses replaceable layers. The recommended mobile stack follows the main path; lower-level modules remain available for custom transports, codecs, verification, and persistence.
 
 <!-- diagram: public-architecture-1 -->
+<a href="../../../diagrams/assets/public-architecture-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-architecture-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-architecture-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-architecture-1-desktop-dark.svg">
-  <img alt="Architecture. Application, server and shared foundation responsibilities." src="../../../diagrams/assets/public-architecture-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Architecture. Application, server and shared foundation responsibilities." src="../../../diagrams/assets/public-architecture-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Architecture</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-architecture-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-architecture-1-mobile-dark.svg">dark</a>.</p>
 <p>Application, server and shared foundation responsibilities.</p>
 <p>Nodes: Android and iOS application; Product UI and state; Compose helpers; Client flow; Ktor contract adapter; Passkey client core; Android and iOS bridge; JVM relying-party backend; Ktor routes; Registration and authentication services; JVM crypto and attestation; Challenge, credential, and account stores; Shared protocol foundation; Models; Binary protocol and validation; JSON API and implementation; Extension hooks.</p>
 <p>Product UI and state belongs to Android and iOS application.</p>

@@ -429,16 +429,21 @@ def asset_name(name, variant, theme):
     return f'{name}-{variant}-{theme}.svg'
 
 
-def picture(spec, prefix, theme=None):
+def picture(spec, prefix, theme=None, github=False):
     name = spec['id']
     attr = f' class="diagram-{theme}"' if theme else ''
     lines = [f'<picture{attr}>']
     variants = [('mobile', 'dark', '(max-width: 720px) and (prefers-color-scheme: dark)'), ('mobile', 'light', '(max-width: 720px)'), ('desktop', 'dark', '(prefers-color-scheme: dark)')]
     if theme:
         variants = [('mobile', theme, '(max-width: 720px)')]
+    if github:
+        # GitHub rewrites theme media queries, discarding combined width rules.
+        # A mobile source here can therefore become a huge desktop image.
+        variants = [('desktop', 'dark', '(prefers-color-scheme: dark)')]
     for variant, color, media in variants:
         lines.append(f'  <source media="{media}" srcset="{prefix}/{asset_name(name, variant, color)}">')
-    lines.append(f'  <img alt="{escape(spec["title"] + ". " + spec["summary"])}" src="{prefix}/{asset_name(name, "desktop", theme or "light")}" width="960" loading="lazy">')
+    width = 640 if github else 960
+    lines.append(f'  <img alt="{escape(spec["title"] + ". " + spec["summary"])}" src="{prefix}/{asset_name(name, "desktop", theme or "light")}" width="{width}" loading="lazy">')
     lines.append('</picture>')
     return '\n'.join(lines)
 
@@ -448,8 +453,12 @@ def embed(spec, page, site=False):
     if site and Path(page).stem != 'index':
         parent = Path(page).with_suffix('')
     prefix = posixpath.relpath('assets/diagrams' if site else 'docs/diagrams/assets', str(parent))
-    images = picture(spec, prefix) if not site else '<div class="diagram-figure">\n' + picture(spec, prefix, 'light') + '\n' + picture(spec, prefix, 'dark') + '\n</div>'
+    images = picture(spec, prefix, github=True) if not site else '<div class="diagram-figure">\n' + picture(spec, prefix, 'light') + '\n' + picture(spec, prefix, 'dark') + '\n</div>'
     paragraphs = ''.join('<p>' + escape(line) + '</p>\n' for line in transcript(spec).splitlines())
+    if not site:
+        images = f'<a href="{prefix}/{asset_name(spec["id"], "desktop", "light")}">\n{images}\n</a>'
+        phone_links = ' · '.join(f'<a href="{prefix}/{asset_name(spec["id"], "mobile", color)}">{color}</a>' for color in THEMES)
+        paragraphs = f'<p>Phone view: {phone_links}.</p>\n' + paragraphs
     return f'<!-- diagram: {spec["id"]} -->\n{images}\n<details>\n<summary>Diagram text: {escape(spec["title"])}</summary>\n{paragraphs}</details>\n<!-- /diagram -->'
 
 

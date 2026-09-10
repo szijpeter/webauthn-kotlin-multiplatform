@@ -81,14 +81,15 @@ bindings belong.
 ## How it fits in the system
 
 <!-- diagram: client-webauthn-client-ktor-readme-1 -->
+<a href="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-desktop-dark.svg">
-  <img alt="client-ktor · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="client-ktor · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: client-ktor · How it fits in the system</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/client-webauthn-client-ktor-readme-1-mobile-dark.svg">dark</a>.</p>
 <p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
 <p>Nodes: webauthn-client-flow; webauthn-client-ktor; Application contract codec; Application-owned Ktor HttpClient and engine.</p>
 <p>1. webauthn-client-flow → webauthn-client-ktor.</p>

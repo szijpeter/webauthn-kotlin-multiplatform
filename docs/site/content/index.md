@@ -63,14 +63,15 @@ Run registration and authentication across the included app and Ktor service. [R
 ## The shortest production-shaped path
 
 <!-- diagram: public-home-flow-1 -->
+<a href="../../diagrams/assets/public-home-flow-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../diagrams/assets/public-home-flow-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../diagrams/assets/public-home-flow-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/assets/public-home-flow-1-desktop-dark.svg">
-  <img alt="From user action to verified result. The platform supplies a credential response; the server makes the verification decision." src="../../diagrams/assets/public-home-flow-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="From user action to verified result. The platform supplies a credential response; the server makes the verification decision." src="../../diagrams/assets/public-home-flow-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: From user action to verified result</summary>
+<p>Phone view: <a href="../../diagrams/assets/public-home-flow-1-mobile-light.svg">light</a> · <a href="../../diagrams/assets/public-home-flow-1-mobile-dark.svg">dark</a>.</p>
 <p>The platform supplies a credential response; the server makes the verification decision.</p>
 <p>Nodes: Mobile UI; PasskeyFlow; Ktor backend contract; Registration or authentication service; Credential and ceremony stores; Android or iOS platform prompt.</p>
 <p>1. Mobile UI → PasskeyFlow.</p>

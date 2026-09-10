@@ -32,14 +32,15 @@ SDK is represented inside the client and backend descriptions rather than as a
 separate runtime system.
 
 <!-- diagram: docs-architecture-1 -->
+<a href="diagrams/assets/docs-architecture-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-1-desktop-dark.svg">
-  <img alt="Reference integration. Application and platform responsibilities, with optional metadata explicitly marked." src="diagrams/assets/docs-architecture-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Reference integration. Application and platform responsibilities, with optional metadata explicitly marked." src="diagrams/assets/docs-architecture-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Reference integration</summary>
+<p>Phone view: <a href="diagrams/assets/docs-architecture-1-mobile-light.svg">light</a> · <a href="diagrams/assets/docs-architecture-1-mobile-dark.svg">dark</a>.</p>
 <p>Application and platform responsibilities, with optional metadata explicitly marked.</p>
 <p>Nodes: End user; Reference passkey application; Client application — webauthn-client-flow over client-core and an Android or iOS bridge; Relying-party backend — webauthn-server-core-jvm plus optional adapters; Credential store; Platform passkey API — Credential Manager or AuthenticationServices; Attestation metadata service — (optional).</p>
 <p>Client application webauthn-client-flow over client-core and an Android or iOS bridge belongs to Reference passkey application.</p>
@@ -60,14 +61,15 @@ The shared foundation keeps protocol contracts, validation, serialization,
 runtime helpers, and cryptographic contracts separated.
 
 <!-- diagram: docs-architecture-2 -->
+<a href="diagrams/assets/docs-architecture-2-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-2-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-2-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-2-desktop-dark.svg">
-  <img alt="Shared foundation. Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated." src="diagrams/assets/docs-architecture-2-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Shared foundation. Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated." src="diagrams/assets/docs-architecture-2-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Shared foundation</summary>
+<p>Phone view: <a href="diagrams/assets/docs-architecture-2-mobile-light.svg">light</a> · <a href="diagrams/assets/docs-architecture-2-mobile-dark.svg">dark</a>.</p>
 <p>Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated.</p>
 <p>Nodes: webauthn-crypto-api — Kotlin/JVM; webauthn-core; webauthn-json-kotlinx; webauthn-json-api; webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-runtime-core — No internal project dependencies.</p>
 <p>1. webauthn-crypto-api Kotlin/JVM → webauthn-core.</p>
@@ -93,14 +95,15 @@ network modules build around those boundaries. Platform bridges use the neutral 
 an OS integration requires JSON and return byte-preserving raw responses.
 
 <!-- diagram: docs-architecture-3 -->
+<a href="diagrams/assets/docs-architecture-3-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-3-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-3-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-3-desktop-dark.svg">
-  <img alt="Client stack. Focused dependency views. Repeated modules provide context; each relationship appears once." src="diagrams/assets/docs-architecture-3-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Client stack. Focused dependency views. Repeated modules provide context; each relationship appears once." src="diagrams/assets/docs-architecture-3-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Client stack</summary>
+<p>Phone view: <a href="diagrams/assets/docs-architecture-3-mobile-light.svg">light</a> · <a href="diagrams/assets/docs-architecture-3-mobile-dark.svg">dark</a>.</p>
 <p>Focused dependency views. Repeated modules provide context; each relationship appears once.</p>
 <p>Nodes: webauthn-client-compose; webauthn-client-platform — (androidMain and iosMain); webauthn-client-json-core; webauthn-client-prf-crypto — (optional); webauthn-client-defaults — (recommended composition); webauthn-client-ktor-kotlinx — (default JSON contract); webauthn-client-ktor — (codec-neutral transport); webauthn-client-flow; webauthn-client-core; webauthn-json-api; webauthn-json-kotlinx; webauthn-runtime-core; webauthn-model.</p>
 <p>1. webauthn-client-compose → webauthn-client-core.</p>
@@ -144,14 +147,15 @@ layer rather than a JSON implementation. Ktor, Exposed, and metadata support
 are optional adapters around the core and cryptographic boundaries.
 
 <!-- diagram: docs-architecture-4 -->
+<a href="diagrams/assets/docs-architecture-4-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-4-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="diagrams/assets/docs-architecture-4-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/assets/docs-architecture-4-desktop-dark.svg">
-  <img alt="JVM server stack. Direct internal dependencies. HTTP, storage and metadata remain optional adapters." src="diagrams/assets/docs-architecture-4-desktop-light.svg" width="960" loading="lazy">
+  <img alt="JVM server stack. Direct internal dependencies. HTTP, storage and metadata remain optional adapters." src="diagrams/assets/docs-architecture-4-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: JVM server stack</summary>
+<p>Phone view: <a href="diagrams/assets/docs-architecture-4-mobile-light.svg">light</a> · <a href="diagrams/assets/docs-architecture-4-mobile-dark.svg">dark</a>.</p>
 <p>Direct internal dependencies. HTTP, storage and metadata remain optional adapters.</p>
 <p>Nodes: webauthn-server-ktor — (optional adapter); webauthn-server-store-exposed — (optional adapter); webauthn-attestation-mds — (optional adapter); webauthn-server-core-jvm; webauthn-protocol; webauthn-server-jvm-crypto; Shared foundation; Cryptography boundary.</p>
 <p>1. webauthn-server-ktor (optional adapter) → webauthn-server-core-jvm.</p>

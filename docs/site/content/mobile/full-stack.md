@@ -5,14 +5,15 @@ The repository includes a Compose Multiplatform app, Android and iOS hosts, and 
 ## Topology
 
 <!-- diagram: public-full-stack-topology-1 -->
+<a href="../../../diagrams/assets/public-full-stack-topology-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-full-stack-topology-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-full-stack-topology-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-full-stack-topology-1-desktop-dark.svg">
-  <img alt="Full-stack topology. The mobile flow connects platform credential APIs to the relying-party backend." src="../../../diagrams/assets/public-full-stack-topology-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Full-stack topology. The mobile flow connects platform credential APIs to the relying-party backend." src="../../../diagrams/assets/public-full-stack-topology-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Full-stack topology</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-full-stack-topology-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-full-stack-topology-1-mobile-dark.svg">dark</a>.</p>
 <p>The mobile flow connects platform credential APIs to the relying-party backend.</p>
 <p>Nodes: Compose shared UI and flow; Android Credential Manager; iOS Authentication Services; Ktor sample backend; Registration and authentication services; Ceremony and credential stores; Association endpoints.</p>
 <p>1. Compose shared UI and flow → Android Credential Manager.</p>

@@ -39,14 +39,15 @@ Real-world scenario: parse backend JSON into typed model objects, run validation
 ## How it fits
 
 <!-- diagram: core-webauthn-json-kotlinx-readme-1 -->
+<a href="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-dark.svg">
-  <img alt="json-kotlinx · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="json-kotlinx · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: json-kotlinx · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-mobile-dark.svg">dark</a>.</p>
 <p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
 <p>Nodes: Wire DTOs (JSON or CBOR); WebAuthnDtoMapper; webauthn-model; webauthn-core.</p>
 <p>1. Wire DTOs (JSON or CBOR) → WebAuthnDtoMapper.</p>

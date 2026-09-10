@@ -5,14 +5,15 @@ Diagnose the first failing boundary. A generic “passkey error” often hides w
 ## Boundary-first flow
 
 <!-- diagram: public-troubleshooting-flow-1 -->
+<a href="../../../diagrams/assets/public-troubleshooting-flow-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-troubleshooting-flow-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-troubleshooting-flow-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-troubleshooting-flow-1-desktop-dark.svg">
-  <img alt="Find the failing boundary. Follow each labelled branch before investigating the next integration boundary." src="../../../diagrams/assets/public-troubleshooting-flow-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Find the failing boundary. Follow each labelled branch before investigating the next integration boundary." src="../../../diagrams/assets/public-troubleshooting-flow-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Find the failing boundary</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-troubleshooting-flow-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-troubleshooting-flow-1-mobile-dark.svg">dark</a>.</p>
 <p>Follow each labelled branch before investigating the next integration boundary.</p>
 <p>Nodes: User starts ceremony; Start endpoint succeeds?; Inspect network, auth, and backend start logs; Platform prompt appears?; Inspect host lifecycle, provider, entitlement, and association; Platform returns a credential?; Classify cancellation, invalid options, or platform error; Finish endpoint accepts?; Inspect challenge, origin, RP ID, signature, state, and policy; Update product session.</p>
 <p>1. User starts ceremony → Start endpoint succeeds?.</p>

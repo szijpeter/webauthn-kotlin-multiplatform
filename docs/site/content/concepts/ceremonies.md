@@ -5,14 +5,15 @@ WebAuthn defines two server-authoritative ceremonies. The authenticator creates 
 ## Registration
 
 <!-- diagram: public-ceremonies-registration-1 -->
+<a href="../../../diagrams/assets/public-ceremonies-registration-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-ceremonies-registration-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-ceremonies-registration-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-ceremonies-registration-1-desktop-dark.svg">
-  <img alt="Registration. The private key stays with the authenticator; the server validates the public credential." src="../../../diagrams/assets/public-ceremonies-registration-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Registration. The private key stays with the authenticator; the server validates the public credential." src="../../../diagrams/assets/public-ceremonies-registration-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Registration</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-ceremonies-registration-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-ceremonies-registration-1-mobile-dark.svg">dark</a>.</p>
 <p>The private key stays with the authenticator; the server validates the public credential.</p>
 <p>Nodes: Mobile app; RP server; Platform credential API; Authenticator.</p>
 <p>1. Mobile app → RP server: registration/start(account context).</p>

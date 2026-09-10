@@ -15,6 +15,9 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
 
 ## Overall Snapshot
 
+- GitHub diagram sizing fix (2026-09-10): desktop previews are capped at 640px, with full-size and phone-view
+  links. GitHub embeds avoid combined theme/width queries that GitHub rewrites; public-site responsive
+  layouts remain available. No runtime or API behavior changes.
 - Documentation diagram migration (2026-09-10): all 30 public Mermaid diagrams now use the maintained
   `docs/diagrams` semantic sources, reviewed layouts, 120 responsive/themed SVG exports, and accessible
   text. Documentation and quality gates check freshness, fidelity and safe assets; site staging reuses

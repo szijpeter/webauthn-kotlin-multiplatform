@@ -5,14 +5,15 @@ The Compose adapter creates and remembers a passkey client and flow without plac
 ## Lifecycle model
 
 <!-- diagram: public-compose-lifecycle-1 -->
+<a href="../../../diagrams/assets/public-compose-lifecycle-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-compose-lifecycle-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../../diagrams/assets/public-compose-lifecycle-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-compose-lifecycle-1-desktop-dark.svg">
-  <img alt="Ceremony lifecycle. Product UI owns state, cancellation and the signed-in session." src="../../../diagrams/assets/public-compose-lifecycle-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Ceremony lifecycle. Product UI owns state, cancellation and the signed-in session." src="../../../diagrams/assets/public-compose-lifecycle-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Ceremony lifecycle</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-compose-lifecycle-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-compose-lifecycle-1-mobile-dark.svg">dark</a>.</p>
 <p>Product UI owns state, cancellation and the signed-in session.</p>
 <p>Nodes: [start]; Idle; Starting; PlatformPrompt; Finishing; Failed; SignedIn.</p>
 <p>1. [start] → Idle.</p>

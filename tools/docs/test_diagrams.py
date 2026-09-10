@@ -106,7 +106,15 @@ class DiagramTests(unittest.TestCase):
         github = d.embed(spec, 'core/webauthn-core/README.md')
         site = d.embed(spec, 'reference/modules/webauthn-core.md', site=True)
         self.assertIn('../../docs/diagrams/assets/', github)
+        # GitHub rewrites theme media queries; no phone source may be selected
+        # by that rewrite on desktop. Phone views remain explicit links.
+        picture = github.split('<picture>')[1].split('</picture>')[0]
+        self.assertNotIn('-mobile-', picture)
+        self.assertNotIn('max-width:', picture)
+        self.assertIn('width="640"', picture)
+        self.assertIn('-mobile-dark.svg">dark</a>', github)
         self.assertIn('../../../assets/diagrams/', site)
+        self.assertIn('(max-width: 720px)', site)
         self.assertIn('class="diagram-dark"', site)
         self.assertNotIn('prefers-color-scheme', site)
         home = d.embed(spec, 'index.md', site=True)

@@ -12,14 +12,15 @@ Audience: teams that need typed WebAuthn values and protocol models as the share
 On JVM, `LargeBlobExtensionInput` and `LargeBlobExtensionOutput` expose public no-argument constructors with all properties set to `null`. Kotlin 2.4.20 generates these constructors for their defaulted parameters, including the nullable `Base64UrlBytes` value-class parameters.
 
 <!-- diagram: core-webauthn-model-readme-1 -->
+<a href="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-model-readme-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="../../docs/diagrams/assets/core-webauthn-model-readme-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-dark.svg">
-  <img alt="model · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="model · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: model · What it provides</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/core-webauthn-model-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/core-webauthn-model-readme-1-mobile-dark.svg">dark</a>.</p>
 <p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
 <p>Nodes: Untrusted input — HTTP JSON / mobile payload; parse(...) boundary — RpId / Origin / CredentialId / Base64UrlBytes; Typed wrappers; Protocol models — PublicKeyCredential*Options / *Response; ValidationResult — Valid or Invalid (errors); webauthn-core; webauthn-client-* modules; webauthn-server-* modules.</p>
 <p>1. Untrusted input HTTP JSON / mobile payload → parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes.</p>

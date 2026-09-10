@@ -50,14 +50,15 @@ WebAuthn has two ceremony pairs:
 Each pair has a server start step and a server finish step, with the platform authenticator in the middle.
 
 <!-- diagram: readme-1 -->
+<a href="docs/diagrams/assets/readme-1-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-1-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="docs/diagrams/assets/readme-1-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-1-desktop-dark.svg">
-  <img alt="WebAuthn ceremonies. The server starts and verifies each ceremony; the platform produces the credential response." src="docs/diagrams/assets/readme-1-desktop-light.svg" width="960" loading="lazy">
+  <img alt="WebAuthn ceremonies. The server starts and verifies each ceremony; the platform produces the credential response." src="docs/diagrams/assets/readme-1-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: WebAuthn ceremonies</summary>
+<p>Phone view: <a href="docs/diagrams/assets/readme-1-mobile-light.svg">light</a> · <a href="docs/diagrams/assets/readme-1-mobile-dark.svg">dark</a>.</p>
 <p>The server starts and verifies each ceremony; the platform produces the credential response.</p>
 <p>Nodes: User; Client App; Platform Authenticator; Relying Party Server.</p>
 <p>Notes: Registration ceremony; Authentication ceremony.</p>
@@ -86,14 +87,15 @@ data rules, signature/attestation verification, counter handling, and policy dec
 The repository follows a layered model that keeps protocol and validation concerns separate from transport and platform adapters.
 
 <!-- diagram: readme-2 -->
+<a href="docs/diagrams/assets/readme-2-desktop-light.svg">
 <picture>
-  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-2-mobile-dark.svg">
-  <source media="(max-width: 720px)" srcset="docs/diagrams/assets/readme-2-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/assets/readme-2-desktop-dark.svg">
-  <img alt="Repository structure. Logical responsibility areas, with dependencies directed inward." src="docs/diagrams/assets/readme-2-desktop-light.svg" width="960" loading="lazy">
+  <img alt="Repository structure. Logical responsibility areas, with dependencies directed inward." src="docs/diagrams/assets/readme-2-desktop-light.svg" width="640" loading="lazy">
 </picture>
+</a>
 <details>
 <summary>Diagram text: Repository structure</summary>
+<p>Phone view: <a href="docs/diagrams/assets/readme-2-mobile-light.svg">light</a> · <a href="docs/diagrams/assets/readme-2-mobile-dark.svg">dark</a>.</p>
 <p>Logical responsibility areas, with dependencies directed inward.</p>
 <p>Nodes: Client stack — Shared orchestration and platform bridges; JVM server stack — Ceremonies, storage and HTTP adapters; Cryptography boundary — Crypto contracts and implementations; Shared foundation — Validation, serialization and runtime; Protocol model — Typed WebAuthn contracts.</p>
 <p>1. Client stack Shared orchestration and platform bridges → Shared foundation Validation, serialization and runtime.</p>

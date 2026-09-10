@@ -55,7 +55,9 @@ Open `docs/diagrams/gallery.html` in a browser for the offline gallery. GitHub d
 
 ## GitHub, accessibility and the public site
 
-GitHub pictures choose phone layouts at 720 CSS pixels and light/dark exports using the browser's color preference, with a desktop light fallback. Every image has meaningful alternative text. Expandable text includes all labels, group memberships and relationships even when images are unavailable. Standalone SVGs also contain titles and descriptions. Small-screen relationship cards repeat nodes deliberately; their direction and relationship labels retain the desktop graph's meaning.
+GitHub uses desktop previews capped at 640 CSS pixels, with light/dark sources and a desktop light fallback. Click a preview for the full-size SVG; phone-view links are inside its expandable text. Keep width conditions out of GitHub's theme sources: GitHub rewrites theme media queries and can discard a combined width condition, causing a tall phone image to appear at desktop size. The offline gallery and public site retain responsive phone layouts at 720 CSS pixels.
+
+Every image has meaningful alternative text. Expandable text includes all labels, group memberships and relationships even when images are unavailable. Standalone SVGs also contain titles and descriptions. Small-screen relationship cards repeat nodes deliberately; their direction and relationship labels retain the desktop graph's meaning.
 
 Site staging replaces registered blocks with local picture paths appropriate to the built page, including relocated module READMEs. CSS follows Material's explicit light/dark theme switch, independently of system preference. Only registered SVG assets enter the site. The HTML check validates `srcset` as well as `src`, and rejects asset paths outside the site. Authoring templates, sources and tools are not added to the public site.
 
