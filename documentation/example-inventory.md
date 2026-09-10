@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **135**
+Managed blocks: **137**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -80,6 +80,8 @@ Managed blocks: **135**
 | docs-architecture-mermaid-2 | docs/architecture.md:58 | Shared foundation | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-3 | docs/architecture.md:91 | Client stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | docs-architecture-mermaid-4 | docs/architecture.md:155 | JVM server stack | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| architecture-visuals-export | docs/experiments/architecture-visuals/README.md:86 | Reproduce and validate | bash | contributor | markdown | Markdown block | syntax |  |
+| architecture-visuals-mermaid | docs/experiments/architecture-visuals/README.md:95 | Reproduce and validate | bash | contributor | markdown | Markdown block | syntax |  |
 | site-maintenance-bash-1 | docs/site/README.md:21 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
 | site-maintenance-bash-2 | docs/site/README.md:28 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
 | site-maintenance-bash-3 | docs/site/README.md:35 | Commands | bash | contributor | markdown | Markdown block | syntax |  |
