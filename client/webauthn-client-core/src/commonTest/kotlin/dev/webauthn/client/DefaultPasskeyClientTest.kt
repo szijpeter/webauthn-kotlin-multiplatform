@@ -250,6 +250,41 @@ class DefaultPasskeyClientTest {
     }
 
     @Test
+    fun createCredential_passes_create_options_to_bridge() = runTest {
+        var passedCreateOptions: PasskeyCreateOptions? = null
+        val client = DefaultPasskeyClient(
+            bridge = TestBridge(
+                createWithOptionsAction = { _, createOptions ->
+                    passedCreateOptions = createOptions
+                    validRawRegistrationResponse()
+                },
+            ),
+        )
+
+        val result = client.createCredential(
+            options = validCreationOptions(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        assertIs<PasskeyResult.Success<RawRegistrationResponse>>(result)
+        assertEquals(PasskeyCreateOptions.Conditional, passedCreateOptions)
+    }
+
+    @Test
+    fun createCredential_maps_unsupported_create_options_to_platform_failure() = runTest {
+        val client = DefaultPasskeyClient(bridge = TestBridge())
+
+        val result = client.createCredential(
+            options = validCreationOptions(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        val failure = assertIs<PasskeyResult.Failure>(result)
+        assertIs<PasskeyClientError.Platform>(failure.error)
+        assertTrue(failure.error.message.contains("CONDITIONAL"))
+    }
+
+    @Test
     fun getAssertion_maps_extension_results_from_bridge() = runTest {
         val client = DefaultPasskeyClient(
             bridge = TestBridge(
@@ -350,11 +385,21 @@ class DefaultPasskeyClientTest {
 
     private class TestBridge(
         private val createAction: suspend (PublicKeyCredentialCreationOptions) -> RawRegistrationResponse = { validRawRegistrationResponse() },
+        private val createWithOptionsAction: (suspend (
+            PublicKeyCredentialCreationOptions,
+            PasskeyCreateOptions,
+        ) -> RawRegistrationResponse)? = null,
         private val assertionAction: suspend (PublicKeyCredentialRequestOptions) -> RawAuthenticationResponse = { validRawAuthenticationResponse() },
         private val errorMapper: (Throwable) -> PasskeyClientError = { PasskeyClientError.Platform(it.message ?: "platform") },
         private val capabilitiesAction: suspend () -> PasskeyCapabilities = { PasskeyCapabilities() },
     ) : PasskeyPlatformBridge {
         override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse = createAction(options)
+
+        override suspend fun createCredential(
+            options: PublicKeyCredentialCreationOptions,
+            createOptions: PasskeyCreateOptions,
+        ): RawRegistrationResponse = createWithOptionsAction?.invoke(options, createOptions)
+            ?: super.createCredential(options, createOptions)
 
         override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): RawAuthenticationResponse = assertionAction(options)
 

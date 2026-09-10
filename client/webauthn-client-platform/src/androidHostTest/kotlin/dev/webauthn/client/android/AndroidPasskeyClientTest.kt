@@ -7,11 +7,16 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialNoCreateOptionException
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.CreateCredentialInterruptedException
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.CapabilitySupport
+import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyResult
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.json.WebAuthnJsonCodec
 import dev.webauthn.serialization.KotlinxWebAuthnJsonCodec
 import dev.webauthn.model.PublicKeyCredentialCreationOptions
@@ -32,7 +37,9 @@ import dev.webauthn.model.PublicKeyCredentialDescriptor
 import kotlinx.coroutines.runBlocking
 import io.mockk.mockk
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.slot
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -53,6 +60,30 @@ class AndroidPasskeyClientTest {
         credentialManagerFactory = { credentialManager },
         codec = codec,
     )
+
+    private fun validCreationOptions(): PublicKeyCredentialCreationOptions =
+        PublicKeyCredentialCreationOptions(
+            rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
+            user = PublicKeyCredentialUserEntity(
+                UserHandle.fromBytes(byteArrayOf(1)),
+                "name",
+                "display",
+            ),
+            challenge = Challenge.fromBytes(ByteArray(32) { 0 }),
+            pubKeyCredParams = [
+                PublicKeyCredentialParameters(PublicKeyCredentialType.PUBLIC_KEY, -7),
+            ],
+        )
+
+    @Test
+    fun capabilities_reports_conditional_create_as_supported() = runBlocking {
+        val capabilities = testClient().capabilities()
+
+        assertEquals(
+            CapabilitySupport.SUPPORTED,
+            capabilities.supportOf(PasskeyCapability.Platform(PlatformCapability.ConditionalCreate)),
+        )
+    }
 
     @Test
     fun createCredential_returns_InvalidOptions_when_pubKeyCredParams_is_empty() = runBlocking {
@@ -170,18 +201,12 @@ class AndroidPasskeyClientTest {
 
     @Test
     fun createCredential_returns_Success_on_valid_registration_response_json() = runBlocking {
-        val validRegJson = """{
-          "id": "MzMzMzMzMzMzMzMzMzMzMw",
-          "rawId": "MzMzMzMzMzMzMzMzMzMzMw",
-          "response": {
-            "clientDataJSON": "BAUG",
-            "attestationObject": "o2NmbXRkbm9uZWhhdXRoRGF0YVhKRERERERERERERERERERERERERERERERERERERERERERBAAAACVVVVVVVVVVVVVVVVVVVVVUAEDMzMzMzMzMzMzMzMzMzMzOhAQJnYXR0U3RtdKA"
-          }
-        }"""
         val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
         val client = testClient(credentialManager = mockCredentialManager)
 
-        coEvery { mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>()) } returns CreatePublicKeyCredentialResponse(validRegJson)
+        coEvery {
+            mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>())
+        } returns CreatePublicKeyCredentialResponse(VALID_REGISTRATION_RESPONSE_JSON)
 
         val options = PublicKeyCredentialCreationOptions(
             rp = PublicKeyCredentialRpEntity(RpId.parseOrThrow("example.com"), "name"),
@@ -194,6 +219,47 @@ class AndroidPasskeyClientTest {
         assertTrue(result is PasskeyResult.Success)
         val success = result as PasskeyResult.Success
         assertEquals("MzMzMzMzMzMzMzMzMzMzMw", success.value.credentialId.value.encoded())
+    }
+
+    @Test
+    fun createCredential_with_conditional_options_forwards_request_flags() = runBlocking {
+        val request = slot<CreatePublicKeyCredentialRequest>()
+        val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
+        val client = testClient(credentialManager = mockCredentialManager)
+        coEvery {
+            mockCredentialManager.createCredential(any<Context>(), capture(request))
+        } returns CreatePublicKeyCredentialResponse(VALID_REGISTRATION_RESPONSE_JSON)
+
+        val result = client.createCredential(
+            options = validCreationOptions(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        assertTrue("Result should be Success but was $result", result is PasskeyResult.Success)
+        coVerify {
+            mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>())
+        }
+        assertTrue(request.captured.isConditional)
+        assertTrue(request.captured.preferImmediatelyAvailableCredentials)
+    }
+
+    @Test
+    fun createCredential_maps_missing_conditional_option_to_platform_error() = runBlocking {
+        val mockCredentialManager = mockk<CredentialManager>(relaxed = true)
+        val client = testClient(credentialManager = mockCredentialManager)
+        coEvery {
+            mockCredentialManager.createCredential(any<Context>(), any<CreatePublicKeyCredentialRequest>())
+        } throws CreateCredentialNoCreateOptionException("No create option")
+
+        val result = client.createCredential(
+            options = validCreationOptions(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        assertTrue("Result should be Failure but was $result", result is PasskeyResult.Failure)
+        val failure = result as PasskeyResult.Failure
+        assertTrue(failure.error is PasskeyClientError.Platform)
+        assertTrue(failure.error.message.contains("No credential creation option"))
     }
 
     @Test
@@ -383,5 +449,16 @@ class AndroidPasskeyClientTest {
         assertTrue(error is PasskeyClientError.Platform)
         assertTrue(error.message.contains("Service temporarily unavailable"))
         assertFalse(error.message.contains("assetlinks.json"))
+    }
+
+    private companion object {
+        const val VALID_REGISTRATION_RESPONSE_JSON: String = """{
+          "id": "MzMzMzMzMzMzMzMzMzMzMw",
+          "rawId": "MzMzMzMzMzMzMzMzMzMzMw",
+          "response": {
+            "clientDataJSON": "BAUG",
+            "attestationObject": "o2NmbXRkbm9uZWhhdXRoRGF0YVhKRERERERERERERERERERERERERERERERERERERERERERBAAAACVVVVVVVVVVVVVVVVVVVVVUAEDMzMzMzMzMzMzMzMzMzMzOhAQJnYXR0U3RtdKA"
+          }
+        }"""
     }
 }

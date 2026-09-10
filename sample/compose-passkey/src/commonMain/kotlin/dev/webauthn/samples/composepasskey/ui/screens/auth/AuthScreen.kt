@@ -22,8 +22,10 @@ internal fun AuthScreen(
     status: PasskeyDemoStatus,
     actionsEnabled: Boolean,
     canRegister: Boolean,
+    conditionalCreateAvailable: Boolean,
     onShowLogs: () -> Unit,
     onRegister: () -> Unit,
+    onAutoCreate: () -> Unit,
     onSignIn: () -> Unit,
 ) {
     Column(
@@ -49,7 +51,9 @@ internal fun AuthScreen(
         ActionsCard(
             actionsEnabled = actionsEnabled,
             showRegister = canRegister,
+            autoCreateAvailable = conditionalCreateAvailable,
             onRegister = onRegister,
+            onAutoCreate = onAutoCreate,
             onSignIn = onSignIn,
         )
 

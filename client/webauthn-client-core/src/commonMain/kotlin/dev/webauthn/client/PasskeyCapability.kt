@@ -33,6 +33,9 @@ public sealed interface PlatformCapability {
     /** Support for cross-platform security-key ceremonies. */
     public data object SecurityKey : PlatformCapability
 
+    /** Support for conditional passkey creation after a non-passkey sign-in or sign-up. */
+    public data object ConditionalCreate : PlatformCapability
+
     /** A stable, implementation-defined platform behavior. */
     public data class Custom(
         public val id: String,
