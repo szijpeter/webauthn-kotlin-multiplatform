@@ -6,9 +6,13 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,12 +45,12 @@ fun PrfCryptoCard(
     DemoCard(modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                "Passkey-powered encryption",
+                "PRF encryption",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.semantics { heading() },
             )
             Text(
-                "Use the PRF extension to unlock a temporary AES-GCM key.",
+                "Derive a temporary AES-GCM key using the PRF extension.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -54,7 +58,7 @@ fun PrfCryptoCard(
         StatusCard(
             PasskeyDemoStatus(
                 tone = if (!actionsEnabled) StatusTone.WORKING else StatusTone.IDLE,
-                headline = if (!actionsEnabled) "Working on your session" else sessionState.label(),
+                headline = if (!actionsEnabled) "Processing" else sessionState.label(),
                 detail = if (!supportsPrf && !hasSession) {
                     "PRF is unavailable on this platform or provider. You can still use ordinary passkey sign-in."
                 } else {
@@ -62,29 +66,26 @@ fun PrfCryptoCard(
                 },
             ),
         )
-        Button(
+        DemoButton(
+            label = "Sign In + PRF",
+            icon = Icons.Rounded.Key,
+            style = DemoButtonStyle.PRIMARY,
             onClick = onSignInWithPrf,
             enabled = actionsEnabled && supportsPrf,
             modifier = Modifier.fillMaxWidth().heightIn(min = DemoLayout.touchTarget),
-        ) { Text("Sign In + PRF") }
+        )
         MessageField(
             value = plaintext,
             onValueChange = onPlaintextChange,
             enabled = actionsEnabled && hasSession,
             hasSession = hasSession,
         )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(
-                onClick = onEncrypt,
-                enabled = actionsEnabled && hasSession,
-                modifier = Modifier.heightIn(min = DemoLayout.touchTarget),
-            ) { Text("Encrypt") }
-            OutlinedButton(
-                onClick = onDecrypt,
-                enabled = actionsEnabled && hasCiphertext,
-                modifier = Modifier.heightIn(min = DemoLayout.touchTarget),
-            ) { Text("Decrypt") }
-        }
+        EncryptionActions(
+            encryptEnabled = actionsEnabled && hasSession,
+            decryptEnabled = actionsEnabled && hasCiphertext,
+            onEncrypt = onEncrypt,
+            onDecrypt = onDecrypt,
+        )
         if (decryptedText != null) {
             SelectionContainer {
                 StatusCard(PasskeyDemoStatus(StatusTone.SUCCESS, "Decrypted message", decryptedText))
@@ -92,15 +93,39 @@ fun PrfCryptoCard(
         }
         TextButton(
             onClick = onClearSession,
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             enabled = actionsEnabled && hasSession,
             modifier = Modifier.heightIn(min = DemoLayout.touchTarget),
         ) {
-            Text("Clear encryption session")
+            ButtonLabel("Clear encryption session", Icons.Rounded.DeleteOutline)
         }
         Text(
             "This demo keeps the salt and key in memory. Removing your passkey makes its encrypted data unrecoverable.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun EncryptionActions(
+    encryptEnabled: Boolean,
+    decryptEnabled: Boolean,
+    onEncrypt: () -> Unit,
+    onDecrypt: () -> Unit,
+) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        DemoButton(
+            label = "Encrypt",
+            icon = Icons.Rounded.Lock,
+            onClick = onEncrypt,
+            enabled = encryptEnabled,
+        )
+        DemoButton(
+            label = "Decrypt",
+            icon = Icons.Rounded.LockOpen,
+            onClick = onDecrypt,
+            enabled = decryptEnabled,
         )
     }
 }

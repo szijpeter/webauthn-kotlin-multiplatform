@@ -38,7 +38,7 @@ struct SessionContent: View {
 
     var body: some View {
         DemoPage { wide in
-            IntroCard(title: "You're signed in.", detail: config.userName, eyebrow: "VERIFIED SESSION")
+            IntroCard(title: "Signed in", detail: config.userName)
             DemoPanels(wide: wide) {
                 PrfCryptoCard(
                     supportsPRF: capabilities.supports(.prf), sessionState: sessionState,
@@ -50,7 +50,7 @@ struct SessionContent: View {
                 ConfigurationCard(config: config)
                 DemoCard {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Finish your session").font(.headline)
+                        Text("Session").font(.headline)
                         Text("Signing out clears the in-memory encryption key. Your passkey stays on your device.")
                             .font(.subheadline).foregroundStyle(Color.demoSecondary)
                         Button(role: .destructive, action: onSignOut) {
@@ -59,6 +59,7 @@ struct SessionContent: View {
                                 .frame(maxWidth: .infinity, minHeight: 32)
                         }
                         .buttonStyle(.bordered)
+                        .tint(.demoNegative)
                         .disabled(busy)
                         .accessibilityIdentifier("sign-out-button")
                     }
@@ -131,13 +132,13 @@ private struct PrfCryptoCard: View {
     var body: some View {
         DemoCard {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Passkey-powered encryption")
+                Text("PRF encryption")
                     .font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                Text("Use the PRF extension to unlock a temporary AES-GCM key.")
+                Text("Derive a temporary AES-GCM key using the PRF extension.")
                     .font(.subheadline).foregroundStyle(Color.demoSecondary)
                 StatusCard(status: DemoStatus(
                     tone: busy ? .working : .idle,
-                    headline: busy ? "Working on your session" : sessionState.rawValue,
+                    headline: busy ? "Processing" : sessionState.rawValue,
                     detail: !supportsPRF && !hasSession
                         ? "PRF is unavailable on this platform or provider. You can still use ordinary passkey sign-in."
                         : status

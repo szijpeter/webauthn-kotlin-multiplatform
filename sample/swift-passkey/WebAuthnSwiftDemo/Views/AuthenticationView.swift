@@ -25,17 +25,17 @@ struct AuthenticationContent: View {
         DemoPage { wide in
             DemoPanels(wide: wide) {
                 IntroCard(
-                    title: "Your passkey.\nYour way in.",
-                    detail: "A simpler, safer sign-in. Create a passkey and let your device take care of the rest."
+                    title: "Passkey authentication",
+                    detail: "Register a passkey or sign in with an existing account."
                 )
                 StatusCard(status: status)
             } secondary: {
                 DemoCard {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Welcome to Passkey Lab")
+                        Text("Passkey actions")
                             .font(.title2.bold())
                             .accessibilityAddTraits(.isHeader)
-                        Text("New here? Register a passkey, then sign in to explore.")
+                        Text("Registration creates a passkey for the configured user.")
                             .font(.subheadline)
                             .foregroundStyle(Color.demoSecondary)
                         Button(action: onRegister) {

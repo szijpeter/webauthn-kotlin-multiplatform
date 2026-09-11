@@ -2,9 +2,16 @@ package dev.webauthn.samples.composepasskey.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,7 +36,13 @@ internal fun ConfigurationCard(config: PasskeyDemoConfig, initiallyExpanded: Boo
             modifier = Modifier.fillMaxWidth().heightIn(min = DemoLayout.touchTarget)
                 .semantics { stateDescription = if (expanded) "Expanded" else "Collapsed" },
         ) {
-            Text(if (expanded) "Configuration  −" else "Configuration  +", style = MaterialTheme.typography.titleSmall)
+            ButtonLabel("Configuration", Icons.Rounded.Settings)
+            Spacer(Modifier.weight(1f))
+            Icon(
+                if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
         }
         if (expanded) {
             ConfigurationValue("Endpoint", config.endpointBase)

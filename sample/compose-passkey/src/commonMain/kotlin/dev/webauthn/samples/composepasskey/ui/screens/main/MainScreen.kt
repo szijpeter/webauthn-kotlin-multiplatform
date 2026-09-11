@@ -23,7 +23,7 @@ internal fun MainScreen(
     config: PasskeyDemoConfig = PasskeyDemoConfig(),
 ) {
     DemoScreen(onShowLogs) {
-        Intro("You're signed in.", state.userName, eyebrow = "VERIFIED SESSION")
+        Intro("Signed in", state.userName)
         AdaptivePanels(
             primary = {
                 PrfCryptoCard(

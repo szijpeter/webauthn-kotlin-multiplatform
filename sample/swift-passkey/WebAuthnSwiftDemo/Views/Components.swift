@@ -60,13 +60,9 @@ struct DemoPanels<Primary: View, Secondary: View>: View {
 struct IntroCard: View {
     let title: String
     let detail: String
-    var eyebrow = "NATIVE SWIFT · KOTLIN CORE"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(eyebrow)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Color.demoAccent)
             Text(title)
                 .font(.largeTitle.bold())
                 .accessibilityAddTraits(.isHeader)

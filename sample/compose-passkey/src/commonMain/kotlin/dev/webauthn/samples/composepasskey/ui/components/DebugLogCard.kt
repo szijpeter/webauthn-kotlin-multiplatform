@@ -3,6 +3,7 @@ package dev.webauthn.samples.composepasskey.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.HorizontalDivider
@@ -26,7 +27,7 @@ fun DebugLogCard(entries: List<DebugLogEntry>) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        entries.asReversed().forEach { entry ->
+        entries.forEach { entry ->
             DebugLogRow(entry)
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -34,25 +35,27 @@ fun DebugLogCard(entries: List<DebugLogEntry>) {
 }
 
 @Composable
-internal fun DebugLogRow(entry: DebugLogEntry) {
+internal fun DebugLogRow(entry: DebugLogEntry, modifier: Modifier = Modifier) {
     val color = when (entry.level) {
         DebugLogLevel.ERROR -> MaterialTheme.colorScheme.error
         DebugLogLevel.WARN -> MaterialTheme.colorScheme.onSecondaryContainer
         DebugLogLevel.INFO -> MaterialTheme.colorScheme.primary
         DebugLogLevel.DEBUG -> MaterialTheme.colorScheme.onSurfaceVariant
     }
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(entry.level.name, color = color, style = MaterialTheme.typography.labelMedium)
-            Text(
-                entry.source,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelMedium,
-            )
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(entry.level.name, color = color, style = MaterialTheme.typography.labelMedium)
+                Text(
+                    entry.source,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
             Text(
                 entry.formatTimestampForDisplay(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
         SelectionContainer {

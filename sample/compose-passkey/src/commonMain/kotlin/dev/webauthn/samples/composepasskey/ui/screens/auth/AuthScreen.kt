@@ -24,8 +24,8 @@ internal fun AuthScreen(
         AdaptivePanels(
             primary = {
                 Intro(
-                    "Your passkey.\nYour way in.",
-                    "A simpler, safer sign-in. Create a passkey and let your device take care of the rest.",
+                    "Passkey authentication",
+                    "Register a passkey or sign in with an existing account.",
                 )
                 StatusCard(status)
             },

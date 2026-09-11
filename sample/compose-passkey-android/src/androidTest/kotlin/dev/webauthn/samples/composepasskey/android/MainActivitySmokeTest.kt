@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -25,7 +26,7 @@ class MainActivitySmokeTest {
         ActivityScenario.launch(MainActivity::class.java).use {
             compose.onNodeWithText("Register").assertIsDisplayed().assertIsEnabled()
             compose.onNodeWithText("Sign In").assertIsEnabled()
-            compose.onNodeWithText("Debug logs").performClick()
+            compose.onNodeWithContentDescription("Debug logs").performClick()
             compose.onNodeWithText("Done").assertIsDisplayed().performClick()
             compose.onNodeWithText("Register").assertIsDisplayed()
         }
@@ -36,7 +37,7 @@ class MainActivitySmokeTest {
         gallery("busy").use {
             compose.onNodeWithText("Register").assertIsNotEnabled()
             compose.onNodeWithText("Sign In").assertIsNotEnabled()
-            compose.onNodeWithText("Debug logs").assertIsEnabled()
+            compose.onNodeWithContentDescription("Debug logs").assertIsEnabled()
         }
     }
 
@@ -71,7 +72,7 @@ class MainActivitySmokeTest {
     @Test
     fun configurationExpansionSurvivesRecreation() {
         gallery("auth").use { activity ->
-            compose.onNodeWithText("Configuration  +").performScrollTo().performClick()
+            compose.onNodeWithText("Configuration").performScrollTo().performClick()
             compose.onNodeWithText("Relying party").performScrollTo().assertIsDisplayed()
             activity.recreate()
             compose.onNodeWithText("Relying party").performScrollTo().assertIsDisplayed()

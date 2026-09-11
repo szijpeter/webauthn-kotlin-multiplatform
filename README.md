@@ -42,7 +42,7 @@ session controls. These images show deterministic rendering fixtures. Browse the
 
 | Compose Android | Compose iOS | Native SwiftUI |
 | --- | --- | --- |
-| <img width="230" alt="Compose Android authentication in light mode" src="https://github.com/user-attachments/assets/19f05916-6c8e-41a9-a2f5-b9baa3d59767"> | <img width="230" alt="Compose iOS authentication in light mode" src="https://github.com/user-attachments/assets/88668c27-0882-439e-a769-b4c484ef6acf"> | <img width="230" alt="Native SwiftUI authentication in light mode" src="https://github.com/user-attachments/assets/e87f7492-05eb-4186-9d00-5999ab90e273"> |
+| <img width="230" alt="Compose Android authentication in light mode" src="https://github.com/user-attachments/assets/5b586a88-4625-44d7-9f93-97ff8f1f477f"> | <img width="230" alt="Compose iOS authentication in light mode" src="https://github.com/user-attachments/assets/6f54a934-2ae2-4bda-b17e-c4861f820ebf"> | <img width="230" alt="Native SwiftUI authentication in light mode" src="https://github.com/user-attachments/assets/520256f9-f71c-4ed3-b6f1-4ced8dd686db"> |
 
 ## Sample Recordings
 

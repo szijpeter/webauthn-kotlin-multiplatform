@@ -2,7 +2,6 @@ package dev.webauthn.samples.composepasskey.app
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -16,6 +15,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.mohamedrejeb.calf.ui.sheet.rememberAdaptiveSheetState
 import dev.webauthn.samples.composepasskey.app.navigation.AppRoute
 import dev.webauthn.samples.composepasskey.app.navigation.NavBackStackConfig
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
@@ -34,7 +34,7 @@ internal fun SampleAppRoot() {
     val debugLogs: DebugLogStore = koinInject()
     val sessionState by sessionStore.state.collectAsState()
     var showDebugSheet by remember { mutableStateOf(false) }
-    val debugSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val debugSheetState = rememberAdaptiveSheetState(skipPartiallyExpanded = true)
 
     val backStack = rememberNavBackStack(
         configuration = NavBackStackConfig,
