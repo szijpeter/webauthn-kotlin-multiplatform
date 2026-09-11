@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="2470" viewBox="0 0 400 2470" role="img" aria-labelledby="readme-1-mobile-light-title readme-1-mobile-light-desc" data-diagram="readme-1">
+<title id="readme-1-mobile-light-title">WebAuthn ceremonies</title>
+<desc id="readme-1-mobile-light-desc">The server starts and verifies each ceremony; the platform produces the credential response.
+Nodes: User; Client App; Platform Authenticator; Relying Party Server.
+Notes: Registration ceremony; Authentication ceremony.
+1. Client App → Relying Party Server: registration/start request.
+2. Relying Party Server → Client App: registration/start response (challenge + options) (dashed).
+3. Client App → Platform Authenticator: navigator.credentials.create / platform create.
+4. Platform Authenticator → Client App: RegistrationResponse (dashed).
+5. Client App → Relying Party Server: registration/finish (credential response).
+6. Relying Party Server → Client App: verified registration (dashed).
+7. Client App → Relying Party Server: authentication/start request.
+8. Relying Party Server → Client App: authentication/start response (challenge + options) (dashed).
+9. Client App → Platform Authenticator: navigator.credentials.get / platform get.
+10. Platform Authenticator → Client App: AuthenticationResponse (dashed).
+11. Client App → Relying Party Server: authentication/finish (credential response).
+12. Relying Party Server → Client App: verified sign-in (dashed).</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="readme-1-mobile-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="24.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · CEREMONY</text>
+<text x="24.00" y="65.00" font-size="23" fill="var(--ink)" font-weight="700" text-anchor="start" >WebAuthn ceremonies</text>
+<text x="24.00" y="96.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >The server starts and verifies each</text>
+<text x="24.00" y="116.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >ceremony; the platform produces the</text>
+<text x="24.00" y="136.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >credential response.</text>
+<text x="24.00" y="189.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Registration ceremony</text>
+<rect x="24.00" y="226.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="252.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >01</text>
+<g data-node="App">
+<text x="40.00" y="278.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<path d="M 49 310 L 49 332" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e1" data-from="App" data-to="RP"/>
+<text x="68.00" y="322.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >registration/start request</text>
+<g data-node="RP">
+<text x="40.00" y="358.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<rect x="24.00" y="390.00" width="352.00" height="170.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="416.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >02</text>
+<g data-node="RP">
+<text x="40.00" y="442.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<path d="M 49 474 L 49 518" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e2" data-from="RP" data-to="App"/>
+<text x="68.00" y="486.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >registration/start response</text>
+<text x="68.00" y="508.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >(challenge + options)</text>
+<g data-node="App">
+<text x="40.00" y="544.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<rect x="24.00" y="576.00" width="352.00" height="170.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="602.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >03</text>
+<g data-node="App">
+<text x="40.00" y="628.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<path d="M 49 660 L 49 704" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e3" data-from="App" data-to="Auth"/>
+<text x="68.00" y="672.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >navigator.credentials.create /</text>
+<text x="68.00" y="694.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >platform create</text>
+<g data-node="Auth">
+<text x="40.00" y="730.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Platform Authenticator</text>
+</g>
+<rect x="24.00" y="762.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="788.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >04</text>
+<g data-node="Auth">
+<text x="40.00" y="814.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Platform Authenticator</text>
+</g>
+<path d="M 49 846 L 49 868" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e4" data-from="Auth" data-to="App"/>
+<text x="68.00" y="858.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >RegistrationResponse</text>
+<g data-node="App">
+<text x="40.00" y="894.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<rect x="24.00" y="926.00" width="352.00" height="170.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="952.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >05</text>
+<g data-node="App">
+<text x="40.00" y="978.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<path d="M 49 1010 L 49 1054" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e5" data-from="App" data-to="RP"/>
+<text x="68.00" y="1022.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >registration/finish</text>
+<text x="68.00" y="1044.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >(credential response)</text>
+<g data-node="RP">
+<text x="40.00" y="1080.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<rect x="24.00" y="1112.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1138.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >06</text>
+<g data-node="RP">
+<text x="40.00" y="1164.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<path d="M 49 1196 L 49 1218" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e6" data-from="RP" data-to="App"/>
+<text x="68.00" y="1208.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >verified registration</text>
+<g data-node="App">
+<text x="40.00" y="1244.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<text x="24.00" y="1286.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Authentication ceremony</text>
+<rect x="24.00" y="1323.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1349.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >07</text>
+<g data-node="App">
+<text x="40.00" y="1375.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<path d="M 49 1407 L 49 1429" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e7" data-from="App" data-to="RP"/>
+<text x="68.00" y="1419.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >authentication/start request</text>
+<g data-node="RP">
+<text x="40.00" y="1455.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<rect x="24.00" y="1487.00" width="352.00" height="170.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1513.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >08</text>
+<g data-node="RP">
+<text x="40.00" y="1539.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<path d="M 49 1571 L 49 1615" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e8" data-from="RP" data-to="App"/>
+<text x="68.00" y="1583.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >authentication/start response</text>
+<text x="68.00" y="1605.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >(challenge + options)</text>
+<g data-node="App">
+<text x="40.00" y="1641.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<rect x="24.00" y="1673.00" width="352.00" height="170.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1699.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >09</text>
+<g data-node="App">
+<text x="40.00" y="1725.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<path d="M 49 1757 L 49 1801" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e9" data-from="App" data-to="Auth"/>
+<text x="68.00" y="1769.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >navigator.credentials.get /</text>
+<text x="68.00" y="1791.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >platform get</text>
+<g data-node="Auth">
+<text x="40.00" y="1827.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Platform Authenticator</text>
+</g>
+<rect x="24.00" y="1859.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1885.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >10</text>
+<g data-node="Auth">
+<text x="40.00" y="1911.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Platform Authenticator</text>
+</g>
+<path d="M 49 1943 L 49 1965" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e10" data-from="Auth" data-to="App"/>
+<text x="68.00" y="1955.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >AuthenticationResponse</text>
+<g data-node="App">
+<text x="40.00" y="1991.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<rect x="24.00" y="2023.00" width="352.00" height="170.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="2049.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >11</text>
+<g data-node="App">
+<text x="40.00" y="2075.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<path d="M 49 2107 L 49 2151" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e11" data-from="App" data-to="RP"/>
+<text x="68.00" y="2119.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >authentication/finish</text>
+<text x="68.00" y="2141.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >(credential response)</text>
+<g data-node="RP">
+<text x="40.00" y="2177.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<rect x="24.00" y="2209.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="2235.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >12</text>
+<g data-node="RP">
+<text x="40.00" y="2261.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying Party Server</text>
+</g>
+<path d="M 49 2293 L 49 2315" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#readme-1-mobile-light-arrow)" data-edge="e12" data-from="RP" data-to="App"/>
+<text x="68.00" y="2305.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >verified sign-in</text>
+<g data-node="App">
+<text x="40.00" y="2341.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client App</text>
+</g>
+<text x="24.00" y="2389.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Additional context</text>
+<g data-node="User">
+<text x="24.00" y="2425.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >User · no drawn relationships</text>
+</g>
+</svg>

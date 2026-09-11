@@ -48,15 +48,25 @@ fun iosPasskeyClient(anchorProvider: PasskeyPresentationAnchorProvider): Passkey
 
 ## How it fits
 
-<!-- doc-example: id=client-webauthn-client-platform-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    UI["Android or iOS UI"] --> CORE["webauthn-client-core raw client"]
-    CORE --> ANDROID["AndroidPasskeyClient"]
-    CORE --> IOS["IosPasskeyClient"]
-    ANDROID --> CM["Credential Manager"]
-    IOS --> AS["Authentication Services"]
-```
+<!-- diagram: client-webauthn-client-platform-readme-1 -->
+<a href="../../docs/diagrams/assets/client-webauthn-client-platform-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-platform-readme-1-desktop-dark.svg">
+  <img alt="client-platform · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-platform-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: client-platform · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/client-webauthn-client-platform-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/client-webauthn-client-platform-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Android or iOS UI; webauthn-client-core raw client; AndroidPasskeyClient; IosPasskeyClient; Credential Manager; Authentication Services.</p>
+<p>1. Android or iOS UI → webauthn-client-core raw client.</p>
+<p>2. webauthn-client-core raw client → AndroidPasskeyClient.</p>
+<p>3. webauthn-client-core raw client → IosPasskeyClient.</p>
+<p>4. AndroidPasskeyClient → Credential Manager.</p>
+<p>5. IosPasskeyClient → Authentication Services.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

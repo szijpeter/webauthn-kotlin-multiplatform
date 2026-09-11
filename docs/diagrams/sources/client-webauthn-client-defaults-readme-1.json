@@ -1,0 +1,23 @@
+{
+  "id": "client-webauthn-client-defaults-readme-1",
+  "title": "client-defaults · How it fits in the system",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "APP", "label": "Application", "shape": "rect", "parent": null, "container": false},
+    {"id": "DEFAULTS", "label": "webauthn-client-defaults", "shape": "rect", "parent": null, "container": false},
+    {"id": "PLATFORM", "label": "webauthn-client-platform", "shape": "rect", "parent": null, "container": false},
+    {"id": "JSON", "label": "webauthn-json-kotlinx\n(Android default)", "shape": "rect", "parent": null, "container": false},
+    {"id": "CORE", "label": "webauthn-client-core", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "APP", "target": "DEFAULTS", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "DEFAULTS", "target": "PLATFORM", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "DEFAULTS", "target": "JSON", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "PLATFORM", "target": "CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "client-defaults · How it fits in the system", "edges": ["e1", "e2", "e3", "e4"]}
+  ]
+}

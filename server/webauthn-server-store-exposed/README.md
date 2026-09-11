@@ -47,13 +47,23 @@ Real-world scenario: replace in-memory stores in production so ceremonies surviv
 
 ## How it fits
 
-<!-- doc-example: id=server-webauthn-server-store-exposed-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    SVC["webauthn-server-core-jvm"] --> CONTRACTS["Store contracts"]
-    EXPOSED["webauthn-server-store-exposed"] --> CONTRACTS
-    EXPOSED --> DB["SQL database"]
-```
+<!-- diagram: server-webauthn-server-store-exposed-readme-1 -->
+<a href="../../docs/diagrams/assets/server-webauthn-server-store-exposed-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/server-webauthn-server-store-exposed-readme-1-desktop-dark.svg">
+  <img alt="server-store-exposed · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/server-webauthn-server-store-exposed-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: server-store-exposed · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/server-webauthn-server-store-exposed-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/server-webauthn-server-store-exposed-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: webauthn-server-core-jvm; Store contracts; webauthn-server-store-exposed; SQL database.</p>
+<p>1. webauthn-server-core-jvm → Store contracts.</p>
+<p>2. webauthn-server-store-exposed → Store contracts.</p>
+<p>3. webauthn-server-store-exposed → SQL database.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

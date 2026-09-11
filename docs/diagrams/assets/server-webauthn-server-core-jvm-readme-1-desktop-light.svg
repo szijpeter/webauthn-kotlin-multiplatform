@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="846" viewBox="0 0 960 846" role="img" aria-labelledby="server-webauthn-server-core-jvm-readme-1-desktop-light-title server-webauthn-server-core-jvm-readme-1-desktop-light-desc" data-diagram="server-webauthn-server-core-jvm-readme-1">
+<title id="server-webauthn-server-core-jvm-readme-1-desktop-light-title">server-core-jvm · How it fits</title>
+<desc id="server-webauthn-server-core-jvm-readme-1-desktop-light-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-server-ktor (optional); webauthn-server-core-jvm; webauthn-core; webauthn-protocol; webauthn-json-api — codec interface; webauthn-json-kotlinx — KotlinxWebAuthnJsonCodec; webauthn-server-jvm-crypto or custom crypto-api implementation; Challenge, credential, and account store contracts; In-memory or Exposed store implementations.
+1. webauthn-server-ktor (optional) → webauthn-server-core-jvm.
+2. webauthn-server-core-jvm → webauthn-core.
+3. webauthn-server-core-jvm → webauthn-protocol.
+4. webauthn-server-core-jvm → webauthn-json-api codec interface.
+5. webauthn-json-kotlinx KotlinxWebAuthnJsonCodec → webauthn-json-api codec interface.
+6. webauthn-server-core-jvm → webauthn-server-jvm-crypto or custom crypto-api implementation.
+7. webauthn-server-core-jvm → Challenge, credential, and account store contracts.
+8. In-memory or Exposed store implementations → Challenge, credential, and account store contracts.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="server-webauthn-server-core-jvm-readme-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >server-core-jvm · How it fits</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 303.33 473.00 C 316.84 473.00 330.63 473.00 344.25 473.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e1" data-from="KTOR" data-to="SVC"/>
+<path d="M 508.60 430.73 C 539.97 385.43 594.95 313.86 657.00 268.00 661.38 264.76 665.99 261.66 670.74 258.70" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e2" data-from="SVC" data-to="CORE"/>
+<path d="M 607.33 478.86 C 620.84 479.48 634.63 480.12 648.25 480.75" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e3" data-from="SVC" data-to="PROTOCOL"/>
+<path d="M 582.82 515.48 C 612.11 527.70 644.16 541.07 673.86 553.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e4" data-from="SVC" data-to="JSON_API"/>
+<path d="M 607.33 599.00 C 620.84 599.00 634.63 599.00 648.25 599.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e5" data-from="JSON_KOTLINX" data-to="JSON_API"/>
+<path d="M 584.93 430.67 C 605.52 422.28 627.41 413.37 648.84 404.64" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e6" data-from="SVC" data-to="CRYPTO"/>
+<path d="M 590.28 515.45 C 596.29 519.87 601.94 524.71 607.00 530.00 648.36 573.24 617.45 610.10 657.00 655.00 659.95 658.34 663.09 661.56 666.40 664.66" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e7" data-from="SVC" data-to="STORE"/>
+<path d="M 607.33 725.00 C 620.84 725.00 634.63 725.00 648.25 725.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-core-jvm-readme-1-desktop-light-arrow)" data-edge="e8" data-from="IMPLEMENTATION" data-to="STORE"/>
+<g data-node="CORE">
+<rect x="657.00" y="172.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="220.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-core</text>
+</g>
+<g data-node="CRYPTO">
+<rect x="657.00" y="283.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="320.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-jvm-</text>
+<text x="784.00" y="345.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >crypto or custom</text>
+<text x="784.00" y="370.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >crypto-api</text>
+<text x="784.00" y="395.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >implementation</text>
+</g>
+<g data-node="IMPLEMENTATION">
+<rect x="353.00" y="683.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="720.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >In-memory or Exposed</text>
+<text x="480.00" y="745.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >store implementations</text>
+</g>
+<g data-node="JSON_API">
+<rect x="657.00" y="557.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="784.00" y="594.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-api</text>
+<text x="784.00" y="619.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >codec interface</text>
+</g>
+<g data-node="JSON_KOTLINX">
+<rect x="353.00" y="544.50" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="581.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-kotlinx</text>
+<text x="480.00" y="606.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >KotlinxWebAuthnJson</text>
+<text x="480.00" y="631.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Codec</text>
+</g>
+<g data-node="KTOR">
+<rect x="49.00" y="431.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="468.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-ktor</text>
+<text x="176.00" y="493.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(optional)</text>
+</g>
+<g data-node="PROTOCOL">
+<rect x="657.00" y="446.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="494.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-protocol</text>
+</g>
+<g data-node="STORE">
+<rect x="657.00" y="670.50" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="707.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Challenge, credential,</text>
+<text x="784.00" y="732.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >and account store</text>
+<text x="784.00" y="757.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >contracts</text>
+</g>
+<g data-node="SVC">
+<rect x="353.00" y="431.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="468.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-core-</text>
+<text x="480.00" y="493.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >jvm</text>
+</g>
+</svg>

@@ -40,6 +40,14 @@ jobs:
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v6
 
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Verify documentation diagrams before publishing
+        run: |
+          python3 tools/docs/test_diagrams.py
+          python3 tools/docs/diagrams.py check
+
       - name: Validate Maven Central secrets
         env:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -114,6 +122,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Package diagrams from the release commit
+        run: python3 tools/docs/diagrams.py package --source-ref "$GITHUB_SHA"
       - name: Extract curated release notes
         env:
           RELEASE_VERSION: ${{ needs.publish.outputs.resolved_version }}
@@ -133,6 +146,7 @@ jobs:
           fi
 
           gh release create "$RELEASE_TAG" \
+            build/diagrams/webauthn-diagrams.zip \
             --target "$GITHUB_SHA" \
             --title "$RELEASE_TAG" \
             --notes-file "$RUNNER_TEMP/release-notes.md"

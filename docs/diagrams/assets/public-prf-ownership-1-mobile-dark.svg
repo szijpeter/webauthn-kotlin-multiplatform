@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1343" viewBox="0 0 400 1343" role="img" aria-labelledby="public-prf-ownership-1-mobile-dark-title public-prf-ownership-1-mobile-dark-desc" data-diagram="public-prf-ownership-1">
+<title id="public-prf-ownership-1-mobile-dark-title">PRF ownership</title>
+<desc id="public-prf-ownership-1-mobile-dark-desc">Local key derivation and server authentication have separate responsibilities.
+Nodes: App-persisted salt; Passkey assertion with PRF; Credential-bound PRF output; HKDF with stable context; Short-lived crypto session; AES-GCM ciphertext package; Explicit key clear; App-owned durable storage.
+1. App-persisted salt → Passkey assertion with PRF.
+2. Passkey assertion with PRF → Credential-bound PRF output.
+3. Credential-bound PRF output → HKDF with stable context.
+4. HKDF with stable context → Short-lived crypto session.
+5. Short-lived crypto session → AES-GCM ciphertext package.
+6. Short-lived crypto session → Explicit key clear.
+7. AES-GCM ciphertext package → App-owned durable storage.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="public-prf-ownership-1-mobile-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="24.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="24.00" y="65.00" font-size="23" fill="var(--ink)" font-weight="700" text-anchor="start" >PRF ownership</text>
+<text x="24.00" y="96.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Local key derivation and server</text>
+<text x="24.00" y="116.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >authentication have separate</text>
+<text x="24.00" y="136.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >responsibilities.</text>
+<rect x="24.00" y="179.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="205.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >01</text>
+<g data-node="Salt">
+<text x="40.00" y="231.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >App-persisted salt</text>
+</g>
+<path d="M 49 263 L 49 285" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e1" data-from="Salt" data-to="Assertion"/>
+<g data-node="Assertion">
+<text x="40.00" y="311.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Passkey assertion with PRF</text>
+</g>
+<rect x="24.00" y="343.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="369.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >02</text>
+<g data-node="Assertion">
+<text x="40.00" y="395.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Passkey assertion with PRF</text>
+</g>
+<path d="M 49 427 L 49 449" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e2" data-from="Assertion" data-to="Output"/>
+<g data-node="Output">
+<text x="40.00" y="475.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Credential-bound PRF output</text>
+</g>
+<rect x="24.00" y="507.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="533.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >03</text>
+<g data-node="Output">
+<text x="40.00" y="559.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Credential-bound PRF output</text>
+</g>
+<path d="M 49 591 L 49 613" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e3" data-from="Output" data-to="HKDF"/>
+<g data-node="HKDF">
+<text x="40.00" y="639.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >HKDF with stable context</text>
+</g>
+<rect x="24.00" y="671.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="697.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >04</text>
+<g data-node="HKDF">
+<text x="40.00" y="723.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >HKDF with stable context</text>
+</g>
+<path d="M 49 755 L 49 777" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e4" data-from="HKDF" data-to="Session"/>
+<g data-node="Session">
+<text x="40.00" y="803.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Short-lived crypto session</text>
+</g>
+<rect x="24.00" y="835.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="861.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >05</text>
+<g data-node="Session">
+<text x="40.00" y="887.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Short-lived crypto session</text>
+</g>
+<path d="M 49 919 L 49 941" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e5" data-from="Session" data-to="AEAD"/>
+<g data-node="AEAD">
+<text x="40.00" y="967.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >AES-GCM ciphertext package</text>
+</g>
+<rect x="24.00" y="999.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1025.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >06</text>
+<g data-node="Session">
+<text x="40.00" y="1051.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Short-lived crypto session</text>
+</g>
+<path d="M 49 1083 L 49 1105" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e6" data-from="Session" data-to="Clear"/>
+<g data-node="Clear">
+<text x="40.00" y="1131.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Explicit key clear</text>
+</g>
+<rect x="24.00" y="1163.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1189.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >07</text>
+<g data-node="AEAD">
+<text x="40.00" y="1215.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >AES-GCM ciphertext package</text>
+</g>
+<path d="M 49 1247 L 49 1269" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-prf-ownership-1-mobile-dark-arrow)" data-edge="e7" data-from="AEAD" data-to="Storage"/>
+<g data-node="Storage">
+<text x="40.00" y="1295.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >App-owned durable storage</text>
+</g>
+</svg>

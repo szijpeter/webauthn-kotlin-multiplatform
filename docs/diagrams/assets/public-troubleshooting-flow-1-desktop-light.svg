@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1587" viewBox="0 0 960 1587" role="img" aria-labelledby="public-troubleshooting-flow-1-desktop-light-title public-troubleshooting-flow-1-desktop-light-desc" data-diagram="public-troubleshooting-flow-1">
+<title id="public-troubleshooting-flow-1-desktop-light-title">Find the failing boundary</title>
+<desc id="public-troubleshooting-flow-1-desktop-light-desc">Follow each labelled branch before investigating the next integration boundary.
+Nodes: User starts ceremony; Start endpoint succeeds?; Inspect network, auth, and backend start logs; Platform prompt appears?; Inspect host lifecycle, provider, entitlement, and association; Platform returns a credential?; Classify cancellation, invalid options, or platform error; Finish endpoint accepts?; Inspect challenge, origin, RP ID, signature, state, and policy; Update product session.
+1. User starts ceremony → Start endpoint succeeds?.
+2. Start endpoint succeeds? → Inspect network, auth, and backend start logs: no.
+3. Start endpoint succeeds? → Platform prompt appears?: yes.
+4. Platform prompt appears? → Inspect host lifecycle, provider, entitlement, and association: no.
+5. Platform prompt appears? → Platform returns a credential?: yes.
+6. Platform returns a credential? → Classify cancellation, invalid options, or platform error: no.
+7. Platform returns a credential? → Finish endpoint accepts?: yes.
+8. Finish endpoint accepts? → Inspect challenge, origin, RP ID, signature, state, and policy: no.
+9. Finish endpoint accepts? → Update product session: yes.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="public-troubleshooting-flow-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >Find the failing boundary</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Follow each labelled branch before investigating the next integration boundary.</text>
+<text x="32.00" y="164.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Request and platform boundary</text>
+<path d="M 303.00 276.37 C 303.00 289.14 303.00 303.71 303.00 318.19" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e1" data-from="A" data-to="B"/>
+<path d="M 275.65 456.44 C 261.46 486.76 244.33 523.38 230.85 552.17" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e2" data-from="B" data-to="C"/>
+<rect x="250.35" y="486.50" width="31.00" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="265.85" y="504.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >no</text>
+<path d="M 358.03 445.34 C 393.83 476.13 440.55 516.32 477.56 548.15" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e3" data-from="B" data-to="D"/>
+<rect x="419.33" y="486.50" width="38.50" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="438.58" y="504.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >yes</text>
+<path d="M 496.25 655.28 C 476.86 678.99 453.59 707.44 432.53 733.20" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e4" data-from="D" data-to="E"/>
+<rect x="452.98" y="691.50" width="31.00" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="468.48" y="709.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >no</text>
+<path d="M 581.49 655.28 C 604.31 683.35 632.51 718.04 656.10 747.06" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e5" data-from="D" data-to="F"/>
+<rect x="617.70" y="691.50" width="38.50" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="636.95" y="709.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >yes</text>
+<g data-node="A">
+<rect x="176.00" y="194.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="303.00" y="242.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >User starts ceremony</text>
+</g>
+<g data-node="B">
+<polygon points="303.0,327.0 478.0,397.0 303.0,467.0 128.0,397.0" fill="var(--soft)" stroke="var(--accent)"/>
+<text x="303.00" y="392.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Start endpoint</text>
+<text x="303.00" y="417.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >succeeds?</text>
+</g>
+<g data-node="C">
+<rect x="81.00" y="560.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="208.00" y="597.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Inspect network, auth,</text>
+<text x="208.00" y="622.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >and backend start logs</text>
+</g>
+<g data-node="D">
+<polygon points="539.0,532.0 714.0,602.0 539.0,672.0 364.0,602.0" fill="var(--panel)" stroke="var(--line)"/>
+<text x="539.00" y="597.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Platform prompt</text>
+<text x="539.00" y="622.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >appears?</text>
+</g>
+<g data-node="E">
+<rect x="246.00" y="740.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="373.00" y="777.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Inspect host</text>
+<text x="373.00" y="802.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >lifecycle, provider,</text>
+<text x="373.00" y="827.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >entitlement, and</text>
+<text x="373.00" y="852.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >association</text>
+</g>
+<g data-node="F">
+<polygon points="704.0,737.0 879.0,807.0 704.0,877.0 529.0,807.0" fill="var(--panel)" stroke="var(--line)"/>
+<text x="704.00" y="802.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Platform returns a</text>
+<text x="704.00" y="827.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >credential?</text>
+</g>
+<text x="32.00" y="947.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Response and server boundary</text>
+<path d="M 311.65 1106.44 C 299.48 1132.46 285.14 1163.10 272.80 1189.46" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e6" data-from="F" data-to="G"/>
+<rect x="286.35" y="1136.50" width="31.00" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="301.85" y="1154.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >no</text>
+<path d="M 394.03 1095.34 C 429.83 1126.13 476.55 1166.32 513.56 1198.15" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e7" data-from="F" data-to="H"/>
+<rect x="455.33" y="1136.50" width="38.50" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="474.58" y="1154.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >yes</text>
+<path d="M 536.57 1307.12 C 520.66 1329.54 501.95 1355.89 484.85 1379.97" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e8" data-from="H" data-to="I"/>
+<rect x="500.26" y="1341.50" width="31.00" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="515.76" y="1359.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >no</text>
+<path d="M 613.16 1307.12 C 634.90 1337.97 661.89 1376.25 682.76 1405.85" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-troubleshooting-flow-1-desktop-light-arrow)" data-edge="e9" data-from="H" data-to="J"/>
+<rect x="640.98" y="1341.50" width="38.50" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="660.23" y="1359.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >yes</text>
+<g data-node="F">
+<polygon points="339.0,977.0 514.0,1047.0 339.0,1117.0 164.0,1047.0" fill="var(--panel)" stroke="var(--line)"/>
+<text x="339.00" y="1042.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Platform returns a</text>
+<text x="339.00" y="1067.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >credential?</text>
+</g>
+<g data-node="G">
+<rect x="117.00" y="1197.50" width="254.00" height="109.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="244.00" y="1234.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Classify cancellation,</text>
+<text x="244.00" y="1259.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >invalid options, or</text>
+<text x="244.00" y="1284.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >platform error</text>
+</g>
+<g data-node="H">
+<polygon points="575.0,1182.0 750.0,1252.0 575.0,1322.0 400.0,1252.0" fill="var(--panel)" stroke="var(--line)"/>
+<text x="575.00" y="1247.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Finish endpoint</text>
+<text x="575.00" y="1272.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >accepts?</text>
+</g>
+<g data-node="I">
+<rect x="306.00" y="1387.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="433.00" y="1424.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Inspect challenge,</text>
+<text x="433.00" y="1449.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >origin, RP ID,</text>
+<text x="433.00" y="1474.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >signature, state, and</text>
+<text x="433.00" y="1499.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >policy</text>
+</g>
+<g data-node="J">
+<rect x="589.00" y="1413.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="716.00" y="1461.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Update product session</text>
+</g>
+</svg>
