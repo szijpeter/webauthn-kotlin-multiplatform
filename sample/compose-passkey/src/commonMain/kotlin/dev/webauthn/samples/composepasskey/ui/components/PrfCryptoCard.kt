@@ -3,19 +3,19 @@ package dev.webauthn.samples.composepasskey.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -114,19 +114,38 @@ private fun EncryptionActions(
     onEncrypt: () -> Unit,
     onDecrypt: () -> Unit,
 ) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        DemoButton(
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        EncryptionButton(
             label = "Encrypt",
-            icon = Icons.Rounded.Lock,
             onClick = onEncrypt,
             enabled = encryptEnabled,
         )
-        DemoButton(
+        EncryptionButton(
             label = "Decrypt",
-            icon = Icons.Rounded.LockOpen,
             onClick = onDecrypt,
             enabled = decryptEnabled,
         )
+    }
+}
+
+@Composable
+private fun EncryptionButton(label: String, onClick: () -> Unit, enabled: Boolean) {
+    TextButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.heightIn(min = 32.dp),
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        Text(label)
     }
 }
 

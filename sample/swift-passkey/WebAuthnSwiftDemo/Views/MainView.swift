@@ -165,8 +165,9 @@ private struct PrfCryptoCard: View {
                 }
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: 12) { cryptoActions }
-                    VStack(alignment: .leading, spacing: 12) { cryptoActions }
+                    VStack(spacing: 12) { cryptoActions }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
                 if let decryptedText {
                     StatusCard(status: DemoStatus(tone: .success, headline: "Decrypted message", detail: decryptedText))
                         .textSelection(.enabled)

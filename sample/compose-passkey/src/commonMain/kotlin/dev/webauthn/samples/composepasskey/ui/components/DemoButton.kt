@@ -48,8 +48,8 @@ internal fun DemoButton(
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = background, contentColor = foreground),
         liquidGlassColors = LiquidGlassButtonColors(
-            tintColor = Color.Unspecified,
-            surfaceColor = background,
+            tintColor = background,
+            surfaceColor = Color.Unspecified,
             contentColor = foreground,
             disabledContentColor = palette.onSurface,
         ),

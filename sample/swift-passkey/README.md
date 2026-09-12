@@ -90,7 +90,8 @@ navigation, buttons, disclosure, text input, and system appearance. Semantic for
 colors adapt to light and dark mode, including disabled PRF controls. Wide screens use two columns;
 Dynamic Type accessibility sizes keep a single scrollable column. PRF input, encryption, decryption,
 and session clearing reflect the available session and ciphertext, and diagnostics remain accessible
-while a ceremony is busy.
+while a ceremony is busy. Intro headings use the scalable 28-point title style; Encrypt/Decrypt
+remain compact text-only controls centered within the PRF card, with a vertical fallback when needed.
 
 Debug builds accept `--sample-gallery` followed by `auth`, `busy`, `success`, `cancelled`, `rejected`,
 `error`, `session`, `encrypted`, `unsupported`, `prf-busy`, or `logs`. These deterministic fixtures render

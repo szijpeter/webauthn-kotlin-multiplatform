@@ -64,7 +64,7 @@ struct IntroCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.largeTitle.bold())
+                .font(.title.bold())
                 .accessibilityAddTraits(.isHeader)
             Text(detail)
                 .font(.body)

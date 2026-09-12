@@ -42,7 +42,7 @@ internal fun Header(onShowLogs: (() -> Unit)? = null) {
 @Composable
 internal fun Intro(title: String, detail: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(title, style = MaterialTheme.typography.headlineLarge, modifier = Modifier.semantics { heading() })
+        Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
         Text(detail, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

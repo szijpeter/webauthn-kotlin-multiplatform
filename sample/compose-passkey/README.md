@@ -201,11 +201,13 @@ For realistic device passkey prompts, use HTTPS plus associated-domain configura
 See the [three-app screenshot gallery](../UI_GALLERY.md) for light/dark, status, PRF, logs, and large layouts.
 
 The Android and iOS hosts share a theme with neutral light/dark surfaces, scalable typography,
-48 dp actions, wrapping status cards, and a keyboard-aware scrolling layout. Large windows use two
+48 dp touch targets, wrapping status cards, and a keyboard-aware scrolling layout. Large windows use two
 columns; increased font scale falls back to one column. Configuration is a selectable, collapsible
 panel, and debug logs have an accessible toolbar icon, an explicit dismiss action, and a compact
 newest-first list that scrolls independently of the page. Action and status icons are Material vectors;
-secondary actions use light tints, and signing out uses the destructive color.
+secondary actions use light tints, and signing out uses the destructive color. Encrypt/Decrypt use
+compact, centered text-only buttons with retained touch targets. Intro headings use 28 sp and still
+wrap at larger accessibility sizes. The log sheet has a large heading below its Done action.
 Capability rows distinguish supported, unavailable, and unreported values.
 
 [Calf 0.13.0](https://github.com/MohamedRejeb/Calf/tree/v0.13.0) supplies adaptive buttons, toolbar
@@ -213,6 +215,12 @@ icon buttons, progress indicators, and the debug sheet. Android retains Material
 Cupertino button rendering before iOS 26, Compose-rendered glass buttons on iOS 26+, and a UIKit page
 sheet. Calf is a sample dependency, exported only by `ComposePasskeyShared`; the published Kotlin SDK
 and native Swift package do not depend on it. The sample's iOS 16 deployment target is unchanged.
+Calf does not provide a complete iOS theme: cards, fields, typography, and page layout remain
+sample-owned. Its native navigation-bar variant was evaluated but is not used: the tested iOS
+simulator exposed an empty navigation-bar accessibility group instead of its title and controls.
+The shared toolbar retains its accessible heading and labelled log action. Compact crypto actions
+use Material text buttons on both Compose hosts because Calf's iOS button does not forward custom
+content padding and uses a fixed 48 dp glass control.
 
 The message input uses Foundation's text field with sample-owned styling. This avoids the
 `CustomStyle.applyStyle` binary mismatch between the current Material 3 alpha's outlined field and

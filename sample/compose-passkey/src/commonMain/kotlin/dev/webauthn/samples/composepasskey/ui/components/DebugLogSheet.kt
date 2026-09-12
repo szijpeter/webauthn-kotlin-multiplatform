@@ -2,8 +2,7 @@ package dev.webauthn.samples.composepasskey.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +15,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -33,18 +31,16 @@ fun DebugLogSheet(entries: List<DebugLogEntry>, sheetState: AdaptiveSheetState, 
         adaptiveSheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.background,
     ) {
-        Column(Modifier.fillMaxHeight()) {
-            Row(
-                Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    "Debug logs",
-                    Modifier.weight(1f).semantics { heading() },
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                TextButton(onClick = onDismissRequest) { Text("Done") }
-            }
+        Column(Modifier.fillMaxSize()) {
+            TextButton(
+                onClick = onDismissRequest,
+                modifier = Modifier.padding(start = 12.dp, top = 8.dp),
+            ) { Text("Done") }
+            Text(
+                "Debug logs",
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp).semantics { heading() },
+                style = MaterialTheme.typography.headlineLarge,
+            )
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
