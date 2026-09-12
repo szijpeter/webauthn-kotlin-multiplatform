@@ -1,98 +1,61 @@
-@file:Suppress("MagicNumber")
-
 package dev.webauthn.samples.composepasskey.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import dev.webauthn.client.CapabilitySupport
 import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PlatformCapability
 import dev.webauthn.model.WebAuthnExtension
 
 @Composable
-fun CapabilitiesCard(
-    capabilities: PasskeyCapabilities,
-) {
-    val prfCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.Prf) }
-    val largeBlobCapability = remember { PasskeyCapability.Extension(WebAuthnExtension.LargeBlob) }
-    val securityKeyCapability = remember {
-        PasskeyCapability.Platform(PlatformCapability.SecurityKey)
-    }
-
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text("Capabilities", style = MaterialTheme.typography.titleMedium)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                CapabilityChip("PRF", capabilities.supports(prfCapability))
-                CapabilityChip("Large Blob", capabilities.supports(largeBlobCapability))
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                CapabilityChip("Security Key", capabilities.supports(securityKeyCapability))
-            }
-            Text(
-                text = "Capabilities reported: ${capabilities.support.size}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+fun CapabilitiesCard(capabilities: PasskeyCapabilities) {
+    DemoCard {
+        Text(
+            "Device capabilities",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.semantics { heading() },
+        )
+        CapabilityRow("PRF encryption", capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.Prf)))
+        CapabilityRow("Large blob", capabilities.supportOf(PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)))
+        CapabilityRow("Security key",
+            capabilities.supportOf(PasskeyCapability.Platform(PlatformCapability.SecurityKey)))
+        Text(
+            "Reported by your platform. Individual passkey providers may differ.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
 @Composable
-private fun CapabilityChip(label: String, enabled: Boolean) {
-    val color = if (enabled) Color(0xFF9BC08E) else Color(0xFFD4D9DD)
-    Surface(
-        shape = RoundedCornerShape(999.dp),
-        color = color,
+private fun CapabilityRow(label: String, support: CapabilitySupport) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(7.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(7.dp)
-                    .clip(CircleShape)
-                    .background(if (enabled) Color(0xFF1B4D2C) else Color(0xFF5E6C77)),
-            )
-            Text(
-                text = "$label: ${if (enabled) "yes" else "no"}",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF1B2C39),
-            )
-        }
+        Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = when (support) {
+                CapabilitySupport.SUPPORTED -> "✓ Supported"
+                CapabilitySupport.UNSUPPORTED -> "Unavailable"
+                CapabilitySupport.UNKNOWN -> "Not reported"
+            },
+            style = MaterialTheme.typography.labelLarge,
+            color = if (support == CapabilitySupport.SUPPORTED) {
+                MaterialTheme.colorScheme.tertiary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
     }
 }

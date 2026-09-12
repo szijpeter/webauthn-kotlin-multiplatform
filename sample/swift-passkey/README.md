@@ -80,3 +80,24 @@ tools/swift/ci-check.sh
 The same check is blocking in pull-request CI. Physical-device registration and authentication remain a
 separate release-evidence step because CI cannot validate signing, association caching, account state, or the
 actual system prompt on a user's device.
+
+## Appearance and deterministic gallery
+
+See the [three-app screenshot gallery](../UI_GALLERY.md) for light/dark, status, PRF, logs, and large layouts.
+
+The native SwiftUI app shares the Compose samples' information hierarchy while retaining native
+navigation, buttons, disclosure, text input, and system appearance. Semantic foreground and accent
+colors adapt to light and dark mode, including disabled PRF controls. Wide screens use two columns;
+Dynamic Type accessibility sizes keep a single scrollable column. PRF input, encryption, decryption,
+and session clearing reflect the available session and ciphertext, and diagnostics remain accessible
+while a ceremony is busy. Intro headings use the scalable 28-point title style; Encrypt/Decrypt
+remain compact text-only controls centered within the PRF card, with a vertical fallback when needed.
+
+Debug builds accept `--sample-gallery` followed by `auth`, `busy`, `success`, `cancelled`, `rejected`,
+`error`, `session`, `encrypted`, `unsupported`, `prf-busy`, or `logs`. These deterministic fixtures render
+`AuthenticationContent` and `SessionContent` directly without constructing a client, backend, or crypto
+session. They demonstrate presentation only. The entry point is compiled out of Release builds.
+
+The UI tests cover live-app launch/log dismissal, busy and terminal action availability, PRF session
+controls, and reaching configuration at the largest Dynamic Type size. Unit tests separately cover
+the unchanged request, backend, and session behavior.

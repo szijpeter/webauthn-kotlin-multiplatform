@@ -34,7 +34,19 @@ This repo focuses on those needs:
 - A client/server setup that shares model and validation semantics instead of duplicating protocol assumptions.
 - A modular stack where server, client, transport, storage, and attestation trust can be adopted separately.
 
+## Sample UI
+
+The samples support system light and dark appearance, responsive layouts, and accessible status and
+session controls. These images show deterministic rendering fixtures. Browse the
+[complete three-app gallery](sample/UI_GALLERY.md) for dark mode, PRF, status, logs, and large screens.
+
+| Compose Android | Compose iOS | Native SwiftUI |
+| --- | --- | --- |
+| <img width="230" alt="Compose Android authentication in light mode" src="https://github.com/user-attachments/assets/5b586a88-4625-44d7-9f93-97ff8f1f477f"> | <img width="230" alt="Compose iOS authentication in light mode" src="https://github.com/user-attachments/assets/6f54a934-2ae2-4bda-b17e-c4861f820ebf"> | <img width="230" alt="Native SwiftUI authentication in light mode" src="https://github.com/user-attachments/assets/520256f9-f71c-4ed3-b6f1-4ced8dd686db"> |
+
 ## Sample Recordings
+
+The recordings below demonstrate the earlier Compose sample appearance and ceremony flow.
 
 | Android | iOS |
 | --- | --- |
