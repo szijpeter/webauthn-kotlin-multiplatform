@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
       - name: Detekt
         run: ./gradlew detekt :build-logic:detekt --stacktrace --continue
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
       - name: JVM Checks
         run: ./gradlew check --stacktrace
@@ -79,7 +79,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: android-actions/setup-android@v4
       - uses: gradle/actions/setup-gradle@v6
       - name: Documentation Examples
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
       - name: API Check
         run: ./gradlew apiCheck --stacktrace
@@ -112,7 +112,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: android-actions/setup-android@v4
       - uses: gradle/actions/setup-gradle@v6
       - name: Android Lint and Build
@@ -129,7 +129,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
       - name: iOS Compile
         run: ./gradlew :client:webauthn-client-platform:compileKotlinIosSimulatorArm64 :sample:ios-passkey:compileKotlinIosSimulatorArm64 :sample:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace
@@ -147,7 +147,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
       - name: Publish Preflight
         run: ./gradlew publishToMavenLocal -PsignAllPublications=false --stacktrace
