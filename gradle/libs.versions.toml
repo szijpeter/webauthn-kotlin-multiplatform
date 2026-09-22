@@ -33,7 +33,7 @@ junit4 = "4.13.2"
 robolectric = "4.17"
 mockk = "1.14.11"
 koin = "4.2.2"
-navigation3 = "1.1.1"
+navigation3 = "1.1.2"
 compose-multiplatform-lifecycle = "2.11.0"
 
 [libraries]
