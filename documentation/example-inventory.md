@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **135**
+Managed blocks: **136**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -41,9 +41,10 @@ Managed blocks: **135**
 | client-webauthn-client-ktor-kotlinx-readme-kotlin-1 | client/webauthn-client-ktor-kotlinx/README.md:27 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/KtorClientExample.kt#kotlinx-ktor-backend | compile |  |
 | client-webauthn-client-ktor-readme-kotlin-1 | client/webauthn-client-ktor/README.md:28 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/KtorClientExample.kt#neutral-ktor-backend | compile |  |
 | client-webauthn-client-ktor-readme-mermaid-1 | client/webauthn-client-ktor/README.md:84 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| client-webauthn-client-platform-readme-kotlin-1 | client/webauthn-client-platform/README.md:25 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client | platform-compile |  |
-| client-webauthn-client-platform-readme-kotlin-2 | client/webauthn-client-platform/README.md:41 | iOS | kotlin | consumer | source | documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/IosClientExample.kt#ios-client | platform-compile |  |
-| client-webauthn-client-platform-readme-mermaid-1 | client/webauthn-client-platform/README.md:54 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| client-webauthn-client-platform-readme-kotlin-1 | client/webauthn-client-platform/README.md:27 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidClientExample.kt#android-client | platform-compile |  |
+| client-webauthn-client-platform-readme-kotlin-3 | client/webauthn-client-platform/README.md:43 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidRestoreCredentialExample.kt#android-restore-client | platform-compile |  |
+| client-webauthn-client-platform-readme-kotlin-2 | client/webauthn-client-platform/README.md:82 | iOS | kotlin | consumer | source | documentation/examples/src/iosMain/kotlin/dev/webauthn/documentation/examples/IosClientExample.kt#ios-client | platform-compile |  |
+| client-webauthn-client-platform-readme-mermaid-1 | client/webauthn-client-platform/README.md:95 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-prf-crypto-readme-mermaid-1 | client/webauthn-client-prf-crypto/README.md:14 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-prf-crypto-readme-kotlin-1 | client/webauthn-client-prf-crypto/README.md:36 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PrfCryptoExample.kt#prf-crypto | compile |  |
 | core-webauthn-cbor-core-readme-mermaid-1 | core/webauthn-cbor-core/README.md:17 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
@@ -118,13 +119,13 @@ Managed blocks: **135**
 | sample-compose-passkey-readiness-checklist-bash-3 | sample/compose-passkey/READINESS_CHECKLIST.md:38 | 2. Local sample backend | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-4 | sample/compose-passkey/READINESS_CHECKLIST.md:66 | 3. Android manual flow (required) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-5 | sample/compose-passkey/READINESS_CHECKLIST.md:83 | 3. Android manual flow (required) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readiness-checklist-bash-6 | sample/compose-passkey/READINESS_CHECKLIST.md:92 | 4. Debug trace verification | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readiness-checklist-bash-7 | sample/compose-passkey/READINESS_CHECKLIST.md:113 | 5. Optional emulator smoke run | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-bash-1 | sample/compose-passkey/README.md:45 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-bash-2 | sample/compose-passkey/README.md:52 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-bash-3 | sample/compose-passkey/README.md:71 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-bash-4 | sample/compose-passkey/README.md:85 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-kotlin-1 | sample/compose-passkey/README.md:143 | Auth route showcase | kotlin | consumer | sample | sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route | sample-build |  |
+| sample-compose-passkey-readiness-checklist-bash-6 | sample/compose-passkey/READINESS_CHECKLIST.md:110 | 5. Debug trace verification | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readiness-checklist-bash-7 | sample/compose-passkey/READINESS_CHECKLIST.md:131 | 6. Optional emulator smoke run | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readme-bash-1 | sample/compose-passkey/README.md:46 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readme-bash-2 | sample/compose-passkey/README.md:53 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readme-bash-3 | sample/compose-passkey/README.md:72 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readme-bash-4 | sample/compose-passkey/README.md:86 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readme-kotlin-1 | sample/compose-passkey/README.md:144 | Auth route showcase | kotlin | consumer | sample | sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route | sample-build |  |
 | sample-passkey-cli-readme-bash-1 | sample/passkey-cli/README.md:24 | Prerequisites | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-2 | sample/passkey-cli/README.md:36 | Commands | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-3 | sample/passkey-cli/README.md:60 | Local Smoke Path (opt-in) | bash | consumer | markdown | Markdown block | syntax |  |
