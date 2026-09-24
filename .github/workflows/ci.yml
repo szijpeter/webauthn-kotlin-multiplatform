@@ -68,6 +68,22 @@ jobs:
       - name: JVM Checks
         run: ./gradlew check --stacktrace
 
+  fido-registration-compatibility:
+    runs-on: ubuntu-latest
+    needs: [harness]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: FIDO Server Registration Compatibility Canary
+        run: ./gradlew :sample:backend-ktor:communityConformanceE2eTest --stacktrace
+
   documentation:
     runs-on: macos-26
     needs: [harness]

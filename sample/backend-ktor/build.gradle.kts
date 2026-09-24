@@ -19,7 +19,23 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(project(":server:webauthn-server-core-jvm"))
     testImplementation(project(":server:webauthn-server-jvm-crypto"))
+    testImplementation(project(":client:webauthn-client-core"))
+    testImplementation(project(":client:webauthn-client-flow"))
+    testImplementation(project(":client:webauthn-client-json-core"))
+    testImplementation(project(":client:webauthn-client-ktor-kotlinx"))
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.content.negotiation)
     testImplementation(libs.ktor.serialization.kotlinx.json)
+}
+
+tasks.register<Test>("communityConformanceE2eTest") {
+    description = "Runs the FIDO server registration compatibility canary against the sample backend."
+    group = "verification"
+
+    val testTask = tasks.named<Test>("test").get()
+    testClassesDirs = testTask.testClassesDirs
+    classpath = testTask.classpath
+    filter {
+        includeTestsMatching("dev.webauthn.samples.backend.CommunityConformanceE2eTest")
+    }
 }
