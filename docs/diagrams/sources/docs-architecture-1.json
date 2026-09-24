@@ -1,0 +1,27 @@
+{
+  "id": "docs-architecture-1",
+  "title": "Reference integration",
+  "kind": "graph",
+  "summary": "Application and platform responsibilities, with optional metadata explicitly marked.",
+  "nodes": [
+    {"id": "USER", "label": "End user", "shape": "stadium", "parent": null, "container": false},
+    {"id": "APPLICATION", "label": "Reference passkey application", "shape": "container", "parent": null, "container": true},
+    {"id": "CLIENT", "label": "Client application\nwebauthn-client-flow over client-core and an Android or iOS bridge", "shape": "rect", "parent": "APPLICATION", "container": false},
+    {"id": "BACKEND", "label": "Relying-party backend\nwebauthn-server-core-jvm plus optional adapters", "shape": "rect", "parent": "APPLICATION", "container": false},
+    {"id": "STORE", "label": "Credential store", "shape": "cylinder", "parent": "APPLICATION", "container": false},
+    {"id": "PLATFORM", "label": "Platform passkey API\nCredential Manager or AuthenticationServices", "shape": "rect", "parent": null, "container": false},
+    {"id": "MDS", "label": "Attestation metadata service\n(optional)", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "USER", "target": "CLIENT", "label": "initiates registration or authentication", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "CLIENT", "target": "BACKEND", "label": "requests ceremony options and submits credential responses", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "BACKEND", "target": "CLIENT", "label": "returns ceremony options and verification results", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "CLIENT", "target": "PLATFORM", "label": "invokes the passkey ceremony", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "BACKEND", "target": "STORE", "label": "stores registered credentials", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "BACKEND", "target": "MDS", "label": "optionally obtains attestation metadata", "style": "dashed", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "Reference integration", "edges": ["e1", "e2", "e3", "e4", "e5", "e6"]}
+  ]
+}

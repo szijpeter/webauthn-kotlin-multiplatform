@@ -33,13 +33,23 @@ Real-world scenario: ship passkey backend endpoints quickly, while keeping polic
 
 ## How it fits
 
-<!-- doc-example: id=server-webauthn-server-ktor-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    CLIENT["Mobile or web client"] --> ROUTES["webauthn-server-ktor routes"]
-    ROUTES --> SVC["webauthn-server-core-jvm services"]
-    SVC --> STORES["Store implementations"]
-```
+<!-- diagram: server-webauthn-server-ktor-readme-1 -->
+<a href="../../docs/diagrams/assets/server-webauthn-server-ktor-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/server-webauthn-server-ktor-readme-1-desktop-dark.svg">
+  <img alt="server-ktor · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/server-webauthn-server-ktor-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: server-ktor · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/server-webauthn-server-ktor-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/server-webauthn-server-ktor-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Mobile or web client; webauthn-server-ktor routes; webauthn-server-core-jvm services; Store implementations.</p>
+<p>1. Mobile or web client → webauthn-server-ktor routes.</p>
+<p>2. webauthn-server-ktor routes → webauthn-server-core-jvm services.</p>
+<p>3. webauthn-server-core-jvm services → Store implementations.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

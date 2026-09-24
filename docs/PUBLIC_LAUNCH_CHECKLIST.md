@@ -7,7 +7,7 @@ Use this checklist when moving from private to public operation.
 1. Security policy file exists and is current: `SECURITY.md`.
 2. CI workflows use least-privilege `permissions`, explicit versioned action references, and
    `persist-credentials: false` on every checkout before repository code executes.
-   - Central publication runs with read-only repository contents and no persisted Git credentials; a separate `publish-and-release`-only job requires `contents:write` solely to create the release tag from curated changelog notes.
+   - Central publication runs with read-only repository contents and no persisted Git credentials; a separate `publish-and-release`-only job requires `contents:write` solely to create the release tag from curated changelog notes and attach the verified diagram snapshot.
    - Any privileged `pull_request_target` workflow loads executable code only from trusted, explicitly versioned references. Data-only configuration may come from the trusted default branch or the exact pull-request base commit, never the pull-request head; pull-request content is treated as API metadata only.
 3. Dependency automation exists and is current: `.github/renovate.json`.
 4. Local/sensitive files are ignored (`.env*`, `local.properties`, build outputs, IDE state).
@@ -17,6 +17,7 @@ Use this checklist when moving from private to public operation.
    - `tools/agent/verify-harness-sync.sh`
    - `tools/agent/quality-gate.sh --mode strict --scope full --block true`
    - `./gradlew apiCheck --stacktrace`
+   - `./gradlew docsDiagramsCheck --stacktrace` and visual review of both widths/themes
    - `./gradlew publishToMavenLocal --stacktrace`
    - `bash tools/agent/check-published-consumer-smoke.sh`
 6. Demo/sample runtime security defaults are explicit (sample backend attestation mode defaults to `STRICT`; relaxed `NONE` mode is opt-in only).
@@ -47,4 +48,5 @@ Use this checklist when moving from private to public operation.
 3. `SECURITY.md` appears in repository security surfaces.
 4. Maven Central artifacts resolve using the published coordinates and BOM.
 5. No secret findings exist in baseline scans; if any are found, rotate credentials immediately and evaluate targeted history rewrite.
-6. Delete any temporary release execution-map doc once that release effort is complete.
+6. Confirm the GitHub release diagram archive records the release commit and its assets render offline.
+7. Delete any temporary release execution-map doc once that release effort is complete.

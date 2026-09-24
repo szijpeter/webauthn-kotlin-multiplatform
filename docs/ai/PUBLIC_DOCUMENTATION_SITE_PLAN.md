@@ -300,7 +300,7 @@ Every authored page must answer:
 | Kotlin examples | `documentation/examples/**` or sample source regions | Rendered by `docsUpdate`; never duplicated manually |
 | Module details | Module `README.md` | Staged into reference pages during build |
 | Public API | KDoc | Rendered by Dokka |
-| Architecture diagrams | Mermaid in canonical repository docs or site source | Kept text-reviewable and GitHub-renderable |
+| Architecture diagrams | `docs/diagrams` semantic sources, reviewed layouts and generated SVGs | Responsive GitHub/site pictures with accessible text and deterministic freshness checks |
 | Platform support values | Gradle build files plus explicit generated site data | Build fails when generated values drift |
 | Maturity | `docs/IMPLEMENTATION_STATUS.md` and module status sections | Curated into stable public labels with an exact review date |
 | Security reporting | `SECURITY.md` | Linked directly; short public summary only |
@@ -386,7 +386,7 @@ The staging task must:
 3. Copy the curated public module README set into stable `/reference/modules/<artifact>/` paths.
 4. Copy selected sample READMEs into `/guides/samples/` paths.
 5. Rewrite repository-relative links deterministically.
-6. Preserve external links, fragment identifiers, fenced code, `doc-example` directives, and Mermaid blocks.
+6. Preserve external links, fragment identifiers, fenced code, `doc-example` directives, and registered diagram embeds.
 7. Generate navigation metadata from a checked-in manifest, not filesystem ordering.
 8. Generate platform-support data from current build configuration or verify checked-in values against it.
 9. Generate the latest stable release label from the most recent stable `v*` Git tag; never present the snapshot version as the latest published release.
@@ -468,7 +468,7 @@ Tasks:
 - Write an original mobile-first value proposition using existing product language.
 - Add `Start mobile setup` and `Explore the backend` actions.
 - Add four mobile journey cards and one visible backend card.
-- Add one Mermaid ceremony diagram emphasizing the server trust boundary.
+- Add a maintained ceremony diagram emphasizing the server trust boundary.
 - Add concise Beta/platform prerequisites.
 - Add Android/iOS media with captions and non-autoplay behavior if current recordings remain representative.
 - Add a `What the library owns / What your app owns` split.
@@ -658,7 +658,7 @@ Create an original, restrained identity based on protocol clarity and trust:
 - Desktop navigation is a persistent vertical menu; mobile navigation is a compact drawer.
 - Security warnings use consistent severity and are never color-only.
 - Code blocks include copy controls and visible language/source-set labels.
-- Mermaid diagrams use one project-owned palette across light and dark themes.
+- Maintained diagrams use one project-owned palette across light and dark themes. See `docs/diagrams/README.md` for sources, staging and release snapshots.
 - Motion is optional, subtle, and disabled under `prefers-reduced-motion`.
 - Videos never autoplay.
 

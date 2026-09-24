@@ -1,0 +1,32 @@
+{
+  "id": "docs-architecture-4",
+  "title": "JVM server stack",
+  "kind": "graph",
+  "summary": "Direct internal dependencies. HTTP, storage and metadata remain optional adapters.",
+  "nodes": [
+    {"id": "KTOR", "label": "webauthn-server-ktor\n(optional adapter)", "shape": "rect", "parent": null, "container": false},
+    {"id": "STORE", "label": "webauthn-server-store-exposed\n(optional adapter)", "shape": "rect", "parent": null, "container": false},
+    {"id": "MDS", "label": "webauthn-attestation-mds\n(optional adapter)", "shape": "rect", "parent": null, "container": false},
+    {"id": "SERVER_CORE", "label": "webauthn-server-core-jvm", "shape": "rect", "parent": null, "container": false},
+    {"id": "PROTOCOL", "label": "webauthn-protocol", "shape": "rect", "parent": null, "container": false},
+    {"id": "JVM_CRYPTO", "label": "webauthn-server-jvm-crypto", "shape": "rect", "parent": null, "container": false},
+    {"id": "FOUNDATION", "label": "Shared foundation", "shape": "rect", "parent": null, "container": false},
+    {"id": "CRYPTO", "label": "Cryptography boundary", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "KTOR", "target": "SERVER_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "STORE", "target": "SERVER_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "STORE", "target": "FOUNDATION", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "STORE", "target": "CRYPTO", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "MDS", "target": "CRYPTO", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "SERVER_CORE", "target": "FOUNDATION", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "SERVER_CORE", "target": "PROTOCOL", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "SERVER_CORE", "target": "CRYPTO", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "JVM_CRYPTO", "target": "FOUNDATION", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e10", "source": "JVM_CRYPTO", "target": "CRYPTO", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "JVM server stack", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10"]}
+  ]
+}

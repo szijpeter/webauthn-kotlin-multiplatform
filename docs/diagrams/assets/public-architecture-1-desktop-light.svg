@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1735" viewBox="0 0 960 1735" role="img" aria-labelledby="public-architecture-1-desktop-light-title public-architecture-1-desktop-light-desc" data-diagram="public-architecture-1">
+<title id="public-architecture-1-desktop-light-title">Architecture</title>
+<desc id="public-architecture-1-desktop-light-desc">Application, server and shared foundation responsibilities.
+Nodes: Android and iOS application; Product UI and state; Compose helpers; Client flow; Ktor contract adapter; Passkey client core; Android and iOS bridge; JVM relying-party backend; Ktor routes; Registration and authentication services; JVM crypto and attestation; Challenge, credential, and account stores; Shared protocol foundation; Models; Binary protocol and validation; JSON API and implementation; Extension hooks.
+Product UI and state belongs to Android and iOS application.
+Compose helpers belongs to Android and iOS application.
+Client flow belongs to Android and iOS application.
+Ktor contract adapter belongs to Android and iOS application.
+Passkey client core belongs to Android and iOS application.
+Android and iOS bridge belongs to Android and iOS application.
+Ktor routes belongs to JVM relying-party backend.
+Registration and authentication services belongs to JVM relying-party backend.
+JVM crypto and attestation belongs to JVM relying-party backend.
+Challenge, credential, and account stores belongs to JVM relying-party backend.
+Models belongs to Shared protocol foundation.
+Binary protocol and validation belongs to Shared protocol foundation.
+JSON API and implementation belongs to Shared protocol foundation.
+Extension hooks belongs to Shared protocol foundation.
+1. Product UI and state → Compose helpers.
+2. Compose helpers → Client flow.
+3. Product UI and state → Client flow.
+4. Client flow → Ktor contract adapter.
+5. Client flow → Passkey client core.
+6. Passkey client core → Android and iOS bridge.
+7. Ktor routes → Registration and authentication services.
+8. Registration and authentication services → JVM crypto and attestation.
+9. Registration and authentication services → Challenge, credential, and account stores.
+10. Ktor contract adapter ↔ Ktor routes.
+11. Passkey client core → Shared protocol foundation.
+12. Registration and authentication services → Shared protocol foundation.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="public-architecture-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >Architecture</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Application, server and shared foundation responsibilities.</text>
+<text x="32.00" y="164.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Mobile application</text>
+<path d="M 453.07 276.42 C 444.36 289.75 434.58 304.70 425.56 318.50" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e1" data-from="UI" data-to="Compose"/>
+<path d="M 420.93 408.42 C 429.64 421.75 439.42 436.70 448.44 450.50" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e2" data-from="Compose" data-to="Flow"/>
+<path d="M 511.76 276.19 C 521.72 290.97 531.40 308.41 536.50 326.00 546.65 361.00 546.65 373.00 536.50 408.00 532.20 422.84 524.63 437.57 516.39 450.70" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e3" data-from="UI" data-to="Flow"/>
+<path d="M 523.65 540.42 C 538.74 554.24 555.74 569.79 571.27 584.02" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e4" data-from="Flow" data-to="Transport"/>
+<path d="M 435.66 540.42 C 420.67 554.24 403.80 569.79 388.37 584.02" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e5" data-from="Flow" data-to="Client"/>
+<path d="M 338.50 672.42 C 338.50 685.38 338.50 699.87 338.50 713.36" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e6" data-from="Client" data-to="Platform"/>
+<g data-node="Client">
+<rect x="211.50" y="590.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="338.50" y="638.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Passkey client core</text>
+</g>
+<g data-node="Compose">
+<rect x="267.50" y="326.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="394.50" y="374.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Compose helpers</text>
+</g>
+<g data-node="Flow">
+<rect x="352.50" y="458.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="479.50" y="506.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Client flow</text>
+</g>
+<g data-node="Platform">
+<rect x="211.50" y="722.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="338.50" y="770.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Android and iOS bridge</text>
+</g>
+<g data-node="Transport">
+<rect x="494.50" y="590.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="621.50" y="638.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ktor contract adapter</text>
+</g>
+<g data-node="UI">
+<rect x="352.50" y="194.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="479.50" y="242.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Product UI and state</text>
+</g>
+<text x="32.00" y="874.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying-party backend</text>
+<path d="M 303.33 1003.00 C 316.84 1003.00 330.63 1003.00 344.25 1003.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e7" data-from="Routes" data-to="Services"/>
+<path d="M 607.33 979.16 C 620.97 976.58 634.89 973.95 648.63 971.36" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e8" data-from="Services" data-to="Crypto"/>
+<path d="M 607.33 1026.42 C 620.97 1028.96 634.89 1031.54 648.63 1034.08" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e9" data-from="Services" data-to="Stores"/>
+<g data-node="Crypto">
+<rect x="657.00" y="904.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="784.00" y="941.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >JVM crypto and</text>
+<text x="784.00" y="966.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >attestation</text>
+</g>
+<g data-node="Routes">
+<rect x="49.00" y="962.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="1010.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ktor routes</text>
+</g>
+<g data-node="Services">
+<rect x="353.00" y="948.50" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="985.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Registration and</text>
+<text x="480.00" y="1010.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >authentication</text>
+<text x="480.00" y="1035.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >services</text>
+</g>
+<g data-node="Stores">
+<rect x="657.00" y="1017.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="1054.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Challenge, credential,</text>
+<text x="784.00" y="1079.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >and account stores</text>
+</g>
+<text x="32.00" y="1171.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Transport and shared foundation</text>
+<path d="M 763.00 1304.90 C 763.00 1320.19 763.00 1337.09 763.00 1352.39" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-start="url(#public-architecture-1-desktop-light-arrow)" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e10" data-from="Transport" data-to="Routes"/>
+<path d="M 236.28 1296.75 C 253.63 1314.54 274.15 1335.56 292.19 1354.06" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e11" data-from="Client" data-to="Foundation"/>
+<path d="M 427.12 1310.31 C 413.05 1324.63 397.96 1339.99 384.26 1353.92" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-architecture-1-desktop-light-arrow)" data-edge="e12" data-from="Services" data-to="Foundation"/>
+<g data-node="Client">
+<rect x="70.00" y="1214.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="197.00" y="1263.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Passkey client core</text>
+</g>
+<g data-node="Foundation">
+<rect x="211.00" y="1360.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" stroke-dasharray="5 4"/>
+<text x="338.00" y="1397.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Shared protocol</text>
+<text x="338.00" y="1422.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >foundation</text>
+</g>
+<g data-node="Routes">
+<rect x="636.00" y="1361.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="763.00" y="1409.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ktor routes</text>
+</g>
+<g data-node="Services">
+<rect x="353.00" y="1201.00" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="1238.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Registration and</text>
+<text x="480.00" y="1263.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >authentication</text>
+<text x="480.00" y="1288.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >services</text>
+</g>
+<g data-node="Transport">
+<rect x="636.00" y="1214.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="763.00" y="1263.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ktor contract adapter</text>
+</g>
+<text x="32.00" y="1510.00" font-size="17" fill="var(--ink)" font-weight="650" text-anchor="start" >Group membership</text>
+<g data-node="Mobile">
+<text x="32.00" y="1539.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >Android and iOS application: Product UI and state; Compose helpers; Client flow; Ktor</text>
+<text x="32.00" y="1562.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >contract adapter; Passkey client core; Android and iOS bridge</text>
+</g>
+<g data-node="Server">
+<text x="32.00" y="1599.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >JVM relying-party backend: Ktor routes; Registration and authentication services; JVM</text>
+<text x="32.00" y="1622.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >crypto and attestation; Challenge, credential, and account stores</text>
+</g>
+<g data-node="Foundation">
+<text x="32.00" y="1659.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >Shared protocol foundation: Models; Binary protocol and validation; JSON API and</text>
+<text x="32.00" y="1682.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >implementation; Extension hooks</text>
+</g>
+</svg>

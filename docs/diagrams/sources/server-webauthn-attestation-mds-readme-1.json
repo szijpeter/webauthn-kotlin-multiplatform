@@ -1,0 +1,23 @@
+{
+  "id": "server-webauthn-attestation-mds-readme-1",
+  "title": "attestation-mds · How it fits",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "MDS", "label": "FIDO MDS endpoint", "shape": "rect", "parent": null, "container": false},
+    {"id": "SOURCE", "label": "FidoMdsTrustSource cache", "shape": "rect", "parent": null, "container": false},
+    {"id": "API", "label": "TrustAnchorSource contract", "shape": "rect", "parent": null, "container": false},
+    {"id": "VERIFY", "label": "Attestation verifier", "shape": "rect", "parent": null, "container": false},
+    {"id": "SVC", "label": "webauthn-server-core-jvm registration flow", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "MDS", "target": "SOURCE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "SOURCE", "target": "API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "API", "target": "VERIFY", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "VERIFY", "target": "SVC", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "attestation-mds · How it fits", "edges": ["e1", "e2", "e3", "e4"]}
+  ]
+}

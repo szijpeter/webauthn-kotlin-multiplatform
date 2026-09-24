@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="720" viewBox="0 0 960 720" role="img" aria-labelledby="client-webauthn-client-platform-readme-1-desktop-light-title client-webauthn-client-platform-readme-1-desktop-light-desc" data-diagram="client-webauthn-client-platform-readme-1">
+<title id="client-webauthn-client-platform-readme-1-desktop-light-title">client-platform · How it fits</title>
+<desc id="client-webauthn-client-platform-readme-1-desktop-light-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Android or iOS UI; webauthn-client-core raw client; AndroidPasskeyClient; IosPasskeyClient; Credential Manager; Authentication Services.
+1. Android or iOS UI → webauthn-client-core raw client.
+2. webauthn-client-core raw client → AndroidPasskeyClient.
+3. webauthn-client-core raw client → IosPasskeyClient.
+4. AndroidPasskeyClient → Credential Manager.
+5. IosPasskeyClient → Authentication Services.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="client-webauthn-client-platform-readme-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >client-platform · How it fits</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 479.50 254.37 C 479.50 267.32 479.50 281.82 479.50 295.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-platform-readme-1-desktop-light-arrow)" data-edge="e1" data-from="UI" data-to="CORE"/>
+<path d="M 434.89 388.45 C 419.93 402.35 403.17 417.92 387.87 432.13" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-platform-readme-1-desktop-light-arrow)" data-edge="e2" data-from="CORE" data-to="ANDROID"/>
+<path d="M 524.43 388.45 C 539.49 402.35 556.37 417.92 571.78 432.13" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-platform-readme-1-desktop-light-arrow)" data-edge="e3" data-from="CORE" data-to="IOS"/>
+<path d="M 338.50 520.37 C 338.50 533.57 338.50 548.37 338.50 562.13" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-platform-readme-1-desktop-light-arrow)" data-edge="e4" data-from="ANDROID" data-to="CM"/>
+<path d="M 621.50 520.37 C 621.50 533.32 621.50 547.82 621.50 561.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-platform-readme-1-desktop-light-arrow)" data-edge="e5" data-from="IOS" data-to="AS"/>
+<g data-node="ANDROID">
+<rect x="211.50" y="438.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="338.50" y="486.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >AndroidPasskeyClient</text>
+</g>
+<g data-node="AS">
+<rect x="494.50" y="570.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="621.50" y="607.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Authentication</text>
+<text x="621.50" y="632.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Services</text>
+</g>
+<g data-node="CM">
+<rect x="211.50" y="571.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="338.50" y="619.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Credential Manager</text>
+</g>
+<g data-node="CORE">
+<rect x="352.50" y="304.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="479.50" y="341.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-core</text>
+<text x="479.50" y="366.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >raw client</text>
+</g>
+<g data-node="IOS">
+<rect x="494.50" y="438.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="621.50" y="486.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >IosPasskeyClient</text>
+</g>
+<g data-node="UI">
+<rect x="352.50" y="172.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="479.50" y="220.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Android or iOS UI</text>
+</g>
+</svg>

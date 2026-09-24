@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1140" viewBox="0 0 960 1140" role="img" aria-labelledby="core-webauthn-model-readme-1-desktop-dark-title core-webauthn-model-readme-1-desktop-dark-desc" data-diagram="core-webauthn-model-readme-1">
+<title id="core-webauthn-model-readme-1-desktop-dark-title">model · What it provides</title>
+<desc id="core-webauthn-model-readme-1-desktop-dark-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Untrusted input — HTTP JSON / mobile payload; parse(...) boundary — RpId / Origin / CredentialId / Base64UrlBytes; Typed wrappers; Protocol models — PublicKeyCredential*Options / *Response; ValidationResult — Valid or Invalid (errors); webauthn-core; webauthn-client-* modules; webauthn-server-* modules.
+1. Untrusted input HTTP JSON / mobile payload → parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes.
+2. parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes → Typed wrappers.
+3. Typed wrappers → Protocol models PublicKeyCredential*Options / *Response.
+4. Protocol models PublicKeyCredential*Options / *Response → ValidationResult Valid or Invalid (errors).
+5. ValidationResult Valid or Invalid (errors) → webauthn-core.
+6. ValidationResult Valid or Invalid (errors) → webauthn-client-* modules.
+7. ValidationResult Valid or Invalid (errors) → webauthn-server-* modules.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="core-webauthn-model-readme-1-desktop-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >model · What it provides</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 480.00 281.13 C 480.00 294.27 480.00 308.56 480.00 322.48" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e1" data-from="Wire" data-to="Parse"/>
+<path d="M 480.00 465.16 C 480.00 478.92 480.00 493.18 480.00 506.18" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e2" data-from="Parse" data-to="Domain"/>
+<path d="M 480.00 597.17 C 480.00 609.78 480.00 624.12 480.00 638.31" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e3" data-from="Domain" data-to="Protocol"/>
+<path d="M 480.00 781.02 C 480.00 794.64 480.00 808.95 480.00 822.43" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e4" data-from="Protocol" data-to="Result"/>
+<path d="M 480.00 940.31 C 480.00 954.13 480.00 968.91 480.00 982.45" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e5" data-from="Result" data-to="Core"/>
+<path d="M 374.62 940.31 C 345.34 955.26 313.84 971.34 285.62 985.75" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e6" data-from="Result" data-to="Client"/>
+<path d="M 585.38 940.31 C 614.66 955.26 646.16 971.34 674.38 985.75" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-model-readme-1-desktop-dark-arrow)" data-edge="e7" data-from="Result" data-to="Server"/>
+<g data-node="Client">
+<rect x="70.00" y="990.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="197.00" y="1027.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-*</text>
+<text x="197.00" y="1052.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >modules</text>
+</g>
+<g data-node="Core">
+<rect x="353.00" y="991.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="1039.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-core</text>
+</g>
+<g data-node="Domain">
+<rect x="353.00" y="515.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="563.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Typed wrappers</text>
+</g>
+<g data-node="Parse">
+<rect x="353.00" y="331.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="368.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >parse(...) boundary</text>
+<text x="480.00" y="393.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >RpId / Origin /</text>
+<text x="480.00" y="418.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >CredentialId /</text>
+<text x="480.00" y="443.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Base64UrlBytes</text>
+</g>
+<g data-node="Protocol">
+<rect x="353.00" y="647.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="684.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Protocol models</text>
+<text x="480.00" y="709.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PublicKey</text>
+<text x="480.00" y="734.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Credential*Options</text>
+<text x="480.00" y="759.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >/ *Response</text>
+</g>
+<g data-node="Result">
+<rect x="353.00" y="831.00" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="868.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >ValidationResult</text>
+<text x="480.00" y="893.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Valid or Invalid</text>
+<text x="480.00" y="918.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(errors)</text>
+</g>
+<g data-node="Server">
+<rect x="636.00" y="990.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="763.00" y="1027.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-*</text>
+<text x="763.00" y="1052.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >modules</text>
+</g>
+<g data-node="Wire">
+<rect x="353.00" y="172.00" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="209.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Untrusted input</text>
+<text x="480.00" y="234.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >HTTP JSON / mobile</text>
+<text x="480.00" y="259.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >payload</text>
+</g>
+</svg>
