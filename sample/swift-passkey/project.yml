@@ -1,0 +1,96 @@
+name: WebAuthnSwiftDemo
+options:
+  xcodeVersion: "16.0"
+  deploymentTarget:
+    iOS: "16.0"
+
+packages:
+  WebAuthn:
+    path: ../..
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    PRODUCT_BUNDLE_IDENTIFIER: dev.webauthn.samples.swiftpasskey
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+    TARGETED_DEVICE_FAMILY: "1,2"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    EXCLUDED_ARCHS[sdk=iphonesimulator*]: x86_64
+    SWIFT_ENABLE_EXPLICIT_MODULES: NO
+    CLANG_ENABLE_EXPLICIT_MODULES: NO
+
+targets:
+  WebAuthnSwiftDemo:
+    type: application
+    platform: iOS
+    sources:
+      - path: WebAuthnSwiftDemo
+        excludes:
+          - Info.plist
+    settings:
+      base:
+        PRODUCT_NAME: WebAuthnSwiftDemo
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: WebAuthnSwiftDemo/Info.plist
+        WEBAUTHN_DEMO_ENDPOINT: "http://127.0.0.1:8080"
+        WEBAUTHN_DEMO_ORIGIN: "https://localhost"
+        WEBAUTHN_DEMO_RP_ID: localhost
+        WEBAUTHN_DEMO_USER_ID: "42"
+        WEBAUTHN_DEMO_USER_NAME: Zaphod Beeblebrox
+    dependencies:
+      - package: WebAuthn
+        product: WebAuthn
+
+  WebAuthnSwiftDemoTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: WebAuthnSwiftDemoTests
+    dependencies:
+      - target: WebAuthnSwiftDemo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
+  WebAuthnPackageTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ../../swift/Tests/WebAuthnTests
+    dependencies:
+      - package: WebAuthn
+        product: WebAuthn
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
+  WebAuthnSwiftDemoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: WebAuthnSwiftDemoUITests
+    dependencies:
+      - target: WebAuthnSwiftDemo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  WebAuthnSwiftDemo:
+    build:
+      targets:
+        WebAuthnSwiftDemo: all
+        WebAuthnSwiftDemoTests: [test]
+        WebAuthnPackageTests: [test]
+        WebAuthnSwiftDemoUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - WebAuthnSwiftDemoTests
+        - WebAuthnPackageTests
+        - WebAuthnSwiftDemoUITests

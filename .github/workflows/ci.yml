@@ -166,6 +166,10 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v6
+      - name: Install pinned XcodeGen
+        run: |
+          tools/swift/install-xcodegen.sh "$RUNNER_TEMP/xcodegen"
+          echo "$RUNNER_TEMP/xcodegen/xcodegen/bin" >> "$GITHUB_PATH"
       - name: Swift SDK Checks
         run: tools/swift/ci-check.sh
 
