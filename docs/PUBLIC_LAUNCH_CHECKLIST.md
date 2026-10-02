@@ -60,3 +60,7 @@ Use this checklist when moving from private to public operation.
 7. The GitHub release contains exactly `WebAuthnBridge.xcframework.zip` and its SHA-256 file, while `main` retains the local-development package manifest.
 8. No secret findings exist in baseline scans; if any are found, rotate credentials immediately and evaluate targeted history rewrite.
 9. Delete any temporary release execution-map doc once that release effort is complete.
+
+Swift bridge changes require simulator tests, both XCFramework architectures, and per-slice
+metadata/privacy/license checks before merge. Physical-device qualification remains a separate
+release requirement.

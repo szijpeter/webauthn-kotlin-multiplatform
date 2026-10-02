@@ -43,3 +43,7 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
 - Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.
 - The Central publishing job runs with read-only repository contents and disables persisted Git credentials before executing Gradle. A separate GitHub-release job receives `contents:write` only after Central succeeds or during explicit finalization recovery. It creates or verifies a detached release commit whose only tree change is the checksum-pinned Swift package manifest, reconciles the coordinated tag/release from immutable retained inputs, reads back exact assets, repairs only missing expected assets, and rejects conflicting or extra release state.
+
+The Swift bridge CI job validates simulator behavior and static XCFramework slices. Packaging
+checks require metadata, privacy declarations, licenses, and notices in every expected slice;
+these checks do not establish physical-device qualification.
