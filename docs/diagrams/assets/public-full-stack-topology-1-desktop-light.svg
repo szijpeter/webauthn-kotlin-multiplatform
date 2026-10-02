@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="677" viewBox="0 0 960 677" role="img" aria-labelledby="public-full-stack-topology-1-desktop-light-title public-full-stack-topology-1-desktop-light-desc" data-diagram="public-full-stack-topology-1">
+<title id="public-full-stack-topology-1-desktop-light-title">Full-stack topology</title>
+<desc id="public-full-stack-topology-1-desktop-light-desc">The mobile flow connects platform credential APIs to the relying-party backend.
+Nodes: Compose shared UI and flow; Android Credential Manager; iOS Authentication Services; Ktor sample backend; Registration and authentication services; Ceremony and credential stores; Association endpoints.
+1. Compose shared UI and flow → Android Credential Manager.
+2. Compose shared UI and flow → iOS Authentication Services.
+3. Compose shared UI and flow ↔ Ktor sample backend.
+4. Ktor sample backend → Registration and authentication services.
+5. Registration and authentication services → Ceremony and credential stores.
+6. Ktor sample backend → Association endpoints.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="public-full-stack-topology-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >Full-stack topology</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >The mobile flow connects platform credential APIs to the relying-party backend.</text>
+<path d="M 336.54 227.23 C 308.57 240.28 277.02 255.00 248.50 268.30" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-full-stack-topology-1-desktop-light-arrow)" data-edge="e1" data-from="A" data-to="B"/>
+<path d="M 416.50 227.23 C 416.50 238.96 416.50 252.03 416.50 264.22" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-full-stack-topology-1-desktop-light-arrow)" data-edge="e2" data-from="A" data-to="C"/>
+<path d="M 503.04 230.31 C 530.06 242.91 559.82 256.79 586.71 269.33" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-start="url(#public-full-stack-topology-1-desktop-light-arrow)" marker-end="url(#public-full-stack-topology-1-desktop-light-arrow)" data-edge="e3" data-from="A" data-to="D"/>
+<path d="M 635.78 346.89 C 623.57 359.31 609.65 373.48 596.37 386.98" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-full-stack-topology-1-desktop-light-arrow)" data-edge="e4" data-from="D" data-to="E"/>
+<path d="M 543.50 491.06 C 543.50 503.14 543.50 516.06 543.50 527.97" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-full-stack-topology-1-desktop-light-arrow)" data-edge="e5" data-from="E" data-to="F"/>
+<path d="M 706.78 346.89 C 722.68 363.18 741.52 382.49 757.97 399.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-full-stack-topology-1-desktop-light-arrow)" data-edge="e6" data-from="D" data-to="G"/>
+<g data-node="A">
+<rect x="302.11" y="151.21" width="228.78" height="75.66" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="416.50" y="184.53" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Compose shared UI and</text>
+<text x="416.50" y="207.05" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >flow</text>
+</g>
+<g data-node="B">
+<rect x="47.21" y="271.90" width="228.78" height="75.66" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="161.60" y="305.23" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Android Credential</text>
+<text x="161.60" y="327.75" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Manager</text>
+</g>
+<g data-node="C">
+<rect x="302.11" y="271.90" width="228.78" height="75.66" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="416.50" y="305.23" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >iOS Authentication</text>
+<text x="416.50" y="327.75" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Services</text>
+</g>
+<g data-node="D">
+<rect x="557.01" y="272.80" width="228.78" height="73.86" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="671.40" y="316.49" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ktor sample backend</text>
+</g>
+<g data-node="E">
+<rect x="429.11" y="392.60" width="228.78" height="98.18" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="543.50" y="425.92" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Registration and</text>
+<text x="543.50" y="448.44" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >authentication</text>
+<text x="543.50" y="470.96" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >services</text>
+</g>
+<g data-node="F">
+<path d="M 429.10951893551686 546.620266120778 C 429.10951893551686 532.2088024564995 657.8915046059365 532.2088024564995 657.8915046059365 546.620266120778 V 600.6632548618219 C 657.8915046059365 615.0747185261004 429.10951893551686 615.0747185261004 429.10951893551686 600.6632548618219 Z" fill="var(--panel)" stroke="var(--line)"/>
+<path d="M 429.10951893551686 546.620266120778 C 429.10951893551686 560.6714431934494 657.8915046059365 560.6714431934494 657.8915046059365 546.620266120778" fill="none" stroke="var(--line)"/>
+<text x="543.50" y="569.14" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ceremony and</text>
+<text x="543.50" y="591.66" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >credential stores</text>
+</g>
+<g data-node="G">
+<rect x="684.01" y="404.76" width="228.78" height="73.86" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="798.40" y="448.44" font-size="18.01" fill="var(--ink)" font-weight="600" text-anchor="middle" >Association endpoints</text>
+</g>
+</svg>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="659" viewBox="0 0 960 659" role="img" aria-labelledby="core-webauthn-crypto-api-readme-1-desktop-dark-title core-webauthn-crypto-api-readme-1-desktop-dark-desc" data-diagram="core-webauthn-crypto-api-readme-1">
+<title id="core-webauthn-crypto-api-readme-1-desktop-dark-title">crypto-api · How it fits</title>
+<desc id="core-webauthn-crypto-api-readme-1-desktop-dark-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-core; webauthn-crypto-api contracts; webauthn-server-core-jvm; webauthn-server-jvm-crypto; webauthn-attestation-mds.
+1. webauthn-core → webauthn-crypto-api contracts.
+2. webauthn-server-core-jvm → webauthn-crypto-api contracts.
+3. webauthn-server-jvm-crypto → webauthn-crypto-api contracts.
+4. webauthn-attestation-mds → webauthn-crypto-api contracts.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="core-webauthn-crypto-api-readme-1-desktop-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >crypto-api · How it fits</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 428.10 254.42 C 437.29 258.81 446.38 263.37 455.00 268.00 492.27 288.03 531.98 313.38 564.23 335.08" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-crypto-api-readme-1-desktop-dark-arrow)" data-edge="e1" data-from="CORE" data-to="API"/>
+<path d="M 426.33 508.65 C 436.11 503.89 445.81 498.97 455.00 494.00 491.43 474.30 530.44 449.84 562.45 428.82" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-crypto-api-readme-1-desktop-dark-arrow)" data-edge="e2" data-from="SERVER" data-to="API"/>
+<path d="M 455.33 348.84 C 468.97 351.42 482.89 354.05 496.63 356.64" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-crypto-api-readme-1-desktop-dark-arrow)" data-edge="e3" data-from="JVM" data-to="API"/>
+<path d="M 455.33 414.58 C 468.97 412.04 482.89 409.46 496.63 406.92" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-crypto-api-readme-1-desktop-dark-arrow)" data-edge="e4" data-from="MDS" data-to="API"/>
+<g data-node="API">
+<rect x="505.00" y="340.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="632.00" y="377.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-crypto-api</text>
+<text x="632.00" y="402.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >contracts</text>
+</g>
+<g data-node="CORE">
+<rect x="201.00" y="172.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="220.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-core</text>
+</g>
+<g data-node="JVM">
+<rect x="201.00" y="283.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="320.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-jvm-</text>
+<text x="328.00" y="345.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >crypto</text>
+</g>
+<g data-node="MDS">
+<rect x="201.00" y="396.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="433.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-attestation-</text>
+<text x="328.00" y="458.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >mds</text>
+</g>
+<g data-node="SERVER">
+<rect x="201.00" y="509.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="546.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-core-</text>
+<text x="328.00" y="571.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >jvm</text>
+</g>
+</svg>

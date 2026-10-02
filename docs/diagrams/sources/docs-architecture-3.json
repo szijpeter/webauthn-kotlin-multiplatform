@@ -1,0 +1,48 @@
+{
+  "id": "docs-architecture-3",
+  "title": "Client stack",
+  "kind": "graph",
+  "summary": "Focused dependency views. Repeated modules provide context; each relationship appears once.",
+  "nodes": [
+    {"id": "COMPOSE", "label": "webauthn-client-compose", "shape": "rect", "parent": null, "container": false},
+    {"id": "PLATFORM", "label": "webauthn-client-platform\n(androidMain and iosMain)", "shape": "rect", "parent": null, "container": false},
+    {"id": "JSON", "label": "webauthn-client-json-core", "shape": "rect", "parent": null, "container": false},
+    {"id": "PRF", "label": "webauthn-client-prf-crypto\n(optional)", "shape": "rect", "parent": null, "container": false},
+    {"id": "DEFAULTS", "label": "webauthn-client-defaults\n(recommended composition)", "shape": "rect", "parent": null, "container": false},
+    {"id": "KTOR_KOTLINX", "label": "webauthn-client-ktor-kotlinx\n(default JSON contract)", "shape": "rect", "parent": null, "container": false},
+    {"id": "KTOR", "label": "webauthn-client-ktor\n(codec-neutral transport)", "shape": "rect", "parent": null, "container": false},
+    {"id": "FLOW", "label": "webauthn-client-flow", "shape": "rect", "parent": null, "container": false},
+    {"id": "CLIENT_CORE", "label": "webauthn-client-core", "shape": "rect", "parent": null, "container": false},
+    {"id": "JSON_API", "label": "webauthn-json-api", "shape": "rect", "parent": null, "container": false},
+    {"id": "JSON_KOTLINX", "label": "webauthn-json-kotlinx", "shape": "rect", "parent": null, "container": false},
+    {"id": "RUNTIME", "label": "webauthn-runtime-core", "shape": "rect", "parent": null, "container": false},
+    {"id": "MODEL", "label": "webauthn-model", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "COMPOSE", "target": "CLIENT_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "COMPOSE", "target": "FLOW", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "COMPOSE", "target": "PLATFORM", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "COMPOSE", "target": "JSON_KOTLINX", "label": "androidMain", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "DEFAULTS", "target": "PLATFORM", "label": "androidMain and iosMain", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "DEFAULTS", "target": "JSON_API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "DEFAULTS", "target": "JSON_KOTLINX", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "PLATFORM", "target": "CLIENT_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "PLATFORM", "target": "JSON_API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e10", "source": "JSON", "target": "CLIENT_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e11", "source": "JSON", "target": "JSON_API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e12", "source": "PRF", "target": "CLIENT_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e13", "source": "PRF", "target": "RUNTIME", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e14", "source": "KTOR_KOTLINX", "target": "KTOR", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e15", "source": "KTOR_KOTLINX", "target": "JSON_KOTLINX", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e16", "source": "KTOR", "target": "FLOW", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e17", "source": "FLOW", "target": "CLIENT_CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e18", "source": "CLIENT_CORE", "target": "RUNTIME", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e19", "source": "CLIENT_CORE", "target": "MODEL", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "UI and platform bridges", "edges": ["e1", "e2", "e3", "e4", "e8", "e9"]},
+    {"title": "Composition, codecs and optional PRF", "edges": ["e5", "e6", "e7", "e10", "e11", "e12", "e13"]},
+    {"title": "Transport and shared operations", "edges": ["e14", "e15", "e16", "e17", "e18", "e19"]}
+  ]
+}

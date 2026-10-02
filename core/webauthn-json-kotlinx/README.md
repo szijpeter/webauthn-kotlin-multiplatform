@@ -38,13 +38,23 @@ Real-world scenario: parse backend JSON into typed model objects, run validation
 
 ## How it fits
 
-<!-- doc-example: id=core-webauthn-json-kotlinx-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    WIRE["Wire DTOs (JSON or CBOR)"] --> MAPPER["WebAuthnDtoMapper"]
-    MAPPER --> MODEL["webauthn-model"]
-    CORE["webauthn-core"] --> MODEL
-```
+<!-- diagram: core-webauthn-json-kotlinx-readme-1 -->
+<a href="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-dark.svg">
+  <img alt="json-kotlinx · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: json-kotlinx · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/core-webauthn-json-kotlinx-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Wire DTOs (JSON or CBOR); WebAuthnDtoMapper; webauthn-model; webauthn-core.</p>
+<p>1. Wire DTOs (JSON or CBOR) → WebAuthnDtoMapper.</p>
+<p>2. WebAuthnDtoMapper → webauthn-model.</p>
+<p>3. webauthn-core → webauthn-model.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

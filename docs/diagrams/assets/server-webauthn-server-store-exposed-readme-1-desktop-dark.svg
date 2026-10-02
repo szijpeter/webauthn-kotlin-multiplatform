@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="435" viewBox="0 0 960 435" role="img" aria-labelledby="server-webauthn-server-store-exposed-readme-1-desktop-dark-title server-webauthn-server-store-exposed-readme-1-desktop-dark-desc" data-diagram="server-webauthn-server-store-exposed-readme-1">
+<title id="server-webauthn-server-store-exposed-readme-1-desktop-dark-title">server-store-exposed · How it fits</title>
+<desc id="server-webauthn-server-store-exposed-readme-1-desktop-dark-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-server-core-jvm; Store contracts; webauthn-server-store-exposed; SQL database.
+1. webauthn-server-core-jvm → Store contracts.
+2. webauthn-server-store-exposed → Store contracts.
+3. webauthn-server-store-exposed → SQL database.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="server-webauthn-server-store-exposed-readme-1-desktop-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >server-store-exposed · How it fits</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 455.33 214.42 C 468.84 214.46 482.63 214.51 496.25 214.55" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-store-exposed-readme-1-desktop-dark-arrow)" data-edge="e1" data-from="SVC" data-to="CONTRACTS"/>
+<path d="M 443.17 284.66 C 465.44 276.40 488.84 267.72 511.27 259.40" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-store-exposed-readme-1-desktop-dark-arrow)" data-edge="e2" data-from="EXPOSED" data-to="CONTRACTS"/>
+<path d="M 455.33 327.00 C 468.84 327.00 482.63 327.00 496.25 327.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-server-store-exposed-readme-1-desktop-dark-arrow)" data-edge="e3" data-from="EXPOSED" data-to="DB"/>
+<g data-node="CONTRACTS">
+<rect x="505.00" y="174.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="632.00" y="222.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Store contracts</text>
+</g>
+<g data-node="DB">
+<rect x="505.00" y="286.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="632.00" y="334.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >SQL database</text>
+</g>
+<g data-node="EXPOSED">
+<rect x="201.00" y="285.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="322.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-store-</text>
+<text x="328.00" y="347.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >exposed</text>
+</g>
+<g data-node="SVC">
+<rect x="201.00" y="172.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="209.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-core-</text>
+<text x="328.00" y="234.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >jvm</text>
+</g>
+</svg>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1408" viewBox="0 0 960 1408" role="img" aria-labelledby="core-webauthn-core-readme-1-desktop-light-title core-webauthn-core-readme-1-desktop-light-desc" data-diagram="core-webauthn-core-readme-1">
+<title id="core-webauthn-core-readme-1-desktop-light-title">core · What it provides</title>
+<desc id="core-webauthn-core-readme-1-desktop-light-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Typed finish input — RegistrationValidationInput / AuthenticationValidationInput; validateClientData; validateAuthenticatorData; requireAllowedCredential; WebAuthnExtensionHook (optional); ValidationResult output; Server crypto verification — signature + attestation; Store signCount / credential state.
+1. Typed finish input RegistrationValidationInput / AuthenticationValidationInput → validateClientData.
+2. validateClientData → validateAuthenticatorData.
+3. validateAuthenticatorData → requireAllowedCredential.
+4. requireAllowedCredential → WebAuthnExtensionHook (optional).
+5. WebAuthnExtensionHook (optional) → ValidationResult output.
+6. ValidationResult output → Server crypto verification signature + attestation.
+7. Server crypto verification signature + attestation → Store signCount / credential state.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="core-webauthn-core-readme-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >core · What it provides</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 480.00 356.30 C 480.00 370.57 480.00 384.81 480.00 397.61" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e1" data-from="Start" data-to="ClientData"/>
+<path d="M 480.00 488.37 C 480.00 501.32 480.00 515.82 480.00 529.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e2" data-from="ClientData" data-to="AuthData"/>
+<path d="M 480.00 622.40 C 480.00 635.43 480.00 649.94 480.00 663.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e3" data-from="AuthData" data-to="AllowCred"/>
+<path d="M 480.00 756.40 C 480.00 769.43 480.00 783.94 480.00 797.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e4" data-from="AllowCred" data-to="Hook"/>
+<path d="M 480.00 890.40 C 480.00 903.43 480.00 917.94 480.00 931.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e5" data-from="Hook" data-to="CoreOut"/>
+<path d="M 480.00 1024.25 C 480.00 1036.86 480.00 1051.13 480.00 1065.25" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e6" data-from="CoreOut" data-to="Crypto"/>
+<path d="M 480.00 1208.13 C 480.00 1221.88 480.00 1236.14 480.00 1249.19" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-core-readme-1-desktop-light-arrow)" data-edge="e7" data-from="Crypto" data-to="Persist"/>
+<g data-node="AllowCred">
+<rect x="353.00" y="672.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="480.00" y="709.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >requireAllowed</text>
+<text x="480.00" y="734.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Credential</text>
+</g>
+<g data-node="AuthData">
+<rect x="353.00" y="538.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="575.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >validateAuthenticator</text>
+<text x="480.00" y="600.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Data</text>
+</g>
+<g data-node="ClientData">
+<rect x="353.00" y="406.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="454.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >validateClientData</text>
+</g>
+<g data-node="CoreOut">
+<rect x="353.00" y="940.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="977.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >ValidationResult</text>
+<text x="480.00" y="1002.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >output</text>
+</g>
+<g data-node="Crypto">
+<rect x="353.00" y="1074.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="1111.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Server crypto</text>
+<text x="480.00" y="1136.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >verification</text>
+<text x="480.00" y="1161.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >signature +</text>
+<text x="480.00" y="1186.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >attestation</text>
+</g>
+<g data-node="Hook">
+<rect x="353.00" y="806.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="843.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >WebAuthnExtensionHook</text>
+<text x="480.00" y="868.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(optional)</text>
+</g>
+<g data-node="Persist">
+<rect x="353.00" y="1258.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="1295.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Store signCount /</text>
+<text x="480.00" y="1320.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >credential state</text>
+</g>
+<g data-node="Start">
+<rect x="353.00" y="172.00" width="254.00" height="184.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="209.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Typed finish input</text>
+<text x="480.00" y="234.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >RegistrationValidation</text>
+<text x="480.00" y="259.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Input</text>
+<text x="480.00" y="284.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >/</text>
+<text x="480.00" y="309.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Authentication</text>
+<text x="480.00" y="334.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >ValidationInput</text>
+</g>
+</svg>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="2165" viewBox="0 0 400 2165" role="img" aria-labelledby="docs-architecture-1-mobile-light-title docs-architecture-1-mobile-light-desc" data-diagram="docs-architecture-1">
+<title id="docs-architecture-1-mobile-light-title">Reference integration</title>
+<desc id="docs-architecture-1-mobile-light-desc">Application and platform responsibilities, with optional metadata explicitly marked.
+Nodes: End user; Reference passkey application; Client application — webauthn-client-flow over client-core and an Android or iOS bridge; Relying-party backend — webauthn-server-core-jvm plus optional adapters; Credential store; Platform passkey API — Credential Manager or AuthenticationServices; Attestation metadata service — (optional).
+Client application webauthn-client-flow over client-core and an Android or iOS bridge belongs to Reference passkey application.
+Relying-party backend webauthn-server-core-jvm plus optional adapters belongs to Reference passkey application.
+Credential store belongs to Reference passkey application.
+1. End user → Client application webauthn-client-flow over client-core and an Android or iOS bridge: initiates registration or authentication.
+2. Client application webauthn-client-flow over client-core and an Android or iOS bridge → Relying-party backend webauthn-server-core-jvm plus optional adapters: requests ceremony options and submits credential responses.
+3. Relying-party backend webauthn-server-core-jvm plus optional adapters → Client application webauthn-client-flow over client-core and an Android or iOS bridge: returns ceremony options and verification results.
+4. Client application webauthn-client-flow over client-core and an Android or iOS bridge → Platform passkey API Credential Manager or AuthenticationServices: invokes the passkey ceremony.
+5. Relying-party backend webauthn-server-core-jvm plus optional adapters → Credential store: stores registered credentials.
+6. Relying-party backend webauthn-server-core-jvm plus optional adapters → Attestation metadata service (optional): optionally obtains attestation metadata (dashed).</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="docs-architecture-1-mobile-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="24.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="24.00" y="65.00" font-size="23" fill="var(--ink)" font-weight="700" text-anchor="start" >Reference integration</text>
+<text x="24.00" y="96.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Application and platform</text>
+<text x="24.00" y="116.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >responsibilities, with optional</text>
+<text x="24.00" y="136.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >metadata explicitly marked.</text>
+<rect x="24.00" y="179.00" width="352.00" height="242.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="205.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >01</text>
+<g data-node="USER">
+<text x="40.00" y="231.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >End user</text>
+</g>
+<path d="M 49 263 L 49 307" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-1-mobile-light-arrow)" data-edge="e1" data-from="USER" data-to="CLIENT"/>
+<text x="68.00" y="275.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >initiates registration or</text>
+<text x="68.00" y="297.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >authentication</text>
+<g data-node="CLIENT">
+<text x="40.00" y="333.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client application</text>
+<text x="40.00" y="357.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-client-flow over</text>
+<text x="40.00" y="381.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >client-core and an Android</text>
+<text x="40.00" y="405.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >or iOS bridge</text>
+</g>
+<rect x="24.00" y="437.00" width="352.00" height="290.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="463.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >02</text>
+<g data-node="CLIENT">
+<text x="40.00" y="489.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client application</text>
+<text x="40.00" y="513.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-client-flow over</text>
+<text x="40.00" y="537.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >client-core and an Android</text>
+<text x="40.00" y="561.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >or iOS bridge</text>
+</g>
+<path d="M 49 593 L 49 637" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-1-mobile-light-arrow)" data-edge="e2" data-from="CLIENT" data-to="BACKEND"/>
+<text x="68.00" y="605.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >requests ceremony options and</text>
+<text x="68.00" y="627.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >submits credential responses</text>
+<g data-node="BACKEND">
+<text x="40.00" y="663.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying-party backend</text>
+<text x="40.00" y="687.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+<text x="40.00" y="711.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >plus optional adapters</text>
+</g>
+<rect x="24.00" y="743.00" width="352.00" height="290.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="769.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >03</text>
+<g data-node="BACKEND">
+<text x="40.00" y="795.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying-party backend</text>
+<text x="40.00" y="819.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+<text x="40.00" y="843.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >plus optional adapters</text>
+</g>
+<path d="M 49 875 L 49 919" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-1-mobile-light-arrow)" data-edge="e3" data-from="BACKEND" data-to="CLIENT"/>
+<text x="68.00" y="887.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >returns ceremony options and</text>
+<text x="68.00" y="909.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >verification results</text>
+<g data-node="CLIENT">
+<text x="40.00" y="945.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client application</text>
+<text x="40.00" y="969.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-client-flow over</text>
+<text x="40.00" y="993.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >client-core and an Android</text>
+<text x="40.00" y="1017.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >or iOS bridge</text>
+</g>
+<rect x="24.00" y="1049.00" width="352.00" height="268.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1075.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >04</text>
+<g data-node="CLIENT">
+<text x="40.00" y="1101.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Client application</text>
+<text x="40.00" y="1125.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-client-flow over</text>
+<text x="40.00" y="1149.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >client-core and an Android</text>
+<text x="40.00" y="1173.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >or iOS bridge</text>
+</g>
+<path d="M 49 1205 L 49 1227" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-1-mobile-light-arrow)" data-edge="e4" data-from="CLIENT" data-to="PLATFORM"/>
+<text x="68.00" y="1217.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >invokes the passkey ceremony</text>
+<g data-node="PLATFORM">
+<text x="40.00" y="1253.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Platform passkey API</text>
+<text x="40.00" y="1277.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Credential Manager or</text>
+<text x="40.00" y="1301.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >AuthenticationServices</text>
+</g>
+<rect x="24.00" y="1333.00" width="352.00" height="196.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1359.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >05</text>
+<g data-node="BACKEND">
+<text x="40.00" y="1385.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying-party backend</text>
+<text x="40.00" y="1409.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+<text x="40.00" y="1433.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >plus optional adapters</text>
+</g>
+<path d="M 49 1465 L 49 1487" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-1-mobile-light-arrow)" data-edge="e5" data-from="BACKEND" data-to="STORE"/>
+<text x="68.00" y="1477.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >stores registered credentials</text>
+<g data-node="STORE">
+<text x="40.00" y="1513.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Credential store</text>
+</g>
+<rect x="24.00" y="1545.00" width="352.00" height="242.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1571.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >06</text>
+<g data-node="BACKEND">
+<text x="40.00" y="1597.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Relying-party backend</text>
+<text x="40.00" y="1621.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+<text x="40.00" y="1645.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >plus optional adapters</text>
+</g>
+<path d="M 49 1677 L 49 1721" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#docs-architecture-1-mobile-light-arrow)" data-edge="e6" data-from="BACKEND" data-to="MDS"/>
+<text x="68.00" y="1689.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >optionally obtains attestation</text>
+<text x="68.00" y="1711.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >metadata</text>
+<g data-node="MDS">
+<text x="40.00" y="1747.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Attestation metadata service</text>
+<text x="40.00" y="1771.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >(optional)</text>
+</g>
+<text x="24.00" y="1819.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Additional context</text>
+<g data-node="APPLICATION">
+<text x="24.00" y="1855.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >Reference passkey application</text>
+</g>
+<g data-node="CLIENT">
+<text x="24.00" y="1892.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >Client application</text>
+<text x="24.00" y="1914.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >webauthn-client-flow over client-</text>
+<text x="24.00" y="1936.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >core and an Android or iOS bridge</text>
+<text x="24.00" y="1958.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >· in Reference passkey application</text>
+</g>
+<g data-node="BACKEND">
+<text x="24.00" y="1995.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >Relying-party backend</text>
+<text x="24.00" y="2017.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >webauthn-server-core-jvm plus</text>
+<text x="24.00" y="2039.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >optional adapters · in Reference</text>
+<text x="24.00" y="2061.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >passkey application</text>
+</g>
+<g data-node="STORE">
+<text x="24.00" y="2098.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >Credential store · in Reference</text>
+<text x="24.00" y="2120.00" font-size="16" fill="var(--muted)" font-weight="400" text-anchor="start" >passkey application</text>
+</g>
+</svg>

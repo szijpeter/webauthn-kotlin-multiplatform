@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="433" viewBox="0 0 960 433" role="img" aria-labelledby="core-webauthn-cbor-core-readme-1-desktop-light-title core-webauthn-cbor-core-readme-1-desktop-light-desc" data-diagram="core-webauthn-cbor-core-readme-1">
+<title id="core-webauthn-cbor-core-readme-1-desktop-light-title">cbor-core · How it fits in the system</title>
+<desc id="core-webauthn-cbor-core-readme-1-desktop-light-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-cbor-core; webauthn-json-kotlinx; webauthn-server-jvm-crypto.
+1. webauthn-cbor-core → webauthn-json-kotlinx.
+2. webauthn-cbor-core → webauthn-server-jvm-crypto.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="core-webauthn-cbor-core-readme-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >cbor-core · How it fits in the system</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 455.33 293.42 C 468.97 295.96 482.89 298.54 496.63 301.08" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-cbor-core-readme-1-desktop-light-arrow)" data-edge="e1" data-from="CBOR" data-to="SERIAL"/>
+<path d="M 455.33 246.58 C 468.97 244.04 482.89 241.46 496.63 238.92" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-cbor-core-readme-1-desktop-light-arrow)" data-edge="e2" data-from="CBOR" data-to="JVM"/>
+<g data-node="CBOR">
+<rect x="201.00" y="229.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="328.00" y="277.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-cbor-core</text>
+</g>
+<g data-node="JVM">
+<rect x="505.00" y="172.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="632.00" y="209.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-jvm-</text>
+<text x="632.00" y="234.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >crypto</text>
+</g>
+<g data-node="SERIAL">
+<rect x="505.00" y="285.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="632.00" y="333.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-kotlinx</text>
+</g>
+</svg>

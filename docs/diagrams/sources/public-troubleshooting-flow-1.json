@@ -1,0 +1,34 @@
+{
+  "id": "public-troubleshooting-flow-1",
+  "title": "Find the failing boundary",
+  "kind": "graph",
+  "summary": "Follow each labelled branch before investigating the next integration boundary.",
+  "nodes": [
+    {"id": "A", "label": "User starts ceremony", "shape": "rect", "parent": null, "container": false},
+    {"id": "B", "label": "Start endpoint succeeds?", "shape": "rhombus", "parent": null, "container": false},
+    {"id": "C", "label": "Inspect network, auth, and backend start logs", "shape": "rect", "parent": null, "container": false},
+    {"id": "D", "label": "Platform prompt appears?", "shape": "rhombus", "parent": null, "container": false},
+    {"id": "E", "label": "Inspect host lifecycle, provider, entitlement, and association", "shape": "rect", "parent": null, "container": false},
+    {"id": "F", "label": "Platform returns a credential?", "shape": "rhombus", "parent": null, "container": false},
+    {"id": "G", "label": "Classify cancellation, invalid options, or platform error", "shape": "rect", "parent": null, "container": false},
+    {"id": "H", "label": "Finish endpoint accepts?", "shape": "rhombus", "parent": null, "container": false},
+    {"id": "I", "label": "Inspect challenge, origin, RP ID, signature, state, and policy", "shape": "rect", "parent": null, "container": false},
+    {"id": "J", "label": "Update product session", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "A", "target": "B", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "B", "target": "C", "label": "no", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "B", "target": "D", "label": "yes", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "D", "target": "E", "label": "no", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "D", "target": "F", "label": "yes", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "F", "target": "G", "label": "no", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "F", "target": "H", "label": "yes", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "H", "target": "I", "label": "no", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "H", "target": "J", "label": "yes", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "Request and platform boundary", "edges": ["e1", "e2", "e3", "e4", "e5"]},
+    {"title": "Response and server boundary", "edges": ["e6", "e7", "e8", "e9"]}
+  ]
+}
