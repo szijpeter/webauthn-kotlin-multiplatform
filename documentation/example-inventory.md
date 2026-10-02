@@ -125,8 +125,8 @@ Managed blocks: **137**
 | sample-compose-passkey-readme-bash-1 | sample/compose-passkey/README.md:47 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-bash-2 | sample/compose-passkey/README.md:54 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-bash-3 | sample/compose-passkey/README.md:73 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-bash-4 | sample/compose-passkey/README.md:87 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readme-kotlin-1 | sample/compose-passkey/README.md:146 | Auth route showcase | kotlin | consumer | sample | sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route | sample-build |  |
+| sample-compose-passkey-readme-bash-4 | sample/compose-passkey/README.md:91 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readme-kotlin-1 | sample/compose-passkey/README.md:150 | Auth route showcase | kotlin | consumer | sample | sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route | sample-build |  |
 | sample-passkey-cli-readme-bash-1 | sample/passkey-cli/README.md:24 | Prerequisites | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-2 | sample/passkey-cli/README.md:36 | Commands | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-3 | sample/passkey-cli/README.md:60 | Local Smoke Path (opt-in) | bash | consumer | markdown | Markdown block | syntax |  |
