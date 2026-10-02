@@ -84,7 +84,25 @@ Suggested crash check:
 adb logcat -d | rg "FATAL EXCEPTION|AndroidRuntime"
 ```
 
-## 4. Debug trace verification
+## 4. Android restore credential manual flow (required when restore card changes)
+
+Prerequisites:
+
+- Android 9+ device/emulator with Google Play services core 24220000+ and Credential Manager
+  restore support (`androidx.credentials` 1.5+; this repository uses 1.6).
+- Existing signed-in session from the Android manual flow.
+- Sample backend reachable with the same `WEBAUTHN_DEMO_*` configuration used for passkey register/sign-in.
+
+Pass criteria:
+
+1. Signed-in demo screen shows the `Restore Credentials` card.
+2. `Create` completes and status reports that the restore key was verified by the server.
+3. `Test` completes and status reports that restore credential sign-in was verified.
+4. `Clear Restore Key` completes without leaving the screen.
+5. `Local Logout` clears the restore key when the platform client is available and returns to `Auth`.
+6. A full restore-device claim is not made unless the flow is also exercised through Android backup/restore or first launch on a restored device.
+
+## 5. Debug trace verification
 
 Run:
 
@@ -105,7 +123,7 @@ For an isolated debugging session, build with
 explicit escape hatch does not redact WebAuthn or PRF material; never use its logs
 as shareable test evidence.
 
-## 5. Optional emulator smoke run
+## 6. Optional emulator smoke run
 
 Run (with emulator/device connected):
 

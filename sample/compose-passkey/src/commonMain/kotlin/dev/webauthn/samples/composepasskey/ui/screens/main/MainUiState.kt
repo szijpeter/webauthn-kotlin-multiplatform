@@ -8,8 +8,10 @@ internal data class MainUiState(
     val capabilities: PasskeyCapabilities = PasskeyCapabilities(),
     val busy: Boolean = false,
     val supportsPrf: Boolean = false,
+    val restoreCredentialAvailable: Boolean = false,
     val sessionState: PrfCryptoDemoSessionState = PrfCryptoDemoSessionState.NoSession,
     val plaintext: String = "The answer is 42",
     val decryptedText: String? = null,
     val statusMessage: String = "Run Sign In + PRF to derive an in-memory AES session key.",
+    val restoreStatusMessage: String = "Restore Credentials are available on supported Android devices.",
 )
