@@ -27,10 +27,10 @@ fi
 "$repo_root/tools/swift/check-xcodegen.sh"
 python3 "$repo_root/tools/swift/test_check_parity.py"
 python3 "$repo_root/tools/swift/test_check_client_parity.py"
+python3 "$repo_root/tools/swift/test_check_package_layout.py"
 python3 "$repo_root/tools/swift/test_reconcile_release.py"
 "$repo_root/tools/swift/check-parity.py"
 "$repo_root/tools/swift/check-client-parity.py"
-(cd "$repo_root" && swift package dump-package >/dev/null)
 release_manifest_root="$temporary/ReleaseManifest"
 mkdir -p "$release_manifest_root"
 "$repo_root/tools/swift/render-release-package.sh" \
@@ -38,7 +38,9 @@ mkdir -p "$release_manifest_root"
   "0000000000000000000000000000000000000000000000000000000000000000" \
   "$release_manifest_root/Package.swift"
 ln -s "$repo_root/swift" "$release_manifest_root/swift"
-(cd "$release_manifest_root" && swift package dump-package >/dev/null)
+python3 "$repo_root/tools/swift/check-package-layout.py" \
+  "$repo_root" \
+  "$release_manifest_root"
 
 simulator_id="$(xcrun simctl list devices available -j | python3 -c '
 import json, sys
@@ -77,8 +79,9 @@ common_arguments=(
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     build
 )
+"$repo_root/tools/swift/check-package-consumer.sh" --local "$repo_root"
 if [[ "${WEBAUTHN_SWIFT_CHECK_API_BASELINE:-true}" == "true" ]]; then
   "$repo_root/tools/swift/check-api.sh" "$derived_data"
 fi
 
-echo "Swift bridge, modular package/sample tests and configuration, Release build, API, parity, and XcodeGen checks passed."
+echo "Swift bridge, modular package/sample/consumer tests and configuration, Release build, API, parity, and XcodeGen checks passed."
