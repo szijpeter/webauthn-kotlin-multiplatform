@@ -10,6 +10,8 @@ Manager; its iOS source set uses Authentication Services.
 - Android and iOS `PasskeyClient` implementations that return byte-preserving raw registration and authentication responses
 - A platform adapter designed to be orchestrated by `webauthn-client-core`
 - Typed capability reporting via `PasskeyCapabilities.supportOf(...)` and `CapabilitySupport`
+- Conditional passkey creation on Android and iOS 18+ through the shared
+  `PasskeyCreateOptions.Conditional` contract
 
 ## When to use
 
@@ -72,6 +74,16 @@ flowchart LR
   - `PasskeyCapability.Extension(WebAuthnExtension.Prf)` when PRF is supported.
   - `PasskeyCapability.Extension(WebAuthnExtension.LargeBlob)` when largeBlob is supported.
   - `PasskeyCapability.Platform(PlatformCapability.SecurityKey)` when cross-platform security keys are supported.
+  - `PasskeyCapability.Platform(PlatformCapability.ConditionalCreate)` when conditional creation is supported.
+- Conditional creation is intended for automatic passkey upgrades after a successful non-passkey
+  sign-in or sign-up. Keep explicit user-initiated registration on `createCredential(options)`.
+- Android maps conditional creation to Credential Manager's `isConditional` and
+  `preferImmediatelyAvailableCredentials` flags. A provider may report that no create option is
+  available; this is a valid conditional outcome, not permission to show an explicit prompt.
+  Android reporting this capability as `SUPPORTED` means the bridge can issue that conditional
+  request; it is not a runtime probe that every installed credential provider will accept it.
+- iOS maps conditional creation to AuthenticationServices' conditional registration request style
+  on iOS 18+. Cross-platform security-key attachment is rejected for this mediation mode.
 - Keep the backend contract aligned with your chosen client and server implementations.
 - If the platform reports `RP ID cannot be validated`, verify:
   - RP ID and HTTPS origin/domain alignment.

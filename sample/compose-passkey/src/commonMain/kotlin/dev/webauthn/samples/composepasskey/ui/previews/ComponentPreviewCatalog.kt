@@ -52,6 +52,7 @@ private fun ActionsCardPreview() {
         ActionsCard(
             actionsEnabled = true,
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }
@@ -153,7 +154,7 @@ private fun ComponentCatalogPreview() {
                 ),
             )
             SpacerBlock()
-            ActionsCard(actionsEnabled = true, onRegister = {}, onSignIn = {})
+            ActionsCard(actionsEnabled = true, onRegister = {}, onAutoCreate = {}, onSignIn = {})
             SpacerBlock()
             SessionActionsCard(busy = false, onLogout = {})
         }

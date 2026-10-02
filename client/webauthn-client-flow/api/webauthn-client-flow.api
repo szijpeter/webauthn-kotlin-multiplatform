@@ -64,7 +64,9 @@ public final class dev/webauthn/client/CeremonyStart {
 
 public final class dev/webauthn/client/PasskeyFlow {
 	public fun <init> (Ldev/webauthn/client/PasskeyClient;)V
+	public final fun register (Ljava/lang/Object;Ldev/webauthn/client/RegistrationBackend;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun register (Ljava/lang/Object;Ldev/webauthn/client/RegistrationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun register$default (Ldev/webauthn/client/PasskeyFlow;Ljava/lang/Object;Ldev/webauthn/client/RegistrationBackend;Ldev/webauthn/client/PasskeyCreateOptions;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun register$default (Ldev/webauthn/client/PasskeyFlow;Ljava/lang/Object;Ldev/webauthn/client/RegistrationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun signIn (Ljava/lang/Object;Ldev/webauthn/client/AuthenticationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun signIn$default (Ldev/webauthn/client/PasskeyFlow;Ljava/lang/Object;Ldev/webauthn/client/AuthenticationBackend;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
