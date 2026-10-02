@@ -23,7 +23,7 @@ kotlin {
         jvmTest.dependencies {
             // Yubico 2.9.0 declares open Jackson ranges; 2.22.0 is currently partially published.
             implementation(project.dependencies.enforcedPlatform(libs.jackson.bom))
-            implementation("com.yubico:webauthn-server-core:2.9.0")
+            implementation("com.yubico:webauthn-server-core:2.10.0")
             implementation(libs.kotlinx.serialization.json)
         }
     }
