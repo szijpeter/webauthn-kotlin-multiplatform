@@ -147,8 +147,8 @@ Managed blocks: **145**
 | server-webauthn-server-store-exposed-readme-kotlin-1 | server/webauthn-server-store-exposed/README.md:19 | How to use | kotlin | consumer | source | documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ExposedStoreExample.kt#exposed-stores | compile |  |
 | server-webauthn-server-store-exposed-readme-mermaid-1 | server/webauthn-server-store-exposed/README.md:51 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | spec-cache-readme-bash-1 | spec-cache/README.md:26 | Update | bash | contributor | markdown | Markdown block | syntax |  |
-| swift-api-parity-bash-1 | swift/API_PARITY.md:38 | Public API compatibility | bash | contributor | markdown | Markdown block | syntax |  |
-| swift-api-parity-bash-2 | swift/API_PARITY.md:68 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
+| swift-api-parity-bash-1 | swift/API_PARITY.md:74 | Public API compatibility | bash | contributor | markdown | Markdown block | syntax |  |
+| swift-api-parity-bash-2 | swift/API_PARITY.md:108 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |
 | swift-readme-swift-1 | swift/README.md:32 | Create the client | swift | consumer | illustrative | Markdown illustration | illustrative | Host window lookup depends on application scene ownership |
 | swift-readme-swift-2 | swift/README.md:55 | Registration and authentication | swift | consumer | illustrative | Markdown illustration | illustrative | Backend methods are application-owned integration points |
 | swift-readme-swift-3 | swift/README.md:78 | Capabilities | swift | consumer | illustrative | Markdown illustration | illustrative | Capability branch omits application-specific fallback UI |
