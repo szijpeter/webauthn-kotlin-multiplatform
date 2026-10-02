@@ -85,6 +85,12 @@ public fun Application.installSampleBackend(
         }
     }
     installWebAuthnRoutes(registrationService, authenticationService)
+    if (config.communityConformanceEnabled) {
+        installCommunityConformanceRoutes(
+            registrationService = registrationService,
+            config = config.communityConformanceConfig(),
+        )
+    }
     routing {
         get("/health") {
             call.respond(HttpStatusPayload(status = "ok"))
@@ -137,6 +143,12 @@ public fun Application.installSampleBackend(
                     appendLine("PORT=${config.port}")
                     appendLine("ANDROID_PACKAGE_NAME=${config.androidPackageName}")
                     appendLine("IOS_APP_ID=${config.iosAppId}")
+                    appendLine("WEBAUTHN_CONFORMANCE_ENABLED=${config.communityConformanceEnabled}")
+                    if (config.communityConformanceEnabled) {
+                        appendLine("WEBAUTHN_CONFORMANCE_RP_ID=${config.conformanceRpId}")
+                        appendLine("WEBAUTHN_CONFORMANCE_RP_NAME=${config.conformanceRpName}")
+                        appendLine("WEBAUTHN_CONFORMANCE_ORIGIN=${config.conformanceOrigin}")
+                    }
                     appendLine("AttestationPolicy=${config.attestationPolicy}")
                     config.iosAppIdWarning?.let { warning ->
                         appendLine("WARNING=$warning")
@@ -147,6 +159,10 @@ public fun Application.installSampleBackend(
                     appendLine("POST /webauthn/registration/finish")
                     appendLine("POST /webauthn/authentication/start")
                     appendLine("POST /webauthn/authentication/finish")
+                    if (config.communityConformanceEnabled) {
+                        appendLine("POST /attestation/options")
+                        appendLine("POST /attestation/result")
+                    }
                     appendLine("GET  /health")
                     appendLine("GET  /.well-known/assetlinks.json")
                     appendLine("GET  /.well-known/apple-app-site-association")
@@ -166,7 +182,18 @@ public data class SampleBackendConfig(
     val iosAppId: String = DEFAULT_IOS_APP_ID,
     val iosAppIdWarning: String? = null,
     val attestationPolicy: AttestationPolicy = AttestationPolicy.Strict,
+    val communityConformanceEnabled: Boolean = false,
+    val conformanceRpId: String = "localhost",
+    val conformanceRpName: String = "WebAuthn Kotlin registration canary",
+    val conformanceOrigin: String = "https://localhost:$DEFAULT_PORT",
 ) {
+    public fun communityConformanceConfig(): CommunityConformanceConfig =
+        CommunityConformanceConfig(
+            rpId = conformanceRpId,
+            rpName = conformanceRpName,
+            origin = conformanceOrigin,
+        )
+
     public companion object {
         public fun fromEnvironment(
             environment: Map<String, String> = System.getenv()
@@ -189,6 +216,13 @@ public data class SampleBackendConfig(
                 iosAppId = configuredIosAppId.appId,
                 iosAppIdWarning = configuredIosAppId.warning,
                 attestationPolicy = attestationPolicy,
+                communityConformanceEnabled = environment["WEBAUTHN_CONFORMANCE_ENABLED"]
+                    ?.equals("true", ignoreCase = true) == true,
+                conformanceRpId = environment["WEBAUTHN_CONFORMANCE_RP_ID"].orIfBlank("localhost"),
+                conformanceRpName = environment["WEBAUTHN_CONFORMANCE_RP_NAME"]
+                    .orIfBlank("WebAuthn Kotlin registration canary"),
+                conformanceOrigin = environment["WEBAUTHN_CONFORMANCE_ORIGIN"]
+                    .orIfBlank("https://localhost:$configuredPort"),
             )
         }
 
