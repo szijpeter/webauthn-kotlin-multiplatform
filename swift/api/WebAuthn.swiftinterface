@@ -58,6 +58,8 @@ public struct PasskeyCapabilities : Swift.Equatable, Swift.Sendable {
   @_Concurrency.MainActor final public func capabilities() async throws -> WebAuthn.PasskeyCapabilities
   @objc deinit
 }
+extension WebAuthn.PasskeyClient : WebAuthn.PasskeyClientProtocol {
+}
 public enum PasskeyClientError : Swift.Error, Swift.Equatable, Foundation.LocalizedError, Swift.Sendable {
   case userCancelled
   case noCredential
@@ -79,8 +81,6 @@ public enum PasskeyClientError : Swift.Error, Swift.Equatable, Foundation.Locali
   @_Concurrency.MainActor func createCredential(optionsJSON: Foundation.Data) async throws -> Foundation.Data
   @_Concurrency.MainActor func getAssertion(optionsJSON: Foundation.Data) async throws -> Foundation.Data
   @_Concurrency.MainActor func capabilities() async throws -> WebAuthn.PasskeyCapabilities
-}
-extension WebAuthn.PasskeyClient : WebAuthn.PasskeyClientProtocol {
 }
 public enum PrfOutputSelection : Swift.String, Swift.Sendable {
   case first
