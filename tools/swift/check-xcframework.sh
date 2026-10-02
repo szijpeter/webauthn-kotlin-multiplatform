@@ -36,7 +36,15 @@ expected = {
 if actual != expected:
     raise SystemExit(f"Unexpected XCFramework slices: {sorted(actual)}")
 
-for framework_info in path.parent.glob("*/WebAuthnBridge.framework/Info.plist"):
+expected_framework_infos = {
+    path.parent / identifier / "WebAuthnBridge.framework" / "Info.plist"
+    for identifier, _, _, _ in expected
+}
+actual_framework_infos = set(path.parent.glob("*/WebAuthnBridge.framework/Info.plist"))
+if actual_framework_infos != expected_framework_infos:
+    raise SystemExit("Missing or unexpected framework Info.plist")
+
+for framework_info in sorted(actual_framework_infos):
     with framework_info.open("rb") as source:
         framework = plistlib.load(source)
     if framework.get("CFBundleIdentifier") != "dev.webauthn.swift.bridge":
