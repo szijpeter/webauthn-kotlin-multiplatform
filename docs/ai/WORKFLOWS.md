@@ -129,3 +129,9 @@ On a workstation without a release signing key, use the credential-free Maven Lo
 
 4. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`. Its Central job has read-only repository access and no persisted Git credentials; only the post-publication GitHub Release job receives `contents:write`.
 5. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
+
+## Swift Bridge Validation
+
+The `swift-bridge` CI job runs Kotlin/Native simulator tests, assembles the release XCFramework,
+and verifies every expected framework slice with `tools/swift/check-xcframework.sh`. Run these
+checks when changing the bridge or its compiler/SKIE baseline.
