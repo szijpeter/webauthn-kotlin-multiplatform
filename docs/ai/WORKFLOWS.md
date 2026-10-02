@@ -130,3 +130,9 @@ On a workstation without a release signing key, use the credential-free Maven Lo
 4. For a live release, complete the physical-iPhone qualification, retain its HTTPS evidence URL for the exact source commit, and use `.github/workflows/publish.yml` via `workflow_dispatch` with both qualification inputs. Its Central job has read-only repository access and no persisted Git credentials; only the post-publication GitHub Release job receives `contents:write` to create or reconcile the detached checksum-pinned Swift package manifest commit, coordinated tag/release, and exact Swift assets after Central succeeds.
 5. If Central succeeds but GitHub finalization fails, use `finalize-release` with the exact version and original workflow run ID. This recovery restores the retained immutable inputs and never republishes Maven artifacts.
 6. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
+
+## Swift Bridge Validation
+
+The `swift-bridge` CI job runs Kotlin/Native simulator tests, assembles the release XCFramework,
+and verifies every expected framework slice with `tools/swift/check-xcframework.sh`. Run these
+checks when changing the bridge or its compiler/SKIE baseline.

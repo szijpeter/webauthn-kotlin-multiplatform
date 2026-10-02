@@ -10,9 +10,9 @@ Apache License 2.0 components
 
 The Apache License 2.0 text is distributed as LICENSE next to this file.
 
-- Kotlin and the Kotlin/Native runtime 2.4.10
+- Kotlin and the Kotlin/Native runtime 2.4.20
   https://github.com/JetBrains/kotlin
-- SKIE runtime 0.10.14
+- SKIE runtime 0.10.15
   https://github.com/touchlab/SKIE
 - KMMResult 1.9.3
   https://github.com/a-sit-plus/KmmResult

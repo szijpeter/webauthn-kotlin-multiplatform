@@ -2,7 +2,7 @@
 
 This document tracks what is implemented today and the current maturity by module.
 
-Last updated: 2026-08-31
+Last updated: 2026-10-02
 
 ## Status Legend
 
@@ -22,6 +22,9 @@ remain subject to the repository's coordinated pre-1.0 compatibility policy.
   Kotlin/bridge/Swift semantic parity checks, and binary/privacy/path-hygiene validation. Coordinated
   `publish-and-release` runs upload a checksum-pinned XCFramework and tag a remote Swift package manifest;
   Intel simulators remain unsupported because the full crypto dependency graph has no `iosX64` variant.
+- Kotlin 2.4.20: the model JVM API baseline includes compiler-generated no-argument constructors for
+  `LargeBlobExtensionInput` and `LargeBlobExtensionOutput`. Both constructors initialize every property
+  to `null`, matching the existing Kotlin default arguments.
 - Mobile-first public documentation site (2026-08-24): a generated MkDocs site now presents 30 authored
   guides, 23 published-module pages, runnable sample guidance, and aggregate API reference behind a
   vertical, responsive navigation shell. The build stages an explicit public source map, validates local
