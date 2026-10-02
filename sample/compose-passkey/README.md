@@ -77,9 +77,13 @@ WEBAUTHN_DEMO_REQUEST_LOCAL_NETWORK_PERMISSION=true \
 ```
 
 The `Auto Create` button is for conditional-create smoke testing after confirming the capabilities
-card advertises it. On Android, a “No credential creation option is available” result is valid when
-no enabled provider can create a passkey opportunistically. The `Register` button remains the
-explicit registration path.
+card advertises it. Successful automatic creation also requires a prior non-passkey sign-in or
+sign-up; Android credential providers typically use a successful password sign-in to establish
+eligibility. This passkey-only sample does not perform that password flow. On Android, a
+“No credential creation option is available” result is expected without that precondition or when
+no enabled provider can create a passkey opportunistically. See the
+[Android automatic-creation guidance](https://developer.android.com/identity/passkeys/create-passkeys#automatically-create).
+The `Register` button remains the explicit registration path.
 
 3. Optional UI smoke test (emulator/device connected):
 

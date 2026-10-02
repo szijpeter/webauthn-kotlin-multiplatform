@@ -7,7 +7,7 @@ Platform-neutral passkey operations and result and error contracts at the raw pl
 - `PasskeyClient` for byte-preserving `RawRegistrationResponse` and `RawAuthenticationResponse` platform ceremonies.
 - `DefaultPasskeyClient` for shared option checks, cancellation handling, and platform-error mapping.
 - `PasskeyResult`, `PasskeyClientError`, and capability contracts.
-- `PasskeyCreateOptions` for default or conditional cross-platform creation mediation.
+- `PasskeyCreateOptions` for default or conditional creation mediation in the shared multiplatform API.
 
 `PasskeyPlatformBridge` is the public SPI for custom target-specific integrations. Application code should normally depend on `PasskeyClient` or the platform/defaults modules instead.
 
