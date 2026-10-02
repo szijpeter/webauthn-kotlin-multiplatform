@@ -28,6 +28,7 @@ Build the most robust and standards-first WebAuthn Kotlin Multiplatform library,
 4. If only docs, samples, internal modules, or build logic change, a Maven Central release is not required.
 5. GitHub release tags follow the coordinated version, for example `v0.1.0`.
 6. For major release initiatives, maintain a temporary execution-map doc under `docs/ai/`, keep it updated when decisions drift, and delete it once the effort is complete.
+7. `publish-and-release` publishes the native Swift package at the same version through a checksum-pinned XCFramework asset and release-tag manifest; `publish-only` remains Maven-only, and `finalize-release` may only resume GitHub finalization from the original immutable workflow artifact after Central already succeeded.
 
 ## Published Artifact Surface
 
@@ -62,6 +63,13 @@ Not published:
 - `platform:constraints`
 - `sample:*`
 - `build-logic`
+
+Swift distribution:
+
+- `WebAuthn` is a source facade released from versioned repository tags.
+- `webauthn-client-swift-bridge` is an internal static XCFramework and is never a direct consumer API.
+- `main` keeps a local-path development manifest; the release workflow creates or exactly reconciles a detached tag commit with the remote URL and checksum.
+- A Swift release requires recorded physical-iPhone qualification for the exact source commit and retains its prepared manifest, artifact, checksum, notes, and source metadata for recovery.
 
 ## Crypto Backend Policy
 
@@ -182,6 +190,7 @@ A change is done only when all apply:
 7. Documentation trace policy is satisfied for impacted public API/integration surface (`README.md`, affected module READMEs, and `docs/architecture.md` when public integration paths change).
 8. If CI/security posture changed, `SECURITY.md` and `docs/PUBLIC_LAUNCH_CHECKLIST.md` are updated in the same change.
 9. If a temporary release execution-map doc is active for the current effort, keep it updated in the same change when scope/sequence decisions change.
+10. If the Swift facade or bridge changed, strict Swift tests, Release library evolution, the public API baseline, semantic parity, and XCFramework checks pass.
 
 ## Quality Gate Contract
 
@@ -243,3 +252,5 @@ Stop and ask before continuing when:
 - Security policy: `SECURITY.md`
 - Public launch checklist: `docs/PUBLIC_LAUNCH_CHECKLIST.md`
 - Maven Central publishing guide: `docs/MAVEN_CENTRAL.md`
+- Swift package guide: `swift/README.md`
+- Swift compatibility contract: `swift/API_PARITY.md`

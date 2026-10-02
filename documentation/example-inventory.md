@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **140**
+Managed blocks: **141**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -65,7 +65,8 @@ Managed blocks: **140**
 | docs-client-first-execution-bash-1 | docs/CLIENT_FIRST_EXECUTION.md:94 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
 | docs-client-first-execution-bash-2 | docs/CLIENT_FIRST_EXECUTION.md:101 | Local Backend App (`sample/backend-ktor`) | bash | consumer | markdown | Markdown block | syntax |  |
 | docs-client-first-execution-kotlin-2 | docs/CLIENT_FIRST_EXECUTION.md:173 | `webauthn-client-json-core` (optional) | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/AndroidJsonClientExample.kt#android-json-client | platform-compile |  |
-| docs-maven-central-bash-1 | docs/MAVEN_CENTRAL.md:71 | Local Validation | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-maven-central-bash-1 | docs/MAVEN_CENTRAL.md:74 | Local Validation | bash | contributor | markdown | Markdown block | syntax |  |
+| docs-maven-central-bash-2 | docs/MAVEN_CENTRAL.md:113 | Swift Artifact Dry Run | bash | maintainer | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-1 | docs/ai/WORKFLOWS.md:10 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-2 | docs/ai/WORKFLOWS.md:17 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |
 | docs-ai-workflows-bash-3 | docs/ai/WORKFLOWS.md:24 | Standard Change Workflow | bash | contributor | markdown | Markdown block | syntax |  |

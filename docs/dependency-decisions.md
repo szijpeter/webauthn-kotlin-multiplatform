@@ -1,5 +1,18 @@
 # Dependency Decisions
 
+## Native Swift PRF Crypto Boundary
+
+The native Swift package keeps WebAuthn option/response handling and platform ceremonies in the shared
+Kotlin implementation, but derives and contains its PRF session key with CryptoKit. The published iOS
+provider used by `webauthn-client-prf-crypto` currently embeds an AES object with an iOS 18.5 deployment
+minimum; statically linking it would make the complete Swift package incompatible with its documented
+iOS 16 baseline.
+
+This is a deliberately narrow platform fallback: HKDF-SHA-256 key derivation, SHA-256 key fingerprinting,
+and AES-256-GCM session operations only. A checked-in derivation vector is asserted by Kotlin tests, Swift
+tests, and the semantic parity checker. Revisit the fallback if the provider can be linked without raising
+the Swift package deployment target.
+
 ## Current State
 
 `webauthn-server-jvm-crypto` is Signum-first:

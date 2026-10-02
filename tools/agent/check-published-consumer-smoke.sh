@@ -6,13 +6,13 @@ cd "$ROOT_DIR"
 
 KTOR_VERSION="$(sed -n 's/^ktor = \"\(.*\)\"/\1/p' gradle/libs.versions.toml | head -n 1)"
 
-VERSION_NAME="$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)"
+VERSION_NAME="${VERSION_NAME_OVERRIDE:-$(sed -n 's/^VERSION_NAME=//p' gradle.properties | head -n 1)}"
 KOTLIN_VERSION="$(sed -n 's/^kotlin = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
 COROUTINES_VERSION="$(sed -n 's/^coroutines = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
 AGP_VERSION="$(sed -n 's/^agp = "\(.*\)"/\1/p' gradle/libs.versions.toml | head -n 1)"
 
 if [[ -z "$VERSION_NAME" ]]; then
-  echo "Unable to resolve VERSION_NAME from gradle.properties" >&2
+  echo "Unable to resolve VERSION_NAME" >&2
   exit 1
 fi
 
