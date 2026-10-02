@@ -30,7 +30,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         let window = UIWindow(windowScene: windowScene)
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: "--sample-gallery"), arguments.indices.contains(index + 1) {
+            window.rootViewController = MainViewControllerKt.GalleryViewController(scenario: arguments[index + 1])
+        } else {
+            window.rootViewController = MainViewControllerKt.MainViewController()
+        }
+        #else
         window.rootViewController = MainViewControllerKt.MainViewController()
+        #endif
         self.window = window
         window.makeKeyAndVisible()
     }

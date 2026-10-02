@@ -28,6 +28,7 @@
 		B0808C0F90F43BE513253D84 /* PasskeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */; };
 		B7A26AEE131D2EAB2FA8DB4A /* DemoRequestsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */; };
 		BF4E8853FC67CB7598948830 /* PasskeyClientProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E40CE6AB77C76BD7D7AE5A /* PasskeyClientProtocolTests.swift */; };
+		C3C173BFBF9FA69BC6E0E898 /* SampleGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28952C0D8F8357246CE8F53 /* SampleGallery.swift */; };
 		CE37ED7CEB87D7593121D1D0 /* DemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C8257E0189A0E5129B3558 /* DemoViewModel.swift */; };
 		E8FF6E12EFF0BDE6E58A7BA2 /* PrfCryptoClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32417A31FFD7DA29ACB0B91 /* PrfCryptoClientTests.swift */; };
 		F8B0F7EAE776927F38E5B470 /* DemoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */; };
@@ -75,6 +76,7 @@
 		C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequestsTests.swift; sourceTree = "<group>"; };
 		CE877F7E41F39AC64988C221 /* WebAuthnSwiftDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoApp.swift; sourceTree = "<group>"; };
 		CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequests.swift; sourceTree = "<group>"; };
+		D28952C0D8F8357246CE8F53 /* SampleGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleGallery.swift; sourceTree = "<group>"; };
 		D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrfSaltStore.swift; sourceTree = "<group>"; };
 		EF6802F24F0623B419E60F86 /* PasskeyFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyFlowTests.swift; sourceTree = "<group>"; };
 		F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoConfiguration.swift; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 				ACF91EA2AFFD99A4C8667B3C /* Components.swift */,
 				3C05904A4CD60DD39FADAB83 /* MainView.swift */,
 				A65CF00BCCF157FB8E092F04 /* RootView.swift */,
+				D28952C0D8F8357246CE8F53 /* SampleGallery.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -442,6 +445,7 @@
 				B0808C0F90F43BE513253D84 /* PasskeyService.swift in Sources */,
 				876979A1A09A9C507E48979C /* PrfSaltStore.swift in Sources */,
 				62CB3AAF9A8522AFDBBAF4DC /* RootView.swift in Sources */,
+				C3C173BFBF9FA69BC6E0E898 /* SampleGallery.swift in Sources */,
 				997AC03FAF19B9B54DA3C223 /* WebAuthnSwiftDemoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

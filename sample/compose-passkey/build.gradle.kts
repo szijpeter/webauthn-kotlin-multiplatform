@@ -23,6 +23,7 @@ kotlin {
         target.binaries.framework {
             baseName = "ComposePasskeyShared"
             isStatic = true
+            export(libs.calf.ui)
         }
     }
 
@@ -32,6 +33,8 @@ kotlin {
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)
+                implementation(libs.compose.material.icons)
+                api(libs.calf.ui)
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.navigation3.ui)

@@ -1,6 +1,6 @@
 # Compose Multiplatform passkey sample
 
-A Compose Multiplatform app for a minimal end-to-end passkey flow against `sample/backend-ktor`.
+A Compose Multiplatform app for an end-to-end passkey flow against `sample/backend-ktor`.
 
 ## What this demonstrates
 
@@ -11,7 +11,7 @@ A Compose Multiplatform app for a minimal end-to-end passkey flow against `sampl
 5. Compose-first authentication wiring via `rememberPasskeyFlow(...)`, with sample-owned state and errors driving UI status and action availability.
 6. Direct sample wiring to `KotlinxKtorPasskeyBackend` against the default backend contract.
 7. PRF crypto demo flow: caller-owned salt loading or generation, `Sign In + PRF`, session-key derivation, AES-GCM encryption and decryption, and explicit session clearing.
-8. Explicit `Logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
+8. Explicit `Debug logs` action in the shared header opening an in-app debug log sheet (wall-clock timestamps, level, source, message).
 9. Structured ceremony + network logs emitted with tag `PasskeyDemo`.
 
 These values are baked into the shared app during build:
@@ -128,7 +128,7 @@ To inspect logs:
 
 - Android: `adb logcat | grep PasskeyDemo`
 - iOS: Xcode/device console output (`NSLog`)
-- In-app: tap `Logs` in the header on either screen to open the debug sheet.
+- In-app: tap `Debug logs` in the header on either screen to open the debug sheet.
 
 ## Auth route showcase
 
@@ -195,3 +195,49 @@ For realistic device passkey prompts, use HTTPS plus associated-domain configura
 
 - Salt persistence is intentionally caller-owned and sample-local (`InMemoryPrfSaltStore`) to keep library storage-independent.
 - Encrypted payloads are tied to passkey PRF output. If the passkey credential is removed, previously encrypted data cannot be recovered.
+
+## Appearance, accessibility, and screenshot fixtures
+
+See the [three-app screenshot gallery](../UI_GALLERY.md) for light/dark, status, PRF, logs, and large layouts.
+
+The Android and iOS hosts share a theme with neutral light/dark surfaces, scalable typography,
+48 dp touch targets, wrapping status cards, and a keyboard-aware scrolling layout. Large windows use two
+columns; increased font scale falls back to one column. Configuration is a selectable, collapsible
+panel, and debug logs have an accessible toolbar icon, an explicit dismiss action, and a compact
+newest-first list that scrolls independently of the page. Action and status icons are Material vectors;
+secondary actions use light tints, and signing out uses the destructive color. Encrypt/Decrypt use
+compact, centered text-only buttons with retained touch targets. Intro headings use 28 sp and still
+wrap at larger accessibility sizes. The log sheet has a large heading below its Done action.
+Capability rows distinguish supported, unavailable, and unreported values.
+
+[Calf 0.13.0](https://github.com/MohamedRejeb/Calf/tree/v0.13.0) supplies adaptive buttons, toolbar
+icon buttons, progress indicators, and the debug sheet. Android retains Material controls; iOS uses
+Cupertino button rendering before iOS 26, Compose-rendered glass buttons on iOS 26+, and a UIKit page
+sheet. Calf is a sample dependency, exported only by `ComposePasskeyShared`; the published Kotlin SDK
+and native Swift package do not depend on it. The sample's iOS 16 deployment target is unchanged.
+Calf does not provide a complete iOS theme: cards, fields, typography, and page layout remain
+sample-owned. Its native navigation-bar variant was evaluated but is not used: the tested iOS
+simulator exposed an empty navigation-bar accessibility group instead of its title and controls.
+The shared toolbar retains its accessible heading and labelled log action. Compact crypto actions
+use Material text buttons on both Compose hosts because Calf's iOS button does not forward custom
+content padding and uses a fixed 48 dp glass control.
+
+The message input uses Foundation's text field with sample-owned styling. This avoids the
+`CustomStyle.applyStyle` binary mismatch between the current Material 3 alpha's outlined field and
+Foundation, while retaining labelled input, focus feedback, multiline editing, and an IME Done action.
+
+`ui/previews/SampleGallery.kt` renders deterministic states using the same screens and components as
+the live app. It never creates Koin, network clients, passkeys, or crypto sessions. In a Debug host,
+use the Android intent string extra `sample-gallery` or the iOS launch argument `--sample-gallery`
+followed by one of `auth`, `busy`, `success`, `cancelled`, `rejected`, `error`, `session`, `encrypted`,
+`unsupported`, `prf-busy`, or `logs`. Both hosts ignore this entry point in Release builds. Appearance
+and font size follow the operating system; the previews also include dark, tablet, and large-text cases.
+
+Gallery credentials, successful messages, and capabilities are rendering fixtures. They are not evidence
+of a live registration, authentication, PRF key derivation, or backend verification. The existing flow,
+request, and PRF lifecycle tests cover those contracts independently; device validation still follows
+[the readiness checklist](READINESS_CHECKLIST.md).
+
+The Android UI smoke covers disabled/busy states, retry availability, session-dependent crypto controls,
+log dismissal, configuration expansion, and message editing across recreation. It pins Espresso 3.7
+because Compose's transitive Espresso 3.5 cannot inject events on recent Android runtimes.

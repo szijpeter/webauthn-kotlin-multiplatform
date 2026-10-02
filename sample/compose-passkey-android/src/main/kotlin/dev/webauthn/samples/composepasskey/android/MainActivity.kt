@@ -4,9 +4,11 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import dev.webauthn.samples.composepasskey.app.App
+import dev.webauthn.samples.composepasskey.ui.previews.SampleGallery
 
 private const val ANDROID_17_API_LEVEL = 37
 private const val LOCAL_NETWORK_PERMISSION_REQUEST_CODE = ANDROID_17_API_LEVEL
@@ -14,10 +16,12 @@ private const val LOCAL_NETWORK_PERMISSION_REQUEST_CODE = ANDROID_17_API_LEVEL
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestLocalNetworkPermissionIfNeeded()
+        enableEdgeToEdge()
+        val gallery = if (BuildConfig.DEBUG) intent.getStringExtra("sample-gallery") else null
+        if (gallery == null) requestLocalNetworkPermissionIfNeeded()
         val platformOrigin = androidAppOrigin()
         setContent {
-            App(platformOrigin = platformOrigin)
+            if (gallery != null) SampleGallery(gallery) else App(platformOrigin = platformOrigin)
         }
     }
 

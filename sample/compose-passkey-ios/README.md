@@ -31,7 +31,7 @@ open sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj
 Expected result:
 - App installs and launches.
 - Compose UI renders with the `Auth` screen first (`Register` / `Sign In`).
-- Signed-in debug logs remain hidden unless the title is double-tapped.
+- The `Debug logs` action opens a scrollable diagnostic sheet.
 
 Note:
 - Passkey registration and sign-in may fail with a free account when the Associated Domains entitlement or domain association is unavailable.
@@ -64,7 +64,7 @@ Expected result:
 - `Register` completes.
 - `Sign In` completes.
 - Signed-in extension demo screen is shown after successful sign-in.
-- `PasskeyDemo` logs appear in Xcode console and in the hidden in-app debug sheet (title double-tap).
+- `PasskeyDemo` logs appear in Xcode console and in the in-app diagnostic sheet (`Debug logs`).
 
 ## Environment variables used by the shared sample
 

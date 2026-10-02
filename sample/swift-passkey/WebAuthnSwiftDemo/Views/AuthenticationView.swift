@@ -4,67 +4,89 @@ struct AuthenticationView: View {
     @ObservedObject var viewModel: DemoViewModel
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                IntroCard(
-                    title: "Native Swift, Kotlin core",
-                    detail: "Exercise registration and authentication through a Swift-first API backed by the same validated WebAuthn implementation."
-                )
-                StatusCard(status: viewModel.ceremonyState.status)
-                actionCard
-                ConfigurationCard(config: viewModel.config)
-            }
-            .padding()
-        }
-        .background(Color.demoCanvas)
+        AuthenticationContent(
+            config: viewModel.config,
+            status: viewModel.ceremonyState.status,
+            actionsEnabled: viewModel.ceremonyActionsEnabled,
+            onRegister: { Task { await viewModel.register() } },
+            onSignIn: { Task { await viewModel.signIn() } }
+        )
     }
+}
 
-    private var actionCard: some View {
-        DemoCard {
-            VStack(alignment: .leading, spacing: 12) {
-                Label("Passkey round trip", systemImage: "person.badge.key")
-                    .font(.headline)
-                Text("Options come from the sample backend; credential responses return there for verification.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                Button {
-                    Task { await viewModel.register() }
-                } label: {
-                    Label("Register", systemImage: "person.badge.plus")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!viewModel.ceremonyActionsEnabled)
-                .accessibilityIdentifier("register-button")
+struct AuthenticationContent: View {
+    let config: DemoConfiguration
+    let status: DemoStatus
+    let actionsEnabled: Bool
+    let onRegister: () -> Void
+    let onSignIn: () -> Void
 
-                Button {
-                    Task { await viewModel.signIn() }
-                } label: {
-                    Label("Sign In", systemImage: "person.crop.circle.badge.checkmark")
-                        .frame(maxWidth: .infinity)
+    var body: some View {
+        DemoPage { wide in
+            DemoPanels(wide: wide) {
+                IntroCard(
+                    title: "Passkey authentication",
+                    detail: "Register a passkey or sign in with an existing account."
+                )
+                StatusCard(status: status)
+            } secondary: {
+                DemoCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Passkey actions")
+                            .font(.title2.bold())
+                            .accessibilityAddTraits(.isHeader)
+                        Text("Registration creates a passkey for the configured user.")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.demoSecondary)
+                        Button(action: onRegister) {
+                            Label("Register", systemImage: "person.badge.plus")
+                                .foregroundStyle(Color.demoOnAccent)
+                                .frame(maxWidth: .infinity, minHeight: 32)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!actionsEnabled)
+                        .accessibilityIdentifier("register-button")
+                        Button(action: onSignIn) {
+                            Label("Sign In", systemImage: "person.crop.circle.badge.checkmark")
+                                .frame(maxWidth: .infinity, minHeight: 32)
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(!actionsEnabled)
+                        .accessibilityIdentifier("sign-in-button")
+                    }
                 }
-                .buttonStyle(.bordered)
-                .disabled(!viewModel.ceremonyActionsEnabled)
-                .accessibilityIdentifier("sign-in-button")
+                ConfigurationCard(config: config)
             }
         }
     }
 }
 
-private struct ConfigurationCard: View {
+struct ConfigurationCard: View {
     let config: DemoConfiguration
 
     var body: some View {
         DemoCard {
-            VStack(alignment: .leading, spacing: 8) {
+            DisclosureGroup {
+                VStack(alignment: .leading, spacing: 14) {
+                    value("Endpoint", config.endpoint.absoluteString)
+                    value("Relying party", config.rpID)
+                    value("Origin", config.origin)
+                    value("User", config.userName)
+                }
+                .padding(.top, 12)
+            } label: {
                 Label("Configuration", systemImage: "gearshape.2")
                     .font(.headline)
-                LabeledContent("Endpoint", value: config.endpoint.host ?? config.endpoint.absoluteString)
-                LabeledContent("RP ID", value: config.rpID)
-                LabeledContent("Origin", value: config.origin)
-                LabeledContent("User", value: config.userName)
+                    .frame(minHeight: 44)
             }
-            .font(.footnote)
+            .accessibilityIdentifier("configuration-disclosure")
+        }
+    }
+
+    private func value(_ label: String, _ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label).font(.caption).foregroundStyle(Color.demoSecondary)
+            Text(text).font(.subheadline).textSelection(.enabled)
         }
     }
 }

@@ -21,8 +21,6 @@ struct RootView: View {
                     Text("Passkey Lab")
                         .font(.headline)
                         .accessibilityIdentifier("demo-title")
-                        .onTapGesture(count: 2) { showsLogs = true }
-                        .accessibilityHint("Double tap to show debug logs")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -35,6 +33,7 @@ struct RootView: View {
                 }
             }
         }
+        .tint(Color.demoAccent)
         .sheet(isPresented: $showsLogs) {
             DebugLogSheet(logs: viewModel.logs)
         }

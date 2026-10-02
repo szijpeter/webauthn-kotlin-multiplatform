@@ -54,6 +54,7 @@ internal fun AuthRoute() {
     }
 
     AuthScreen(
+        config = config,
         status = state.toDemoStatus(),
         actionsEnabled = actionsEnabled,
         canRegister = canRegister,

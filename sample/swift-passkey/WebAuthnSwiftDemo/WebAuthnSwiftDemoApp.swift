@@ -3,6 +3,22 @@ import UIKit
 
 @main
 struct WebAuthnSwiftDemoApp: App {
+    var body: some Scene {
+        WindowGroup {
+            #if DEBUG
+            if let scenario = SampleGallery.launchScenario {
+                SampleGallery(scenario: scenario)
+            } else {
+                LiveDemoRoot()
+            }
+            #else
+            LiveDemoRoot()
+            #endif
+        }
+    }
+}
+
+private struct LiveDemoRoot: View {
     @StateObject private var viewModel: DemoViewModel
 
     @MainActor
@@ -24,9 +40,5 @@ struct WebAuthnSwiftDemoApp: App {
         )
     }
 
-    var body: some Scene {
-        WindowGroup {
-            RootView(viewModel: viewModel)
-        }
-    }
+    var body: some View { RootView(viewModel: viewModel) }
 }

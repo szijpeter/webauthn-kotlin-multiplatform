@@ -1,99 +1,56 @@
 package dev.webauthn.samples.composepasskey.ui.previews
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import dev.webauthn.client.PasskeyCapabilities
-import dev.webauthn.client.PasskeyCapability
-import dev.webauthn.client.CapabilitySupport
-import dev.webauthn.client.PlatformCapability
-import dev.webauthn.model.WebAuthnExtension
-import dev.webauthn.samples.composepasskey.domain.model.PasskeyDemoStatus
-import dev.webauthn.samples.composepasskey.domain.model.StatusTone
-import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
-import dev.webauthn.samples.composepasskey.ui.screens.auth.AuthScreen
-import dev.webauthn.samples.composepasskey.ui.screens.main.MainScreen
-import dev.webauthn.samples.composepasskey.ui.screens.main.MainUiState
-import dev.webauthn.samples.composepasskey.ui.theme.Palette
-import dev.webauthn.samples.composepasskey.ui.theme.Typography
 
-@Preview(name = "Auth Screen - Idle")
+@Preview(name = "Authentication · light")
 @Composable
-private fun AuthScreenIdlePreview() {
-    PreviewSurface {
-        AuthScreen(
-            status = PasskeyDemoStatus(
-                tone = StatusTone.IDLE,
-                headline = "Ready",
-                detail = "Tap Register or Sign In to begin.",
-            ),
-            actionsEnabled = true,
-            canRegister = true,
-            onShowLogs = {},
-            onRegister = {},
-            onSignIn = {},
-        )
-    }
-}
+private fun AuthPreview() { SampleGallery("auth", darkTheme = false) }
 
-@Preview(name = "Auth Screen - Busy")
+@Preview(name = "Authentication · dark")
 @Composable
-private fun AuthScreenBusyPreview() {
-    PreviewSurface {
-        AuthScreen(
-            status = PasskeyDemoStatus(
-                tone = StatusTone.WORKING,
-                headline = "Platform prompt active",
-                detail = "Complete the passkey prompt to continue.",
-            ),
-            actionsEnabled = false,
-            canRegister = true,
-            onShowLogs = {},
-            onRegister = {},
-            onSignIn = {},
-        )
-    }
-}
+private fun DarkPreview() { SampleGallery("auth", darkTheme = true) }
 
-@Preview(name = "Main Screen")
+@Preview(name = "Platform prompt · busy")
 @Composable
-private fun MainScreenPreview() {
-    PreviewSurface {
-        MainScreen(
-            state = MainUiState(
-                userName = "demo@local",
-                capabilities = PasskeyCapabilities(
-                    support = mapOf(
-                        PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED,
-                        PasskeyCapability.Platform(PlatformCapability.SecurityKey) to CapabilitySupport.SUPPORTED,
-                    ),
-                ),
-                supportsPrf = true,
-                sessionState = PrfCryptoDemoSessionState.SessionReady,
-                plaintext = "The answer is 42",
-                decryptedText = "The answer is 42",
-                statusMessage = "Decrypt succeeded.",
-            ),
-            onShowLogs = {},
-            onSignInWithPrf = {},
-            onEncrypt = {},
-            onDecrypt = {},
-            onClearPrfSession = {},
-            onPlaintextChange = {},
-            onLogout = {},
-        )
-    }
-}
+private fun BusyPreview() { SampleGallery("busy") }
 
+@Preview(name = "Registration complete")
 @Composable
-private fun PreviewSurface(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = Palette,
-        typography = Typography,
-    ) {
-        Surface {
-            content()
-        }
-    }
-}
+private fun SuccessPreview() { SampleGallery("success") }
+
+@Preview(name = "Cancelled")
+@Composable
+private fun CancelledPreview() { SampleGallery("cancelled") }
+
+@Preview(name = "Server rejection")
+@Composable
+private fun RejectedPreview() { SampleGallery("rejected") }
+
+@Preview(name = "Connection error")
+@Composable
+private fun ErrorPreview() { SampleGallery("error") }
+
+@Preview(name = "PRF unavailable")
+@Composable
+private fun UnsupportedPreview() { SampleGallery("unsupported") }
+
+@Preview(name = "Active PRF session")
+@Composable
+private fun SessionPreview() { SampleGallery("session") }
+
+@Preview(name = "Encrypted and decrypted")
+@Composable
+private fun EncryptedPreview() { SampleGallery("encrypted") }
+
+@Preview(name = "PRF prompt · busy")
+@Composable
+private fun PrfBusyPreview() { SampleGallery("prf-busy") }
+
+@Preview(name = "Tablet", widthDp = 1100, heightDp = 850)
+@Composable
+private fun TabletPreview() { SampleGallery("session") }
+
+@Preview(name = "Compact · large type", widthDp = 320, heightDp = 700, fontScale = 1.5f)
+@Composable
+private fun LargeTypePreview() { SampleGallery("auth") }
