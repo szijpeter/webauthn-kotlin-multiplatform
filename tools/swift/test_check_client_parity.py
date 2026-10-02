@@ -43,8 +43,8 @@ final class example/Client { // example/Client|null[0]
         (self.root / "docs/parity.md").write_text("## Client operations\n")
         symbols = CHECKER.extract_klib_symbols(self.api_path.read_text())
         self.manifest = {
-            "schemaVersion": 1,
-            "swiftInterface": "swift/WebAuthn.swiftinterface",
+            "schemaVersion": 2,
+            "swiftInterfaces": ["swift/WebAuthn.swiftinterface"],
             "scope": {
                 "apiDumpGlob": "client/webauthn-client-*/api/*.klib.api",
                 "apiDumpPathsSha256": CHECKER.symbol_digest({self.api_relative_path}),
@@ -126,6 +126,13 @@ final class example/Client { // example/Client|null[0]
         ]
 
         with self.assertRaisesRegex(CHECKER.ClientParityError, "Stale Swift mapping"):
+            self.validate(manifest)
+
+    def test_missing_swift_interface_is_rejected(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["swiftInterfaces"] = ["swift/Missing.swiftinterface"]
+
+        with self.assertRaisesRegex(CHECKER.ClientParityError, "Missing client parity input"):
             self.validate(manifest)
 
     def test_missing_rationale_is_rejected(self) -> None:

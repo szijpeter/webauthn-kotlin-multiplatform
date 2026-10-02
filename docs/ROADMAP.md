@@ -68,7 +68,9 @@ Definition of done:
 2. Documentation quality pass for integration guidance.
 3. Sample app hardening for reference-quality usage.
 4. Maintain native Swift semantic parity, complete client-surface disposition accounting, its public
-   application-testing seams, and its compiler-generated API baseline alongside Kotlin BCV.
+   application-testing seams, optional source-only ceremony flow, and compiler-generated API baselines
+   alongside Kotlin BCV. Add native transport only after concrete consumer evidence justifies a reusable
+   contract that does not couple the SDK to one backend.
 
 Definition of done:
 

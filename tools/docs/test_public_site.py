@@ -90,6 +90,7 @@ class PublicSiteTest(unittest.TestCase):
     checksum: "{checksum}"
 )
 .target(name: "WebAuthn", path: "swift/Sources/WebAuthn")
+.target(name: "WebAuthnFlow", path: "swift/Sources/WebAuthnFlow")
 // swiftLanguageModes: [.v6]
 """
 
@@ -189,6 +190,7 @@ class PublicSiteTest(unittest.TestCase):
     checksum: "{checksum}"
 )
 .target(name: "WebAuthn", path: "swift/Sources/WebAuthn")
+.target(name: "WebAuthnFlow", path: "swift/Sources/WebAuthnFlow")
 // swiftLanguageModes: [.v6]
 """
         manifest_result = public_site.subprocess.CompletedProcess(

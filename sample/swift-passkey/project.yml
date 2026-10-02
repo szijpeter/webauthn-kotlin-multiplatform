@@ -43,6 +43,8 @@ targets:
     dependencies:
       - package: WebAuthn
         product: WebAuthn
+      - package: WebAuthn
+        product: WebAuthnFlow
 
   WebAuthnSwiftDemoTests:
     type: bundle.unit-test
@@ -63,6 +65,20 @@ targets:
     dependencies:
       - package: WebAuthn
         product: WebAuthn
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
+  WebAuthnFlowPackageTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ../../swift/Tests/WebAuthnFlowTests
+    dependencies:
+      - package: WebAuthn
+        product: WebAuthn
+      - package: WebAuthn
+        product: WebAuthnFlow
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
@@ -93,4 +109,5 @@ schemes:
       targets:
         - WebAuthnSwiftDemoTests
         - WebAuthnPackageTests
+        - WebAuthnFlowPackageTests
         - WebAuthnSwiftDemoUITests

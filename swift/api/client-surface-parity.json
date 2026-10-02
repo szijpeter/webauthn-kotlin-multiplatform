@@ -1,6 +1,9 @@
 {
-  "schemaVersion": 1,
-  "swiftInterface": "swift/api/WebAuthn.swiftinterface",
+  "schemaVersion": 2,
+  "swiftInterfaces": [
+    "swift/api/WebAuthn.swiftinterface",
+    "swift/api/WebAuthnFlow.swiftinterface"
+  ],
   "scope": {
     "apiDumpGlob": "client/webauthn-client-*/api/*.klib.api",
     "apiDumpPathsSha256": "83ea26263dd9f1a76db444424051e1f70bf0553157067c752cb69042e550015a",
@@ -269,170 +272,216 @@
       "declarations": [
         {
           "kotlinRoot": "dev.webauthn.client/AuthenticationBackend",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "adapted",
+          "rationale": "Swift exposes the same application-owned start and finish boundary with associated types and JSON Data at its native facade boundary.",
           "symbolsSha256": "d8eb529f3fa0c7dd2be79af637bf0ce93c6be71d62aa9a5d8af33122d3d28ee8",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "@_Concurrency.MainActor public protocol AuthenticationBackend"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "testAuthenticationPreservesResponseStateAndOutput"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "## Backend contracts"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
+          "adaptation": "Kotlin typed options and raw response models become UTF-8 JSON Data at the Swift facade boundary.",
           "symbolCount": 3
         },
         {
           "kotlinRoot": "dev.webauthn.client/CeremonyFailure",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "direct",
+          "rationale": "Both APIs classify only concurrent flow use and typed platform-client failures.",
           "symbolsSha256": "6fc18e46e4ff0c15e53762efb3baf9f4f7e0fa2d12df0d99e5bf6373488854fb",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "public enum CeremonyFailure : Swift.Equatable, Swift.Sendable"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "testPlatformFailureIsClassifiedAndBackendFailurePropagates"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "## Failure and cancellation policy"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
           "symbolCount": 14
         },
         {
           "kotlinRoot": "dev.webauthn.client/CeremonyResult",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "direct",
+          "rationale": "Both APIs return application output or a deliberately classified ceremony failure.",
           "symbolsSha256": "12510eaa0a9c85bd879207b776b8b14fd7fbe30d2fc6d838e7faa4fc57e11052",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "public enum CeremonyResult<Output>"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "testRegistrationPreservesResponseStateOutputAndPhases"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "## Failure and cancellation policy"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
           "symbolCount": 19
         },
         {
           "kotlinRoot": "dev.webauthn.client/CeremonyStart",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "adapted",
+          "rationale": "Swift forwards the same generic state while representing options as UTF-8 JSON Data for the native client facade.",
           "symbolsSha256": "c8d61c5db684bc4a173e802f4ab15c3dabd8e656d115b29f4de596b9fb3dc405",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "public struct CeremonyStart<State>"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "finishedState"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "Opaque state is never inspected"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
+          "adaptation": "The native facade intentionally retains Data instead of exporting Kotlin protocol-model graphs.",
           "symbolCount": 12
         },
         {
           "kotlinRoot": "dev.webauthn.client/PasskeyFlow",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "adapted",
+          "rationale": "A source-only Swift product preserves start-prompt-finish ordering, opaque state, phase callbacks, one-active-operation behavior, and application output.",
           "symbolsSha256": "41f35debd84acd17d8a99a83161daaf738fda4e41f104663d2f3c90766085710",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "@_Concurrency.MainActor final public class PasskeyFlow"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "class PasskeyFlowTests"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "# Ceremony flow for native Swift"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
+          "adaptation": "Swift uses async throws for backend and callback failures while keeping typed client failures in CeremonyResult.",
           "symbolCount": 4
         },
         {
           "kotlinRoot": "dev.webauthn.client/PasskeyPhase",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "direct",
+          "rationale": "Swift reports the same starting, platform-prompt, and finishing phases in the same order.",
           "symbolsSha256": "7b00eb8fa0885e1d326877346f2578fa0ac751580f595a790a6453630e5af29b",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "public enum PasskeyPhase : Swift.Equatable, Swift.Sendable"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "XCTAssertEqual(phases, [.starting, .platformPrompt, .finishing])"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "starting -> platformPrompt -> finishing"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
           "symbolCount": 8
         },
         {
           "kotlinRoot": "dev.webauthn.client/RegistrationBackend",
-          "disposition": "deferred",
-          "rationale": "A source-only native ceremony flow is planned so Swift applications can reuse orchestration without adopting transport or UI state.",
+          "disposition": "adapted",
+          "rationale": "Swift exposes the same application-owned start and finish boundary with associated types and JSON Data at its native facade boundary.",
           "symbolsSha256": "b5295fc0e2f4065c122fca78bcea9a998379ffa13a43d5c6144ab8fce12bab0c",
-          "swiftSymbols": [],
+          "swiftSymbols": [
+            "@_Concurrency.MainActor public protocol RegistrationBackend"
+          ],
           "tests": [
             {
               "path": "client/webauthn-client-flow/src/commonTest/kotlin/dev/webauthn/client/PasskeyFlowTest.kt",
               "contains": "class PasskeyFlowTest"
+            },
+            {
+              "path": "swift/Tests/WebAuthnFlowTests/PasskeyFlowTests.swift",
+              "contains": "testRegistrationPreservesResponseStateOutputAndPhases"
             }
           ],
           "documentation": [
             {
               "path": "client/webauthn-client-flow/README.md",
               "contains": "# webauthn-client-flow"
+            },
+            {
+              "path": "swift/FLOW.md",
+              "contains": "## Backend contracts"
             }
           ],
-          "owner": "Swift SDK maintainers",
-          "targetPhase": "P3",
-          "tracking": "swift/API_PARITY.md#planned-native-parity-work",
-          "reviewBy": "2027-01-31",
+          "adaptation": "Kotlin typed options and raw response models become UTF-8 JSON Data at the Swift facade boundary.",
           "symbolCount": 3
         }
       ]

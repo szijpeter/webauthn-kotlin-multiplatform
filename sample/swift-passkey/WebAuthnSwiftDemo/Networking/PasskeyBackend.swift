@@ -1,4 +1,5 @@
 import Foundation
+import WebAuthnFlow
 
 @MainActor
 protocol PasskeyBackend {
@@ -6,6 +7,38 @@ protocol PasskeyBackend {
     func finishRegistration(responseJSON: Data) async throws -> FinishOutcome
     func startAuthentication(config: DemoConfiguration, prfSalt: Data?) async throws -> Data
     func finishAuthentication(responseJSON: Data) async throws -> FinishOutcome
+}
+
+@MainActor
+struct RegistrationFlowBackend: RegistrationBackend {
+    let backend: any PasskeyBackend
+
+    func start(input: DemoConfiguration) async throws -> CeremonyStart<Void> {
+        CeremonyStart(
+            state: (),
+            optionsJSON: try await backend.startRegistration(config: input)
+        )
+    }
+
+    func finish(state: Void, responseJSON: Data) async throws -> FinishOutcome {
+        try await backend.finishRegistration(responseJSON: responseJSON)
+    }
+}
+
+@MainActor
+struct AuthenticationFlowBackend: AuthenticationBackend {
+    let backend: any PasskeyBackend
+
+    func start(input: DemoConfiguration) async throws -> CeremonyStart<Void> {
+        CeremonyStart(
+            state: (),
+            optionsJSON: try await backend.startAuthentication(config: input, prfSalt: nil)
+        )
+    }
+
+    func finish(state: Void, responseJSON: Data) async throws -> FinishOutcome {
+        try await backend.finishAuthentication(responseJSON: responseJSON)
+    }
 }
 
 @MainActor

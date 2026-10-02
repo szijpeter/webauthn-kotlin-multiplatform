@@ -16,10 +16,7 @@ struct DemoPrfAuthentication {
 }
 
 @MainActor
-protocol PasskeyServing {
-    func createCredential(optionsJSON: Data) async throws -> Data
-    func getAssertion(optionsJSON: Data) async throws -> Data
-    func capabilities() async throws -> PasskeyCapabilities
+protocol PasskeyServing: PasskeyClientProtocol {
     func authenticateWithPrf(optionsJSON: Data, firstSalt: Data) async throws -> DemoPrfAuthentication
 }
 

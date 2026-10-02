@@ -1,5 +1,6 @@
 import Foundation
 import WebAuthn
+import WebAuthnFlow
 
 enum DemoRoute: Equatable {
     case authentication
@@ -21,6 +22,21 @@ enum CeremonyPhase: String, Equatable {
         case .starting: "Loading server options."
         case .platformPrompt: "Waiting for the platform passkey prompt."
         case .finishing: "Verifying the passkey response."
+        }
+    }
+}
+
+extension CeremonyPhase {
+    init(_ phase: PasskeyPhase) {
+        switch phase {
+        case .starting:
+            self = .starting
+        case .platformPrompt:
+            self = .platformPrompt
+        case .finishing:
+            self = .finishing
+        @unknown default:
+            self = .starting
         }
     }
 }
@@ -79,6 +95,24 @@ struct DemoFailure: Error, Equatable {
         @unknown default:
             return DemoFailure(kind: .internalContract, message: error.localizedDescription)
         }
+    }
+
+    static func flow(_ failure: CeremonyFailure) -> DemoFailure {
+        switch failure {
+        case .alreadyInProgress:
+            return DemoFailure(
+                kind: .alreadyInProgress,
+                message: "Another passkey ceremony is already in progress."
+            )
+        case let .platform(error):
+            return .platform(error)
+        @unknown default:
+            return unknownFlowResult()
+        }
+    }
+
+    static func unknownFlowResult() -> DemoFailure {
+        DemoFailure(kind: .internalContract, message: "The passkey flow returned an unknown result.")
     }
 }
 

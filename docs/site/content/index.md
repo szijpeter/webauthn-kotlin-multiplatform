@@ -90,7 +90,7 @@ The latest stable coordinated release is **@@STABLE_VERSION@@**. All published a
 | --- | --- | --- |
 | Compose Multiplatform app | [Mobile quickstart](mobile/quickstart.md) | [Compose lifecycle](guides/compose-lifecycle.md) |
 | Android app | [Android integration](mobile/android.md) | Digital Asset Links and provider-backed device behavior |
-| Native Swift iOS app | [Swift package](mobile/swift.md) | API integration, Associated Domains, and physical-device behavior |
+| Native Swift iOS app | [Swift package](mobile/swift.md) and optional [ceremony flow](mobile/swift-flow.md) | API integration, application-owned backend orchestration, Associated Domains, and physical-device behavior |
 | Compose/Kotlin iOS app | [iOS integration](mobile/ios.md) | Shared lifecycle, presentation anchor, and physical-device behavior |
 | Mobile app plus backend | [Full sample](mobile/full-stack.md) | Registration and authentication end to end |
 | Existing JVM service | [Ktor quickstart](backend/index.md) | Ceremony state, replay protection, and trusted origins |

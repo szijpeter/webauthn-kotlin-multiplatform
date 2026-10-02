@@ -131,6 +131,8 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
 - [`WebAuthn` Swift package](./swift/README.md): native Swift passkeys, capabilities, typed errors, an
   application-testable client contract, and PRF sessions over the shared implementation.
+- [`WebAuthnFlow` Swift product](./swift/FLOW.md): optional source-only ceremony sequencing with
+  application-owned backend contracts and opaque state.
 
 ## How To Read Module Docs
 
@@ -160,7 +162,8 @@ Swift release will publish an exact install version in the [native Swift guide](
 
 The SDK supports iOS 16+, arm64 devices, and arm64 simulators. Application services and view models can
 depend on the public `PasskeyClientProtocol` while production code injects `PasskeyClient`. Continue with
-the [native Swift guide](./swift/README.md) and [SwiftUI sample](./sample/swift-passkey/README.md).
+the [native Swift guide](./swift/README.md), optional [ceremony flow guide](./swift/FLOW.md), and
+[SwiftUI sample](./sample/swift-passkey/README.md).
 
 ### Kotlin and JVM
 

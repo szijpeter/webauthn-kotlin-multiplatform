@@ -9,6 +9,7 @@ let package = Package(
     ],
     products: [
         .library(name: "WebAuthn", targets: ["WebAuthn"]),
+        .library(name: "WebAuthnFlow", targets: ["WebAuthnFlow"]),
     ],
     targets: [
         // Release tags replace this local development path with the matching
@@ -22,10 +23,20 @@ let package = Package(
             dependencies: ["WebAuthnBridge"],
             path: "swift/Sources/WebAuthn"
         ),
+        .target(
+            name: "WebAuthnFlow",
+            dependencies: ["WebAuthn"],
+            path: "swift/Sources/WebAuthnFlow"
+        ),
         .testTarget(
             name: "WebAuthnTests",
             dependencies: ["WebAuthn"],
             path: "swift/Tests/WebAuthnTests"
+        ),
+        .testTarget(
+            name: "WebAuthnFlowTests",
+            dependencies: ["WebAuthnFlow", "WebAuthn"],
+            path: "swift/Tests/WebAuthnFlowTests"
         ),
     ],
     swiftLanguageModes: [.v6]

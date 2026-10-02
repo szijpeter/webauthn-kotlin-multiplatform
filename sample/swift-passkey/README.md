@@ -1,12 +1,13 @@
 # Native Swift passkey sample
 
-This SwiftUI app exercises the public `WebAuthn` Swift package against the repository's default four-route
-backend contract. It demonstrates registration, authentication, capability reporting, typed UI states, and
-a PRF-derived AES-GCM session without importing generated Kotlin types in application code.
+This SwiftUI app exercises the public `WebAuthn` and `WebAuthnFlow` Swift products against the repository's
+default four-route backend contract. It demonstrates registration, authentication, capability reporting,
+typed UI states, and a PRF-derived AES-GCM session without importing generated Kotlin types in application code.
 
 ## What it proves
 
 - start → platform prompt → finish sequencing for registration and authentication;
+- application-owned backend adapters and opaque state through the source-only `PasskeyFlow`;
 - backend verification before opening an authenticated route;
 - late resolution of the foreground presentation window;
 - typed cancellation, rejection, platform, codec, concurrency, and internal failures;

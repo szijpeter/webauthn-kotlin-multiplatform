@@ -13,7 +13,8 @@ context, and physical-device behavior.
 1. Enable the `webcredentials` Associated Domains capability for the relying-party domain.
 2. Serve a matching `apple-app-site-association` document over HTTPS.
 3. Resolve a current presentation window immediately before each prompt; do not cache a stale scene window.
-4. Use the native Swift facade or a deliberately narrow shared Kotlin facade; do not depend on the internal binary bridge.
+4. Use the native Swift facade or a deliberately narrow shared Kotlin facade; add its optional source-only flow
+   product for reusable sequencing, and do not depend on the internal binary bridge.
 5. Preserve task/coroutine cancellation and map typed outcomes into deliberate SwiftUI or UIKit state.
 
 !!! note "Simulator versus device"

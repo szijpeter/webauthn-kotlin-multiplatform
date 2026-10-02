@@ -14,6 +14,8 @@ The format is based on Keep a Changelog and this project follows coordinated pre
   semantic parity gate covering operations, errors, capabilities, PRF lifecycle, and regression evidence.
 - A `MainActor`-isolated, `Sendable` Swift passkey client protocol for application-owned test fakes without
   exposing generated bridge types.
+- An optional source-only `WebAuthnFlow` Swift product with generic application backends, opaque continuation
+  state, phase callbacks, deterministic concurrent-use rejection, and cancellation-safe ceremony sequencing.
 
 ### Changed
 

@@ -28,8 +28,9 @@ Construct `defaultPasskeyClient(context)` with an Activity-capable host context,
 The native `WebAuthn` facade is implemented but not yet released. Use the repository sample for development
 and qualification; do not point Swift Package Manager at an existing Kotlin-only release tag. Once the guide
 shows a verified install version, construct `PasskeyClient` with a late-bound presentation-anchor provider and
-use Swift-owned values and typed errors. Continue with the [native Swift package guide](swift.md) and
-[iOS platform setup](ios.md).
+use Swift-owned values and typed errors. Add the source-only `WebAuthnFlow` product only when the application
+wants reusable start-prompt-finish sequencing with its own backend contract. Continue with the
+[native Swift package guide](swift.md), [ceremony flow guide](swift-flow.md), and [iOS platform setup](ios.md).
 
 ### Compose Multiplatform on iOS
 
