@@ -10,11 +10,16 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 
@@ -30,12 +35,22 @@ public fun Application.installCommunityConformanceRoutes(
 ) {
     routing {
         post("/attestation/options") {
-            call.handleAttestationOptions(registrationService, config)
+            call.handleConformanceRequest { call.handleAttestationOptions(registrationService, config) }
         }
 
         post("/attestation/result") {
-            call.handleAttestationResult(registrationService)
+            call.handleConformanceRequest { call.handleAttestationResult(registrationService) }
         }
+    }
+}
+
+private suspend fun ApplicationCall.handleConformanceRequest(operation: suspend () -> Unit) {
+    try {
+        operation()
+    } catch (_: BadRequestException) {
+        respondConformanceError(HttpStatusCode.BadRequest, "Invalid registration request")
+    } catch (_: IllegalArgumentException) {
+        respondConformanceError(HttpStatusCode.BadRequest, "Invalid registration request")
     }
 }
 
@@ -96,10 +111,10 @@ private suspend fun ApplicationCall.respondConformanceError(
 ) {
     respond(
         status,
-        mapOf(
-            "status" to "failed",
-            "errorMessage" to message,
-            "errors" to [message],
-        ),
+        buildJsonObject {
+            put("status", "failed")
+            put("errorMessage", message)
+            put("errors", buildJsonArray { add(message) })
+        },
     )
 }

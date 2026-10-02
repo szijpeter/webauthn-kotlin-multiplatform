@@ -55,8 +55,8 @@ Managed blocks: **136**
 | core-webauthn-crypto-api-readme-mermaid-1 | core/webauthn-crypto-api/README.md:37 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-json-kotlinx-readme-kotlin-1 | core/webauthn-json-kotlinx/README.md:18 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/SerializationExample.kt#serialization-mapper | compile |  |
 | core-webauthn-json-kotlinx-readme-mermaid-1 | core/webauthn-json-kotlinx/README.md:42 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| core-webauthn-model-readme-mermaid-1 | core/webauthn-model/README.md:13 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
-| core-webauthn-model-readme-kotlin-1 | core/webauthn-model/README.md:33 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ModelExample.kt#model-request-options | unit |  |
+| core-webauthn-model-readme-mermaid-1 | core/webauthn-model/README.md:15 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
+| core-webauthn-model-readme-kotlin-1 | core/webauthn-model/README.md:35 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ModelExample.kt#model-request-options | unit |  |
 | core-webauthn-protocol-readme-kotlin-1 | core/webauthn-protocol/README.md:20 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/ProtocolExample.kt#protocol-authenticator-data | compile |  |
 | core-webauthn-protocol-readme-mermaid-1 | core/webauthn-protocol/README.md:33 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-runtime-core-readme-kotlin-1 | core/webauthn-runtime-core/README.md:28 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/RuntimeExample.kt#runtime-cancellation | unit |  |
@@ -109,8 +109,8 @@ Managed blocks: **136**
 | platform-bom-readme-kotlin-1 | platform/bom/README.md:25 | How to use | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
 | platform-bom-readme-mermaid-1 | platform/bom/README.md:38 | Fit in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | sample-backend-ktor-readme-bash-1 | sample/backend-ktor/README.md:22 | Run | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-backend-ktor-readme-bash-3 | sample/backend-ktor/README.md:61 | FIDO server registration compatibility canary | bash | contributor | markdown | Markdown block | syntax |  |
-| sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:70 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-backend-ktor-readme-bash-3 | sample/backend-ktor/README.md:62 | FIDO server registration compatibility canary | bash | contributor | markdown | Markdown block | syntax |  |
+| sample-backend-ktor-readme-bash-2 | sample/backend-ktor/README.md:71 | ngrok helper | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-1 | sample/compose-passkey-ios/README.md:20 | Quick run on a device with a free Apple account | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-2 | sample/compose-passkey-ios/README.md:46 | Complete passkey path with Associated Domains | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-ios-readme-bash-3 | sample/compose-passkey-ios/README.md:102 | Maintaining this project | bash | contributor | markdown | Markdown block | syntax |  |

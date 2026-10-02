@@ -129,3 +129,9 @@ On a workstation without a release signing key, use the credential-free Maven Lo
 
 4. For a live release, use `.github/workflows/publish.yml` via `workflow_dispatch`. Its Central job has read-only repository access and no persisted Git credentials; only the post-publication GitHub Release job receives `contents:write`.
 5. After the release effort is complete, delete the temporary release execution-map doc in the cleanup PR.
+
+## Registration Compatibility Canary
+
+The JVM CI job runs `:sample:backend-ktor:communityConformanceE2eTest`. It checks registration
+options, client/backend mapping, verification, and malformed-request rejection against the opt-in
+sample routes. It does not cover assertions, physical authenticator prompts, or certification.

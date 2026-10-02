@@ -53,7 +53,8 @@ compatibility canary, not FIDO certification or a complete conformance server.
 The adapter always uses `WEBAUTHN_CONFORMANCE_RP_ID`,
 `WEBAUTHN_CONFORMANCE_RP_NAME`, and `WEBAUTHN_CONFORMANCE_ORIGIN` as trusted
 server configuration. RP or origin values supplied by the caller are ignored,
-and unsupported extension input is not reflected into creation options.
+and unsupported extension input is not reflected into creation options. Malformed registration
+requests return HTTP 400 with the testing API failure envelope.
 
 Run the local canary test with:
 

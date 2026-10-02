@@ -121,6 +121,36 @@ class CommunityConformanceE2eTest {
     }
 
     @Test
+    fun malformedRegistrationOptionsReturnClientErrors() = testApplication {
+        val services = backendServices()
+        application {
+            installSampleBackend(
+                registrationService = services.registrationService,
+                authenticationService = services.authenticationService,
+                config = sampleConfig(),
+            )
+        }
+        val payloads = [
+            "{}",
+            """{"username":{}}""",
+            """{"username":"arthur","attestation":{}}""",
+            """["unexpected"]""",
+            "{",
+            """{"username":"arthur","authenticatorSelection":[]}""",
+            """{"username":"arthur","authenticatorSelection":{"userVerification":{}}}""",
+        ]
+        for (payload in payloads) {
+            val response = client.post("/attestation/options") {
+                contentType(ContentType.Application.Json)
+                setBody(payload)
+            }
+            assertEquals(HttpStatusCode.BadRequest, response.status, "$payload: ${response.bodyAsText()}")
+            val body = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+            assertEquals("failed", body.getValue("status").jsonPrimitive.content)
+        }
+    }
+
+    @Test
     fun directRegistrationE2eUsesSharedClientAndJsonFacade() = testApplication {
         val services = backendServices()
         application {
