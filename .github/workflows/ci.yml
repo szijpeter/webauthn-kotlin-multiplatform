@@ -76,10 +76,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
       - name: FIDO Server Registration Compatibility Canary
         run: ./gradlew :sample:backend-ktor:communityConformanceE2eTest --stacktrace

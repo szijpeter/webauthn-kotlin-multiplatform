@@ -132,6 +132,6 @@ On a workstation without a release signing key, use the credential-free Maven Lo
 
 ## Registration Compatibility Canary
 
-The JVM CI job runs `:sample:backend-ktor:communityConformanceE2eTest`. It checks registration
+The `fido-registration-compatibility` CI job runs `:sample:backend-ktor:communityConformanceE2eTest`. It checks registration
 options, client/backend mapping, verification, and malformed-request rejection against the opt-in
 sample routes. It does not cover assertions, physical authenticator prompts, or certification.

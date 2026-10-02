@@ -121,7 +121,7 @@ class CommunityConformanceE2eTest {
     }
 
     @Test
-    fun malformedRegistrationOptionsReturnClientErrors() = testApplication {
+    fun malformedRegistrationRequestsReturnClientErrors() = testApplication {
         val services = backendServices()
         application {
             installSampleBackend(
@@ -139,14 +139,16 @@ class CommunityConformanceE2eTest {
             """{"username":"arthur","authenticatorSelection":[]}""",
             """{"username":"arthur","authenticatorSelection":{"userVerification":{}}}""",
         ]
-        for (payload in payloads) {
-            val response = client.post("/attestation/options") {
-                contentType(ContentType.Application.Json)
-                setBody(payload)
+        for (route in ["/attestation/options", "/attestation/result"]) {
+            for (payload in payloads) {
+                val response = client.post(route) {
+                    contentType(ContentType.Application.Json)
+                    setBody(payload)
+                }
+                assertEquals(HttpStatusCode.BadRequest, response.status, "$route $payload: ${response.bodyAsText()}")
+                val body = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+                assertEquals("failed", body.getValue("status").jsonPrimitive.content)
             }
-            assertEquals(HttpStatusCode.BadRequest, response.status, "$payload: ${response.bodyAsText()}")
-            val body = Json.parseToJsonElement(response.bodyAsText()).jsonObject
-            assertEquals("failed", body.getValue("status").jsonPrimitive.content)
         }
     }
 
