@@ -30,7 +30,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = MainViewControllerKt.MainViewController()
+        window.rootViewController = MainViewControllerKt.MainViewController(
+            credentialSignalBridge: AuthenticationServicesCredentialSignalBridge(),
+        )
         self.window = window
         window.makeKeyAndVisible()
     }
