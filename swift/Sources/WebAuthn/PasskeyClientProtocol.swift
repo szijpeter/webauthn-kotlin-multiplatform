@@ -15,5 +15,3 @@ public protocol PasskeyClientProtocol: Sendable {
     /// Returns the platform's current passkey capability snapshot.
     func capabilities() async throws -> PasskeyCapabilities
 }
-
-extension PasskeyClient: PasskeyClientProtocol {}
