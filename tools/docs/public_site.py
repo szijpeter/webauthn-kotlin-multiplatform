@@ -14,7 +14,8 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import quote, unquote, urlsplit
+from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -26,6 +27,9 @@ REPORT_ROOT = BUILD_ROOT / "reports"
 AUTHOR_ROOT = ROOT / "docs" / "site" / "content"
 ASSET_ROOT = ROOT / "docs" / "site" / "assets"
 REPOSITORY_URL = "https://github.com/szijpeter/webauthn-kotlin-multiplatform"
+REPOSITORY_API_URL = "https://api.github.com/repos/szijpeter/webauthn-kotlin-multiplatform"
+SWIFT_ARCHIVE_NAME = "WebAuthnBridge.xcframework.zip"
+SWIFT_CHECKSUM_NAME = f"{SWIFT_ARCHIVE_NAME}.sha256"
 PAGES_PREFIX = "/webauthn-kotlin-multiplatform/"
 PUBLISHED_AREAS = ("client", "core", "server", "platform")
 FORBIDDEN_SOURCE_PREFIXES = (
@@ -35,9 +39,11 @@ FORBIDDEN_SOURCE_PREFIXES = (
     ".gradle/",
     "build/",
 )
-SAMPLE_PAGES = {
+REPOSITORY_PAGES = {
+    "swift/README.md": "mobile/swift.md",
     "sample/compose-passkey/README.md": "guides/samples/compose-passkey.md",
     "sample/compose-passkey-ios/README.md": "guides/samples/compose-passkey-ios.md",
+    "sample/swift-passkey/README.md": "guides/samples/swift-passkey.md",
     "sample/backend-ktor/README.md": "guides/samples/backend-ktor.md",
 }
 LINK_PATTERN = re.compile(
@@ -45,6 +51,10 @@ LINK_PATTERN = re.compile(
 )
 EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel", "data", "javascript"}
 UNRESOLVED_TOKEN_PATTERN = re.compile(r"@@[A-Z][A-Z0-9_]*@@")
+SWIFT_RELEASE_SECTION_PATTERN = re.compile(
+    r"<!-- public-site:swift-release:start -->.*?<!-- public-site:swift-release:end -->",
+    re.DOTALL,
+)
 EXPECTED_ANDROID_SUPPORT = {
     "androidMinSdk": "26",
     "androidCompileSdk": "37",
@@ -52,6 +62,7 @@ EXPECTED_ANDROID_SUPPORT = {
     "androidPrfCompileSdk": "37",
     "sampleMinSdk": "30",
 }
+_AUTO_SWIFT_RELEASE = object()
 
 
 def run(*args: str) -> str:
@@ -74,6 +85,187 @@ def latest_stable_version() -> str:
     if not versions:
         return "unreleased"
     return max(versions)[1]
+
+
+def swift_release_manifest_checksum(tag: str, manifest: str) -> str | None:
+    if re.fullmatch(r"v\d+(?:\.\d+)*", tag) is None:
+        return None
+    expected_url = (
+        f"{REPOSITORY_URL}/releases/download/{tag}/{SWIFT_ARCHIVE_NAME}"
+    )
+    if not all(
+        fragment in manifest
+        for fragment in (
+            "// swift-tools-version: 6.0",
+            '.binaryTarget(',
+            f'url: "{expected_url}"',
+            'path: "swift/Sources/WebAuthn"',
+            "swiftLanguageModes: [.v6]",
+        )
+    ):
+        return None
+    checksum = re.search(r'checksum: "([0-9a-f]{64})"', manifest)
+    return checksum.group(1) if checksum is not None else None
+
+
+def is_swift_release_manifest(tag: str, manifest: str) -> bool:
+    return swift_release_manifest_checksum(tag, manifest) is not None
+
+
+def _github_json(url: str) -> dict[str, object]:
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "webauthn-kotlin-multiplatform-docs",
+        "X-GitHub-Api-Version": "2026-03-10",
+    }
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = Request(
+        url,
+        headers=headers,
+    )
+    with urlopen(request, timeout=15) as response:
+        payload = json.load(response)
+    if not isinstance(payload, dict):
+        raise ValueError("GitHub release response is not an object")
+    return payload
+
+
+def _github_bytes(url: str) -> bytes:
+    headers = {"User-Agent": "webauthn-kotlin-multiplatform-docs"}
+    request = Request(
+        url,
+        headers=headers,
+    )
+    with urlopen(request, timeout=15) as response:
+        return response.read()
+
+
+def github_release_has_swift_assets(
+    tag: str,
+    checksum: str,
+    *,
+    fetch_json=_github_json,
+    fetch_bytes=_github_bytes,
+) -> bool:
+    try:
+        release = fetch_json(f"{REPOSITORY_API_URL}/releases/tags/{quote(tag, safe='')}")
+        if (
+            release.get("tag_name") != tag
+            or release.get("draft") is not False
+            or release.get("prerelease") is not False
+        ):
+            return False
+        raw_assets = release.get("assets")
+        if not isinstance(raw_assets, list):
+            return False
+        assets = {
+            asset.get("name"): asset
+            for asset in raw_assets
+            if isinstance(asset, dict) and isinstance(asset.get("name"), str)
+        }
+        if set(assets) != {SWIFT_ARCHIVE_NAME, SWIFT_CHECKSUM_NAME}:
+            return False
+
+        expected_archive_url = (
+            f"{REPOSITORY_URL}/releases/download/{tag}/{SWIFT_ARCHIVE_NAME}"
+        )
+        expected_urls = {
+            SWIFT_ARCHIVE_NAME: expected_archive_url,
+            SWIFT_CHECKSUM_NAME: f"{expected_archive_url}.sha256",
+        }
+        for name, expected_url in expected_urls.items():
+            asset = assets[name]
+            size = asset.get("size")
+            if (
+                asset.get("state") != "uploaded"
+                or asset.get("browser_download_url") != expected_url
+                or not isinstance(size, int)
+                or isinstance(size, bool)
+                or size <= 0
+            ):
+                return False
+
+        archive_digest = assets[SWIFT_ARCHIVE_NAME].get("digest")
+        if archive_digest != f"sha256:{checksum}":
+            return False
+        return fetch_bytes(expected_urls[SWIFT_CHECKSUM_NAME]) == f"{checksum}\n".encode()
+    except (OSError, TimeoutError, TypeError, ValueError, json.JSONDecodeError):
+        return False
+
+
+@functools.cache
+def latest_swift_release_version() -> str | None:
+    tags = run("git", "tag", "--list", "v[0-9]*").splitlines()
+    versions: list[tuple[tuple[int, ...], str]] = []
+    for tag in tags:
+        match = re.fullmatch(r"v(\d+(?:\.\d+)*)", tag)
+        if match:
+            versions.append((tuple(int(part) for part in match.group(1).split(".")), tag))
+    for _, tag in sorted(versions, reverse=True):
+        manifest_result = subprocess.run(
+            ("git", "show", f"{tag}:Package.swift"),
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        source_result = subprocess.run(
+            ("git", "cat-file", "-e", f"{tag}:swift/Sources/WebAuthn/PasskeyClient.swift"),
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if manifest_result.returncode != 0 or source_result.returncode != 0:
+            continue
+        manifest = manifest_result.stdout.strip()
+        checksum = swift_release_manifest_checksum(tag, manifest)
+        if checksum is not None and github_release_has_swift_assets(tag, checksum):
+            return tag
+    return None
+
+
+def render_swift_release_section(
+    text: str,
+    tag: str | None | object = _AUTO_SWIFT_RELEASE,
+) -> str:
+    if SWIFT_RELEASE_SECTION_PATTERN.search(text) is None:
+        raise ValueError("swift/README.md lacks the public Swift release section markers")
+    resolved_tag = latest_swift_release_version() if tag is _AUTO_SWIFT_RELEASE else tag
+    if resolved_tag is not None and not isinstance(resolved_tag, str):
+        raise TypeError("Swift release tag must be a string or None")
+    if resolved_tag is None:
+        replacement = """<!-- public-site:swift-release:start -->
+## Release status
+
+**The native Swift package has not been released yet.** The existing coordinated Kotlin release tags do
+not contain the remote binary manifest and XCFramework assets required by Swift Package Manager. Do not use
+an existing Kotlin version for the Swift package; build from this repository only for development and
+qualification until the first coordinated Swift release is published.
+<!-- public-site:swift-release:end -->"""
+    else:
+        version = resolved_tag.removeprefix("v")
+        replacement = f"""<!-- public-site:swift-release:start -->
+## Install
+
+The latest verified native Swift release is **{resolved_tag}**. Add the repository URL as a Swift package
+dependency, select the `WebAuthn` product, and pin the exact coordinated version:
+
+```swift
+.package(
+    url: "{REPOSITORY_URL}.git",
+    exact: "{version}"
+)
+```
+
+The qualifying published release contains the expected XCFramework and checksum assets, and its tag contains a
+Swift 6 manifest that identifies them exactly. Branch-based consumption is unsupported because `main` uses a
+local development artifact.
+<!-- public-site:swift-release:end -->"""
+    return SWIFT_RELEASE_SECTION_PATTERN.sub(replacement, text, count=1)
 
 
 def relative_to_root(path: Path) -> str:
@@ -124,7 +316,7 @@ def authored_pages() -> list[tuple[Path, Path]]:
 def source_map() -> dict[Path, Path]:
     mapping = {source.resolve(): output for source, output in authored_pages()}
     mapping.update({source.resolve(): output for source, output in published_modules()})
-    for source, output in SAMPLE_PAGES.items():
+    for source, output in REPOSITORY_PAGES.items():
         mapping[(ROOT / source).resolve()] = Path(output)
     return mapping
 
@@ -176,6 +368,8 @@ def write_page(source: Path, output: Path, mapping: dict[Path, Path], rewrite: b
     if repository_path.startswith(FORBIDDEN_SOURCE_PREFIXES):
         raise ValueError(f"Forbidden public-site source: {repository_path}")
     text = replace_tokens(source.read_text())
+    if repository_path == "swift/README.md":
+        text = render_swift_release_section(text)
     if rewrite:
         text = rewrite_links(text, source, output, mapping)
     destination = STAGED_ROOT / output
@@ -351,7 +545,7 @@ def stage() -> None:
         write_page(source, output, mapping, rewrite=True)
         staged.append({"source": relative_to_root(source), "output": output.as_posix()})
 
-    for source_name, output_name in SAMPLE_PAGES.items():
+    for source_name, output_name in REPOSITORY_PAGES.items():
         source = ROOT / source_name
         output = Path(output_name)
         write_page(source, output, mapping, rewrite=True)
@@ -364,6 +558,7 @@ def stage() -> None:
     report = {
         "sourceRef": source_ref(),
         "stableVersion": latest_stable_version(),
+        "swiftReleaseVersion": latest_swift_release_version() or "unreleased",
         "authoredPages": len(authored_pages()),
         "publishedModules": len(modules),
         "stagedSources": staged,

@@ -28,6 +28,9 @@ Use this as a release gate for each application identity and relying-party envir
 - [ ] The provisioning profile and deployed domain agree with the release build.
 - [ ] Presentation anchoring works for every supported scene/window configuration.
 - [ ] Physical devices complete registration and authentication with production-like association.
+- [ ] Native Swift apps pin a versioned release and resolve the checksum-pinned XCFramework from that tag.
+- [ ] PRF sessions are accepted only after backend verification and are cleared on rejection, sign-out, and lifecycle end.
+- [ ] The generated Xcode privacy report is reviewed for the complete application dependency graph.
 
 ## Cross-system rollout
 

@@ -71,6 +71,8 @@ jobs:
       - uses: android-actions/setup-android@v4
       - uses: gradle/actions/setup-gradle@v6
       - name: Build public documentation
+        env:
+          GITHUB_TOKEN: ${{ github.event_name != 'pull_request' && github.token || '' }}
         run: ./gradlew docsSiteCheck --stacktrace
       - name: Upload review artifact and reports
         if: always()

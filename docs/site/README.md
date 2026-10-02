@@ -6,7 +6,7 @@ The public site leads with Android, iOS, and Compose adoption, then completes th
 
 - `docs/site/content` contains curated public journeys and reference landing pages.
 - Published artifact pages are discovered from the repository's publishing plugins and require a module README.
-- Only the three selected end-to-end sample READMEs are staged.
+- The native Swift guide and four selected end-to-end sample READMEs are staged.
 - `docs/ai`, spec caches/notes, Gradle state, build output, and arbitrary repository Markdown are excluded.
 - Relative links in relocated repository READMEs are rewritten to another staged page or a commit-pinned repository URL.
 - Platform baselines and stable artifact versions are derived during staging and fail when expected source declarations drift.

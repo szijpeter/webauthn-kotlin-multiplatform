@@ -30,7 +30,7 @@ This repo focuses on those needs:
 ## What You Can Build With It
 
 - A JVM/Ktor WebAuthn backend using typed ceremony services.
-- Android and iOS passkey clients with shared Kotlin orchestration.
+- Android and iOS passkey clients with shared Kotlin orchestration or a native Swift facade.
 - A client/server setup that shares model and validation semantics instead of duplicating protocol assumptions.
 - A modular stack where server, client, transport, storage, and attestation trust can be adopted separately.
 
@@ -109,6 +109,7 @@ reference integration and focused core, client, and server dependency views.
 
 - `core/` contains reusable protocol, validation, runtime, serialization, and crypto contracts.
 - `client/` contains typed platform operations, generic ceremony flow, platform bridges, Compose helpers, and client transport.
+- `swift/` contains the native Swift package facade, compatibility baseline, and parity contract.
 - `server/` contains JVM server services, Ktor/store adapters, JVM crypto, and optional trust metadata.
 - `sample/` contains runnable samples and demo entry points; these modules are not published.
 - `docs/site/` contains the authored public documentation and site-specific assets; the build stages
@@ -128,6 +129,7 @@ reference integration and focused core, client, and server dependency views.
 - [`webauthn-client-defaults`](./client/webauthn-client-defaults/README.md): recommended platform composition with an explicit Kotlinx codec override seam.
 - [`webauthn-client-compose`](./client/webauthn-client-compose/README.md): Compose integration.
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md): optional PRF-derived application cryptography.
+- [`WebAuthn` Swift package](./swift/README.md): native Swift passkeys, capabilities, typed errors, and PRF sessions over the shared implementation.
 
 ## How To Read Module Docs
 
@@ -147,6 +149,18 @@ Recommended adoption paths:
 - Add `client-prf-crypto` only when you need PRF-derived application crypto.
 
 ## Install
+
+### Native Swift
+
+The native Swift package is implemented but has not been released yet. Existing coordinated tags publish the
+Kotlin artifacts only; they do not contain the remote manifest and XCFramework assets needed by Swift Package
+Manager. Do not substitute the latest Kotlin version in a Swift dependency declaration. The first coordinated
+Swift release will publish an exact install version in the [native Swift guide](./swift/README.md).
+
+The SDK supports iOS 16+, arm64 devices, and arm64 simulators. Continue with the
+[native Swift guide](./swift/README.md) and [SwiftUI sample](./sample/swift-passkey/README.md).
+
+### Kotlin and JVM
 
 The coordinated release train uses one version for the full published surface. JVM and Android dependency
 configurations can use the BOM; Kotlin Multiplatform common and Native source sets should put that same
@@ -245,6 +259,7 @@ Composition notes:
 - If you only use the shared client abstractions, `commonMain` only needs the common modules.
 - Keep the explicit KMP artifact versions identical; JVM server builds can use the BOM shown below to align them.
 - For a complete source set example, see [`sample/compose-passkey`](./sample/compose-passkey/README.md), [`sample/compose-passkey-android`](./sample/compose-passkey-android/README.md), and [`sample/compose-passkey-ios`](./sample/compose-passkey-ios/README.md).
+- Native Swift applications should use the public [`WebAuthn` facade](./swift/README.md), not the internal generated bridge module; the guide reports release availability explicitly.
 
 Published to Maven Central (latest version is shown in the Maven Central badge above). Maintainers can still validate publication locally with:
 
@@ -280,6 +295,7 @@ Use:
 - [`webauthn-client-prf-crypto`](./client/webauthn-client-prf-crypto/README.md) for PRF-based key derivation and encryption helpers
 - [`webauthn-client-ktor`](./client/webauthn-client-ktor/README.md) for codec-neutral Ktor backends
 - [`webauthn-client-ktor-kotlinx`](./client/webauthn-client-ktor-kotlinx/README.md) for the default `/webauthn/*` contract
+- [`WebAuthn` Swift package](./swift/README.md) for a native SwiftUI or UIKit host over the shared protocol and platform bridge
 
 ### End-to-end reference app
 
@@ -288,6 +304,7 @@ Start with:
 - [`sample/backend-ktor`](./sample/backend-ktor/README.md)
 - [`sample/compose-passkey`](./sample/compose-passkey/README.md)
 - [`sample/compose-passkey-ios`](./sample/compose-passkey-ios/README.md)
+- [`sample/swift-passkey`](./sample/swift-passkey/README.md)
 - [`sample/passkey-cli`](./sample/passkey-cli/README.md) for a macOS-first experimental native-authenticator CLI POC
 
 Desktop and CLI strategy notes for this repo live in [`docs/DESKTOP_CLI_STRATEGY.md`](./docs/DESKTOP_CLI_STRATEGY.md).

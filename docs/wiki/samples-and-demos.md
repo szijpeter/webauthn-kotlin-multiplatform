@@ -1,6 +1,6 @@
 # Samples And Demos
 
-Last reviewed: 2026-04-06
+Last reviewed: 2026-08-31
 
 The sample apps are reference integrations, not published library modules. They exist to prove end-to-end flows, show intended usage, and shorten onboarding.
 
@@ -10,6 +10,7 @@ The sample apps are reference integrations, not published library modules. They 
 - `sample/compose-passkey`: shared Compose Multiplatform sample module demonstrating register, sign-in, capability checks, debug logs, and PRF crypto demo flow
 - `sample/compose-passkey-android`: Android host app for the shared Compose sample
 - `sample/compose-passkey-ios`: iOS host app for the shared Compose sample
+- `sample/swift-passkey`: native SwiftUI host for the repository-local `WebAuthn` facade and future versioned package
 - `sample/passkey-cli`: experimental macOS-first native-authenticator CLI proof of concept
 - `sample/android-passkey` and `sample/ios-passkey`: platform-specific sample apps outside the Compose path
 
@@ -22,7 +23,8 @@ The sample backend exposes:
 - `POST /webauthn/authentication/start`
 - `POST /webauthn/authentication/finish`
 
-The Compose sample uses the default Kotlinx Ktor contract through `webauthn-client-ktor-kotlinx`.
+The Compose and native Swift samples use the same four-route backend contract. The Swift sample deliberately
+constructs the request payloads in the host while delegating WebAuthn JSON and platform behavior to the SDK.
 
 ## Why These Matter
 
@@ -41,4 +43,5 @@ The Compose sample uses the default Kotlinx Ktor contract through `webauthn-clie
 - Sample overview in root docs: [`README.md`](../../README.md)
 - Backend sample doc: [`sample/backend-ktor/README.md`](../../sample/backend-ktor/README.md)
 - Compose sample doc: [`sample/compose-passkey/README.md`](../../sample/compose-passkey/README.md)
+- Native Swift sample doc: [`sample/swift-passkey/README.md`](../../sample/swift-passkey/README.md)
 - Desktop/CLI notes: [`docs/DESKTOP_CLI_STRATEGY.md`](../DESKTOP_CLI_STRATEGY.md)

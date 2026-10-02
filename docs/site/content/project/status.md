@@ -1,6 +1,6 @@
 # Status and compatibility
 
-**Last reviewed: 2026-08-24**
+**Last reviewed: 2026-08-31**
 
 The latest stable coordinated release is **@@STABLE_VERSION@@**. The project is pre-1.0: APIs are usable and tested, but source and binary compatibility can change between minor releases with documented migration guidance.
 
@@ -19,7 +19,11 @@ Do not infer device or production support from publication alone. Platform APIs,
 
 ## Version alignment
 
-Published artifacts use a coordinated version train. Use the BOM for JVM dependencies and keep explicit KMP dependency versions aligned. Snapshot builds track unreleased source and can differ from the latest stable API.
+Published artifacts use a coordinated version train. Use the BOM for JVM dependencies and keep explicit KMP
+dependency versions aligned. The native Swift package is currently unreleased; its first release will use the
+same coordinated number and resolve a checksum-pinned XCFramework from the matching GitHub release. Snapshot
+builds track unreleased source and can differ from the latest stable API; the Swift `main` manifest is for
+local repository development rather than branch-based consumption.
 
 ## Support policy
 

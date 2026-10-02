@@ -23,9 +23,18 @@ Start with [Mobile quickstart](quickstart.md), then use [`rememberPasskeyClient`
 
 Construct `defaultPasskeyClient(context)` with an Activity-capable host context, then invoke it from a lifecycle-aware coroutine. Continue with [Android integration](android.md).
 
-### SwiftUI or UIKit host with shared Kotlin
+### Native SwiftUI or UIKit
 
-Expose a small shared facade to Swift, construct the client with a presentation-anchor provider when necessary, and preserve coroutine cancellation. Continue with [iOS integration](ios.md).
+The native `WebAuthn` facade is implemented but not yet released. Use the repository sample for development
+and qualification; do not point Swift Package Manager at an existing Kotlin-only release tag. Once the guide
+shows a verified install version, construct `PasskeyClient` with a late-bound presentation-anchor provider and
+use Swift-owned values and typed errors. Continue with the [native Swift package guide](swift.md) and
+[iOS platform setup](ios.md).
+
+### Compose Multiplatform on iOS
+
+Keep shared ceremony orchestration in Kotlin and use the committed Compose iOS host when the application is
+already multiplatform. Continue with [Compose Multiplatform](compose.md) and [iOS platform setup](ios.md).
 
 ## What the library does—and does not do
 

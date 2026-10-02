@@ -1,6 +1,6 @@
 # Quality And Release
 
-Last reviewed: 2026-04-06
+Last reviewed: 2026-08-31
 
 The repo treats public release posture as active. Even small changes should be checked against compatibility, documentation trace, and quality-gate expectations.
 
@@ -20,11 +20,13 @@ These are the standard advisory gates for local work and pre-PR validation.
 
 - Run `./gradlew apiCheck --stacktrace` when a BCV-covered published API changes.
 - Run `./gradlew publishToMavenLocal --stacktrace` when publishing coordinates, metadata, or release wiring change.
+- Run `tools/swift/ci-check.sh` when the Swift facade, internal bridge, sample, API baseline, or release packaging changes.
 - Escalate to broader checks only when the change is cross-cutting, risky, or explicitly requested.
 
 ## Release-Train Model
 
 - Published artifacts move together on one coordinated version.
+- Once published, the native Swift package uses the same version and a checksum-pinned XCFramework on the coordinated GitHub release; existing Kotlin-only tags do not qualify as Swift releases.
 - The BOM is the alignment entry point for consumers.
 - Samples, `platform:constraints`, and `build-logic` are not part of the published artifact surface.
 - Public-facing docs need to stay current when public API or integration paths change.
@@ -50,10 +52,12 @@ The preferred order is:
 4. run strict changed-scope gate
 5. run `apiCheck` if public API changed
 6. run `publishToMavenLocal` if publishing/build metadata changed
+7. run the Swift compatibility and packaging checks when that distribution surface changed
 
 ## Canonical Source Anchors
 
 - Steering and done criteria: [`docs/ai/STEERING.md`](../ai/STEERING.md)
 - Contribution workflow: [`CONTRIBUTING.md`](../../CONTRIBUTING.md)
 - Maven Central guide: [`docs/MAVEN_CENTRAL.md`](../MAVEN_CENTRAL.md)
+- Native Swift guide: [`swift/README.md`](../../swift/README.md)
 - Public launch checklist: [`docs/PUBLIC_LAUNCH_CHECKLIST.md`](../PUBLIC_LAUNCH_CHECKLIST.md)

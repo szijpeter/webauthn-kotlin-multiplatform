@@ -1,13 +1,19 @@
-# iOS integration
+# iOS platform integration
 
-The iOS client bridges to Authentication Services through shared Kotlin. The published targets and minimums are listed in the generated [platform support matrix](../reference/platform-support.md). A successful ceremony still depends on Associated Domains, the signed application identifier, presentation context, and physical-device behavior.
+The iOS client reaches Authentication Services through the shared Kotlin implementation. Native applications
+can consume the versioned [Swift package](swift.md); Compose applications can use the Kotlin APIs directly.
+Both routes share protocol mapping, platform-ceremony behavior, and typed outcome semantics. Their PRF crypto
+backends are platform-native implementations kept aligned by shared behavioral contracts and test vectors. The
+published targets and minimums are listed in the generated [platform support matrix](../reference/platform-support.md).
+A successful ceremony still depends on Associated Domains, the signed application identifier, presentation
+context, and physical-device behavior.
 
 ## Host responsibilities
 
 1. Enable the `webcredentials` Associated Domains capability for the relying-party domain.
 2. Serve a matching `apple-app-site-association` document over HTTPS.
-3. Construct the client when a presentation anchor can be resolved; supply a `PasskeyPresentationAnchorProvider` when the default is insufficient.
-4. Expose a narrow suspend facade to Swift rather than leaking internal transport and model layers.
+3. Resolve a current presentation window immediately before each prompt; do not cache a stale scene window.
+4. Use the native Swift facade or a deliberately narrow shared Kotlin facade; do not depend on the internal binary bridge.
 5. Preserve task/coroutine cancellation and map typed outcomes into deliberate SwiftUI or UIKit state.
 
 !!! note "Simulator versus device"
@@ -49,4 +55,5 @@ Record the OS version, device class, distribution identity, account state, RP ID
 | No matching passkey appears | RP ID, account/provider state, and authentication allow-list | Credential discovery |
 | User cancellation appears as an error | `PasskeyClientError.UserCancelled` mapping and UI transition | Product behavior |
 
-For the committed Swift host, use the staged [iOS sample guide](../guides/samples/compose-passkey-ios.md).
+Use the [native Swift sample](../guides/samples/swift-passkey.md) for the Swift package or the
+[Compose iOS host](../guides/samples/compose-passkey-ios.md) for shared Kotlin UI.

@@ -66,7 +66,7 @@ Not published:
 
 Swift distribution:
 
-- `WebAuthn` is a source facade released from versioned repository tags.
+- `WebAuthn` is a source facade designed for release from versioned repository tags; availability must not be claimed until a qualifying Swift tag and assets exist.
 - `webauthn-client-swift-bridge` is an internal static XCFramework and is never a direct consumer API.
 - `main` keeps a local-path development manifest; the release workflow creates or exactly reconciles a detached tag commit with the remote URL and checksum.
 - A Swift release requires recorded physical-iPhone qualification for the exact source commit and retains its prepared manifest, artifact, checksum, notes, and source metadata for recovery.

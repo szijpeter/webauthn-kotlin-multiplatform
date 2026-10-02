@@ -6,6 +6,23 @@ The format is based on Keep a Changelog and this project follows coordinated pre
 
 ## Unreleased
 
+### Added
+
+- Native `WebAuthn` Swift package for iOS registration, authentication, capability reporting, typed errors,
+  and PRF-derived AES-GCM sessions, plus a feature-parity SwiftUI sample for the default backend contract.
+- Compiler-generated Swift public API compatibility checks and a machine-readable Kotlin/bridge/Swift
+  semantic parity gate covering operations, errors, capabilities, PRF lifecycle, and regression evidence.
+
+### Changed
+
+- Coordinated `publish-and-release` runs now attach a static XCFramework and checksum, then tag a generated
+  remote Swift package manifest at the same version as the Maven artifact train.
+
+### Security
+
+- Swift release artifacts include an explicit privacy manifest, strip build-machine debug metadata, reject
+  unexpected required-reason API use, and are consumed through a checksum-pinned binary target.
+
 ## 0.4.0 - 2026-08-23
 
 ### Added
