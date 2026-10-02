@@ -46,6 +46,28 @@ let passkeys = PasskeyClient {
 Use the convenience `PasskeyClient(presentationAnchor:)` initializer only when the window identity is truly
 stable for the client's lifetime.
 
+## Testing application code
+
+Application services and view models can depend on `any PasskeyClientProtocol` when they need a deterministic
+test fake. The protocol contains only the three public passkey operations, is `MainActor`-isolated and
+`Sendable`, and does not expose the generated bridge or its result models. Keep constructing `PasskeyClient`
+in production and inject it at the application boundary.
+
+<!-- doc-example: id=swift-readme-swift-5; owner=illustrative; verify=illustrative; audience=consumer; reason=The surrounding application chooses its own dependency-injection and fake strategy -->
+```swift
+@MainActor
+func register(
+    using client: any PasskeyClientProtocol,
+    optionsJSON: Data
+) async throws -> Data {
+    try await client.createCredential(optionsJSON: optionsJSON)
+}
+```
+
+PRF authentication intentionally remains on `PrfCryptoClient` because its result includes the high-level
+crypto session. Application tests that exercise PRF behavior should fake that high-level dependency rather
+than importing internal bridge values.
+
 ## Registration and authentication
 
 The API accepts and returns UTF-8 JSON as `Data`. The shared Kotlin codec remains the single source of truth

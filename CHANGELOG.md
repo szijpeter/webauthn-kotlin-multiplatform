@@ -12,6 +12,8 @@ The format is based on Keep a Changelog and this project follows coordinated pre
   and PRF-derived AES-GCM sessions, plus a feature-parity SwiftUI sample for the default backend contract.
 - Compiler-generated Swift public API compatibility checks and a machine-readable Kotlin/bridge/Swift
   semantic parity gate covering operations, errors, capabilities, PRF lifecycle, and regression evidence.
+- A `MainActor`-isolated, `Sendable` Swift passkey client protocol for application-owned test fakes without
+  exposing generated bridge types.
 
 ### Changed
 

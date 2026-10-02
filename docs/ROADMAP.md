@@ -2,7 +2,7 @@
 
 This roadmap tracks what to do next to reach a state-of-the-art WebAuthn Kotlin Multiplatform library.
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 
 ## North-Star Exit Criteria
 
@@ -67,7 +67,8 @@ Definition of done:
 1. API surface review and compatibility expectations by module maturity.
 2. Documentation quality pass for integration guidance.
 3. Sample app hardening for reference-quality usage.
-4. Maintain native Swift semantic parity and its compiler-generated API baseline alongside Kotlin BCV.
+4. Maintain native Swift semantic parity, complete client-surface disposition accounting, its public
+   application-testing seams, and its compiler-generated API baseline alongside Kotlin BCV.
 
 Definition of done:
 
