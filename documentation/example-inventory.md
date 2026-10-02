@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **136**
+Managed blocks: **138**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -144,3 +144,5 @@ Managed blocks: **136**
 | server-webauthn-server-store-exposed-readme-kotlin-1 | server/webauthn-server-store-exposed/README.md:19 | How to use | kotlin | consumer | source | documentation/examples/src/jvmMain/kotlin/dev/webauthn/documentation/examples/ExposedStoreExample.kt#exposed-stores | compile |  |
 | server-webauthn-server-store-exposed-readme-mermaid-1 | server/webauthn-server-store-exposed/README.md:51 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | spec-cache-readme-bash-1 | spec-cache/README.md:26 | Update | bash | contributor | markdown | Markdown block | syntax |  |
+| swift-api-parity-bash-1 | swift/API_PARITY.md:38 | Public API compatibility | bash | contributor | markdown | Markdown block | syntax |  |
+| swift-api-parity-bash-2 | swift/API_PARITY.md:68 | Local checks | bash | contributor | markdown | Markdown block | syntax |  |

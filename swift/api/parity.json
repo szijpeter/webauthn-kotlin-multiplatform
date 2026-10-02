@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 2,
+  "contracts": {
+    "passkeyOperations": [
+      {
+        "name": "capabilities",
+        "kotlin": "public suspend fun capabilities(): PasskeyCapabilities",
+        "bridge": "public suspend fun capabilities(): SwiftPasskeyBridgeCapabilities",
+        "swift": "public func capabilities() async throws -> PasskeyCapabilities"
+      },
+      {
+        "name": "createCredential",
+        "kotlin": "public suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse>",
+        "bridge": "public suspend fun createCredential(requestJson: String): SwiftPasskeyBridgeResult",
+        "swift": "public func createCredential(optionsJSON: Data) async throws -> Data"
+      },
+      {
+        "name": "getAssertion",
+        "kotlin": "public suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse>",
+        "bridge": "public suspend fun getAssertion(requestJson: String): SwiftPasskeyBridgeResult",
+        "swift": "public func getAssertion(optionsJSON: Data) async throws -> Data"
+      }
+    ],
+    "bridgeOnlyOperations": [
+      {
+        "name": "authenticateWithPrf",
+        "bridge": "public suspend fun authenticateWithPrf(requestJson: String, firstSaltBase64Url: String, secondSaltBase64Url: String?): SwiftPrfAuthenticationBridgeResult"
+      },
+      {
+        "name": "updatePresentationAnchor",
+        "bridge": "public fun updatePresentationAnchor(window: UIWindow?)"
+      }
+    ],
+    "prfClient": [
+      {
+        "kotlinName": "authenticateWithPrf",
+        "swiftName": "authenticate",
+        "kotlin": "public suspend fun authenticateWithPrf(options: PublicKeyCredentialRequestOptions, salts: AuthenticationExtensionsPRFValues, context: String = PrfCrypto.DEFAULT_CONTEXT, hkdfSalt: Base64UrlBytes? = null, outputSelection: PrfOutputSelection = PrfOutputSelection.FIRST): PasskeyResult<PrfAuthenticationResult>",
+        "swift": "public func authenticate(optionsJSON: Data, firstSalt: Data, secondSalt: Data? = nil, context: String = PrfCryptoClient.defaultContext, hkdfSalt: Data? = nil, outputSelection: PrfOutputSelection = .first) async throws -> PrfAuthenticationResult"
+      }
+    ],
+    "prfSession": [
+      {
+        "kotlinName": "clear",
+        "swiftName": "clear",
+        "kotlin": "public fun clear()",
+        "swift": "public func clear() async"
+      },
+      {
+        "kotlinName": "decrypt",
+        "swiftName": "decrypt",
+        "kotlin": "public suspend fun decrypt(ciphertext: PrfCiphertext): ByteArray",
+        "swift": "public func decrypt(_ ciphertext: PrfCiphertext) async throws -> Data"
+      },
+      {
+        "kotlinName": "encrypt",
+        "swiftName": "encrypt",
+        "kotlin": "public suspend fun encrypt(plaintext: ByteArray, associatedData: ByteArray? = null): PrfCiphertext",
+        "swift": "public func encrypt(_ plaintext: Data, associatedData: Data? = nil) async throws -> PrfCiphertext"
+      }
+    ],
+    "kotlinOnlySessionConveniences": [
+      {
+        "kotlinName": "decryptToString",
+        "kotlin": "public suspend fun decryptToString(ciphertext: PrfCiphertext): String"
+      },
+      {
+        "kotlinName": "encryptString",
+        "kotlin": "public suspend fun encryptString(plaintext: String, associatedData: ByteArray? = null): PrfCiphertext"
+      }
+    ]
+  },
+  "errorMappings": [
+    {
+      "kotlin": "UserCancelled",
+      "code": "userCancelled",
+      "swift": "userCancelled"
+    },
+    {
+      "kotlin": "NoCredential",
+      "code": "noCredential",
+      "swift": "noCredential"
+    },
+    {
+      "kotlin": "InvalidOptions",
+      "code": "invalidOptions",
+      "swift": "invalidOptions"
+    },
+    {
+      "kotlin": "Platform",
+      "code": "platform",
+      "swift": "platform"
+    },
+    {
+      "kotlin": "Codec",
+      "code": "codec",
+      "swift": "codec"
+    }
+  ],
+  "bridgeBoundaryCodes": [
+    "bridgeContract",
+    "operationInProgress"
+  ],
+  "swiftBoundaryErrors": [
+    "bridgeContract",
+    "crypto",
+    "invalidUTF8",
+    "operationInProgress",
+    "sessionCleared",
+    "unavailablePresentationAnchor"
+  ],
+  "capabilitySupportMappings": {
+    "SUPPORTED": "supported",
+    "UNKNOWN": "unknown",
+    "UNSUPPORTED": "unsupported"
+  },
+  "capabilityMappings": [
+    {
+      "kind": "extension",
+      "kotlin": "Prf",
+      "id": "prf",
+      "swiftStatic": "prf"
+    },
+    {
+      "kind": "extension",
+      "kotlin": "LargeBlob",
+      "id": "largeBlob",
+      "swiftStatic": "largeBlob"
+    },
+    {
+      "kind": "extension",
+      "kotlin": "CredProps",
+      "id": "credProps"
+    },
+    {
+      "kind": "extension",
+      "kotlin": "DevicePubKey",
+      "id": "devicePubKey"
+    },
+    {
+      "kind": "extension",
+      "kotlin": "Uvm",
+      "id": "uvm"
+    },
+    {
+      "kind": "extension",
+      "kotlin": "AppIdExclude",
+      "id": "appidExclude"
+    },
+    {
+      "kind": "extension",
+      "kotlin": "AppId",
+      "id": "appid"
+    },
+    {
+      "kind": "platform",
+      "kotlin": "SecurityKey",
+      "id": "securityKey",
+      "swiftStatic": "securityKey"
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "kotlin-prf-session-string-conveniences",
+      "rationale": "Swift Data and String conversions are already explicit and the public Swift session remains byte-oriented."
+    }
+  ],
+  "prfDerivationVector": {
+    "prfOutputHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "hkdfSaltHex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+    "context": "webauthn-prf-parity-v1",
+    "derivedKeyHex": "f30c0abf6f3aea9ba7fc58f951095e308601a418efff0ee3ac1f44c125c41964",
+    "keyFingerprint": "a7fb7d362417caf0"
+  }
+}

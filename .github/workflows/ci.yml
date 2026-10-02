@@ -136,10 +136,27 @@ jobs:
       - name: iOS Host App Compile
         run: xcodebuild -project sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj -scheme ComposePasskeyIos -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
-  swift-bridge:
-    runs-on: macos-26
+  swift:
+    name: Swift (${{ matrix.xcode }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - xcode: '16.4'
+            runner: macos-15
+            developer-dir: /Applications/Xcode_16.4.app/Contents/Developer
+            check-api-baseline: 'false'
+          - xcode: '26.6'
+            runner: macos-26
+            developer-dir: /Applications/Xcode_26.6.app/Contents/Developer
+            check-api-baseline: 'true'
+    runs-on: ${{ matrix.runner }}
     needs: [harness]
-    timeout-minutes: 35
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: ${{ matrix.developer-dir }}
+      WEBAUTHN_EXPECTED_XCODE_VERSION: ${{ matrix.xcode }}
+      WEBAUTHN_SWIFT_CHECK_API_BASELINE: ${{ matrix.check-api-baseline }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -149,13 +166,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v6
-      - name: Swift Bridge Checks
-        run: |
-          ./gradlew \
-            :client:webauthn-client-swift-bridge:iosSimulatorArm64Test \
-            :client:webauthn-client-swift-bridge:assembleWebAuthnBridgeReleaseXCFramework \
-            --stacktrace
-          tools/swift/check-xcframework.sh
+      - name: Swift SDK Checks
+        run: tools/swift/ci-check.sh
 
   release-preflight:
     runs-on: macos-latest
