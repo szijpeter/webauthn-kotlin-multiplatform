@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **135**
+Managed blocks: **136**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -46,6 +46,7 @@ Managed blocks: **135**
 | client-webauthn-client-platform-readme-mermaid-1 | client/webauthn-client-platform/README.md:52 | How it fits | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-prf-crypto-readme-mermaid-1 | client/webauthn-client-prf-crypto/README.md:14 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | client-webauthn-client-prf-crypto-readme-kotlin-1 | client/webauthn-client-prf-crypto/README.md:36 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/PrfCryptoExample.kt#prf-crypto | compile |  |
+| client-webauthn-client-swift-bridge-readme-bash-1 | client/webauthn-client-swift-bridge/README.md:26 | webauthn-client-swift-bridge | bash | contributor | markdown | Markdown block | syntax |  |
 | core-webauthn-cbor-core-readme-mermaid-1 | core/webauthn-cbor-core/README.md:17 | How it fits in the system | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-core-readme-mermaid-1 | core/webauthn-core/README.md:15 | What it provides | mermaid | consumer | illustrative | Markdown illustration | illustrative | Diagram is rendered by the Markdown host |
 | core-webauthn-core-readme-kotlin-1 | core/webauthn-core/README.md:35 | How to use | kotlin | consumer | source | documentation/examples/src/commonMain/kotlin/dev/webauthn/documentation/examples/CoreValidationExample.kt#core-validation | compile |  |
