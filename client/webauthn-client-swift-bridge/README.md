@@ -29,3 +29,5 @@ Build the local binary with:
 
 Run `tools/swift/check-xcframework.sh` after assembly. Native Swift applications should follow
 [`swift/README.md`](../../swift/README.md) and must not import this module directly.
+
+The bridge uses SKIE 0.10.15 for compatibility with the repository's Kotlin 2.4.20 compiler.

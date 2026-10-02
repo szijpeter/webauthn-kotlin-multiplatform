@@ -249,3 +249,7 @@ When changing a diagram:
 2. Run `./gradlew docsUpdate docsCheck --stacktrace`.
 3. Run `tools/agent/quality-gate.sh --mode strict --scope changed --block true`.
 4. Inspect the rendered diagram on GitHub for readability and edge crossings.
+
+The internal `client:webauthn-client-swift-bridge` module adapts client-platform and the explicit
+JSON codec into a static XCFramework. Its primitive bridge contracts remain separate from the
+published Kotlin modules and are validated on iOS simulator and device architecture builds.
