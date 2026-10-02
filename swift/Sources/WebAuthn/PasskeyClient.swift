@@ -95,3 +95,5 @@ public final class PasskeyClient {
         throw PasskeyClientError.bridge(code: result.errorCode, message: result.errorMessage)
     }
 }
+
+extension PasskeyClient: PasskeyClientProtocol {}
