@@ -4,7 +4,7 @@
 This inventory is generated from the inline `doc-example` directives. It records every user-facing fenced
 example, its single source of truth, and its strongest automated or illustrative verification level.
 
-Managed blocks: **149**
+Managed blocks: **152**
 
 | ID | File | Purpose | Language | Audience | Owner | Source of truth | Verification | Exception |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -121,12 +121,15 @@ Managed blocks: **149**
 | sample-compose-passkey-readiness-checklist-bash-4 | sample/compose-passkey/READINESS_CHECKLIST.md:66 | 3. Android manual flow (required) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-5 | sample/compose-passkey/READINESS_CHECKLIST.md:83 | 3. Android manual flow (required) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readiness-checklist-bash-6 | sample/compose-passkey/READINESS_CHECKLIST.md:92 | 4. Debug trace verification | bash | consumer | markdown | Markdown block | syntax |  |
-| sample-compose-passkey-readiness-checklist-bash-7 | sample/compose-passkey/READINESS_CHECKLIST.md:113 | 5. Optional emulator smoke run | bash | consumer | markdown | Markdown block | syntax |  |
+| sample-compose-passkey-readiness-checklist-bash-7 | sample/compose-passkey/READINESS_CHECKLIST.md:113 | 5. Executed emulator smoke run | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-bash-1 | sample/compose-passkey/README.md:45 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-bash-2 | sample/compose-passkey/README.md:52 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-bash-3 | sample/compose-passkey/README.md:71 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-bash-4 | sample/compose-passkey/README.md:80 | Run (Android) | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-compose-passkey-readme-kotlin-1 | sample/compose-passkey/README.md:138 | Auth route showcase | kotlin | consumer | sample | sample/compose-passkey/src/commonMain/kotlin/dev/webauthn/samples/composepasskey/ui/screens/auth/AuthRoute.kt#compose-sample-auth-route | sample-build |  |
+| sample-mobile-ui-android-1 | sample/mobile-ui-tests/README.md:14 | Run the checks | bash | contributor | markdown | Markdown block | syntax |  |
+| sample-mobile-ui-compose-ios-1 | sample/mobile-ui-tests/README.md:23 | Run the checks | bash | contributor | markdown | Markdown block | syntax |  |
+| sample-mobile-ui-swift-ios-1 | sample/mobile-ui-tests/README.md:31 | Run the checks | bash | contributor | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-1 | sample/passkey-cli/README.md:24 | Prerequisites | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-2 | sample/passkey-cli/README.md:36 | Commands | bash | consumer | markdown | Markdown block | syntax |  |
 | sample-passkey-cli-readme-bash-3 | sample/passkey-cli/README.md:60 | Local Smoke Path (opt-in) | bash | consumer | markdown | Markdown block | syntax |  |

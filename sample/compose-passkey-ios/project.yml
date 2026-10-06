@@ -40,10 +40,26 @@ targets:
       - framework: "$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/ComposePasskeyShared.framework"
         embed: false
 
+  ComposePasskeyIosUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ../mobile-ui-tests/ShowcaseUITests.swift
+    dependencies:
+      - target: ComposePasskeyIos
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   ComposePasskeyIos:
     build:
       targets:
         ComposePasskeyIos: all
+        ComposePasskeyIosUITests: [test]
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - ComposePasskeyIosUITests

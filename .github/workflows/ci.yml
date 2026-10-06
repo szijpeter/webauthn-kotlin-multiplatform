@@ -118,6 +118,46 @@ jobs:
       - name: Android Lint and Build
         run: ./gradlew :client:webauthn-client-platform:lintAnalyzeAndroidHostTest :client:webauthn-client-platform:assemble :sample:android-passkey:lintDebug :sample:android-passkey:assemble :sample:compose-passkey-android:lintDebug :sample:compose-passkey-android:assemble :sample:compose-passkey-android:compileDebugAndroidTestKotlin --stacktrace
 
+  android-ui:
+    runs-on: ubuntu-latest
+    needs: [harness]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: android-actions/setup-android@v4
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run sample UI smoke tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          script: tools/mobile/check-android-showcase.sh
+      - name: Retain Android UI evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-showcase-tests
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            build/mobile-ui/android/
+            sample/compose-passkey-android/build/reports/androidTests/
+            sample/compose-passkey-android/build/outputs/androidTest-results/
+
   ios-compile:
     runs-on: macos-26
     needs: [harness]
@@ -133,8 +173,16 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: iOS Compile
         run: ./gradlew :client:webauthn-client-platform:compileKotlinIosSimulatorArm64 :sample:ios-passkey:compileKotlinIosSimulatorArm64 :sample:compose-passkey:compileKotlinIosSimulatorArm64 --stacktrace
-      - name: iOS Host App Compile
-        run: xcodebuild -project sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj -scheme ComposePasskeyIos -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Compose iOS UI smoke tests
+        run: tools/mobile/check-compose-ios-showcase.sh
+      - name: Retain Compose iOS UI evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: compose-ios-showcase-tests
+          retention-days: 7
+          if-no-files-found: warn
+          path: build/mobile-ui/compose-ios/
 
   swift:
     name: Swift (${{ matrix.xcode }})
@@ -172,6 +220,14 @@ jobs:
           echo "$RUNNER_TEMP/xcodegen/xcodegen/bin" >> "$GITHUB_PATH"
       - name: Swift SDK Checks
         run: tools/swift/ci-check.sh
+      - name: Retain Swift UI evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: swift-showcase-tests-${{ matrix.xcode }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: build/mobile-ui/swift/
 
   release-preflight:
     runs-on: macos-latest

@@ -10,6 +10,9 @@ repo_root="$(cd "$(dirname "$0")/../.." && pwd)"
 temporary="$(mktemp -d "${TMPDIR:-/tmp}/webauthn-swift-ci.XXXXXX")"
 trap 'rm -rf "$temporary"' EXIT
 derived_data="${WEBAUTHN_SWIFT_DERIVED_DATA:-$temporary/DerivedData}"
+results_root="${WEBAUTHN_SWIFT_RESULTS_DIR:-$repo_root/build/mobile-ui/swift}"
+mkdir -p "$results_root"
+results_run="$(mktemp -d "$results_root/run.XXXXXX")"
 if [[ -n "${WEBAUTHN_EXPECTED_XCODE_VERSION:-}" ]]; then
   actual_xcode_version="$(xcodebuild -version | awk 'NR == 1 { print $2 }')"
   if [[ "$actual_xcode_version" != "$WEBAUTHN_EXPECTED_XCODE_VERSION" ]]; then
@@ -42,16 +45,7 @@ python3 "$repo_root/tools/swift/check-package-layout.py" \
   "$repo_root" \
   "$release_manifest_root"
 
-simulator_id="$(xcrun simctl list devices available -j | python3 -c '
-import json, sys
-devices = json.load(sys.stdin)["devices"]
-for runtime in sorted(devices, reverse=True):
-    for device in devices[runtime]:
-        if device.get("isAvailable") and device["name"].startswith("iPhone"):
-            print(device["udid"])
-            raise SystemExit
-raise SystemExit("No available iPhone simulator")
-')"
+simulator_id="${WEBAUTHN_IOS_TEST_SIMULATOR:-$(python3 "$repo_root/tools/mobile/select-ios-simulator.py")}"
 
 common_arguments=(
   -quiet
@@ -59,18 +53,25 @@ common_arguments=(
   -scheme WebAuthnSwiftDemo
   -destination "platform=iOS Simulator,id=$simulator_id"
   -derivedDataPath "$derived_data"
+  -collect-test-diagnostics never
   ARCHS=arm64
   VALID_ARCHS=arm64
   EXCLUDED_ARCHS=x86_64
   ONLY_ACTIVE_ARCH=YES
-  CODE_SIGNING_ALLOWED=NO
+  CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
   SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
   GCC_TREAT_WARNINGS_AS_ERRORS=YES
 )
 
 (
   cd "$repo_root"
-  xcodebuild "${common_arguments[@]}" -configuration Debug test
+  started_at="$(python3 -c 'import time; print(time.time())')"
+  test_status=0
+  xcodebuild "${common_arguments[@]}" -configuration Debug -resultBundlePath "$results_run/Debug.xcresult" test || test_status=$?
+  python3 "$repo_root/tools/mobile/record-test-run.py" \
+    --out "$results_run/metadata.json" --platform swift-ios \
+    --destination "$simulator_id" --status "$test_status" --started-at "$started_at" || true
+  if [[ "$test_status" != 0 ]]; then exit "$test_status"; fi
   "$repo_root/tools/swift/check-sample-app.sh" \
     "$derived_data/Build/Products/Debug-iphonesimulator/WebAuthnSwiftDemo.app"
   xcodebuild \

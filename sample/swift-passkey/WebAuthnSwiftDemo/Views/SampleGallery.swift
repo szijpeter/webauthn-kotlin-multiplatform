@@ -7,6 +7,10 @@ struct SampleGallery: View {
     let scenario: String
     @State private var plaintext = "The answer is 42"
     @State private var showsLogs = false
+    @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private static let stressText = "Avery Example [!! Lõñg ãccõüñt dîsplãy ñãmê fõr wräppîñg !!] שלום مرحبا"
+    private var usesStressText: Bool { scenario == "long-text" || scenario == "rtl" }
 
     static var launchScenario: String? {
         let args = ProcessInfo.processInfo.arguments
@@ -14,15 +18,18 @@ struct SampleGallery: View {
         return args[index + 1]
     }
 
-    private let config = DemoConfiguration(
-        endpoint: URL(string: "https://passkeys.example.test")!, rpID: "passkeys.example.test",
-        origin: "https://passkeys.example.test", userHandle: "gallery-user", userName: "Avery Example"
-    )
+    private var config: DemoConfiguration {
+        DemoConfiguration(
+            endpoint: URL(string: "https://passkeys.example.test")!, rpID: "passkeys.example.test",
+            origin: "https://passkeys.example.test", userHandle: "gallery-user",
+            userName: usesStressText ? Self.stressText : "Avery Example"
+        )
+    }
 
     var body: some View {
         NavigationStack {
             Group {
-                if ["session", "encrypted", "unsupported", "prf-busy"].contains(scenario) {
+                if ["session", "encrypted", "unsupported", "prf-busy", "long-text", "rtl"].contains(scenario) {
                     SessionContent(
                         config: config,
                         capabilities: PasskeyCapabilities(support: [
@@ -46,7 +53,12 @@ struct SampleGallery: View {
                 }
             }
         }
-        .onAppear { showsLogs = scenario == "logs" }
+        .environment(\.layoutDirection, scenario == "rtl" ? .rightToLeft : layoutDirection)
+        .dynamicTypeSize(scenario == "large-text" ? .accessibility3 : dynamicTypeSize)
+        .onAppear {
+            showsLogs = scenario == "logs"
+            if usesStressText { plaintext = Self.stressText }
+        }
         .tint(Color.demoAccent)
         .sheet(isPresented: $showsLogs) {
             DebugLogContent(entries: Self.logs, onClear: {})
@@ -55,7 +67,7 @@ struct SampleGallery: View {
 
     private var sessionState: PrfSessionState {
         switch scenario {
-        case "session": .sessionReady
+        case "session", "long-text", "rtl": .sessionReady
         case "encrypted": .ciphertextReady
         default: .noSession
         }
@@ -64,7 +76,7 @@ struct SampleGallery: View {
     private var prfStatus: String {
         switch scenario {
         case "encrypted": "Decrypt succeeded."
-        case "session": "PRF session ready. Encrypt a message to try it out."
+        case "session", "long-text", "rtl": "PRF session ready. Encrypt a message to try it out."
         case "prf-busy": "Complete the passkey prompt to unlock your encryption key."
         default: "Run Sign In + PRF to derive an in-memory AES session key."
         }
