@@ -52,6 +52,18 @@ enum DemoFailureKind: Equatable {
     case alreadyInProgress
     case internalContract
 
+    var guidance: String {
+        switch self {
+        case .userCancelled: "No changes were made. Choose Register or Sign In when you are ready."
+        case .noCredential: "No matching passkey was found. Use the account that owns it, or choose Register."
+        case .invalidOptions, .codec, .internalContract: "Check the relying party and server configuration before starting a new attempt."
+        case .platform: "Your passkey provider could not complete the request. Check its availability, then start a new attempt."
+        case .backend: "Check the server configuration and connection, then start a new attempt."
+        case .rejected: "The server did not accept the response. Start a new sign-in request; contact the server administrator if this continues."
+        case .alreadyInProgress: "Wait for the current request to finish before starting another."
+        }
+    }
+
     var label: String {
         switch self {
         case .userCancelled: "User Cancelled"
@@ -169,7 +181,7 @@ extension CeremonyState {
             return DemoStatus(
                 tone: failure.kind == .userCancelled ? .warning : .error,
                 headline: failure.kind.label,
-                detail: "[\(failure.kind.label)] \(failure.message)"
+                detail: failure.kind.guidance
             )
         }
     }

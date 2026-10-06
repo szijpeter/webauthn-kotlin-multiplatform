@@ -101,3 +101,12 @@ session. They demonstrate presentation only. The entry point is compiled out of 
 The UI tests cover live-app launch/log dismissal, busy and terminal action availability, PRF session
 controls, and reaching configuration at the largest Dynamic Type size. Unit tests separately cover
 the unchanged request, backend, and session behavior.
+
+## Session lifetime
+
+Manual clear, sign-out, actual backgrounding, and host disappearance invalidate pending operations,
+detach the session, and remove visible plaintext before awaiting key cleanup. Temporary inactivity while
+the OS presents authentication does not trigger the actual-background handler. A late start cannot open
+a new PRF prompt after clear, and a late finish cannot activate a session or overwrite cleared state.
+Owned key buffers are cleared best effort; immutable strings and platform/provider copies are outside
+that guarantee. Salts and ciphertext remain ephemeral, so restarting loses the encrypted sample data.

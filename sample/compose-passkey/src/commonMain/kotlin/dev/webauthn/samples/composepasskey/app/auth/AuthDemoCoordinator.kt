@@ -7,6 +7,7 @@ import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import dev.webauthn.samples.composepasskey.domain.passkey.DemoCeremonyState
 import dev.webauthn.samples.composepasskey.domain.passkey.DemoPasskeyAction
 import dev.webauthn.samples.composepasskey.domain.passkey.demoTransitionEvent
+import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,20 +18,22 @@ internal class AuthDemoCoordinator(
 ) {
     val canRegister: StateFlow<Boolean> field = MutableStateFlow<Boolean>(true)
 
+    private val endpointHost = runCatching { Url(config.endpointBase).host }.getOrDefault("unavailable")
+
     private var previousState: DemoCeremonyState = DemoCeremonyState.Idle
 
     init {
         debugLogs.i(
             source = "app",
-            message = "Config endpoint=${config.endpointBase} rpId=${config.rpId} " +
-                "origin=${config.origin}",
+            message = "Config endpointHost=$endpointHost rpId=${config.rpId} " +
+                "originHost=${runCatching { Url(config.origin).host }.getOrDefault("unavailable")}",
         )
     }
 
     fun onRegisterClicked() {
         debugLogs.i(
             source = "action",
-            message = "Register tapped endpoint=${config.endpointBase} " +
+            message = "Register tapped endpointHost=$endpointHost " +
                 "rpId=${config.rpId}",
         )
     }
@@ -38,7 +41,7 @@ internal class AuthDemoCoordinator(
     fun onSignInClicked() {
         debugLogs.i(
             source = "action",
-            message = "Sign In tapped endpoint=${config.endpointBase} " +
+            message = "Sign In tapped endpointHost=$endpointHost " +
                 "rpId=${config.rpId}",
         )
     }

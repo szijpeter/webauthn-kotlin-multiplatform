@@ -2,6 +2,22 @@
 
 package dev.webauthn.samples.composepasskey
 
+import androidx.lifecycle.ViewModelStore
+import dev.webauthn.client.CeremonyStart
+import dev.webauthn.client.CapabilitySupport
+import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
+import dev.webauthn.model.WebAuthnExtension
+import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
+import dev.webauthn.samples.composepasskey.data.session.AppSessionStore
+import dev.webauthn.samples.composepasskey.ui.screens.main.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.resetMain
 import dev.webauthn.client.AuthenticationBackend
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyResult
@@ -28,6 +44,8 @@ import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
 import dev.webauthn.samples.composepasskey.domain.prf.PrfDemoResult
 import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,6 +54,114 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class PrfCryptoDemoLifecycleTest {
+    @Test
+    fun clearing_during_finish_prevents_late_session_activation() = runTest {
+        val finishEntered = CompletableDeferred<Unit>()
+        val releaseFinish = CompletableDeferred<Unit>()
+        val controller = controller(
+            FakePrfBackend(finishAction = { _, _ ->
+                finishEntered.complete(Unit)
+                releaseFinish.await()
+                DefaultPasskeyFinishResult.Verified
+            }),
+        )
+        val signIn = async { controller.signInWithPrf(config(), supportsPrf = true) }
+        finishEntered.await()
+
+        controller.clearSession()
+        releaseFinish.complete(Unit)
+        signIn.await()
+
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+        assertIs<PrfDemoResult.Failure>(controller.encrypt("should remain locked"))
+    }
+
+    @Test
+    fun clearing_during_start_does_not_open_a_platform_prompt() = runTest {
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val client = FakePrfPasskeyClient()
+        val controller = controller(FakePrfBackend(startAction = {
+            entered.complete(Unit)
+            release.await()
+            CeremonyStart(Unit, defaultPrfOptions())
+        }), passkeyClient = client)
+        val operation = async { controller.signInWithPrf(config(), supportsPrf = true) }
+        entered.await()
+        controller.clearSession()
+        release.complete(Unit)
+
+        assertIs<PrfDemoResult.Failure>(operation.await())
+        assertEquals(0, client.assertionCalls)
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+    }
+
+    @Test
+    fun clearing_during_platform_prompt_skips_backend_finish() = runTest {
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val backend = FakePrfBackend()
+        val client = FakePrfPasskeyClient(beforeAssertion = {
+            entered.complete(Unit)
+            release.await()
+        })
+        val controller = controller(backend, passkeyClient = client)
+        val operation = async { controller.signInWithPrf(config(), supportsPrf = true) }
+        entered.await()
+        controller.clearSession()
+        release.complete(Unit)
+
+        assertIs<PrfDemoResult.Failure>(operation.await())
+        assertEquals(0, backend.finishCalls)
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+    }
+
+    @Test
+    fun temporary_host_inactivity_during_prompt_allows_verified_session_after_return() = runTest {
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        var foreground = true
+        val backend = FakePrfBackend()
+        val client = FakePrfPasskeyClient(beforeAssertion = {
+            entered.complete(Unit)
+            release.await()
+        })
+        val controller = controller(backend, passkeyClient = client, isForeground = { foreground })
+        val operation = async { controller.signInWithPrf(config(), supportsPrf = true) }
+        entered.await()
+        assertTrue(controller.isPlatformPromptInProgress)
+        foreground = false
+        controller.lockCurrentSession()
+        foreground = true
+        release.complete(Unit)
+
+        assertIs<PrfDemoResult.Success>(operation.await())
+        assertEquals(1, backend.finishCalls)
+        assertEquals(PrfCryptoDemoSessionState.SessionReady, controller.sessionState)
+    }
+
+    @Test
+    fun backgrounded_host_does_not_verify_or_activate_a_returned_platform_session() = runTest {
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        var foreground = true
+        val backend = FakePrfBackend()
+        val client = FakePrfPasskeyClient(beforeAssertion = {
+            entered.complete(Unit)
+            release.await()
+        })
+        val controller = controller(backend, passkeyClient = client, isForeground = { foreground })
+        val operation = async { controller.signInWithPrf(config(), supportsPrf = true) }
+        entered.await()
+        foreground = false
+        controller.lockCurrentSession()
+        release.complete(Unit)
+
+        assertIs<PrfDemoResult.Failure>(operation.await())
+        assertEquals(0, backend.finishCalls)
+        assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+    }
+
     @Test
     fun unsupported_capability_does_not_start_backend() = runTest {
         val backend = FakePrfBackend()
@@ -62,6 +188,13 @@ class PrfCryptoDemoLifecycleTest {
 
         assertIs<PrfDemoResult.Success>(controller.clearSession())
         assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
+    }
+
+    @Test
+    fun success_message_omits_user_scope_and_key_material() = runTest {
+        val result = assertIs<PrfDemoResult.Success>(controller(FakePrfBackend()).signInWithPrf(config(), true))
+        assertEquals("PRF session ready. Caller-owned salt is available.", result.message)
+        assertTrue(!result.message.contains(config().userHandle))
     }
 
     @Test
@@ -96,7 +229,7 @@ class PrfCryptoDemoLifecycleTest {
         val result = controller.signInWithPrf(config(), supportsPrf = true)
 
         assertIs<PrfDemoResult.Failure>(result)
-        assertTrue(result.message.contains("start failed"))
+        assertTrue(result.message.contains("Could not start"))
         assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
     }
 
@@ -109,7 +242,7 @@ class PrfCryptoDemoLifecycleTest {
         val result = controller.signInWithPrf(config(), supportsPrf = true)
 
         assertIs<PrfDemoResult.Failure>(result)
-        assertTrue(result.message.contains("finish failed"))
+        assertTrue(result.message.contains("Could not verify"))
         assertEquals(PrfCryptoDemoSessionState.NoSession, controller.sessionState)
     }
 
@@ -201,6 +334,75 @@ class PrfCryptoDemoLifecycleTest {
     }
 }
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+class MainViewModelLifecycleTest {
+    @Test
+    fun disposing_owner_clears_active_session_and_plaintext() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val owner = ViewModelStore()
+        try {
+            val viewModel = mainViewModel()
+            owner.put("demo", viewModel)
+            viewModel.uiState.first { it.supportsPrf }
+            viewModel.onSignInWithPrfClicked()
+            viewModel.uiState.first { !it.busy && it.sessionState == PrfCryptoDemoSessionState.SessionReady }
+            viewModel.onPlaintextChanged("private message")
+            viewModel.onEncryptClicked()
+            viewModel.uiState.first { !it.busy && it.sessionState == PrfCryptoDemoSessionState.CiphertextReady }
+            viewModel.onDecryptClicked()
+            viewModel.uiState.first { !it.busy && it.decryptedText != null }
+
+            owner.clear()
+
+            assertEquals(PrfCryptoDemoSessionState.NoSession, viewModel.uiState.value.sessionState)
+            assertEquals("", viewModel.uiState.value.plaintext)
+            assertEquals(null, viewModel.uiState.value.decryptedText)
+            assertEquals(false, viewModel.uiState.value.busy)
+        } finally {
+            owner.clear()
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun disposing_owner_during_finish_rejects_non_cooperative_completion() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val owner = ViewModelStore()
+        val entered = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        try {
+            val backend = FakePrfBackend(finishAction = { _, _ ->
+                withContext(NonCancellable) {
+                    entered.complete(Unit)
+                    release.await()
+                }
+                DefaultPasskeyFinishResult.Verified
+            })
+            val viewModel = mainViewModel(backend)
+            owner.put("demo", viewModel)
+            viewModel.uiState.first { it.supportsPrf }
+            viewModel.onSignInWithPrfClicked()
+            entered.await()
+
+            owner.clear()
+            release.complete(Unit)
+            testScheduler.runCurrent()
+
+            assertEquals(PrfCryptoDemoSessionState.NoSession, viewModel.uiState.value.sessionState)
+            assertEquals(false, viewModel.uiState.value.busy)
+        } finally {
+            release.complete(Unit)
+            owner.clear()
+            Dispatchers.resetMain()
+        }
+    }
+
+    private fun mainViewModel(backend: DemoPasskeyBackend = FakePrfBackend()) = MainViewModel(
+        config = config(), debugLogs = DebugLogStore(), sessionStore = AppSessionStore(),
+        saltStore = FixedSaltStore(), passkeyClient = FakePrfPasskeyClient(), backend = backend,
+    )
+}
+
 private class FixedSaltStore : PrfSaltStore {
     private val salt = Base64UrlBytes.fromBytes(ByteArray(32) { 3 })
     val requestedKeys = mutableListOf<String>()
@@ -212,13 +414,14 @@ private class FixedSaltStore : PrfSaltStore {
 }
 
 private class FakePrfBackend(
-    private val startAction: suspend (AuthenticationStartPayload) -> dev.webauthn.client.CeremonyStart<Unit, PublicKeyCredentialRequestOptions> = {
-        dev.webauthn.client.CeremonyStart(Unit, defaultPrfOptions())
+    private val startAction: suspend (AuthenticationStartPayload) -> CeremonyStart<Unit, PublicKeyCredentialRequestOptions> = {
+        CeremonyStart(Unit, defaultPrfOptions())
     },
     private val finishAction: suspend (Unit, RawAuthenticationResponse) -> DefaultPasskeyFinishResult = {
         _, _ -> DefaultPasskeyFinishResult.Verified
     },
 ) : DemoPasskeyBackend {
+    var finishCalls: Int = 0
     var startCalls: Int = 0
     val startPayloads = mutableListOf<AuthenticationStartPayload>()
     override val registration: RegistrationBackend<RegistrationStartPayload, Unit, DefaultPasskeyFinishResult> =
@@ -242,7 +445,10 @@ private class FakePrfBackend(
             override suspend fun finish(
                 state: Unit,
                 response: RawAuthenticationResponse,
-            ): DefaultPasskeyFinishResult = finishAction(state, response)
+            ): DefaultPasskeyFinishResult {
+                finishCalls += 1
+                return finishAction(state, response)
+            }
         }
 }
 
@@ -250,22 +456,34 @@ private class FakePrfPasskeyClient(
     private val assertionResults: MutableList<PasskeyResult<RawAuthenticationResponse>> = mutableListOf(
         successfulAssertion(),
     ),
+    private val beforeAssertion: suspend () -> Unit = {},
 ) : PasskeyClient {
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> =
         error("registration is not used")
 
-    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> =
-        assertionResults.removeAt(0)
+    var assertionCalls = 0
+
+    override suspend fun capabilities(): PasskeyCapabilities = PasskeyCapabilities(
+        support = mapOf(PasskeyCapability.Extension(WebAuthnExtension.Prf) to CapabilitySupport.SUPPORTED),
+    )
+
+    override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> {
+        assertionCalls += 1
+        beforeAssertion()
+        return assertionResults.removeAt(0)
+    }
 }
 
 private fun controller(
     backend: DemoPasskeyBackend,
     passkeyClient: PasskeyClient = FakePrfPasskeyClient(),
     saltStore: PrfSaltStore = FixedSaltStore(),
+    isForeground: () -> Boolean = { true },
 ): PrfCryptoDemoController = PrfCryptoDemoController(
     passkeyClient = passkeyClient,
     backend = backend,
     saltStore = saltStore,
+    isForeground = isForeground,
 )
 
 private fun successfulAssertion(): PasskeyResult<RawAuthenticationResponse> = PasskeyResult.Success(

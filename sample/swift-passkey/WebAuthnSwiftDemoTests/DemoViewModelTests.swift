@@ -86,6 +86,116 @@ final class DemoViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.route, .main)
     }
 
+    func testBackgroundClearsKeyAndVisiblePlaintext() async {
+        let fixture = Fixture()
+        fixture.passkeys.capabilityValue = PasskeyCapabilities(support: [.prf: .supported])
+        await fixture.viewModel.loadCapabilities()
+        await fixture.viewModel.signInWithPRF()
+        fixture.viewModel.plaintext = "private message"
+        await fixture.viewModel.encrypt()
+        await fixture.viewModel.decrypt()
+
+        await fixture.viewModel.backgrounded()
+
+        XCTAssertEqual(fixture.viewModel.prfSessionState, .noSession)
+        XCTAssertEqual(fixture.viewModel.plaintext, "")
+        XCTAssertNil(fixture.viewModel.decryptedText)
+        XCTAssertEqual(fixture.passkeys.session.clearCalls, 1)
+    }
+
+    func testSignOutPreventsLateOrdinarySignInFromReopeningRoute() async {
+        let passkeys = SuspendingCeremonyPasskeyService()
+        let viewModel = DemoViewModel(
+            config: .testValue, passkeys: passkeys, backend: FakePasskeyBackend(),
+            loadCapabilitiesImmediately: false
+        )
+        let operation = Task { await viewModel.signIn() }
+        while !passkeys.assertionIsSuspended { await Task.yield() }
+
+        await viewModel.signOut()
+        passkeys.resumeAssertion()
+        await operation.value
+
+        XCTAssertEqual(viewModel.route, .authentication)
+        XCTAssertEqual(viewModel.ceremonyState, .idle)
+    }
+
+    func testClearDuringStartPreventsOpeningPrfPrompt() async {
+        let fixture = Fixture()
+        fixture.passkeys.capabilityValue = PasskeyCapabilities(support: [.prf: .supported])
+        await fixture.viewModel.loadCapabilities()
+        fixture.backend.suspendStart = true
+        let operation = Task { await fixture.viewModel.signInWithPRF() }
+        while !fixture.backend.startIsSuspended { await Task.yield() }
+
+        await fixture.viewModel.clearPrfSession()
+        fixture.backend.resumeStart()
+        await operation.value
+
+        XCTAssertNil(fixture.passkeys.lastPrfSalt)
+        XCTAssertEqual(fixture.backend.authenticationFinishes, 0)
+        XCTAssertEqual(fixture.viewModel.prfSessionState, .noSession)
+        XCTAssertFalse(fixture.viewModel.prfBusy)
+    }
+
+    func testClearDuringFinishPreventsLateSessionOrRejection() async {
+        for outcome in [FinishOutcome.verified, .rejected("private server response")] {
+            let fixture = Fixture()
+            fixture.passkeys.capabilityValue = PasskeyCapabilities(support: [.prf: .supported])
+            await fixture.viewModel.loadCapabilities()
+            fixture.backend.suspendFinish = true
+            fixture.backend.authenticationFinish = outcome
+            let operation = Task { await fixture.viewModel.signInWithPRF() }
+            while !fixture.backend.finishIsSuspended { await Task.yield() }
+
+            await fixture.viewModel.clearPrfSession()
+            let clearedStatus = fixture.viewModel.prfStatus
+            fixture.backend.resumeFinish()
+            await operation.value
+
+            XCTAssertEqual(fixture.viewModel.prfSessionState, .noSession)
+            XCTAssertEqual(fixture.viewModel.prfStatus, clearedStatus)
+            XCTAssertFalse(fixture.viewModel.prfBusy)
+            XCTAssertEqual(fixture.passkeys.session.clearCalls, 1)
+        }
+    }
+
+    func testRawErrorTextIsExcludedFromUiAndLogs() async {
+        let fixture = Fixture()
+        fixture.passkeys.assertionError = PasskeyClientError.platform(message: "private assertion token")
+        await fixture.viewModel.signIn()
+
+        XCTAssertEqual(fixture.viewModel.ceremonyState.status.headline, "Platform")
+        XCTAssertFalse(fixture.viewModel.ceremonyState.status.detail.contains("private assertion token"))
+        XCTAssertFalse(fixture.viewModel.logs.entries.contains { $0.message.contains("private assertion token") })
+    }
+
+    func testCryptoFailuresGiveLocalRecoveryGuidanceWithoutRawErrors() async {
+        let fixture = Fixture()
+        fixture.passkeys.capabilityValue = PasskeyCapabilities(support: [.prf: .supported])
+        await fixture.viewModel.loadCapabilities()
+        await fixture.viewModel.signInWithPRF()
+        let error = DemoFailure(kind: .internalContract, message: "private crypto error")
+        fixture.passkeys.session.encryptError = error
+
+        await fixture.viewModel.encrypt()
+
+        XCTAssertEqual(fixture.viewModel.prfStatus, "Could not encrypt the message. Unlock a session and try again.")
+        XCTAssertEqual(fixture.viewModel.prfSessionState, .sessionReady)
+        XCTAssertFalse(fixture.viewModel.prfBusy)
+        fixture.passkeys.session.encryptError = nil
+        await fixture.viewModel.encrypt()
+        fixture.passkeys.session.decryptError = error
+
+        await fixture.viewModel.decrypt()
+
+        XCTAssertEqual(fixture.viewModel.prfStatus, "Could not decrypt the message. Check that you used the same passkey and saved data.")
+        XCTAssertEqual(fixture.viewModel.prfSessionState, .ciphertextReady)
+        XCTAssertNil(fixture.viewModel.decryptedText)
+        XCTAssertFalse(fixture.viewModel.prfBusy)
+        XCTAssertFalse(fixture.viewModel.logs.entries.contains { $0.message.contains("private crypto error") })
+    }
+
     func testCapabilitiesAndPrfSessionLifecycle() async throws {
         let fixture = Fixture()
         fixture.passkeys.capabilityValue = PasskeyCapabilities(support: [.prf: .supported])
@@ -368,8 +478,11 @@ private final class FakeCryptoSession: DemoCryptoSession {
     let keyFingerprint = "0123456789abcdef"
     var clearCalls = 0
     private(set) var lastCiphertext: DemoPrfCiphertext?
+    var encryptError: Error?
+    var decryptError: Error?
 
     func encrypt(_ plaintext: Data, associatedData: Data?) async throws -> DemoPrfCiphertext {
+        if let encryptError { throw encryptError }
         let value = DemoPrfCiphertext(
             nonce: Data(repeating: 1, count: 12),
             ciphertext: plaintext,
@@ -381,7 +494,8 @@ private final class FakeCryptoSession: DemoCryptoSession {
     }
 
     func decrypt(_ ciphertext: DemoPrfCiphertext) async throws -> Data {
-        ciphertext.ciphertext
+        if let decryptError { throw decryptError }
+        return ciphertext.ciphertext
     }
 
     func clear() async {
@@ -391,6 +505,12 @@ private final class FakeCryptoSession: DemoCryptoSession {
 
 @MainActor
 private final class FakePasskeyBackend: PasskeyBackend {
+    var suspendStart = false
+    var suspendFinish = false
+    private var startContinuation: CheckedContinuation<Data, Never>?
+    private var finishContinuation: CheckedContinuation<FinishOutcome, Never>?
+    var startIsSuspended: Bool { startContinuation != nil }
+    var finishIsSuspended: Bool { finishContinuation != nil }
     var registrationStarts = 0
     var registrationFinishes = 0
     var authenticationStarts = 0
@@ -410,11 +530,29 @@ private final class FakePasskeyBackend: PasskeyBackend {
 
     func startAuthentication(config: DemoConfiguration, prfSalt: Data?) async throws -> Data {
         authenticationStarts += 1
+        if suspendStart {
+            return await withCheckedContinuation { startContinuation = $0 }
+        }
         return Data("{}".utf8)
     }
 
     func finishAuthentication(responseJSON: Data) async throws -> FinishOutcome {
         authenticationFinishes += 1
+        if suspendFinish {
+            return await withCheckedContinuation { finishContinuation = $0 }
+        }
         return authenticationFinish
+    }
+
+    func resumeStart() {
+        let continuation = startContinuation
+        startContinuation = nil
+        continuation?.resume(returning: Data("{}".utf8))
+    }
+
+    func resumeFinish() {
+        let continuation = finishContinuation
+        finishContinuation = nil
+        continuation?.resume(returning: authenticationFinish)
     }
 }

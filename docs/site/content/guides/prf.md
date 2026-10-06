@@ -23,9 +23,10 @@ The application owns salt generation and persistence, stable context naming, ass
 1. Probe `PasskeyCapability.Extension(WebAuthnExtension.Prf)` at runtime.
 2. Load or generate a per-policy salt and persist it independently of the ephemeral session.
 3. Authenticate with PRF evaluation requested.
-4. Derive a key under a stable, versioned context.
-5. Encrypt with meaningful associated data and persist the complete `PrfCiphertext` package.
-6. Clear the session in `finally` and on logout/background teardown as appropriate.
+4. Keep the returned crypto session provisional until the server verifies the assertion. Clear it on rejection, cancellation, or a stale completion.
+5. Use a stable, versioned derivation context. Encrypt with meaningful associated data and persist the complete `PrfCiphertext` package.
+6. Clear the session in `finally` and on logout, actual backgrounding, and host disposal as appropriate. Temporary inactivity while the OS presents authentication is a different lifecycle event.
+
 
 ## Migration and recovery
 

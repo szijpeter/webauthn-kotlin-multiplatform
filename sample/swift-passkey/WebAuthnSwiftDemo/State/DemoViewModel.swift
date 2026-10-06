@@ -24,6 +24,7 @@ final class DemoViewModel: ObservableObject {
     private var prfSession: (any DemoCryptoSession)?
     private var ciphertext: DemoPrfCiphertext?
     private var activePrfOperation: UUID?
+    private var sessionGeneration = 0
 
     var supportsPRF: Bool { capabilities.supports(.prf) }
     var ceremonyActionsEnabled: Bool { ceremonyState.actionsEnabled }
@@ -46,7 +47,7 @@ final class DemoViewModel: ObservableObject {
         let endpointHost = config.endpoint.host ?? "unavailable"
         logs.info(
             "config",
-            "endpointHost=\(endpointHost) rpId=\(config.rpID) origin=\(config.origin)"
+            "endpointHost=\(endpointHost) rpId=\(config.rpID) originHost=\(URL(string: config.origin)?.host ?? "unavailable")"
         )
         if loadCapabilitiesImmediately {
             Task { await loadCapabilities() }
@@ -54,14 +55,17 @@ final class DemoViewModel: ObservableObject {
     }
 
     func register() async {
+        let generation = sessionGeneration
         do {
             let result = try await passkeyFlow.register(
                 config,
                 backend: RegistrationFlowBackend(backend: backend),
                 onPhaseChanged: { [weak self] phase in
+                    guard self?.sessionGeneration == generation else { return }
                     self?.transition(.register, to: CeremonyPhase(phase))
                 }
             )
+            guard sessionGeneration == generation else { return }
             switch result {
             case .success(.verified):
                 succeed(.register)
@@ -73,21 +77,26 @@ final class DemoViewModel: ObservableObject {
                 fail(.register, DemoFailure.unknownFlowResult())
             }
         } catch is CancellationError {
+            guard sessionGeneration == generation else { return }
             ceremonyState = .idle
         } catch {
+            guard sessionGeneration == generation else { return }
             failCurrent(.register, error: error)
         }
     }
 
     func signIn() async {
+        let generation = sessionGeneration
         do {
             let result = try await passkeyFlow.signIn(
                 config,
                 backend: AuthenticationFlowBackend(backend: backend),
                 onPhaseChanged: { [weak self] phase in
+                    guard self?.sessionGeneration == generation else { return }
                     self?.transition(.signIn, to: CeremonyPhase(phase))
                 }
             )
+            guard sessionGeneration == generation else { return }
             switch result {
             case .success(.verified):
                 succeed(.signIn)
@@ -100,8 +109,10 @@ final class DemoViewModel: ObservableObject {
                 fail(.signIn, DemoFailure.unknownFlowResult())
             }
         } catch is CancellationError {
+            guard sessionGeneration == generation else { return }
             ceremonyState = .idle
         } catch {
+            guard sessionGeneration == generation else { return }
             failCurrent(.signIn, error: error)
         }
     }
@@ -141,6 +152,7 @@ final class DemoViewModel: ObservableObject {
             let saltScope = "\(config.rpID):\(config.userHandle)"
             let salt = try saltStore.loadOrCreate(scope: saltScope)
             let options = try await backend.startAuthentication(config: config, prfSalt: salt)
+            guard activePrfOperation == operationID else { return }
             let authenticated = try await passkeys.authenticateWithPrf(
                 optionsJSON: options,
                 firstSalt: salt
@@ -161,14 +173,15 @@ final class DemoViewModel: ObservableObject {
                     }
                     prfStatus = "PRF session ready. Caller-owned salt is available."
                     logs.info("prf", "PRF session ready after backend verification.")
-                case let .rejected(message):
+                case .rejected:
                     await authenticated.session.clear()
-                    applyPrfFailure("PRF sign-in verification rejected: \(message)")
+                    guard activePrfOperation == operationID else { return }
+                    applyPrfFailure("PRF sign-in verification rejected. Start a new sign-in request.")
                 }
             } catch {
                 await authenticated.session.clear()
                 guard activePrfOperation == operationID else { return }
-                applyPrfFailure("PRF sign-in finish failed: \(safeMessage(error))")
+                applyPrfFailure("Could not verify passkey sign-in. Start a new request to try again.")
             }
         } catch is CancellationError {
             guard activePrfOperation == operationID else { return }
@@ -212,7 +225,7 @@ final class DemoViewModel: ObservableObject {
             logs.info("prf", prfStatus)
         } catch {
             guard activePrfOperation == operationID else { return }
-            applyPrfFailure("Encrypt failed: \(safeMessage(error))")
+            applyPrfFailure("Could not encrypt the message. Unlock a session and try again.")
         }
     }
 
@@ -246,29 +259,36 @@ final class DemoViewModel: ObservableObject {
             logs.info("prf", prfStatus)
         } catch {
             guard activePrfOperation == operationID else { return }
-            applyPrfFailure("Decrypt failed: \(safeMessage(error))")
+            applyPrfFailure("Could not decrypt the message. Check that you used the same passkey and saved data.")
         }
     }
 
     func clearPrfSession() async {
         activePrfOperation = nil
         prfBusy = false
-        if let prfSession {
-            await prfSession.clear()
-        }
+        let previous = prfSession
         prfSession = nil
         ciphertext = nil
+        plaintext = ""
         decryptedText = nil
         prfSessionState = .noSession
         prfStatus = "PRF session key cleared from memory."
         logs.info("session", prfStatus)
+        await previous?.clear()
+    }
+
+    func backgrounded() async {
+        sessionGeneration += 1
+        ceremonyState = .idle
+        await clearPrfSession()
     }
 
     func signOut() async {
-        await clearPrfSession()
+        sessionGeneration += 1
         ceremonyState = .idle
         route = .authentication
         logs.info("session", "Signed out")
+        await clearPrfSession()
     }
 
     private func transition(_ action: DemoAction, to phase: CeremonyPhase) {
@@ -295,7 +315,7 @@ final class DemoViewModel: ObservableObject {
 
     private func fail(_ action: DemoAction, _ failure: DemoFailure) {
         ceremonyState = .failure(action: action, failure: failure)
-        let message = "\(action.rawValue) failed [\(failure.kind.label)] \(failure.message)"
+        let message = "\(action.rawValue) failed [\(failure.kind.label)]"
         if failure.kind == .userCancelled {
             logs.warning("ceremony", message)
         } else {
@@ -327,7 +347,8 @@ final class DemoViewModel: ObservableObject {
     }
 
     private func safeMessage(_ error: Error) -> String {
-        let message = error.localizedDescription.trimmingCharacters(in: .whitespacesAndNewlines)
-        return message.isEmpty ? "unknown error" : message
+        if let failure = error as? DemoFailure { return failure.kind.guidance }
+        if error is PasskeyClientError { return DemoFailure.platform(error).kind.guidance }
+        return DemoFailureKind.backend.guidance
     }
 }

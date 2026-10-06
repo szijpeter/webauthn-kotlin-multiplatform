@@ -3,6 +3,7 @@ package dev.webauthn.samples.composepasskey.ui.screens.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import dev.webauthn.samples.composepasskey.app.AppVisibilityEffect
 import dev.webauthn.samples.composepasskey.app.LocalShowDebugLogs
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
 import org.koin.compose.koinInject
@@ -13,6 +14,11 @@ internal fun MainRoute() {
     val showDebugLogs = LocalShowDebugLogs.current
     val viewModel = koinViewModel<MainViewModel>()
     val state by viewModel.uiState.collectAsState()
+    AppVisibilityEffect(
+        onForeground = { viewModel.onVisibilityChanged(true) },
+        onBackground = { viewModel.onVisibilityChanged(false) },
+        onHostDisposed = viewModel::onClearSessionClicked,
+    )
 
     MainScreen(
         config = koinInject<PasskeyDemoConfig>(),

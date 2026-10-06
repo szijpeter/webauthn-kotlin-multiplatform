@@ -12,6 +12,8 @@ import dev.webauthn.runtime.runSuspendCatching
 import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.network.kotlinx.DefaultPasskeyFinishResult
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.passkey.DemoCeremonyError
+import dev.webauthn.samples.composepasskey.domain.passkey.userGuidance
 import dev.webauthn.samples.composepasskey.domain.passkey.toAuthenticationStartPayload
 import kotlin.random.Random
 
@@ -28,12 +30,14 @@ sealed interface PrfCryptoDemoSessionState {
 }
 
 internal sealed interface PrfDemoResult {
+    val message: String
+
     data class Success(
-        val message: String,
+        override val message: String,
         val plaintext: String? = null,
     ) : PrfDemoResult
 
-    data class Failure(val message: String) : PrfDemoResult
+    data class Failure(override val message: String) : PrfDemoResult
 }
 
 internal interface PrfSaltStore {
@@ -55,9 +59,15 @@ internal class PrfCryptoDemoController(
     passkeyClient: PasskeyClient,
     private val backend: DemoPasskeyBackend,
     private val saltStore: PrfSaltStore,
+    private val isForeground: () -> Boolean = { true },
 ) {
     private val prfCryptoClient: PrfCryptoClient = PrfCryptoClient(passkeyClient)
     private var internalState: SessionDataState = SessionDataState.NoSession
+    private var operationGeneration: Long = 0
+    private var promptGeneration: Long? = null
+
+    val isPlatformPromptInProgress: Boolean
+        get() = promptGeneration == operationGeneration
 
     val sessionState: PrfCryptoDemoSessionState
         get() = internalState.publicState
@@ -67,52 +77,58 @@ internal class PrfCryptoDemoController(
         if (!supportsPrf) {
             return PrfDemoResult.Failure("This device does not report PRF support.")
         }
+        val generation = ++operationGeneration
         val saltScope = "${config.rpId}:${config.userHandle}"
         val firstSalt = saltStore.loadOrCreate(saltScope)
         val startPayload = config.toAuthenticationStartPayload(prfSalt = firstSalt)
         val startResult = runSuspendCatching {
             backend.authentication.start(startPayload)
-        }.getOrElse { throwable ->
+        }.getOrElse { _ ->
             return PrfDemoResult.Failure(
-                "PRF sign-in start failed: ${throwable.message ?: "unknown error"}",
+                "Could not start passkey sign-in. Check the server configuration and connection, then try again.",
             )
         }
+        if (generation != operationGeneration || !isForeground()) return cancelledResult()
         val signInOptions = startResult.options
-        val authResult = when (
-            val assertionResult = prfCryptoClient.authenticateWithPrf(
+        promptGeneration = generation
+        val assertion = try {
+            prfCryptoClient.authenticateWithPrf(
                 options = signInOptions,
                 salts = AuthenticationExtensionsPRFValues(first = firstSalt),
                 context = SAMPLE_PRF_CONTEXT,
             )
-        ) {
-            is PasskeyResult.Failure -> {
-                return PrfDemoResult.Failure("PRF assertion failed: ${assertionResult.error.message}")
-            }
-
-            is PasskeyResult.Success -> assertionResult.value
+        } finally {
+            if (promptGeneration == generation) promptGeneration = null
+        }
+        val authResult = when (assertion) {
+            is PasskeyResult.Failure -> return PrfDemoResult.Failure(
+                DemoCeremonyError.Platform(assertion.error).userGuidance(),
+            )
+            is PasskeyResult.Success -> assertion.value
         }
         var sessionTransferred = false
         try {
+            if (generation != operationGeneration || !isForeground()) return cancelledResult()
             val finishResult = runSuspendCatching {
                 backend.authentication.finish(startResult.state, authResult.response)
-            }.getOrElse { throwable ->
+            }.getOrElse { _ ->
                 return PrfDemoResult.Failure(
-                    "PRF sign-in finish failed: ${throwable.message ?: "unknown error"}",
+                    "Could not verify passkey sign-in. Start a new request to try again.",
                 )
             }
+            if (generation != operationGeneration || !isForeground()) return cancelledResult()
             return when (finishResult) {
                 DefaultPasskeyFinishResult.Verified -> {
                     transitionTo(SessionDataState.SessionReady(authResult.session))
                     sessionTransferred = true
                     PrfDemoResult.Success(
-                        message = "PRF session ready (${authResult.session.keyFingerprint}). " +
-                            "Caller-owned salt loaded for $saltScope.",
+                        message = "PRF session ready. Caller-owned salt is available.",
                     )
                 }
 
                 is DefaultPasskeyFinishResult.Rejected -> {
                     PrfDemoResult.Failure(
-                        "PRF sign-in verification rejected: ${finishResult.message ?: "server rejected response"}",
+                        "PRF sign-in verification rejected. Start a new sign-in request.",
                     )
                 }
             }
@@ -129,37 +145,49 @@ internal class PrfCryptoDemoController(
         if (plaintext.isBlank()) {
             return PrfDemoResult.Failure("Enter plaintext before encryption.")
         }
+        val generation = operationGeneration
         return runSuspendCatching {
             val ciphertext = activeSession.encryptString(
                 plaintext = plaintext,
                 associatedData = SAMPLE_ASSOCIATED_DATA.encodeToByteArray(),
             )
+            if (generation != operationGeneration || !isForeground()) return cancelledResult()
             transitionTo(SessionDataState.CiphertextReady(activeSession, ciphertext))
             PrfDemoResult.Success(
                 message = "Encrypted ${plaintext.length} chars to ${ciphertext.ciphertext.bytes().size} bytes.",
             )
-        }.getOrElse { throwable ->
-            PrfDemoResult.Failure("Encrypt failed: ${throwable.message ?: "unknown error"}")
+        }.getOrElse { _ ->
+            PrfDemoResult.Failure("Could not encrypt the message. Unlock a session and try again.")
         }
     }
 
     suspend fun decrypt(): PrfDemoResult {
+        val generation = operationGeneration
         return when (val state = internalState) {
             SessionDataState.NoSession -> PrfDemoResult.Failure("No PRF session. Run Sign In + PRF first.")
             is SessionDataState.SessionReady -> PrfDemoResult.Failure("No ciphertext. Encrypt text first.")
             is SessionDataState.CiphertextReady -> runSuspendCatching {
                 val plaintext = state.session.decryptToString(state.payload)
+                if (generation != operationGeneration || !isForeground()) return cancelledResult()
                 PrfDemoResult.Success(
                     message = "Decrypt succeeded.",
                     plaintext = plaintext,
                 )
-            }.getOrElse { throwable ->
-                PrfDemoResult.Failure("Decrypt failed: ${throwable.message ?: "unknown error"}")
+            }.getOrElse { _ ->
+                PrfDemoResult.Failure(
+                    "Could not decrypt the message. Check that you used the same passkey and saved data.",
+                )
             }
         }
     }
 
     fun clearSession(): PrfDemoResult {
+        operationGeneration += 1
+        return lockCurrentSession()
+    }
+
+    // Backgrounding during an OS prompt clears the previous key without cancelling the prompt.
+    fun lockCurrentSession(): PrfDemoResult {
         return when (internalState) {
             SessionDataState.NoSession -> PrfDemoResult.Success("No active PRF session.")
             is SessionDataState.SessionReady, is SessionDataState.CiphertextReady -> {
@@ -168,6 +196,9 @@ internal class PrfCryptoDemoController(
             }
         }
     }
+
+    private fun cancelledResult(): PrfDemoResult.Failure =
+        PrfDemoResult.Failure("Session cleared. Use your passkey to continue.")
 
     private fun transitionTo(newState: SessionDataState) {
         val previousSession = internalState.sessionOrNull()

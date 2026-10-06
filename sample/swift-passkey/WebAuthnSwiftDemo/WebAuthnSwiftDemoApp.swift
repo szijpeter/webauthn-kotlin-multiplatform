@@ -40,5 +40,11 @@ private struct LiveDemoRoot: View {
         )
     }
 
-    var body: some View { RootView(viewModel: viewModel) }
+    var body: some View {
+        RootView(viewModel: viewModel)
+            .onDisappear { Task { await viewModel.backgrounded() } }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
+                Task { await viewModel.backgrounded() }
+            }
+    }
 }
