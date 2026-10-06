@@ -241,3 +241,14 @@ request, and PRF lifecycle tests cover those contracts independently; device val
 The Android UI smoke covers disabled/busy states, retry availability, session-dependent crypto controls,
 log dismissal, configuration expansion, and message editing across recreation. It pins Espresso 3.7
 because Compose's transitive Espresso 3.5 cannot inject events on recent Android runtimes.
+
+## Session lifetime
+
+Manual clear, sign-out, actual backgrounding, and host disposal remove the active crypto session and
+visible plaintext. Obsolete start, prompt, finish, encryption, and decryption completions cannot restore
+cleared state. Android preserves the view model across configuration recreation. A known platform prompt
+may temporarily stop the Android host; clearing the previous key does not cancel that prompt, and a new
+session is accepted only after the host is foreground and the backend verifies the response. iOS listens
+to actual background notifications, rather than temporary inactivity during system authentication.
+Clearing is best effort for owned buffers; immutable strings and platform/provider copies are outside
+that guarantee. Restarting loses the sample salt, key, and ciphertext on every showcase.

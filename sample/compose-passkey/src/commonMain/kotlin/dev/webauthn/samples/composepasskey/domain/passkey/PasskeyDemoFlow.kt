@@ -89,7 +89,7 @@ internal fun DemoCeremonyState.toDemoStatus(): PasskeyDemoStatus {
                 StatusTone.ERROR
             },
             headline = error.label(),
-            detail = "[${error.label()}] ${error.message.withProviderDependencyHint()}",
+            detail = error.userGuidance(),
         )
     }
 }
@@ -114,7 +114,7 @@ internal fun demoTransitionEvent(
             level = if (current.error is DemoCeremonyError.Platform &&
                 current.error.error is PasskeyClientError.UserCancelled
             ) DebugLogLevel.WARN else DebugLogLevel.ERROR,
-            message = "${current.action.label()} failed [${current.error.label()}] ${current.error.message}",
+            message = "${current.action.label()} failed [${current.error.label()}]",
         )
     }
     return null
@@ -144,11 +144,19 @@ private fun PasskeyPhase.logLabel(): String = when (this) {
     PasskeyPhase.FINISHING -> "finishing"
 }
 
-private fun String.withProviderDependencyHint(): String {
-    val lowered = lowercase()
-    return if (lowered.contains("no provider dependencies found")) {
-        "$this Add androidx.credentials:credentials-play-services-auth and use a Google Play-enabled emulator/device."
-    } else {
-        this
+internal fun DemoCeremonyError.userGuidance(): String = when (this) {
+    is DemoCeremonyError.Platform -> when (error) {
+        is PasskeyClientError.UserCancelled -> "No changes were made. Choose Register or Sign In when you are ready."
+        is PasskeyClientError.NoCredential ->
+            "No matching passkey was found. Use the account that owns it, or choose Register."
+        is PasskeyClientError.InvalidOptions, is PasskeyClientError.Codec ->
+            "Check the relying party and server configuration before starting a new attempt."
+        is PasskeyClientError.Platform ->
+            "Your passkey provider could not complete the request. Check its availability, then start a new attempt."
     }
+    is DemoCeremonyError.Backend -> "Check the server configuration and connection, then start a new attempt."
+    is DemoCeremonyError.Rejected ->
+        "The server did not accept the response. Start a new sign-in request; " +
+            "contact the server administrator if this continues."
+    DemoCeremonyError.AlreadyInProgress -> "Wait for the current request to finish before starting another."
 }

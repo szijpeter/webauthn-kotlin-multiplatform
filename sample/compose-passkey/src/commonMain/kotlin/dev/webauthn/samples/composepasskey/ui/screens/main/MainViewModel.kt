@@ -16,6 +16,7 @@ import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoController
 import dev.webauthn.samples.composepasskey.domain.prf.PrfCryptoDemoSessionState
 import dev.webauthn.samples.composepasskey.domain.prf.PrfDemoResult
 import dev.webauthn.samples.composepasskey.domain.prf.PrfSaltStore
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -32,11 +33,16 @@ internal class MainViewModel(
     val uiState: StateFlow<MainUiState> field =
         MutableStateFlow<MainUiState>(MainUiState(userName = config.userName))
 
+    private var foreground: Boolean = true
+    private var actionJob: Job? = null
+    private var actionGeneration: Long = 0
+
     private val prfCapability = PasskeyCapability.Extension(WebAuthnExtension.Prf)
     private val prfDemoController = PrfCryptoDemoController(
         passkeyClient = passkeyClient,
         backend = backend,
         saltStore = saltStore,
+        isForeground = { foreground },
     )
 
     init {
@@ -69,7 +75,28 @@ internal class MainViewModel(
     }
 
     fun onClearSessionClicked() {
+        actionGeneration += 1
+        actionJob?.cancel()
+        actionJob = null
         applyPrfResult(prfDemoController.clearSession())
+        uiState.update { it.copy(busy = false, plaintext = "", decryptedText = null) }
+    }
+
+    fun onVisibilityChanged(isForeground: Boolean) {
+        foreground = isForeground
+        if (isForeground) return
+        if (prfDemoController.isPlatformPromptInProgress) {
+            applyPrfResult(prfDemoController.lockCurrentSession())
+            uiState.update { it.copy(plaintext = "", decryptedText = null) }
+        } else {
+            onClearSessionClicked()
+        }
+    }
+
+    override fun onCleared() {
+        foreground = false
+        onClearSessionClicked()
+        super.onCleared()
     }
 
     fun onPlaintextChanged(value: String) {
@@ -77,11 +104,7 @@ internal class MainViewModel(
     }
 
     fun onLogoutClicked() {
-        prfDemoController.clearSession().let { clearResult ->
-            if (clearResult is PrfDemoResult.Success) {
-                debugLogs.i(source = "session", message = clearResult.message)
-            }
-        }
+        onClearSessionClicked()
         sessionStore.signOut()
         uiState.update {
             it.copy(
@@ -124,7 +147,7 @@ internal class MainViewModel(
                         message = "Loaded PRF=${loaded.supports(prfCapability)}",
                     )
                 }
-                .onFailure { throwable ->
+                .onFailure { _ ->
                     uiState.update {
                         it.copy(
                             capabilities = PasskeyCapabilities(),
@@ -133,8 +156,7 @@ internal class MainViewModel(
                     }
                     debugLogs.e(
                         source = "capabilities",
-                        message = "Failed to load capabilities: ${throwable.message ?: "using defaults"}",
-                        throwable = throwable,
+                        message = "Failed to load capabilities; using defaults.",
                     )
                 }
         }
@@ -142,47 +164,32 @@ internal class MainViewModel(
 
     private fun runBusyAction(action: suspend () -> PrfDemoResult) {
         if (uiState.value.busy) return
-        setBusy(true)
-        viewModelScope.launch {
+        val generation = ++actionGeneration
+        uiState.update { it.copy(busy = true) }
+        actionJob = viewModelScope.launch {
             try {
-                applyPrfResult(action())
+                val result = action()
+                if (generation == actionGeneration) applyPrfResult(result)
             } finally {
-                setBusy(false)
+                if (generation == actionGeneration) {
+                    actionJob = null
+                    uiState.update { it.copy(busy = false) }
+                }
             }
         }
     }
 
     private fun applyPrfResult(result: PrfDemoResult) {
-        when (result) {
-            is PrfDemoResult.Success -> {
-                updatePrfUi(
-                    statusMessage = result.message,
-                    decryptedText = result.plaintext,
-                )
-                debugLogs.i(source = "prf", message = result.message)
-            }
-
-            is PrfDemoResult.Failure -> {
-                updatePrfUi(statusMessage = result.message)
-                debugLogs.w(source = "prf", message = result.message)
-            }
-        }
-    }
-
-    private fun updatePrfUi(
-        statusMessage: String,
-        decryptedText: String? = uiState.value.decryptedText,
-    ) {
         uiState.update {
             it.copy(
-                statusMessage = statusMessage,
-                decryptedText = decryptedText,
+                statusMessage = result.message,
+                decryptedText = if (result is PrfDemoResult.Success) result.plaintext else it.decryptedText,
                 sessionState = prfDemoController.sessionState,
             )
         }
-    }
-
-    private fun setBusy(value: Boolean) {
-        uiState.update { it.copy(busy = value) }
+        when (result) {
+            is PrfDemoResult.Success -> debugLogs.i(source = "prf", message = result.message)
+            is PrfDemoResult.Failure -> debugLogs.w(source = "prf", message = result.message)
+        }
     }
 }

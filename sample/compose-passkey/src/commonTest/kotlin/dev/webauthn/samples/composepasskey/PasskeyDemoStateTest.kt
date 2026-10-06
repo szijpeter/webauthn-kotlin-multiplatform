@@ -69,7 +69,8 @@ class PasskeyDemoStateTest {
 
         assertEquals(StatusTone.WARNING, cancelled.tone)
         assertEquals(StatusTone.ERROR, rejected.tone)
-        assertTrue(rejected.detail.orEmpty().contains("Rejected"))
+        assertEquals("Rejected", rejected.headline)
+        assertTrue(rejected.detail.orEmpty().contains("Start a new sign-in request"))
     }
 
     @Test
