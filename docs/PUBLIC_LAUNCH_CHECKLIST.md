@@ -64,3 +64,8 @@ Use this checklist when moving from private to public operation.
 Swift bridge changes require simulator tests, both XCFramework architectures, and per-slice
 metadata/privacy/license checks before merge. Physical-device qualification remains a separate
 release requirement.
+
+Sample UI changes also require executed Android, Compose iOS, and native SwiftUI smoke checks.
+Review retained failure screenshots and result bundles for fixture-only content and seven-day
+retention. Capture failures must not replace the original test status. UI fixtures do not establish
+physical-provider behavior or release device qualification.

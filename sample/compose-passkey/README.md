@@ -230,8 +230,10 @@ Foundation, while retaining labelled input, focus feedback, multiline editing, a
 the live app. It never creates Koin, network clients, passkeys, or crypto sessions. In a Debug host,
 use the Android intent string extra `sample-gallery` or the iOS launch argument `--sample-gallery`
 followed by one of `auth`, `busy`, `success`, `cancelled`, `rejected`, `error`, `session`, `encrypted`,
-`unsupported`, `prf-busy`, or `logs`. Both hosts ignore this entry point in Release builds. Appearance
-and font size follow the operating system; the previews also include dark, tablet, and large-text cases.
+`unsupported`, `prf-busy`, `logs`, `large-text`, `long-text`, or `rtl`. Both hosts ignore this entry point in Release builds. Appearance
+and font size follow the operating system. The `large-text` fixture uses a 2× font scale; `long-text`
+uses pseudolocalized account data, and `rtl` also reverses the layout direction. These fixtures check
+layout resilience without claiming translated product copy.
 
 Gallery credentials, successful messages, and capabilities are rendering fixtures. They are not evidence
 of a live registration, authentication, PRF key derivation, or backend verification. The existing flow,
@@ -242,7 +244,7 @@ The Android UI smoke covers disabled/busy states, retry availability, session-de
 log dismissal, configuration expansion, and message editing across recreation. It pins Espresso 3.7
 because Compose's transitive Espresso 3.5 cannot inject events on recent Android runtimes.
 
-## Session lifetime
+## Session lifetime and executed UI checks
 
 Manual clear, sign-out, actual backgrounding, and host disposal remove the active crypto session and
 visible plaintext. Obsolete start, prompt, finish, encryption, and decryption completions cannot restore
@@ -252,3 +254,10 @@ session is accepted only after the host is foreground and the backend verifies t
 to actual background notifications, rather than temporary inactivity during system authentication.
 Clearing is best effort for owned buffers; immutable strings and platform/provider copies are outside
 that guarantee. Restarting loses the sample salt, key, and ciphertext on every showcase.
+
+Android instrumentation and the Compose iOS UI suite execute in CI. Both iOS hosts use the same test
+source in `sample/mobile-ui-tests`. Failure capture runs while the app is open and preserves the original
+test failure. Android screenshots use Gradle's additional test output collection; iOS retains `.xcresult`
+attachments. Per-run metadata records the revision, destination, OS/toolchain, result, duration, and fixture
+boundary. Artifacts expire after seven days. See [mobile UI checks](../mobile-ui-tests/README.md) for commands,
+coverage, budgets, and the distinction between fixtures and attended provider checks.

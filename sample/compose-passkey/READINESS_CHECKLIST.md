@@ -21,7 +21,7 @@ Pass condition:
 - all commands succeed without test failures.
 - shared sample tests cover sealed-state lifecycle outcomes for register/sign-in plus debug-log transition behavior.
 - runtime platform client wiring is provided by `webauthn-client-compose` (`rememberPasskeyClient()` + `rememberPasskeyFlow()`), and the auth route remains the clearest reference usage.
-- Android UI smoke test sources compile in CI (`:sample:compose-passkey-android:compileDebugAndroidTestKotlin`).
+- Android and Compose iOS UI smoke tests execute in CI and retain failures; both iOS hosts share `sample/mobile-ui-tests` source.
 
 ## 2. Local sample backend
 
@@ -71,10 +71,10 @@ adb shell am start -n dev.webauthn.samples.composepasskey.android/.MainActivity
 Pass criteria:
 
 1. App launch succeeds.
-2. `Auth` screen is shown first with both `Register` and `Sign In` actions.
+2. The authentication screen is shown first with both `Register` and `Sign In` actions.
 3. `Register` succeeds and debug log records registration success.
 4. `Sign In` succeeds, transitions to the signed-in demo screen, and debug log records authentication success.
-5. `Local Logout` returns to `Auth` and clears active local session state.
+5. `Sign Out` returns to authentication and clears active local session state.
 6. No fatal crash in logcat while running the flow.
 
 Suggested crash check:
@@ -98,22 +98,27 @@ Pass condition:
 - app/action/flow/http events are present and readable.
 - HTTP entries contain request/response metadata without bodies under the default
   configuration.
-- in-app debug sheet opens from the explicit `Logs` header action on both screens.
+- in-app debug sheet opens from the explicit `Debug logs` header action on both screens.
 
 For an isolated debugging session, build with
 `WEBAUTHN_DEMO_UNSAFE_HTTP_BODY_LOGGING=true` to include raw HTTP bodies. This
 explicit escape hatch does not redact WebAuthn or PRF material; never use its logs
 as shareable test evidence.
 
-## 5. Optional emulator smoke run
+## 5. Executed emulator smoke run
 
-Run (with emulator/device connected):
+Run with exactly one emulator selected:
 
 <!-- doc-example: id=sample-compose-passkey-readiness-checklist-bash-7; owner=markdown; verify=syntax; audience=consumer -->
 ```bash
-./gradlew :sample:compose-passkey-android:connectedDebugAndroidTest --stacktrace
+tools/mobile/check-android-showcase.sh
 ```
 
 Pass condition:
 
-- `MainActivitySmokeTest` passes (`app_launches_without_crash`).
+- `MainActivitySmokeTest` passes all selected fixture scenarios.
+- Each run records allowlisted metadata under `build/mobile-ui/android/`.
+- A deliberately failing capture drill produces a screenshot and retains a nonzero test exit status.
+- Large text, long/bidirectional account data, and recreation keep primary actions reachable.
+
+See [mobile UI checks](../mobile-ui-tests/README.md) for Compose iOS execution and evidence boundaries.

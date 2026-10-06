@@ -70,7 +70,7 @@ cp "$repo_root/Package.swift" "$generated_repo/Package.swift"
 cp "$sample_root/project.yml" "$generated_root/project.yml"
 cp -R "$sample_root/WebAuthnSwiftDemo" "$generated_root/WebAuthnSwiftDemo"
 cp -R "$sample_root/WebAuthnSwiftDemoTests" "$generated_root/WebAuthnSwiftDemoTests"
-cp -R "$sample_root/WebAuthnSwiftDemoUITests" "$generated_root/WebAuthnSwiftDemoUITests"
+cp -R "$repo_root/sample/mobile-ui-tests" "$generated_repo/sample/mobile-ui-tests"
 cp -R "$repo_root/swift/Tests/WebAuthnTests" "$generated_repo/swift/Tests/WebAuthnTests"
 cp -R "$repo_root/swift/Tests/WebAuthnFlowTests" "$generated_repo/swift/Tests/WebAuthnFlowTests"
 xcodegen generate --spec "$generated_root/project.yml" --project "$generated_root" --quiet

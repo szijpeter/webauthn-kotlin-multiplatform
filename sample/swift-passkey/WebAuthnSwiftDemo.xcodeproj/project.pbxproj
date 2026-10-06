@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0322B2BFF68DCAF60BA29BBC /* WebAuthnSwiftDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */; };
 		0F94504375BCD32394C204EC /* PasskeyBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0CE08CCFE74A42BE2C4236 /* PasskeyBackend.swift */; };
 		2856D663BF51DB4EEFC9DFC1 /* PasskeyBackendTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A595FFCB0850464B5FE043E8 /* PasskeyBackendTests.swift */; };
 		302E6751C13AD6225AC39842 /* DemoRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */; };
@@ -17,6 +16,7 @@
 		48655D14688D8442594FB00D /* WebAuthn in Frameworks */ = {isa = PBXBuildFile; productRef = 39AF5276C36DF1EDF494F104 /* WebAuthn */; };
 		5DC5B730498C58359B3D8CD7 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63EAB6048616424B6654568 /* AuthenticationView.swift */; };
 		62CB3AAF9A8522AFDBBAF4DC /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65CF00BCCF157FB8E092F04 /* RootView.swift */; };
+		70CD67164AFA67E354019C81 /* ShowcaseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF061F61D36C191D9F33ABFF /* ShowcaseUITests.swift */; };
 		765C62D4C3CFC21AFC92DCA9 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C05904A4CD60DD39FADAB83 /* MainView.swift */; };
 		7B3323A55DD807B766354269 /* WebAuthn in Frameworks */ = {isa = PBXBuildFile; productRef = FB7114E1C764C139CC031C65 /* WebAuthn */; };
 		846D604CE7B23976DFA55334 /* PasskeyClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A7094B37BD27AE6DB2C41E /* PasskeyClientTests.swift */; };
@@ -60,10 +60,9 @@
 		0C1FB6F935D1C51ABC7B9557 /* WebAuthnSwiftDemoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnSwiftDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		18A7094B37BD27AE6DB2C41E /* PasskeyClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyClientTests.swift; sourceTree = "<group>"; };
 		266711338CF516D0F65ED57E /* WebAuthnSwiftDemoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnSwiftDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoUITests.swift; sourceTree = "<group>"; };
 		3C05904A4CD60DD39FADAB83 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		52DD83E70FB53D79B85FBFBC /* WebAuthnPackageTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WebAuthnPackageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5EF79E6317761004F638065A /* webauthn-kotlin-multiplatform-swift-parity */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "webauthn-kotlin-multiplatform-swift-parity"; path = ../..; sourceTree = SOURCE_ROOT; };
+		87E6F21FBC75F5714102068D /* webauthn-kotlin-multiplatform */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "webauthn-kotlin-multiplatform"; path = ../..; sourceTree = SOURCE_ROOT; };
 		95E40CE6AB77C76BD7D7AE5A /* PasskeyClientProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyClientProtocolTests.swift; sourceTree = "<group>"; };
 		A595FFCB0850464B5FE043E8 /* PasskeyBackendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyBackendTests.swift; sourceTree = "<group>"; };
 		A63EAB6048616424B6654568 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
@@ -75,6 +74,7 @@
 		C4DCDACD49FFA0941957FE2D /* PasskeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyService.swift; sourceTree = "<group>"; };
 		C9F6A9E7C549D8502CC3C70E /* DemoRequestsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequestsTests.swift; sourceTree = "<group>"; };
 		CE877F7E41F39AC64988C221 /* WebAuthnSwiftDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnSwiftDemoApp.swift; sourceTree = "<group>"; };
+		CF061F61D36C191D9F33ABFF /* ShowcaseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcaseUITests.swift; sourceTree = "<group>"; };
 		CF0C6DE8AAD249F37CA813EF /* DemoRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRequests.swift; sourceTree = "<group>"; };
 		D28952C0D8F8357246CE8F53 /* SampleGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleGallery.swift; sourceTree = "<group>"; };
 		D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrfSaltStore.swift; sourceTree = "<group>"; };
@@ -148,7 +148,7 @@
 		50D5CC9BCF3090F0B37DD407 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				5EF79E6317761004F638065A /* webauthn-kotlin-multiplatform-swift-parity */,
+				87E6F21FBC75F5714102068D /* webauthn-kotlin-multiplatform */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -169,6 +169,15 @@
 				F87C1F37309F5E2A44357D1A /* DemoConfiguration.swift */,
 			);
 			path = Configuration;
+			sourceTree = "<group>";
+		};
+		87C5AE742A31A65E91D9E58C /* mobile-ui-tests */ = {
+			isa = PBXGroup;
+			children = (
+				CF061F61D36C191D9F33ABFF /* ShowcaseUITests.swift */,
+			);
+			name = "mobile-ui-tests";
+			path = "../mobile-ui-tests";
 			sourceTree = "<group>";
 		};
 		A5C2096571EC9235EFA42559 /* Logging */ = {
@@ -194,11 +203,11 @@
 		BBD583679636652D6289DF1B = {
 			isa = PBXGroup;
 			children = (
+				87C5AE742A31A65E91D9E58C /* mobile-ui-tests */,
 				50D5CC9BCF3090F0B37DD407 /* Packages */,
 				E46EF6B4029E47BCDE5FAB56 /* WebAuthnFlowTests */,
 				43BB7C7B27FAE8392413C437 /* WebAuthnSwiftDemo */,
 				66248CE32C19693DDDD57276 /* WebAuthnSwiftDemoTests */,
-				CCF61654DA45BB573B6CA9F8 /* WebAuthnSwiftDemoUITests */,
 				EBE13D2ED16E92E48895A864 /* WebAuthnTests */,
 				E82B99E3963A78C932A49FF7 /* Products */,
 			);
@@ -211,14 +220,6 @@
 				D6360F4E8A8ED834C43159DF /* PrfSaltStore.swift */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		CCF61654DA45BB573B6CA9F8 /* WebAuthnSwiftDemoUITests */ = {
-			isa = PBXGroup;
-			children = (
-				31194D59EBD703294EE35FA6 /* WebAuthnSwiftDemoUITests.swift */,
-			);
-			path = WebAuthnSwiftDemoUITests;
 			sourceTree = "<group>";
 		};
 		E46EF6B4029E47BCDE5FAB56 /* WebAuthnFlowTests */ = {
@@ -464,7 +465,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0322B2BFF68DCAF60BA29BBC /* WebAuthnSwiftDemoUITests.swift in Sources */,
+				70CD67164AFA67E354019C81 /* ShowcaseUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

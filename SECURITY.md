@@ -47,3 +47,10 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 The Swift bridge CI job validates simulator behavior and static XCFramework slices. Packaging
 checks require metadata, privacy declarations, licenses, and notices in every expected slice;
 these checks do not establish physical-device qualification.
+
+## Mobile sample test evidence
+
+The sample UI lanes run deterministic scenarios with read-only repository access and no production
+credentials. Failure screenshots and test results are retained for seven days. Evidence collection
+must preserve the original test failure and avoid unrestricted HTTP bodies or device logs. Physical
+provider qualification uses a separately reviewed evidence record and is not run by these CI lanes.

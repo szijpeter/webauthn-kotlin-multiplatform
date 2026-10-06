@@ -55,7 +55,7 @@ Use a Debug build and select a gallery state through the host's launch mechanism
 - **Appearance and text size:** use the operating system's light/dark and accessibility settings.
 
 Available states are `auth`, `busy`, `success`, `cancelled`, `rejected`, `error`, `session`, `encrypted`,
-`unsupported`, `prf-busy`, and `logs`. Release hosts ignore the gallery entry point. Fixtures render
+`unsupported`, `prf-busy`, `logs`, `large-text`, `long-text`, and `rtl`. Release hosts ignore the gallery entry point. Fixtures render
 the actual screen components without creating a backend client, passkey, or PRF session.
 
 See the [shared Compose sample](compose-passkey/README.md#appearance-accessibility-and-screenshot-fixtures),
@@ -66,3 +66,8 @@ The UI checks cover busy and terminal action availability, session-dependent cry
 message state, log dismissal, and reaching configuration with large text. Live registration,
 authentication, and PRF validation remain separate device checks described in the
 [Compose readiness checklist](compose-passkey/READINESS_CHECKLIST.md).
+
+The extra text fixtures use public pseudolocalized and bidirectional account data. `rtl` also reverses
+layout direction; `large-text` sets a large fixture font size. They provide layout checks without adding
+a supported-language promise. [Executed mobile UI checks](mobile-ui-tests/README.md) share the iOS test
+source and retain failure evidence in CI; this gallery remains deterministic rendering evidence.

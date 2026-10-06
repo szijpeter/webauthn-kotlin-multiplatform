@@ -87,7 +87,7 @@ targets:
     type: bundle.ui-testing
     platform: iOS
     sources:
-      - path: WebAuthnSwiftDemoUITests
+      - path: ../mobile-ui-tests/ShowcaseUITests.swift
     dependencies:
       - target: WebAuthnSwiftDemo
     settings:

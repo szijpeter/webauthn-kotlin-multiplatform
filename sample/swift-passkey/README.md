@@ -94,15 +94,16 @@ while a ceremony is busy. Intro headings use the scalable 28-point title style; 
 remain compact text-only controls centered within the PRF card, with a vertical fallback when needed.
 
 Debug builds accept `--sample-gallery` followed by `auth`, `busy`, `success`, `cancelled`, `rejected`,
-`error`, `session`, `encrypted`, `unsupported`, `prf-busy`, or `logs`. These deterministic fixtures render
+`error`, `session`, `encrypted`, `unsupported`, `prf-busy`, `logs`, `large-text`, `long-text`, or `rtl`. These deterministic fixtures render
 `AuthenticationContent` and `SessionContent` directly without constructing a client, backend, or crypto
 session. They demonstrate presentation only. The entry point is compiled out of Release builds.
 
 The UI tests cover live-app launch/log dismissal, busy and terminal action availability, PRF session
-controls, and reaching configuration at the largest Dynamic Type size. Unit tests separately cover
-the unchanged request, backend, and session behavior.
-
-## Session lifetime
+controls, reaching configuration at the largest Dynamic Type size, and long/bidirectional account data.
+The `large-text` fixture sets an accessibility Dynamic Type size; `rtl` reverses layout direction.
+Fixtures check layout resilience and do not claim translated product copy. Both iOS hosts share the
+UI-test source in `sample/mobile-ui-tests`; [mobile UI checks](../mobile-ui-tests/README.md) describes
+failure artifacts and coverage boundaries.
 
 Manual clear, sign-out, actual backgrounding, and host disappearance invalidate pending operations,
 detach the session, and remove visible plaintext before awaiting key cleanup. Temporary inactivity while

@@ -3,19 +3,33 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		285CB960E67F5D7493B47868 /* ComposePasskeyIosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */; };
+		3D51ECB13DF4B8D227B58106 /* ShowcaseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B37D6CF06C51B2841DC451E0 /* ShowcaseUITests.swift */; };
 		729ECCE037B334E608061C3B /* ComposePasskeyShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020E8BEC08EDAB193162C8F0 /* ComposePasskeyShared.framework */; };
 		EEA0A397E433A3BC1D8E6F51 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D05536FE2830CD3C83D94EDF /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0822F81A5A6884CB23BA6CE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C1B4E411824664090F29F28 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CFB1D48572F3794BE43FFB7F;
+			remoteInfo = ComposePasskeyIos;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		020E8BEC08EDAB193162C8F0 /* ComposePasskeyShared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposePasskeyShared.framework; path = "$SRCROOT/../compose-passkey/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/ComposePasskeyShared.framework"; sourceTree = "<group>"; };
+		25E59833C2B72F40612046C6 /* ComposePasskeyIosUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ComposePasskeyIosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B7B280E6649E1FE2BECF86C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B37D6CF06C51B2841DC451E0 /* ShowcaseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcaseUITests.swift; sourceTree = "<group>"; };
 		D05536FE2830CD3C83D94EDF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		EC8470A115D06D044F4D7D79 /* ComposePasskeyIos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComposePasskeyIos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC8470A115D06D044F4D7D79 /* ComposePasskeyIos.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ComposePasskeyIos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposePasskeyIosApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -35,6 +49,7 @@
 			isa = PBXGroup;
 			children = (
 				54AE4534FD10B8D3743CF934 /* ComposePasskeyIos */,
+				949E4E2D3EC5C47B60677894 /* mobile-ui-tests */,
 				F64F119466D95B6616824F06 /* Frameworks */,
 				D97C733830D53D6D1C40C13F /* Products */,
 			);
@@ -45,14 +60,25 @@
 			children = (
 				D05536FE2830CD3C83D94EDF /* Assets.xcassets */,
 				F3A72121BAA5A0037AE74FEA /* ComposePasskeyIosApp.swift */,
+				6B7B280E6649E1FE2BECF86C /* Info.plist */,
 			);
 			path = ComposePasskeyIos;
+			sourceTree = "<group>";
+		};
+		949E4E2D3EC5C47B60677894 /* mobile-ui-tests */ = {
+			isa = PBXGroup;
+			children = (
+				B37D6CF06C51B2841DC451E0 /* ShowcaseUITests.swift */,
+			);
+			name = "mobile-ui-tests";
+			path = "../mobile-ui-tests";
 			sourceTree = "<group>";
 		};
 		D97C733830D53D6D1C40C13F /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				EC8470A115D06D044F4D7D79 /* ComposePasskeyIos.app */,
+				25E59833C2B72F40612046C6 /* ComposePasskeyIosUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,6 +94,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		676CFFC160D0C8032B2D3890 /* ComposePasskeyIosUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C9974894A4AF5A729AB85D6 /* Build configuration list for PBXNativeTarget "ComposePasskeyIosUITests" */;
+			buildPhases = (
+				BEA7DB8B8CE353F8D7F40001 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0F93F9C5F40D1F49D1908BB5 /* PBXTargetDependency */,
+			);
+			name = ComposePasskeyIosUITests;
+			packageProductDependencies = (
+			);
+			productName = ComposePasskeyIosUITests;
+			productReference = 25E59833C2B72F40612046C6 /* ComposePasskeyIosUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		CFB1D48572F3794BE43FFB7F /* ComposePasskeyIos */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2E3F1A8C4C96247B42B0C12 /* Build configuration list for PBXNativeTarget "ComposePasskeyIos" */;
@@ -97,13 +141,18 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					676CFFC160D0C8032B2D3890 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = CFB1D48572F3794BE43FFB7F;
+					};
 					CFB1D48572F3794BE43FFB7F = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
 			buildConfigurationList = A88FAA36BB745199089541F3 /* Build configuration list for PBXProject "ComposePasskeyIos" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -112,10 +161,13 @@
 			);
 			mainGroup = 1F33ADD75A38736490A248CB;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D97C733830D53D6D1C40C13F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				CFB1D48572F3794BE43FFB7F /* ComposePasskeyIos */,
+				676CFFC160D0C8032B2D3890 /* ComposePasskeyIosUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -161,7 +213,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BEA7DB8B8CE353F8D7F40001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D51ECB13DF4B8D227B58106 /* ShowcaseUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0F93F9C5F40D1F49D1908BB5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CFB1D48572F3794BE43FFB7F /* ComposePasskeyIos */;
+			targetProxy = 0822F81A5A6884CB23BA6CE8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1CE53A24506212764EA25132 /* Debug */ = {
@@ -306,7 +374,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -329,7 +396,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -347,9 +413,50 @@
 			};
 			name = Debug;
 		};
+		BC75A904D888686EFD41F679 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ComposePasskeyIos;
+			};
+			name = Release;
+		};
+		CD293907DFDF5E38F23B5D63 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ComposePasskeyIos;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2C9974894A4AF5A729AB85D6 /* Build configuration list for PBXNativeTarget "ComposePasskeyIosUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD293907DFDF5E38F23B5D63 /* Debug */,
+				BC75A904D888686EFD41F679 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		A88FAA36BB745199089541F3 /* Build configuration list for PBXProject "ComposePasskeyIos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
