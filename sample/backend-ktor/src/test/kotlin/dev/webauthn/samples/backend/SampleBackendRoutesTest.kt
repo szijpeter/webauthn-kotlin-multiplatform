@@ -10,7 +10,9 @@ import dev.webauthn.server.crypto.JvmRpIdHasher
 import dev.webauthn.server.crypto.JvmSignatureVerifier
 import dev.webauthn.server.crypto.StrictAttestationVerifier
 import io.ktor.client.request.get
+import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -81,6 +83,8 @@ class SampleBackendRoutesTest {
         assertTrue(cliBrowserPage.contains("Passkey CLI Browser Handoff"))
         assertTrue(cliBrowserPage.contains("navigator.credentials.create"))
         assertTrue(cliBrowserPage.contains("navigator.credentials.get"))
+
+        assertEquals(HttpStatusCode.NotFound, client.post("/attestation/options").status)
     }
 
     @Test
@@ -92,6 +96,7 @@ class SampleBackendRoutesTest {
         )
         assertEquals(9090, defaultConfig.port)
         assertEquals(AttestationPolicy.Strict, defaultConfig.attestationPolicy)
+        assertEquals(false, defaultConfig.communityConformanceEnabled)
         assertEquals("TEAMID.com.example.app", defaultConfig.iosAppId)
         assertTrue(defaultConfig.iosAppIdWarning?.contains("placeholder") == true)
 
@@ -108,6 +113,19 @@ class SampleBackendRoutesTest {
             ),
         )
         assertEquals(AttestationPolicy.None, noneConfig.attestationPolicy)
+
+        val conformanceConfig = SampleBackendConfig.fromEnvironment(
+            mapOf(
+                "WEBAUTHN_CONFORMANCE_ENABLED" to "true",
+                "WEBAUTHN_CONFORMANCE_RP_ID" to "example.test",
+                "WEBAUTHN_CONFORMANCE_RP_NAME" to "Example Test RP",
+                "WEBAUTHN_CONFORMANCE_ORIGIN" to "https://example.test",
+            ),
+        )
+        assertEquals(true, conformanceConfig.communityConformanceEnabled)
+        assertEquals("example.test", conformanceConfig.conformanceRpId)
+        assertEquals("Example Test RP", conformanceConfig.conformanceRpName)
+        assertEquals("https://example.test", conformanceConfig.conformanceOrigin)
 
         val unknownConfig = SampleBackendConfig.fromEnvironment(
             mapOf(
