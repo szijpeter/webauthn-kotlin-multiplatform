@@ -45,6 +45,7 @@ include(
     ":client:webauthn-client-json-core",
     ":client:webauthn-client-compose",
     ":client:webauthn-client-platform",
+    ":client:webauthn-client-swift-bridge",
     ":sample:backend-ktor",
     ":sample:android-passkey",
     ":sample:ios-passkey",
