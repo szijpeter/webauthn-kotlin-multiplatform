@@ -249,7 +249,7 @@ internal class AndroidPasskeyPlatformBridge(
 }
 
 @Suppress("TooGenericExceptionCaught")
-private inline fun <T> runCodecOperation(
+internal inline fun <T> runCodecOperation(
     failureMessage: String,
     operation: () -> T,
 ): T {
@@ -273,7 +273,7 @@ private fun enrichRpIdValidationMessage(message: String): String {
 private fun Boolean.asCapabilitySupport(): CapabilitySupport =
     if (this) CapabilitySupport.SUPPORTED else CapabilitySupport.UNSUPPORTED
 
-private fun <T> ValidationResult<T>.toPlatformValue(context: String): T = when (this) {
+internal fun <T> ValidationResult<T>.toPlatformValue(context: String): T = when (this) {
     is ValidationResult.Valid -> value
     is ValidationResult.Invalid -> {
         val error = errors.firstOrNull()
