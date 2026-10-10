@@ -6,6 +6,7 @@ import dev.webauthn.client.PasskeyCapabilities
 import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyPlatformBridge
 import dev.webauthn.client.PlatformCapability
 import dev.webauthn.client.platform.InvalidPlatformResponseException
@@ -41,8 +42,15 @@ internal class IosPasskeyPlatformBridge(
     private val bridge: IosAuthorizationBridge,
 ) : PasskeyPlatformBridge {
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): RawRegistrationResponse {
+        return createCredential(options, PasskeyCreateOptions.Default)
+    }
+
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): RawRegistrationResponse {
         return bridge
-            .createCredential(options)
+            .createCredential(options, createOptions)
             .toRaw()
     }
 
@@ -104,6 +112,10 @@ internal class IosPasskeyPlatformBridge(
                 put(
                     PasskeyCapability.Platform(PlatformCapability.SecurityKey),
                     (major >= 15).asCapabilitySupport(),
+                )
+                put(
+                    PasskeyCapability.Platform(PlatformCapability.ConditionalCreate),
+                    (major >= 18).asCapabilitySupport(),
                 )
             },
         )

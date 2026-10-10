@@ -64,6 +64,21 @@ class PasskeyFlowTest {
     }
 
     @Test
+    fun registration_forwards_conditional_create_options() = runTest {
+        val client = TestClient(createResult = PasskeyResult.Success(rawRegistration()))
+        val flow = PasskeyFlow(client)
+
+        val result = flow.register(
+            input = "user",
+            backend = registrationBackend(),
+            createOptions = PasskeyCreateOptions.Conditional,
+        )
+
+        assertIs<CeremonyResult.Success<Unit>>(result)
+        assertEquals(PasskeyCreateOptions.Conditional, client.receivedCreateOptions)
+    }
+
+    @Test
     fun platform_failure_is_classified_but_backend_failure_propagates() = runTest {
         val platformError = PasskeyClientError.UserCancelled()
         val flow = PasskeyFlow(TestClient(createResult = PasskeyResult.Failure(platformError)))
@@ -132,8 +147,18 @@ private class TestClient(
     private val assertionResult: PasskeyResult<RawAuthenticationResponse> = PasskeyResult.Failure(PasskeyClientError.Platform("unused")),
     private val createAction: (suspend () -> PasskeyResult<RawRegistrationResponse>)? = null,
 ) : PasskeyClient {
+    var receivedCreateOptions: PasskeyCreateOptions? = null
+
     override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): PasskeyResult<RawRegistrationResponse> =
         createAction?.invoke() ?: createResult
+
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): PasskeyResult<RawRegistrationResponse> {
+        receivedCreateOptions = createOptions
+        return createAction?.invoke() ?: createResult
+    }
 
     override suspend fun getAssertion(options: PublicKeyCredentialRequestOptions): PasskeyResult<RawAuthenticationResponse> =
         assertionResult
