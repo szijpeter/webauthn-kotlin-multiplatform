@@ -29,8 +29,13 @@ The repository sample keeps the flow stable across recomposition and leaves coor
 ```kotlin
     val flow = rememberPasskeyFlow(passkeyClient)
     val scope = rememberCoroutineScope()
-    val coordinator = remember(config, debugLogs, sessionStore) {
-        AuthDemoCoordinator(config, debugLogs, sessionStore)
+    val coordinator = remember(config, debugLogs, sessionStore, credentialSignalClient) {
+        AuthDemoCoordinator(
+            config = config,
+            debugLogs = debugLogs,
+            sessionStore = sessionStore,
+            credentialSignalClient = credentialSignalClient,
+        )
     }
     var state by remember { mutableStateOf<DemoCeremonyState>(DemoCeremonyState.Idle) }
     val canRegister by coordinator.canRegister.collectAsState()
