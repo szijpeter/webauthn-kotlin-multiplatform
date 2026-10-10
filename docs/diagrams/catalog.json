@@ -1,0 +1,122 @@
+[
+  {
+    "id": "readme-1",
+    "page": "README.md"
+  },
+  {
+    "id": "readme-2",
+    "page": "README.md"
+  },
+  {
+    "id": "docs-architecture-1",
+    "page": "docs/architecture.md"
+  },
+  {
+    "id": "docs-architecture-2",
+    "page": "docs/architecture.md"
+  },
+  {
+    "id": "docs-architecture-3",
+    "page": "docs/architecture.md"
+  },
+  {
+    "id": "docs-architecture-4",
+    "page": "docs/architecture.md"
+  },
+  {
+    "id": "public-ceremonies-registration-1",
+    "page": "docs/site/content/concepts/ceremonies.md"
+  },
+  {
+    "id": "public-prf-ownership-1",
+    "page": "docs/site/content/guides/prf.md"
+  },
+  {
+    "id": "public-home-flow-1",
+    "page": "docs/site/content/index.md"
+  },
+  {
+    "id": "public-compose-lifecycle-1",
+    "page": "docs/site/content/mobile/compose.md"
+  },
+  {
+    "id": "public-full-stack-topology-1",
+    "page": "docs/site/content/mobile/full-stack.md"
+  },
+  {
+    "id": "public-troubleshooting-flow-1",
+    "page": "docs/site/content/mobile/troubleshooting.md"
+  },
+  {
+    "id": "public-architecture-1",
+    "page": "docs/site/content/reference/architecture.md"
+  },
+  {
+    "id": "core-webauthn-cbor-core-readme-1",
+    "page": "core/webauthn-cbor-core/README.md"
+  },
+  {
+    "id": "core-webauthn-core-readme-1",
+    "page": "core/webauthn-core/README.md"
+  },
+  {
+    "id": "core-webauthn-crypto-api-readme-1",
+    "page": "core/webauthn-crypto-api/README.md"
+  },
+  {
+    "id": "core-webauthn-json-kotlinx-readme-1",
+    "page": "core/webauthn-json-kotlinx/README.md"
+  },
+  {
+    "id": "core-webauthn-model-readme-1",
+    "page": "core/webauthn-model/README.md"
+  },
+  {
+    "id": "core-webauthn-protocol-readme-1",
+    "page": "core/webauthn-protocol/README.md"
+  },
+  {
+    "id": "client-webauthn-client-defaults-readme-1",
+    "page": "client/webauthn-client-defaults/README.md"
+  },
+  {
+    "id": "client-webauthn-client-flow-readme-1",
+    "page": "client/webauthn-client-flow/README.md"
+  },
+  {
+    "id": "client-webauthn-client-json-core-readme-1",
+    "page": "client/webauthn-client-json-core/README.md"
+  },
+  {
+    "id": "client-webauthn-client-ktor-readme-1",
+    "page": "client/webauthn-client-ktor/README.md"
+  },
+  {
+    "id": "client-webauthn-client-platform-readme-1",
+    "page": "client/webauthn-client-platform/README.md"
+  },
+  {
+    "id": "client-webauthn-client-prf-crypto-readme-1",
+    "page": "client/webauthn-client-prf-crypto/README.md"
+  },
+  {
+    "id": "server-webauthn-attestation-mds-readme-1",
+    "page": "server/webauthn-attestation-mds/README.md"
+  },
+  {
+    "id": "server-webauthn-server-core-jvm-readme-1",
+    "page": "server/webauthn-server-core-jvm/README.md"
+  },
+  {
+    "id": "server-webauthn-server-jvm-crypto-readme-1",
+    "page": "server/webauthn-server-jvm-crypto/README.md"
+  },
+  {
+    "id": "server-webauthn-server-ktor-readme-1",
+    "page": "server/webauthn-server-ktor/README.md"
+  },
+  {
+    "id": "server-webauthn-server-store-exposed-readme-1",
+    "page": "server/webauthn-server-store-exposed/README.md"
+  }
+]

@@ -30,13 +30,23 @@ Real-world scenario: an SDK surface accepts and returns JSON strings, but delega
 
 ## How it fits
 
-<!-- doc-example: id=client-webauthn-client-json-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    APP["Host app or SDK"] --> JSON["webauthn-client-json-core"]
-    JSON --> CORE["webauthn-client-core"]
-    CORE --> PLATFORM["Android or iOS passkey client"]
-```
+<!-- diagram: client-webauthn-client-json-core-readme-1 -->
+<a href="../../docs/diagrams/assets/client-webauthn-client-json-core-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-json-core-readme-1-desktop-dark.svg">
+  <img alt="client-json-core · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-json-core-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: client-json-core · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/client-webauthn-client-json-core-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/client-webauthn-client-json-core-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Host app or SDK; webauthn-client-json-core; webauthn-client-core; Android or iOS passkey client.</p>
+<p>1. Host app or SDK → webauthn-client-json-core.</p>
+<p>2. webauthn-client-json-core → webauthn-client-core.</p>
+<p>3. webauthn-client-core → Android or iOS passkey client.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

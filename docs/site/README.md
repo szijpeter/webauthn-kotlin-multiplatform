@@ -9,13 +9,14 @@ The public site leads with Android, iOS, and Compose adoption, then completes th
 - Only the three selected end-to-end sample READMEs are staged.
 - `docs/ai`, spec caches/notes, Gradle state, build output, and arbitrary repository Markdown are excluded.
 - Relative links in relocated repository READMEs are rewritten to another staged page or a commit-pinned repository URL.
+- Registered diagrams are staged from `docs/diagrams` with local desktop/mobile and light/dark assets, accessible transcripts, and `srcset` validation. Follow the [diagram maintenance contract](../diagrams/README.md).
 - Platform baselines and stable artifact versions are derived during staging and fail when expected source declarations drift.
 
 Every user-facing fenced block remains subject to the repository documentation-example contract. Edit canonical source regions for source-, sample-, and configuration-owned examples, then update and verify them through Gradle.
 
 ## Commands
 
-Update synchronized example bodies:
+Update synchronized example bodies and diagram exports:
 
 <!-- doc-example: id=site-maintenance-bash-1; owner=markdown; verify=syntax; audience=contributor -->
 ```bash
@@ -57,4 +58,5 @@ Pull requests and `main` build the same artifact. Pull requests receive only a p
 - Keep iOS target publication, host deployment target, and optional-feature minimums distinct.
 - Update the owning module README when its public responsibility or integration changes.
 - Add new published artifacts through the existing publishing plugin so catalog completeness remains testable.
+- Inspect diagrams at desktop/phone widths and both site themes; the explicit site theme must select the matching assets.
 - Inspect the built artifact for unintended files before enabling deployment.

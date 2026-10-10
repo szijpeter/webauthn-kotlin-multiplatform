@@ -11,17 +11,27 @@ Audience: teams that need typed WebAuthn values and protocol models as the share
 
 On JVM, `LargeBlobExtensionInput` and `LargeBlobExtensionOutput` expose public no-argument constructors with all properties set to `null`. Kotlin 2.4.20 generates these constructors for their defaulted parameters, including the nullable `Base64UrlBytes` value-class parameters.
 
-<!-- doc-example: id=core-webauthn-model-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    Wire["Untrusted input<br/>HTTP JSON / mobile payload"] --> Parse["parse(...) boundary<br/>RpId / Origin / CredentialId / Base64UrlBytes"]
-    Parse --> Domain["Typed wrappers"]
-    Domain --> Protocol["Protocol models<br/>PublicKeyCredential*Options / *Response"]
-    Protocol --> Result["ValidationResult<T><br/>Valid or Invalid (errors)"]
-    Result --> Core["webauthn-core"]
-    Result --> Client["webauthn-client-* modules"]
-    Result --> Server["webauthn-server-* modules"]
-```
+<!-- diagram: core-webauthn-model-readme-1 -->
+<a href="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-dark.svg">
+  <img alt="model · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-model-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: model · What it provides</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/core-webauthn-model-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/core-webauthn-model-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Untrusted input — HTTP JSON / mobile payload; parse(...) boundary — RpId / Origin / CredentialId / Base64UrlBytes; Typed wrappers; Protocol models — PublicKeyCredential*Options / *Response; ValidationResult — Valid or Invalid (errors); webauthn-core; webauthn-client-* modules; webauthn-server-* modules.</p>
+<p>1. Untrusted input HTTP JSON / mobile payload → parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes.</p>
+<p>2. parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes → Typed wrappers.</p>
+<p>3. Typed wrappers → Protocol models PublicKeyCredential*Options / *Response.</p>
+<p>4. Protocol models PublicKeyCredential*Options / *Response → ValidationResult Valid or Invalid (errors).</p>
+<p>5. ValidationResult Valid or Invalid (errors) → webauthn-core.</p>
+<p>6. ValidationResult Valid or Invalid (errors) → webauthn-client-* modules.</p>
+<p>7. ValidationResult Valid or Invalid (errors) → webauthn-server-* modules.</p>
+</details>
+<!-- /diagram -->
 
 ## Typical usage boundary
 

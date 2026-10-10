@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="716" viewBox="0 0 400 716" role="img" aria-labelledby="core-webauthn-protocol-readme-1-mobile-dark-title core-webauthn-protocol-readme-1-mobile-dark-desc" data-diagram="core-webauthn-protocol-readme-1">
+<title id="core-webauthn-protocol-readme-1-mobile-dark-title">protocol · How it fits in the system</title>
+<desc id="core-webauthn-protocol-readme-1-mobile-dark-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-json-kotlinx.
+1. webauthn-protocol → webauthn-cbor-core.
+2. webauthn-protocol → webauthn-model.
+3. webauthn-json-kotlinx → webauthn-protocol.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="core-webauthn-protocol-readme-1-mobile-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="24.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="24.00" y="65.00" font-size="23" fill="var(--ink)" font-weight="700" text-anchor="start" >protocol · How it fits in the</text>
+<text x="24.00" y="94.00" font-size="23" fill="var(--ink)" font-weight="700" text-anchor="start" >system</text>
+<text x="24.00" y="125.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and</text>
+<text x="24.00" y="145.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >relationships; see the surrounding</text>
+<text x="24.00" y="165.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >module guide for scope and limits.</text>
+<rect x="24.00" y="208.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="234.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >01</text>
+<g data-node="PROTOCOL">
+<text x="40.00" y="260.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-protocol</text>
+</g>
+<path d="M 49 292 L 49 314" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-protocol-readme-1-mobile-dark-arrow)" data-edge="e1" data-from="PROTOCOL" data-to="CBOR"/>
+<g data-node="CBOR">
+<text x="40.00" y="340.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-cbor-core</text>
+</g>
+<rect x="24.00" y="372.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="398.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >02</text>
+<g data-node="PROTOCOL">
+<text x="40.00" y="424.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-protocol</text>
+</g>
+<path d="M 49 456 L 49 478" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-protocol-readme-1-mobile-dark-arrow)" data-edge="e2" data-from="PROTOCOL" data-to="MODEL"/>
+<g data-node="MODEL">
+<text x="40.00" y="504.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-model</text>
+</g>
+<rect x="24.00" y="536.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="562.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >03</text>
+<g data-node="SERIALIZATION">
+<text x="40.00" y="588.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-json-kotlinx</text>
+</g>
+<path d="M 49 620 L 49 642" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-protocol-readme-1-mobile-dark-arrow)" data-edge="e3" data-from="SERIALIZATION" data-to="PROTOCOL"/>
+<g data-node="PROTOCOL">
+<text x="40.00" y="668.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-protocol</text>
+</g>
+</svg>

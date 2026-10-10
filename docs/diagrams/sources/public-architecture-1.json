@@ -1,0 +1,45 @@
+{
+  "id": "public-architecture-1",
+  "title": "Architecture",
+  "kind": "graph",
+  "summary": "Application, server and shared foundation responsibilities.",
+  "nodes": [
+    {"id": "Mobile", "label": "Android and iOS application", "shape": "container", "parent": null, "container": true},
+    {"id": "UI", "label": "Product UI and state", "shape": "rect", "parent": "Mobile", "container": false},
+    {"id": "Compose", "label": "Compose helpers", "shape": "rect", "parent": "Mobile", "container": false},
+    {"id": "Flow", "label": "Client flow", "shape": "rect", "parent": "Mobile", "container": false},
+    {"id": "Transport", "label": "Ktor contract adapter", "shape": "rect", "parent": "Mobile", "container": false},
+    {"id": "Client", "label": "Passkey client core", "shape": "rect", "parent": "Mobile", "container": false},
+    {"id": "Platform", "label": "Android and iOS bridge", "shape": "rect", "parent": "Mobile", "container": false},
+    {"id": "Server", "label": "JVM relying-party backend", "shape": "container", "parent": null, "container": true},
+    {"id": "Routes", "label": "Ktor routes", "shape": "rect", "parent": "Server", "container": false},
+    {"id": "Services", "label": "Registration and authentication services", "shape": "rect", "parent": "Server", "container": false},
+    {"id": "Crypto", "label": "JVM crypto and attestation", "shape": "rect", "parent": "Server", "container": false},
+    {"id": "Stores", "label": "Challenge, credential, and account stores", "shape": "rect", "parent": "Server", "container": false},
+    {"id": "Foundation", "label": "Shared protocol foundation", "shape": "container", "parent": null, "container": true},
+    {"id": "Models", "label": "Models", "shape": "rect", "parent": "Foundation", "container": false},
+    {"id": "Protocol", "label": "Binary protocol and validation", "shape": "rect", "parent": "Foundation", "container": false},
+    {"id": "Json", "label": "JSON API and implementation", "shape": "rect", "parent": "Foundation", "container": false},
+    {"id": "Extensions", "label": "Extension hooks", "shape": "rect", "parent": "Foundation", "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "UI", "target": "Compose", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "Compose", "target": "Flow", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "UI", "target": "Flow", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "Flow", "target": "Transport", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "Flow", "target": "Client", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "Client", "target": "Platform", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "Routes", "target": "Services", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "Services", "target": "Crypto", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "Services", "target": "Stores", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e10", "source": "Transport", "target": "Routes", "label": "", "style": "solid", "bidirectional": true, "undirected": false},
+    {"id": "e11", "source": "Client", "target": "Foundation", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e12", "source": "Services", "target": "Foundation", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "Mobile application", "edges": ["e1", "e2", "e3", "e4", "e5", "e6"]},
+    {"title": "Relying-party backend", "edges": ["e7", "e8", "e9"]},
+    {"title": "Transport and shared foundation", "edges": ["e10", "e11", "e12"]}
+  ]
+}

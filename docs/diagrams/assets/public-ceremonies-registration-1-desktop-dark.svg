@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1141" viewBox="0 0 960 1141" role="img" aria-labelledby="public-ceremonies-registration-1-desktop-dark-title public-ceremonies-registration-1-desktop-dark-desc" data-diagram="public-ceremonies-registration-1">
+<title id="public-ceremonies-registration-1-desktop-dark-title">Registration</title>
+<desc id="public-ceremonies-registration-1-desktop-dark-desc">The private key stays with the authenticator; the server validates the public credential.
+Nodes: Mobile app; RP server; Platform credential API; Authenticator.
+1. Mobile app → RP server: registration/start(account context).
+2. RP server → RP server: store short-lived challenge state.
+3. RP server → Mobile app: creation options (dashed).
+4. Mobile app → Platform credential API: create credential(options).
+5. Platform credential API → Authenticator: user verification and key creation.
+6. Authenticator → Platform credential API: public-key credential response (dashed).
+7. Platform credential API → Mobile app: raw registration response (dashed).
+8. Mobile app → RP server: registration/finish(raw response).
+9. RP server → Mobile app: accepted account result or rejection (dashed).</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="public-ceremonies-registration-1-desktop-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · CEREMONY</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >Registration</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >The private key stays with the authenticator; the server validates the public credential.</text>
+<text x="32.00" y="164.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Registration</text>
+<g data-node="App">
+<rect x="24.00" y="189.00" width="192.00" height="76.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="120.00" y="217.00" font-size="15" fill="var(--ink)" font-weight="650" text-anchor="middle" >Mobile app</text>
+</g>
+<g data-node="Server">
+<rect x="264.00" y="189.00" width="192.00" height="76.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="360.00" y="217.00" font-size="15" fill="var(--ink)" font-weight="650" text-anchor="middle" >RP server</text>
+</g>
+<g data-node="OS">
+<rect x="504.00" y="189.00" width="192.00" height="76.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="600.00" y="217.00" font-size="15" fill="var(--ink)" font-weight="650" text-anchor="middle" >Platform credential</text>
+<text x="600.00" y="238.00" font-size="15" fill="var(--ink)" font-weight="650" text-anchor="middle" >API</text>
+</g>
+<g data-node="Auth">
+<rect x="744.00" y="189.00" width="192.00" height="76.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="840.00" y="217.00" font-size="15" fill="var(--ink)" font-weight="650" text-anchor="middle" >Authenticator</text>
+</g>
+<path d="M 120 265 V 1091" stroke="var(--line)" stroke-dasharray="4 5"/>
+<path d="M 360 265 V 1091" stroke="var(--line)" stroke-dasharray="4 5"/>
+<path d="M 600 265 V 1091" stroke="var(--line)" stroke-dasharray="4 5"/>
+<path d="M 840 265 V 1091" stroke="var(--line)" stroke-dasharray="4 5"/>
+<rect x="81.80" y="283.00" width="316.40" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="240.00" y="299.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >01  registration/start(account context)</text>
+<path d="M 120 331 H 360" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e1" data-from="App" data-to="Server"/>
+<rect x="379.40" y="373.00" width="301.20" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="530.00" y="389.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >02  store short-lived challenge state</text>
+<path d="M 360 421 H 408 V 441 H 360" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e2" data-from="Server" data-to="Server"/>
+<rect x="154.00" y="463.00" width="172.00" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="240.00" y="479.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >03  creation options</text>
+<path d="M 360 511 H 120" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e3" data-from="Server" data-to="App"/>
+<rect x="236.00" y="553.00" width="248.00" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="360.00" y="569.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >04  create credential(options)</text>
+<path d="M 120 601 H 600" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e4" data-from="App" data-to="OS"/>
+<rect x="565.60" y="643.00" width="308.80" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="720.00" y="659.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >05  user verification and key creation</text>
+<path d="M 600 691 H 840" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e5" data-from="OS" data-to="Auth"/>
+<rect x="580.80" y="733.00" width="278.40" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="720.00" y="749.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >06  public-key credential response</text>
+<path d="M 840 781 H 600" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e6" data-from="Auth" data-to="OS"/>
+<rect x="239.80" y="823.00" width="240.40" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="360.00" y="839.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >07  raw registration response</text>
+<path d="M 600 871 H 120" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e7" data-from="OS" data-to="App"/>
+<rect x="89.40" y="913.00" width="301.20" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="240.00" y="929.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >08  registration/finish(raw response)</text>
+<path d="M 120 961 H 360" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e8" data-from="App" data-to="Server"/>
+<rect x="78.00" y="1003.00" width="324.00" height="26.00" rx="4" fill="var(--paper)" stroke="var(--paper)" />
+<text x="240.00" y="1019.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="middle" >09  accepted account result or rejection</text>
+<path d="M 360 1051 H 120" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#public-ceremonies-registration-1-desktop-dark-arrow)" data-edge="e9" data-from="Server" data-to="App"/>
+</svg>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="2027" viewBox="0 0 400 2027" role="img" aria-labelledby="docs-architecture-4-mobile-light-title docs-architecture-4-mobile-light-desc" data-diagram="docs-architecture-4">
+<title id="docs-architecture-4-mobile-light-title">JVM server stack</title>
+<desc id="docs-architecture-4-mobile-light-desc">Direct internal dependencies. HTTP, storage and metadata remain optional adapters.
+Nodes: webauthn-server-ktor — (optional adapter); webauthn-server-store-exposed — (optional adapter); webauthn-attestation-mds — (optional adapter); webauthn-server-core-jvm; webauthn-protocol; webauthn-server-jvm-crypto; Shared foundation; Cryptography boundary.
+1. webauthn-server-ktor (optional adapter) → webauthn-server-core-jvm.
+2. webauthn-server-store-exposed (optional adapter) → webauthn-server-core-jvm.
+3. webauthn-server-store-exposed (optional adapter) → Shared foundation.
+4. webauthn-server-store-exposed (optional adapter) → Cryptography boundary.
+5. webauthn-attestation-mds (optional adapter) → Cryptography boundary.
+6. webauthn-server-core-jvm → Shared foundation.
+7. webauthn-server-core-jvm → webauthn-protocol.
+8. webauthn-server-core-jvm → Cryptography boundary.
+9. webauthn-server-jvm-crypto → Shared foundation.
+10. webauthn-server-jvm-crypto → Cryptography boundary.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="docs-architecture-4-mobile-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="24.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="24.00" y="65.00" font-size="23" fill="var(--ink)" font-weight="700" text-anchor="start" >JVM server stack</text>
+<text x="24.00" y="96.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Direct internal dependencies. HTTP,</text>
+<text x="24.00" y="116.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >storage and metadata remain optional</text>
+<text x="24.00" y="136.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >adapters.</text>
+<rect x="24.00" y="179.00" width="352.00" height="172.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="205.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >01</text>
+<g data-node="KTOR">
+<text x="40.00" y="231.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-ktor</text>
+<text x="40.00" y="255.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >(optional adapter)</text>
+</g>
+<path d="M 49 287 L 49 309" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e1" data-from="KTOR" data-to="SERVER_CORE"/>
+<g data-node="SERVER_CORE">
+<text x="40.00" y="335.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+</g>
+<rect x="24.00" y="367.00" width="352.00" height="196.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="393.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >02</text>
+<g data-node="STORE">
+<text x="40.00" y="419.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-store-</text>
+<text x="40.00" y="443.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >exposed</text>
+<text x="40.00" y="467.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >(optional adapter)</text>
+</g>
+<path d="M 49 499 L 49 521" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e2" data-from="STORE" data-to="SERVER_CORE"/>
+<g data-node="SERVER_CORE">
+<text x="40.00" y="547.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+</g>
+<rect x="24.00" y="579.00" width="352.00" height="196.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="605.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >03</text>
+<g data-node="STORE">
+<text x="40.00" y="631.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-store-</text>
+<text x="40.00" y="655.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >exposed</text>
+<text x="40.00" y="679.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >(optional adapter)</text>
+</g>
+<path d="M 49 711 L 49 733" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e3" data-from="STORE" data-to="FOUNDATION"/>
+<g data-node="FOUNDATION">
+<text x="40.00" y="759.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Shared foundation</text>
+</g>
+<rect x="24.00" y="791.00" width="352.00" height="196.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="817.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >04</text>
+<g data-node="STORE">
+<text x="40.00" y="843.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-store-</text>
+<text x="40.00" y="867.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >exposed</text>
+<text x="40.00" y="891.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >(optional adapter)</text>
+</g>
+<path d="M 49 923 L 49 945" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e4" data-from="STORE" data-to="CRYPTO"/>
+<g data-node="CRYPTO">
+<text x="40.00" y="971.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Cryptography boundary</text>
+</g>
+<rect x="24.00" y="1003.00" width="352.00" height="172.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1029.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >05</text>
+<g data-node="MDS">
+<text x="40.00" y="1055.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-attestation-mds</text>
+<text x="40.00" y="1079.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >(optional adapter)</text>
+</g>
+<path d="M 49 1111 L 49 1133" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e5" data-from="MDS" data-to="CRYPTO"/>
+<g data-node="CRYPTO">
+<text x="40.00" y="1159.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Cryptography boundary</text>
+</g>
+<rect x="24.00" y="1191.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1217.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >06</text>
+<g data-node="SERVER_CORE">
+<text x="40.00" y="1243.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+</g>
+<path d="M 49 1275 L 49 1297" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e6" data-from="SERVER_CORE" data-to="FOUNDATION"/>
+<g data-node="FOUNDATION">
+<text x="40.00" y="1323.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Shared foundation</text>
+</g>
+<rect x="24.00" y="1355.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1381.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >07</text>
+<g data-node="SERVER_CORE">
+<text x="40.00" y="1407.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+</g>
+<path d="M 49 1439 L 49 1461" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e7" data-from="SERVER_CORE" data-to="PROTOCOL"/>
+<g data-node="PROTOCOL">
+<text x="40.00" y="1487.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-protocol</text>
+</g>
+<rect x="24.00" y="1519.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1545.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >08</text>
+<g data-node="SERVER_CORE">
+<text x="40.00" y="1571.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-core-jvm</text>
+</g>
+<path d="M 49 1603 L 49 1625" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e8" data-from="SERVER_CORE" data-to="CRYPTO"/>
+<g data-node="CRYPTO">
+<text x="40.00" y="1651.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Cryptography boundary</text>
+</g>
+<rect x="24.00" y="1683.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1709.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >09</text>
+<g data-node="JVM_CRYPTO">
+<text x="40.00" y="1735.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-jvm-crypto</text>
+</g>
+<path d="M 49 1767 L 49 1789" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e9" data-from="JVM_CRYPTO" data-to="FOUNDATION"/>
+<g data-node="FOUNDATION">
+<text x="40.00" y="1815.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Shared foundation</text>
+</g>
+<rect x="24.00" y="1847.00" width="352.00" height="148.00" rx="10" fill="var(--panel)" stroke="var(--line)" />
+<text x="40.00" y="1873.00" font-size="12" fill="var(--accent)" font-weight="700" text-anchor="start" >10</text>
+<g data-node="JVM_CRYPTO">
+<text x="40.00" y="1899.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >webauthn-server-jvm-crypto</text>
+</g>
+<path d="M 49 1931 L 49 1953" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-4-mobile-light-arrow)" data-edge="e10" data-from="JVM_CRYPTO" data-to="CRYPTO"/>
+<g data-node="CRYPTO">
+<text x="40.00" y="1979.00" font-size="18" fill="var(--ink)" font-weight="650" text-anchor="start" >Cryptography boundary</text>
+</g>
+</svg>

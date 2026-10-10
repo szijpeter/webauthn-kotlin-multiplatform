@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>WebAuthn diagram gallery</title><style>body{margin:0;padding:24px;font:16px system-ui;background:#f3f5f7;color:#293545}main{max-width:960px;margin:auto}section{margin:24px 0 64px}img{display:block;width:100%;height:auto}pre{white-space:pre-wrap}a{color:#316da8}@media(prefers-color-scheme:dark){body{background:#141b23;color:#edf1f5}a{color:#82b5e8}}</style></head><body><main><h1>WebAuthn diagrams</h1><p>Generated from reviewed semantic sources and layouts. Resize for the mobile view; system theme selects light or dark.</p><section id="readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme-1-desktop-dark.svg">
+  <img alt="WebAuthn ceremonies. The server starts and verifies each ceremony; the platform produces the credential response." src="assets/readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>The server starts and verifies each ceremony; the platform produces the credential response.
+Nodes: User; Client App; Platform Authenticator; Relying Party Server.
+Notes: Registration ceremony; Authentication ceremony.
+1. Client App → Relying Party Server: registration/start request.
+2. Relying Party Server → Client App: registration/start response (challenge + options) (dashed).
+3. Client App → Platform Authenticator: navigator.credentials.create / platform create.
+4. Platform Authenticator → Client App: RegistrationResponse (dashed).
+5. Client App → Relying Party Server: registration/finish (credential response).
+6. Relying Party Server → Client App: verified registration (dashed).
+7. Client App → Relying Party Server: authentication/start request.
+8. Relying Party Server → Client App: authentication/start response (challenge + options) (dashed).
+9. Client App → Platform Authenticator: navigator.credentials.get / platform get.
+10. Platform Authenticator → Client App: AuthenticationResponse (dashed).
+11. Client App → Relying Party Server: authentication/finish (credential response).
+12. Relying Party Server → Client App: verified sign-in (dashed).</pre></details></section><section id="readme-2"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/readme-2-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/readme-2-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme-2-desktop-dark.svg">
+  <img alt="Repository structure. Logical responsibility areas, with dependencies directed inward." src="assets/readme-2-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Logical responsibility areas, with dependencies directed inward.
+Nodes: Client stack — Shared orchestration and platform bridges; JVM server stack — Ceremonies, storage and HTTP adapters; Cryptography boundary — Crypto contracts and implementations; Shared foundation — Validation, serialization and runtime; Protocol model — Typed WebAuthn contracts.
+1. Client stack Shared orchestration and platform bridges → Shared foundation Validation, serialization and runtime.
+2. Client stack Shared orchestration and platform bridges → Protocol model Typed WebAuthn contracts.
+3. JVM server stack Ceremonies, storage and HTTP adapters → Shared foundation Validation, serialization and runtime.
+4. JVM server stack Ceremonies, storage and HTTP adapters → Cryptography boundary Crypto contracts and implementations.
+5. Cryptography boundary Crypto contracts and implementations → Shared foundation Validation, serialization and runtime.
+6. Shared foundation Validation, serialization and runtime → Protocol model Typed WebAuthn contracts.</pre></details></section><section id="docs-architecture-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/docs-architecture-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/docs-architecture-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/docs-architecture-1-desktop-dark.svg">
+  <img alt="Reference integration. Application and platform responsibilities, with optional metadata explicitly marked." src="assets/docs-architecture-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Application and platform responsibilities, with optional metadata explicitly marked.
+Nodes: End user; Reference passkey application; Client application — webauthn-client-flow over client-core and an Android or iOS bridge; Relying-party backend — webauthn-server-core-jvm plus optional adapters; Credential store; Platform passkey API — Credential Manager or AuthenticationServices; Attestation metadata service — (optional).
+Client application webauthn-client-flow over client-core and an Android or iOS bridge belongs to Reference passkey application.
+Relying-party backend webauthn-server-core-jvm plus optional adapters belongs to Reference passkey application.
+Credential store belongs to Reference passkey application.
+1. End user → Client application webauthn-client-flow over client-core and an Android or iOS bridge: initiates registration or authentication.
+2. Client application webauthn-client-flow over client-core and an Android or iOS bridge → Relying-party backend webauthn-server-core-jvm plus optional adapters: requests ceremony options and submits credential responses.
+3. Relying-party backend webauthn-server-core-jvm plus optional adapters → Client application webauthn-client-flow over client-core and an Android or iOS bridge: returns ceremony options and verification results.
+4. Client application webauthn-client-flow over client-core and an Android or iOS bridge → Platform passkey API Credential Manager or AuthenticationServices: invokes the passkey ceremony.
+5. Relying-party backend webauthn-server-core-jvm plus optional adapters → Credential store: stores registered credentials.
+6. Relying-party backend webauthn-server-core-jvm plus optional adapters → Attestation metadata service (optional): optionally obtains attestation metadata (dashed).</pre></details></section><section id="docs-architecture-2"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/docs-architecture-2-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/docs-architecture-2-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/docs-architecture-2-desktop-dark.svg">
+  <img alt="Shared foundation. Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated." src="assets/docs-architecture-2-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Arrows point from a consumer to its direct internal dependency. Runtime is intentionally isolated.
+Nodes: webauthn-crypto-api — Kotlin/JVM; webauthn-core; webauthn-json-kotlinx; webauthn-json-api; webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-runtime-core — No internal project dependencies.
+1. webauthn-crypto-api Kotlin/JVM → webauthn-core.
+2. webauthn-crypto-api Kotlin/JVM → webauthn-model.
+3. webauthn-core → webauthn-model.
+4. webauthn-json-kotlinx → webauthn-json-api.
+5. webauthn-json-kotlinx → webauthn-protocol.
+6. webauthn-json-api → webauthn-model.
+7. webauthn-protocol → webauthn-model.
+8. webauthn-protocol → webauthn-cbor-core.</pre></details></section><section id="docs-architecture-3"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/docs-architecture-3-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/docs-architecture-3-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/docs-architecture-3-desktop-dark.svg">
+  <img alt="Client stack. Focused dependency views. Repeated modules provide context; each relationship appears once." src="assets/docs-architecture-3-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Focused dependency views. Repeated modules provide context; each relationship appears once.
+Nodes: webauthn-client-compose; webauthn-client-platform — (androidMain and iosMain); webauthn-client-json-core; webauthn-client-prf-crypto — (optional); webauthn-client-defaults — (recommended composition); webauthn-client-ktor-kotlinx — (default JSON contract); webauthn-client-ktor — (codec-neutral transport); webauthn-client-flow; webauthn-client-core; webauthn-json-api; webauthn-json-kotlinx; webauthn-runtime-core; webauthn-model.
+1. webauthn-client-compose → webauthn-client-core.
+2. webauthn-client-compose → webauthn-client-flow.
+3. webauthn-client-compose → webauthn-client-platform (androidMain and iosMain).
+4. webauthn-client-compose → webauthn-json-kotlinx: androidMain.
+5. webauthn-client-defaults (recommended composition) → webauthn-client-platform (androidMain and iosMain): androidMain and iosMain.
+6. webauthn-client-defaults (recommended composition) → webauthn-json-api.
+7. webauthn-client-defaults (recommended composition) → webauthn-json-kotlinx.
+8. webauthn-client-platform (androidMain and iosMain) → webauthn-client-core.
+9. webauthn-client-platform (androidMain and iosMain) → webauthn-json-api.
+10. webauthn-client-json-core → webauthn-client-core.
+11. webauthn-client-json-core → webauthn-json-api.
+12. webauthn-client-prf-crypto (optional) → webauthn-client-core.
+13. webauthn-client-prf-crypto (optional) → webauthn-runtime-core.
+14. webauthn-client-ktor-kotlinx (default JSON contract) → webauthn-client-ktor (codec-neutral transport).
+15. webauthn-client-ktor-kotlinx (default JSON contract) → webauthn-json-kotlinx.
+16. webauthn-client-ktor (codec-neutral transport) → webauthn-client-flow.
+17. webauthn-client-flow → webauthn-client-core.
+18. webauthn-client-core → webauthn-runtime-core.
+19. webauthn-client-core → webauthn-model.</pre></details></section><section id="docs-architecture-4"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/docs-architecture-4-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/docs-architecture-4-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/docs-architecture-4-desktop-dark.svg">
+  <img alt="JVM server stack. Direct internal dependencies. HTTP, storage and metadata remain optional adapters." src="assets/docs-architecture-4-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Direct internal dependencies. HTTP, storage and metadata remain optional adapters.
+Nodes: webauthn-server-ktor — (optional adapter); webauthn-server-store-exposed — (optional adapter); webauthn-attestation-mds — (optional adapter); webauthn-server-core-jvm; webauthn-protocol; webauthn-server-jvm-crypto; Shared foundation; Cryptography boundary.
+1. webauthn-server-ktor (optional adapter) → webauthn-server-core-jvm.
+2. webauthn-server-store-exposed (optional adapter) → webauthn-server-core-jvm.
+3. webauthn-server-store-exposed (optional adapter) → Shared foundation.
+4. webauthn-server-store-exposed (optional adapter) → Cryptography boundary.
+5. webauthn-attestation-mds (optional adapter) → Cryptography boundary.
+6. webauthn-server-core-jvm → Shared foundation.
+7. webauthn-server-core-jvm → webauthn-protocol.
+8. webauthn-server-core-jvm → Cryptography boundary.
+9. webauthn-server-jvm-crypto → Shared foundation.
+10. webauthn-server-jvm-crypto → Cryptography boundary.</pre></details></section><section id="public-ceremonies-registration-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-ceremonies-registration-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-ceremonies-registration-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-ceremonies-registration-1-desktop-dark.svg">
+  <img alt="Registration. The private key stays with the authenticator; the server validates the public credential." src="assets/public-ceremonies-registration-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>The private key stays with the authenticator; the server validates the public credential.
+Nodes: Mobile app; RP server; Platform credential API; Authenticator.
+1. Mobile app → RP server: registration/start(account context).
+2. RP server → RP server: store short-lived challenge state.
+3. RP server → Mobile app: creation options (dashed).
+4. Mobile app → Platform credential API: create credential(options).
+5. Platform credential API → Authenticator: user verification and key creation.
+6. Authenticator → Platform credential API: public-key credential response (dashed).
+7. Platform credential API → Mobile app: raw registration response (dashed).
+8. Mobile app → RP server: registration/finish(raw response).
+9. RP server → Mobile app: accepted account result or rejection (dashed).</pre></details></section><section id="public-prf-ownership-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-prf-ownership-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-prf-ownership-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-prf-ownership-1-desktop-dark.svg">
+  <img alt="PRF ownership. Local key derivation and server authentication have separate responsibilities." src="assets/public-prf-ownership-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Local key derivation and server authentication have separate responsibilities.
+Nodes: App-persisted salt; Passkey assertion with PRF; Credential-bound PRF output; HKDF with stable context; Short-lived crypto session; AES-GCM ciphertext package; Explicit key clear; App-owned durable storage.
+1. App-persisted salt → Passkey assertion with PRF.
+2. Passkey assertion with PRF → Credential-bound PRF output.
+3. Credential-bound PRF output → HKDF with stable context.
+4. HKDF with stable context → Short-lived crypto session.
+5. Short-lived crypto session → AES-GCM ciphertext package.
+6. Short-lived crypto session → Explicit key clear.
+7. AES-GCM ciphertext package → App-owned durable storage.</pre></details></section><section id="public-home-flow-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-home-flow-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-home-flow-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-home-flow-1-desktop-dark.svg">
+  <img alt="From user action to verified result. The platform supplies a credential response; the server makes the verification decision." src="assets/public-home-flow-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>The platform supplies a credential response; the server makes the verification decision.
+Nodes: Mobile UI; PasskeyFlow; Ktor backend contract; Registration or authentication service; Credential and ceremony stores; Android or iOS platform prompt.
+1. Mobile UI → PasskeyFlow.
+2. PasskeyFlow → Ktor backend contract.
+3. Ktor backend contract → Registration or authentication service.
+4. Registration or authentication service → Credential and ceremony stores.
+5. PasskeyFlow → Android or iOS platform prompt.
+6. Android or iOS platform prompt → PasskeyFlow.</pre></details></section><section id="public-compose-lifecycle-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-compose-lifecycle-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-compose-lifecycle-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-compose-lifecycle-1-desktop-dark.svg">
+  <img alt="Ceremony lifecycle. Product UI owns state, cancellation and the signed-in session." src="assets/public-compose-lifecycle-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Product UI owns state, cancellation and the signed-in session.
+Nodes: [start]; Idle; Starting; PlatformPrompt; Finishing; Failed; SignedIn.
+1. [start] → Idle.
+2. Idle → Starting: user action.
+3. Starting → PlatformPrompt: start response.
+4. PlatformPrompt → Finishing: signed response.
+5. Starting → Failed: network or contract error.
+6. PlatformPrompt → Idle: user cancellation.
+7. PlatformPrompt → Failed: platform error.
+8. Finishing → SignedIn: server accepts.
+9. Finishing → Failed: server rejects.
+10. SignedIn → Idle: product logout.</pre></details></section><section id="public-full-stack-topology-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-full-stack-topology-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-full-stack-topology-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-full-stack-topology-1-desktop-dark.svg">
+  <img alt="Full-stack topology. The mobile flow connects platform credential APIs to the relying-party backend." src="assets/public-full-stack-topology-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>The mobile flow connects platform credential APIs to the relying-party backend.
+Nodes: Compose shared UI and flow; Android Credential Manager; iOS Authentication Services; Ktor sample backend; Registration and authentication services; Ceremony and credential stores; Association endpoints.
+1. Compose shared UI and flow → Android Credential Manager.
+2. Compose shared UI and flow → iOS Authentication Services.
+3. Compose shared UI and flow ↔ Ktor sample backend.
+4. Ktor sample backend → Registration and authentication services.
+5. Registration and authentication services → Ceremony and credential stores.
+6. Ktor sample backend → Association endpoints.</pre></details></section><section id="public-troubleshooting-flow-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-troubleshooting-flow-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-troubleshooting-flow-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-troubleshooting-flow-1-desktop-dark.svg">
+  <img alt="Find the failing boundary. Follow each labelled branch before investigating the next integration boundary." src="assets/public-troubleshooting-flow-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Follow each labelled branch before investigating the next integration boundary.
+Nodes: User starts ceremony; Start endpoint succeeds?; Inspect network, auth, and backend start logs; Platform prompt appears?; Inspect host lifecycle, provider, entitlement, and association; Platform returns a credential?; Classify cancellation, invalid options, or platform error; Finish endpoint accepts?; Inspect challenge, origin, RP ID, signature, state, and policy; Update product session.
+1. User starts ceremony → Start endpoint succeeds?.
+2. Start endpoint succeeds? → Inspect network, auth, and backend start logs: no.
+3. Start endpoint succeeds? → Platform prompt appears?: yes.
+4. Platform prompt appears? → Inspect host lifecycle, provider, entitlement, and association: no.
+5. Platform prompt appears? → Platform returns a credential?: yes.
+6. Platform returns a credential? → Classify cancellation, invalid options, or platform error: no.
+7. Platform returns a credential? → Finish endpoint accepts?: yes.
+8. Finish endpoint accepts? → Inspect challenge, origin, RP ID, signature, state, and policy: no.
+9. Finish endpoint accepts? → Update product session: yes.</pre></details></section><section id="public-architecture-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/public-architecture-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/public-architecture-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/public-architecture-1-desktop-dark.svg">
+  <img alt="Architecture. Application, server and shared foundation responsibilities." src="assets/public-architecture-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Application, server and shared foundation responsibilities.
+Nodes: Android and iOS application; Product UI and state; Compose helpers; Client flow; Ktor contract adapter; Passkey client core; Android and iOS bridge; JVM relying-party backend; Ktor routes; Registration and authentication services; JVM crypto and attestation; Challenge, credential, and account stores; Shared protocol foundation; Models; Binary protocol and validation; JSON API and implementation; Extension hooks.
+Product UI and state belongs to Android and iOS application.
+Compose helpers belongs to Android and iOS application.
+Client flow belongs to Android and iOS application.
+Ktor contract adapter belongs to Android and iOS application.
+Passkey client core belongs to Android and iOS application.
+Android and iOS bridge belongs to Android and iOS application.
+Ktor routes belongs to JVM relying-party backend.
+Registration and authentication services belongs to JVM relying-party backend.
+JVM crypto and attestation belongs to JVM relying-party backend.
+Challenge, credential, and account stores belongs to JVM relying-party backend.
+Models belongs to Shared protocol foundation.
+Binary protocol and validation belongs to Shared protocol foundation.
+JSON API and implementation belongs to Shared protocol foundation.
+Extension hooks belongs to Shared protocol foundation.
+1. Product UI and state → Compose helpers.
+2. Compose helpers → Client flow.
+3. Product UI and state → Client flow.
+4. Client flow → Ktor contract adapter.
+5. Client flow → Passkey client core.
+6. Passkey client core → Android and iOS bridge.
+7. Ktor routes → Registration and authentication services.
+8. Registration and authentication services → JVM crypto and attestation.
+9. Registration and authentication services → Challenge, credential, and account stores.
+10. Ktor contract adapter ↔ Ktor routes.
+11. Passkey client core → Shared protocol foundation.
+12. Registration and authentication services → Shared protocol foundation.</pre></details></section><section id="core-webauthn-cbor-core-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/core-webauthn-cbor-core-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/core-webauthn-cbor-core-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/core-webauthn-cbor-core-readme-1-desktop-dark.svg">
+  <img alt="cbor-core · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/core-webauthn-cbor-core-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-cbor-core; webauthn-json-kotlinx; webauthn-server-jvm-crypto.
+1. webauthn-cbor-core → webauthn-json-kotlinx.
+2. webauthn-cbor-core → webauthn-server-jvm-crypto.</pre></details></section><section id="core-webauthn-core-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/core-webauthn-core-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/core-webauthn-core-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/core-webauthn-core-readme-1-desktop-dark.svg">
+  <img alt="core · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/core-webauthn-core-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Typed finish input — RegistrationValidationInput / AuthenticationValidationInput; validateClientData; validateAuthenticatorData; requireAllowedCredential; WebAuthnExtensionHook (optional); ValidationResult output; Server crypto verification — signature + attestation; Store signCount / credential state.
+1. Typed finish input RegistrationValidationInput / AuthenticationValidationInput → validateClientData.
+2. validateClientData → validateAuthenticatorData.
+3. validateAuthenticatorData → requireAllowedCredential.
+4. requireAllowedCredential → WebAuthnExtensionHook (optional).
+5. WebAuthnExtensionHook (optional) → ValidationResult output.
+6. ValidationResult output → Server crypto verification signature + attestation.
+7. Server crypto verification signature + attestation → Store signCount / credential state.</pre></details></section><section id="core-webauthn-crypto-api-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/core-webauthn-crypto-api-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/core-webauthn-crypto-api-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/core-webauthn-crypto-api-readme-1-desktop-dark.svg">
+  <img alt="crypto-api · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/core-webauthn-crypto-api-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-core; webauthn-crypto-api contracts; webauthn-server-core-jvm; webauthn-server-jvm-crypto; webauthn-attestation-mds.
+1. webauthn-core → webauthn-crypto-api contracts.
+2. webauthn-server-core-jvm → webauthn-crypto-api contracts.
+3. webauthn-server-jvm-crypto → webauthn-crypto-api contracts.
+4. webauthn-attestation-mds → webauthn-crypto-api contracts.</pre></details></section><section id="core-webauthn-json-kotlinx-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/core-webauthn-json-kotlinx-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/core-webauthn-json-kotlinx-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/core-webauthn-json-kotlinx-readme-1-desktop-dark.svg">
+  <img alt="json-kotlinx · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/core-webauthn-json-kotlinx-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Wire DTOs (JSON or CBOR); WebAuthnDtoMapper; webauthn-model; webauthn-core.
+1. Wire DTOs (JSON or CBOR) → WebAuthnDtoMapper.
+2. WebAuthnDtoMapper → webauthn-model.
+3. webauthn-core → webauthn-model.</pre></details></section><section id="core-webauthn-model-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/core-webauthn-model-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/core-webauthn-model-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/core-webauthn-model-readme-1-desktop-dark.svg">
+  <img alt="model · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/core-webauthn-model-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Untrusted input — HTTP JSON / mobile payload; parse(...) boundary — RpId / Origin / CredentialId / Base64UrlBytes; Typed wrappers; Protocol models — PublicKeyCredential*Options / *Response; ValidationResult — Valid or Invalid (errors); webauthn-core; webauthn-client-* modules; webauthn-server-* modules.
+1. Untrusted input HTTP JSON / mobile payload → parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes.
+2. parse(...) boundary RpId / Origin / CredentialId / Base64UrlBytes → Typed wrappers.
+3. Typed wrappers → Protocol models PublicKeyCredential*Options / *Response.
+4. Protocol models PublicKeyCredential*Options / *Response → ValidationResult Valid or Invalid (errors).
+5. ValidationResult Valid or Invalid (errors) → webauthn-core.
+6. ValidationResult Valid or Invalid (errors) → webauthn-client-* modules.
+7. ValidationResult Valid or Invalid (errors) → webauthn-server-* modules.</pre></details></section><section id="core-webauthn-protocol-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/core-webauthn-protocol-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/core-webauthn-protocol-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/core-webauthn-protocol-readme-1-desktop-dark.svg">
+  <img alt="protocol · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/core-webauthn-protocol-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-json-kotlinx.
+1. webauthn-protocol → webauthn-cbor-core.
+2. webauthn-protocol → webauthn-model.
+3. webauthn-json-kotlinx → webauthn-protocol.</pre></details></section><section id="client-webauthn-client-defaults-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-defaults-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/client-webauthn-client-defaults-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-defaults-readme-1-desktop-dark.svg">
+  <img alt="client-defaults · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/client-webauthn-client-defaults-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Application; webauthn-client-defaults; webauthn-client-platform; webauthn-json-kotlinx — (Android default); webauthn-client-core.
+1. Application → webauthn-client-defaults.
+2. webauthn-client-defaults → webauthn-client-platform.
+3. webauthn-client-defaults → webauthn-json-kotlinx (Android default).
+4. webauthn-client-platform → webauthn-client-core.</pre></details></section><section id="client-webauthn-client-flow-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-flow-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/client-webauthn-client-flow-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-flow-readme-1-desktop-dark.svg">
+  <img alt="client-flow · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/client-webauthn-client-flow-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Application UI and state; webauthn-client-flow; webauthn-client-core; Application backend contract; Android or iOS platform bridge.
+1. Application UI and state → webauthn-client-flow.
+2. webauthn-client-flow → webauthn-client-core.
+3. webauthn-client-flow → Application backend contract.
+4. webauthn-client-core → Android or iOS platform bridge.</pre></details></section><section id="client-webauthn-client-json-core-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-json-core-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/client-webauthn-client-json-core-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-json-core-readme-1-desktop-dark.svg">
+  <img alt="client-json-core · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/client-webauthn-client-json-core-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Host app or SDK; webauthn-client-json-core; webauthn-client-core; Android or iOS passkey client.
+1. Host app or SDK → webauthn-client-json-core.
+2. webauthn-client-json-core → webauthn-client-core.
+3. webauthn-client-core → Android or iOS passkey client.</pre></details></section><section id="client-webauthn-client-ktor-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-ktor-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/client-webauthn-client-ktor-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-ktor-readme-1-desktop-dark.svg">
+  <img alt="client-ktor · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/client-webauthn-client-ktor-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-client-flow; webauthn-client-ktor; Application contract codec; Application-owned Ktor HttpClient and engine.
+1. webauthn-client-flow → webauthn-client-ktor.
+2. webauthn-client-ktor → Application contract codec.
+3. webauthn-client-ktor → Application-owned Ktor HttpClient and engine.</pre></details></section><section id="client-webauthn-client-platform-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-platform-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/client-webauthn-client-platform-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-platform-readme-1-desktop-dark.svg">
+  <img alt="client-platform · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/client-webauthn-client-platform-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Android or iOS UI; webauthn-client-core raw client; AndroidPasskeyClient; IosPasskeyClient; Credential Manager; Authentication Services.
+1. Android or iOS UI → webauthn-client-core raw client.
+2. webauthn-client-core raw client → AndroidPasskeyClient.
+3. webauthn-client-core raw client → IosPasskeyClient.
+4. AndroidPasskeyClient → Credential Manager.
+5. IosPasskeyClient → Authentication Services.</pre></details></section><section id="client-webauthn-client-prf-crypto-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-prf-crypto-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/client-webauthn-client-prf-crypto-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/client-webauthn-client-prf-crypto-readme-1-desktop-dark.svg">
+  <img alt="client-prf-crypto · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/client-webauthn-client-prf-crypto-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Caller-owned persisted salt; PublicKeyCredentialRequestOptions; PrfCrypto.withPrfEvaluation; PasskeyClient.getAssertion; PrfCrypto.requirePrfResults; HKDF-SHA256 deriveAes256Key; PrfCryptoSession (in memory); encrypt / encryptString; decrypt / decryptToString; clear() zeroizes key bytes.
+1. Caller-owned persisted salt → PublicKeyCredentialRequestOptions.
+2. PublicKeyCredentialRequestOptions → PrfCrypto.withPrfEvaluation.
+3. PrfCrypto.withPrfEvaluation → PasskeyClient.getAssertion.
+4. PasskeyClient.getAssertion → PrfCrypto.requirePrfResults.
+5. PrfCrypto.requirePrfResults → HKDF-SHA256 deriveAes256Key.
+6. HKDF-SHA256 deriveAes256Key → PrfCryptoSession (in memory).
+7. PrfCryptoSession (in memory) → encrypt / encryptString.
+8. PrfCryptoSession (in memory) → decrypt / decryptToString.
+9. PrfCryptoSession (in memory) → clear() zeroizes key bytes.</pre></details></section><section id="server-webauthn-attestation-mds-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/server-webauthn-attestation-mds-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/server-webauthn-attestation-mds-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/server-webauthn-attestation-mds-readme-1-desktop-dark.svg">
+  <img alt="attestation-mds · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/server-webauthn-attestation-mds-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: FIDO MDS endpoint; FidoMdsTrustSource cache; TrustAnchorSource contract; Attestation verifier; webauthn-server-core-jvm registration flow.
+1. FIDO MDS endpoint → FidoMdsTrustSource cache.
+2. FidoMdsTrustSource cache → TrustAnchorSource contract.
+3. TrustAnchorSource contract → Attestation verifier.
+4. Attestation verifier → webauthn-server-core-jvm registration flow.</pre></details></section><section id="server-webauthn-server-core-jvm-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-core-jvm-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/server-webauthn-server-core-jvm-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-core-jvm-readme-1-desktop-dark.svg">
+  <img alt="server-core-jvm · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/server-webauthn-server-core-jvm-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-server-ktor (optional); webauthn-server-core-jvm; webauthn-core; webauthn-protocol; webauthn-json-api — codec interface; webauthn-json-kotlinx — KotlinxWebAuthnJsonCodec; webauthn-server-jvm-crypto or custom crypto-api implementation; Challenge, credential, and account store contracts; In-memory or Exposed store implementations.
+1. webauthn-server-ktor (optional) → webauthn-server-core-jvm.
+2. webauthn-server-core-jvm → webauthn-core.
+3. webauthn-server-core-jvm → webauthn-protocol.
+4. webauthn-server-core-jvm → webauthn-json-api codec interface.
+5. webauthn-json-kotlinx KotlinxWebAuthnJsonCodec → webauthn-json-api codec interface.
+6. webauthn-server-core-jvm → webauthn-server-jvm-crypto or custom crypto-api implementation.
+7. webauthn-server-core-jvm → Challenge, credential, and account store contracts.
+8. In-memory or Exposed store implementations → Challenge, credential, and account store contracts.</pre></details></section><section id="server-webauthn-server-jvm-crypto-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-jvm-crypto-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/server-webauthn-server-jvm-crypto-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-jvm-crypto-readme-1-desktop-dark.svg">
+  <img alt="server-jvm-crypto · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/server-webauthn-server-jvm-crypto-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-server-core-jvm; webauthn-server-jvm-crypto; webauthn-crypto-api; webauthn-attestation-mds (optional).
+1. webauthn-server-core-jvm → webauthn-server-jvm-crypto.
+2. webauthn-server-jvm-crypto → webauthn-crypto-api.
+3. webauthn-attestation-mds (optional) → webauthn-crypto-api.</pre></details></section><section id="server-webauthn-server-ktor-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-ktor-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/server-webauthn-server-ktor-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-ktor-readme-1-desktop-dark.svg">
+  <img alt="server-ktor · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/server-webauthn-server-ktor-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Mobile or web client; webauthn-server-ktor routes; webauthn-server-core-jvm services; Store implementations.
+1. Mobile or web client → webauthn-server-ktor routes.
+2. webauthn-server-ktor routes → webauthn-server-core-jvm services.
+3. webauthn-server-core-jvm services → Store implementations.</pre></details></section><section id="server-webauthn-server-store-exposed-readme-1"><picture>
+  <source media="(max-width: 720px) and (prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-store-exposed-readme-1-mobile-dark.svg">
+  <source media="(max-width: 720px)" srcset="assets/server-webauthn-server-store-exposed-readme-1-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/server-webauthn-server-store-exposed-readme-1-desktop-dark.svg">
+  <img alt="server-store-exposed · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="assets/server-webauthn-server-store-exposed-readme-1-desktop-light.svg" width="960" loading="lazy">
+</picture><details><summary>Diagram text</summary><pre>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: webauthn-server-core-jvm; Store contracts; webauthn-server-store-exposed; SQL database.
+1. webauthn-server-core-jvm → Store contracts.
+2. webauthn-server-store-exposed → Store contracts.
+3. webauthn-server-store-exposed → SQL database.</pre></details></section></main></body></html>

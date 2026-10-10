@@ -110,16 +110,48 @@ subprojects {
     }
 }
 
+val docsDiagramsTest = tasks.register<Exec>("docsDiagramsTest") {
+    group = "verification"
+    description = "Tests diagram semantics, safe exports, responsive embeds and release packaging."
+    workingDir = rootDir
+    commandLine("python3", rootDir.resolve("tools/docs/test_diagrams.py").absolutePath)
+}
+
+val docsDiagramsCheck = tasks.register<Exec>("docsDiagramsCheck") {
+    group = "verification"
+    description = "Verifies the diagram catalog, reviewed layouts, generated SVGs and documentation embeds."
+    dependsOn(docsDiagramsTest)
+    workingDir = rootDir
+    commandLine("python3", rootDir.resolve("tools/docs/diagrams.py").absolutePath, "check")
+}
+
+val docsDiagramsUpdate = tasks.register<Exec>("docsDiagramsUpdate") {
+    group = "documentation"
+    description = "Exports reviewed diagrams and updates their GitHub embeds and accessible transcripts."
+    workingDir = rootDir
+    commandLine("python3", rootDir.resolve("tools/docs/diagrams.py").absolutePath, "update")
+}
+
+// The two update tasks write the same Markdown pages; serialize their writers.
+project(":documentation:tooling").tasks.matching { it.name == "updateDocumentation" }.configureEach {
+    mustRunAfter(docsDiagramsUpdate)
+}
+project(":documentation:tooling").tasks.matching { it.name == "checkDocumentation" }.configureEach {
+    mustRunAfter(":documentation:tooling:updateDocumentation")
+}
+docsDiagramsTest.configure { mustRunAfter(docsDiagramsUpdate) }
+docsDiagramsCheck.configure { mustRunAfter(docsDiagramsUpdate) }
+
 val docsCatalogCheck = tasks.register("docsCatalogCheck") {
     group = "verification"
     description = "Verifies documentation example ownership, syntax, inventory, and source synchronization."
-    dependsOn(":documentation:tooling:checkDocumentation")
+    dependsOn(docsDiagramsCheck, ":documentation:tooling:checkDocumentation")
 }
 
 tasks.register("docsUpdate") {
     group = "documentation"
     description = "Updates source-backed documentation examples and the generated example inventory."
-    dependsOn(":documentation:tooling:updateDocumentation")
+    dependsOn(docsDiagramsUpdate, ":documentation:tooling:updateDocumentation")
 }
 
 tasks.register("docsCheck") {
@@ -127,6 +159,7 @@ tasks.register("docsCheck") {
     description = "Runs the repository-wide documentation example verification system."
     dependsOn(
         docsCatalogCheck,
+        docsDiagramsCheck,
         ":documentation:tooling:test",
         ":documentation:examples:jvmTest",
         ":documentation:examples:compileAndroidMain",
@@ -140,6 +173,7 @@ tasks.register("docsCheck") {
 val docsSiteStage = tasks.register<Exec>("docsSiteStage") {
     group = "documentation"
     description = "Stages authored and canonical public documentation for the static site."
+    dependsOn(docsDiagramsCheck)
     workingDir = rootDir
     commandLine("python3", rootDir.resolve("tools/docs/public_site.py").absolutePath, "stage")
 }

@@ -1,0 +1,26 @@
+{
+  "id": "public-home-flow-1",
+  "title": "From user action to verified result",
+  "kind": "graph",
+  "summary": "The platform supplies a credential response; the server makes the verification decision.",
+  "nodes": [
+    {"id": "UI", "label": "Mobile UI", "shape": "rect", "parent": null, "container": false},
+    {"id": "Flow", "label": "PasskeyFlow", "shape": "rect", "parent": null, "container": false},
+    {"id": "API", "label": "Ktor backend contract", "shape": "rect", "parent": null, "container": false},
+    {"id": "Service", "label": "Registration or authentication service", "shape": "rect", "parent": null, "container": false},
+    {"id": "Store", "label": "Credential and ceremony stores", "shape": "cylinder", "parent": null, "container": false},
+    {"id": "Prompt", "label": "Android or iOS platform prompt", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "UI", "target": "Flow", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "Flow", "target": "API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "API", "target": "Service", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "Service", "target": "Store", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "Flow", "target": "Prompt", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "Prompt", "target": "Flow", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "From user action to verified result", "edges": ["e1", "e2", "e3", "e4", "e5", "e6"]}
+  ]
+}

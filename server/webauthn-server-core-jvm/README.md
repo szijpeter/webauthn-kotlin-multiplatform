@@ -68,18 +68,28 @@ Real-world scenario: run start/finish ceremonies in your backend service layer, 
 
 ## How it fits
 
-<!-- doc-example: id=server-webauthn-server-core-jvm-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    KTOR["webauthn-server-ktor (optional)"] --> SVC["webauthn-server-core-jvm"]
-    SVC --> CORE["webauthn-core"]
-    SVC --> PROTOCOL["webauthn-protocol"]
-    SVC --> JSON_API["webauthn-json-api<br/>codec interface"]
-    JSON_KOTLINX["webauthn-json-kotlinx<br/>KotlinxWebAuthnJsonCodec"] --> JSON_API
-    SVC --> CRYPTO["webauthn-server-jvm-crypto or custom crypto-api implementation"]
-    SVC --> STORE["Challenge, credential, and account store contracts"]
-    IMPLEMENTATION["In-memory or Exposed store implementations"] --> STORE
-```
+<!-- diagram: server-webauthn-server-core-jvm-readme-1 -->
+<a href="../../docs/diagrams/assets/server-webauthn-server-core-jvm-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/server-webauthn-server-core-jvm-readme-1-desktop-dark.svg">
+  <img alt="server-core-jvm · How it fits. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/server-webauthn-server-core-jvm-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: server-core-jvm · How it fits</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/server-webauthn-server-core-jvm-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/server-webauthn-server-core-jvm-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: webauthn-server-ktor (optional); webauthn-server-core-jvm; webauthn-core; webauthn-protocol; webauthn-json-api — codec interface; webauthn-json-kotlinx — KotlinxWebAuthnJsonCodec; webauthn-server-jvm-crypto or custom crypto-api implementation; Challenge, credential, and account store contracts; In-memory or Exposed store implementations.</p>
+<p>1. webauthn-server-ktor (optional) → webauthn-server-core-jvm.</p>
+<p>2. webauthn-server-core-jvm → webauthn-core.</p>
+<p>3. webauthn-server-core-jvm → webauthn-protocol.</p>
+<p>4. webauthn-server-core-jvm → webauthn-json-api codec interface.</p>
+<p>5. webauthn-json-kotlinx KotlinxWebAuthnJsonCodec → webauthn-json-api codec interface.</p>
+<p>6. webauthn-server-core-jvm → webauthn-server-jvm-crypto or custom crypto-api implementation.</p>
+<p>7. webauthn-server-core-jvm → Challenge, credential, and account store contracts.</p>
+<p>8. In-memory or Exposed store implementations → Challenge, credential, and account store contracts.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

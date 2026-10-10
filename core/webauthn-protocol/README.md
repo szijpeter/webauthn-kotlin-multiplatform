@@ -29,13 +29,23 @@ The caller remains responsible for ceremony policy and attestation verification.
 
 ## How it fits in the system
 
-<!-- doc-example: id=core-webauthn-protocol-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart LR
-    PROTOCOL["webauthn-protocol"] --> CBOR["webauthn-cbor-core"]
-    PROTOCOL --> MODEL["webauthn-model"]
-    SERIALIZATION["webauthn-json-kotlinx"] --> PROTOCOL
-```
+<!-- diagram: core-webauthn-protocol-readme-1 -->
+<a href="../../docs/diagrams/assets/core-webauthn-protocol-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-protocol-readme-1-desktop-dark.svg">
+  <img alt="protocol · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-protocol-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: protocol · How it fits in the system</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/core-webauthn-protocol-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/core-webauthn-protocol-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: webauthn-protocol; webauthn-cbor-core; webauthn-model; webauthn-json-kotlinx.</p>
+<p>1. webauthn-protocol → webauthn-cbor-core.</p>
+<p>2. webauthn-protocol → webauthn-model.</p>
+<p>3. webauthn-json-kotlinx → webauthn-protocol.</p>
+</details>
+<!-- /diagram -->
 
 Arrows point from a consuming module to its direct dependency. JSON implementations may use the
 protocol parser, while the parser itself remains independent of any serialization implementation.

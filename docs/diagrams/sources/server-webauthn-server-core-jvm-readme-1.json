@@ -1,0 +1,31 @@
+{
+  "id": "server-webauthn-server-core-jvm-readme-1",
+  "title": "server-core-jvm · How it fits",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "KTOR", "label": "webauthn-server-ktor (optional)", "shape": "rect", "parent": null, "container": false},
+    {"id": "SVC", "label": "webauthn-server-core-jvm", "shape": "rect", "parent": null, "container": false},
+    {"id": "CORE", "label": "webauthn-core", "shape": "rect", "parent": null, "container": false},
+    {"id": "PROTOCOL", "label": "webauthn-protocol", "shape": "rect", "parent": null, "container": false},
+    {"id": "JSON_API", "label": "webauthn-json-api\ncodec interface", "shape": "rect", "parent": null, "container": false},
+    {"id": "JSON_KOTLINX", "label": "webauthn-json-kotlinx\nKotlinxWebAuthnJsonCodec", "shape": "rect", "parent": null, "container": false},
+    {"id": "CRYPTO", "label": "webauthn-server-jvm-crypto or custom crypto-api implementation", "shape": "rect", "parent": null, "container": false},
+    {"id": "STORE", "label": "Challenge, credential, and account store contracts", "shape": "rect", "parent": null, "container": false},
+    {"id": "IMPLEMENTATION", "label": "In-memory or Exposed store implementations", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "KTOR", "target": "SVC", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "SVC", "target": "CORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "SVC", "target": "PROTOCOL", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "SVC", "target": "JSON_API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "JSON_KOTLINX", "target": "JSON_API", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "SVC", "target": "CRYPTO", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "SVC", "target": "STORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "IMPLEMENTATION", "target": "STORE", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "server-core-jvm · How it fits", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8"]}
+  ]
+}

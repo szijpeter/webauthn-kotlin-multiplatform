@@ -1,0 +1,29 @@
+{
+  "id": "core-webauthn-model-readme-1",
+  "title": "model · What it provides",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "Wire", "label": "Untrusted input\nHTTP JSON / mobile payload", "shape": "rect", "parent": null, "container": false},
+    {"id": "Parse", "label": "parse(...) boundary\nRpId / Origin / CredentialId / Base64UrlBytes", "shape": "rect", "parent": null, "container": false},
+    {"id": "Domain", "label": "Typed wrappers", "shape": "rect", "parent": null, "container": false},
+    {"id": "Protocol", "label": "Protocol models\nPublicKeyCredential*Options / *Response", "shape": "rect", "parent": null, "container": false},
+    {"id": "Result", "label": "ValidationResult\nValid or Invalid (errors)", "shape": "rect", "parent": null, "container": false},
+    {"id": "Core", "label": "webauthn-core", "shape": "rect", "parent": null, "container": false},
+    {"id": "Client", "label": "webauthn-client-* modules", "shape": "rect", "parent": null, "container": false},
+    {"id": "Server", "label": "webauthn-server-* modules", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "Wire", "target": "Parse", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "Parse", "target": "Domain", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "Domain", "target": "Protocol", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "Protocol", "target": "Result", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "Result", "target": "Core", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "Result", "target": "Client", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "Result", "target": "Server", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "model · What it provides", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7"]}
+  ]
+}
