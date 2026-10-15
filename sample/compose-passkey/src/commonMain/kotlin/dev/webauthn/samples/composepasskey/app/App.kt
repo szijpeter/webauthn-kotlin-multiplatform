@@ -11,6 +11,7 @@ import dev.webauthn.samples.composepasskey.data.network.DemoPasskeyBackend
 import dev.webauthn.samples.composepasskey.data.network.normalizedEndpoint
 import dev.webauthn.samples.composepasskey.data.network.rememberPlatformHttpClient
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.domain.restore.rememberRestoreCredentialDemoClient
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
 import org.koin.core.logger.Level
@@ -29,6 +30,7 @@ fun App(platformOrigin: String? = null) {
         platformOrigin?.let { defaults.copy(origin = it) } ?: defaults
     }
     val passkeyClient = rememberPasskeyClient()
+    val restoreCredentialClient = rememberRestoreCredentialDemoClient()
     val backend: DemoPasskeyBackend = remember(httpClient, config.endpointBase) {
         DefaultDemoPasskeyBackend(
             httpClient = httpClient,
@@ -36,11 +38,12 @@ fun App(platformOrigin: String? = null) {
         )
     }
 
-    val modules = remember(config, debugLogs, passkeyClient, backend) {
+    val modules = remember(config, debugLogs, passkeyClient, restoreCredentialClient, backend) {
         sampleAppModules(
             config = config,
             debugLogs = debugLogs,
             passkeyClient = passkeyClient,
+            restoreCredentialClient = restoreCredentialClient,
             backend = backend,
         )
     }
