@@ -48,3 +48,6 @@ Use this checklist when moving from private to public operation.
 4. Maven Central artifacts resolve using the published coordinates and BOM.
 5. No secret findings exist in baseline scans; if any are found, rotate credentials immediately and evaluate targeted history rewrite.
 6. Delete any temporary release execution-map doc once that release effort is complete.
+
+The registration compatibility canary must pass in CI. Keep its sample routes disabled in ordinary
+deployments; the canary is registration interoperability evidence, not formal FIDO conformance.
