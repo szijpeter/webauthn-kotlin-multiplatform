@@ -360,3 +360,6 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 - [`docs/ai/STEERING.md`](./docs/ai/STEERING.md)
 
 License: Apache-2.0. See [`LICENSE`](./LICENSE).
+
+The internal [Swift bridge](client/webauthn-client-swift-bridge/README.md) builds a static
+`WebAuthnBridge.xcframework` for iOS arm64 devices and Apple Silicon simulators. It is not a Maven artifact.

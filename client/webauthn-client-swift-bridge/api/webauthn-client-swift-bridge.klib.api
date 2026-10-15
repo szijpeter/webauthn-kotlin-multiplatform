@@ -1,0 +1,50 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.szijpeter:webauthn-client-swift-bridge>
+final class dev.webauthn.client.swift/SwiftPasskeyBridge { // dev.webauthn.client.swift/SwiftPasskeyBridge|null[0]
+    constructor <init>() // dev.webauthn.client.swift/SwiftPasskeyBridge.<init>|<init>(){}[0]
+
+    final fun updatePresentationAnchor(platform.UIKit/UIWindow?) // dev.webauthn.client.swift/SwiftPasskeyBridge.updatePresentationAnchor|updatePresentationAnchor(platform.UIKit.UIWindow?){}[0]
+    final suspend fun authenticateWithPrf(kotlin/String, kotlin/String, kotlin/String?): dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult // dev.webauthn.client.swift/SwiftPasskeyBridge.authenticateWithPrf|authenticateWithPrf(kotlin.String;kotlin.String;kotlin.String?){}[0]
+    final suspend fun capabilities(): dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities // dev.webauthn.client.swift/SwiftPasskeyBridge.capabilities|capabilities(){}[0]
+    final suspend fun createCredential(kotlin/String): dev.webauthn.client.swift/SwiftPasskeyBridgeResult // dev.webauthn.client.swift/SwiftPasskeyBridge.createCredential|createCredential(kotlin.String){}[0]
+    final suspend fun getAssertion(kotlin/String): dev.webauthn.client.swift/SwiftPasskeyBridgeResult // dev.webauthn.client.swift/SwiftPasskeyBridge.getAssertion|getAssertion(kotlin.String){}[0]
+}
+
+final class dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities { // dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities|null[0]
+    final val reportedCount // dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities.reportedCount|{}reportedCount[0]
+        final fun <get-reportedCount>(): kotlin/Int // dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities.reportedCount.<get-reportedCount>|<get-reportedCount>(){}[0]
+    final val valuesJson // dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities.valuesJson|{}valuesJson[0]
+        final fun <get-valuesJson>(): kotlin/String // dev.webauthn.client.swift/SwiftPasskeyBridgeCapabilities.valuesJson.<get-valuesJson>|<get-valuesJson>(){}[0]
+}
+
+final class dev.webauthn.client.swift/SwiftPasskeyBridgeResult { // dev.webauthn.client.swift/SwiftPasskeyBridgeResult|null[0]
+    final val errorCode // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.errorCode|{}errorCode[0]
+        final fun <get-errorCode>(): kotlin/String? // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.errorCode.<get-errorCode>|<get-errorCode>(){}[0]
+    final val errorMessage // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.errorMessage|{}errorMessage[0]
+        final fun <get-errorMessage>(): kotlin/String? // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.errorMessage.<get-errorMessage>|<get-errorMessage>(){}[0]
+    final val isSuccess // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.isSuccess|{}isSuccess[0]
+        final fun <get-isSuccess>(): kotlin/Boolean // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.isSuccess.<get-isSuccess>|<get-isSuccess>(){}[0]
+    final val responseJson // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.responseJson|{}responseJson[0]
+        final fun <get-responseJson>(): kotlin/String? // dev.webauthn.client.swift/SwiftPasskeyBridgeResult.responseJson.<get-responseJson>|<get-responseJson>(){}[0]
+}
+
+final class dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult { // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult|null[0]
+    final val errorCode // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.errorCode|{}errorCode[0]
+        final fun <get-errorCode>(): kotlin/String? // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.errorCode.<get-errorCode>|<get-errorCode>(){}[0]
+    final val errorMessage // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.errorMessage|{}errorMessage[0]
+        final fun <get-errorMessage>(): kotlin/String? // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.errorMessage.<get-errorMessage>|<get-errorMessage>(){}[0]
+    final val firstResultBase64Url // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.firstResultBase64Url|{}firstResultBase64Url[0]
+        final fun <get-firstResultBase64Url>(): kotlin/String? // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.firstResultBase64Url.<get-firstResultBase64Url>|<get-firstResultBase64Url>(){}[0]
+    final val isSuccess // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.isSuccess|{}isSuccess[0]
+        final fun <get-isSuccess>(): kotlin/Boolean // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.isSuccess.<get-isSuccess>|<get-isSuccess>(){}[0]
+    final val responseJson // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.responseJson|{}responseJson[0]
+        final fun <get-responseJson>(): kotlin/String? // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.responseJson.<get-responseJson>|<get-responseJson>(){}[0]
+    final val secondResultBase64Url // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.secondResultBase64Url|{}secondResultBase64Url[0]
+        final fun <get-secondResultBase64Url>(): kotlin/String? // dev.webauthn.client.swift/SwiftPrfAuthenticationBridgeResult.secondResultBase64Url.<get-secondResultBase64Url>|<get-secondResultBase64Url>(){}[0]
+}
