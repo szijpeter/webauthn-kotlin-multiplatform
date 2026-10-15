@@ -45,6 +45,10 @@ LINK_PATTERN = re.compile(
 )
 EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel", "data", "javascript"}
 UNRESOLVED_TOKEN_PATTERN = re.compile(r"@@[A-Z][A-Z0-9_]*@@")
+DOKKA_MEMBER_ANCHOR_PATTERN = re.compile(
+    r'<a data-name="[^"]+" anchor-label="[^"]+" id="(?P<fragment>[^"]+)"[^>]*></a>',
+)
+DOKKA_SELF_LINK_PATTERN = re.compile(r'href="index\.html#(?P<fragment>[^"]+)"')
 EXPECTED_ANDROID_SUPPORT = {
     "androidMinSdk": "26",
     "androidCompileSdk": "37",
@@ -383,6 +387,9 @@ def install_api() -> None:
     reset_directory(destination)
     shutil.copytree(API_ROOT, destination, dirs_exist_ok=True)
     remove_omitted_internal_dokka_links(destination)
+    repaired_links = repair_dokka_grouped_overload_links(destination)
+    if repaired_links:
+        print(f"Repaired Dokka grouped-overload links: {repaired_links}")
     print(f"Installed API reference: {destination}")
 
 
@@ -409,6 +416,49 @@ def remove_omitted_internal_dokka_links(destination: Path) -> None:
             "Expected two Dokka links to the omitted internal JSON serializer, "
             f"replaced {replacements}",
         )
+
+
+def repair_dokka_grouped_overload_links(destination: Path) -> int:
+    """Point broken Dokka overload self-links at their existing member-group anchor."""
+    repairs = 0
+    for path in destination.rglob("*.html"):
+        content = path.read_text()
+        parser = parse_html(path)
+        encoded_ids = parser.ids
+        decoded_ids = {unquote(fragment) for fragment in encoded_ids}
+        member_anchors = list(DOKKA_MEMBER_ANCHOR_PATTERN.finditer(content))
+
+        for index in range(len(member_anchors) - 1, -1, -1):
+            member_anchor = member_anchors[index]
+            member_fragment = member_anchor.group("fragment")
+            segment_start = member_anchor.end()
+            segment_end = member_anchors[index + 1].start() if index + 1 < len(member_anchors) else len(content)
+            segment = content[segment_start:segment_end]
+            if f'pointing-to="{member_fragment}"' not in segment:
+                continue
+
+            member_parts = unquote(member_fragment).split("/")
+            if len(member_parts) != 3 or member_parts[1] != "Functions":
+                continue
+
+            def repair_link(match: re.Match[str]) -> str:
+                nonlocal repairs
+                target_fragment = match.group("fragment")
+                if target_fragment in encoded_ids or unquote(target_fragment) in decoded_ids:
+                    return match.group(0)
+
+                target_parts = unquote(target_fragment).split("/")
+                if len(target_parts) != 3 or target_parts[1:] != member_parts[1:]:
+                    return match.group(0)
+
+                repairs += 1
+                return f'href="index.html#{member_fragment}"'
+
+            repaired_segment = DOKKA_SELF_LINK_PATTERN.sub(repair_link, segment)
+            content = content[:segment_start] + repaired_segment + content[segment_end:]
+
+        path.write_text(content)
+    return repairs
 
 
 class AssetParser(html.parser.HTMLParser):

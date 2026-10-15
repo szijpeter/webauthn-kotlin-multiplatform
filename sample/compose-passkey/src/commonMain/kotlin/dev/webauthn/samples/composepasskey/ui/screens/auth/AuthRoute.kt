@@ -10,8 +10,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import dev.webauthn.client.CeremonyFailure
 import dev.webauthn.client.CeremonyResult
+import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyClient
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyFlow
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.client.compose.rememberPasskeyFlow
 import dev.webauthn.network.kotlinx.DefaultPasskeyFinishResult
 import dev.webauthn.samples.composepasskey.app.LocalShowDebugLogs
@@ -48,21 +52,40 @@ internal fun AuthRoute() {
     val canRegister by coordinator.canRegister.collectAsState()
     val actionsEnabled = areCeremonyActionsEnabled(state)
     // docs-endregion compose-sample-auth-route
+    var conditionalCreateAvailable by remember { mutableStateOf(false) }
 
     LaunchedEffect(state) {
         coordinator.onCeremonyStateChanged(state)
+    }
+
+    LaunchedEffect(passkeyClient) {
+        conditionalCreateAvailable = passkeyClient.capabilities().supportsConditionalCreate()
     }
 
     AuthScreen(
         status = state.toDemoStatus(),
         actionsEnabled = actionsEnabled,
         canRegister = canRegister,
+        conditionalCreateAvailable = conditionalCreateAvailable,
         onShowLogs = showDebugLogs,
         onRegister = {
-            if (actionsEnabled && canRegister) {
+            if (canStartExplicitRegistration(actionsEnabled, canRegister)) {
                 coordinator.onRegisterClicked()
                 scope.launch {
                     state = runRegistration(flow, backend, config) { state = it }
+                }
+            }
+        },
+        onAutoCreate = {
+            if (canStartConditionalRegistration(actionsEnabled, canRegister, conditionalCreateAvailable)) {
+                coordinator.onAutoCreateClicked()
+                scope.launch {
+                    state = runRegistration(
+                        flow = flow,
+                        backend = backend,
+                        config = config,
+                        createOptions = PasskeyCreateOptions.Conditional,
+                    ) { state = it }
                 }
             }
         },
@@ -77,18 +100,37 @@ internal fun AuthRoute() {
     )
 }
 
+internal fun PasskeyCapabilities.supportsConditionalCreate(): Boolean = supports(
+    PasskeyCapability.Platform(PlatformCapability.ConditionalCreate),
+)
+
+internal fun canStartExplicitRegistration(actionsEnabled: Boolean, canRegister: Boolean): Boolean =
+    actionsEnabled && canRegister
+
+internal fun canStartConditionalRegistration(
+    actionsEnabled: Boolean,
+    canRegister: Boolean,
+    conditionalCreateAvailable: Boolean,
+): Boolean = canStartExplicitRegistration(actionsEnabled, canRegister) && conditionalCreateAvailable
+
 @Suppress("TooGenericExceptionCaught")
 private suspend fun runRegistration(
     flow: PasskeyFlow,
     backend: DemoPasskeyBackend,
     config: PasskeyDemoConfig,
+    createOptions: PasskeyCreateOptions = PasskeyCreateOptions.Default,
     onPhaseChanged: (DemoCeremonyState) -> Unit,
 ): DemoCeremonyState {
     val action = DemoPasskeyAction.REGISTER
     return try {
-        when (val result = flow.register(config.toRegistrationStartPayload(), backend.registration) {
-            onPhaseChanged(DemoCeremonyState.InProgress(action, it))
-        }) {
+        when (
+            val result = flow.register(
+                input = config.toRegistrationStartPayload(),
+                backend = backend.registration,
+                createOptions = createOptions,
+                onPhaseChanged = { onPhaseChanged(DemoCeremonyState.InProgress(action, it)) },
+            )
+        ) {
             is CeremonyResult.Success -> result.value.toState(action)
             is CeremonyResult.Failure -> result.error.toState(action)
         }
