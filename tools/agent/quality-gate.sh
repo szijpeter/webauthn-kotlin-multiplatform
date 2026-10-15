@@ -93,7 +93,7 @@ if [[ "$scope" == "changed" && "$DOCS_ONLY" == "true" ]]; then
         docs_only_failed="true"
     fi
     if [[ "$mode" == "strict" ]]; then
-        for trace_check in spec-trace-check.sh docs-trace-check.sh mermaid-trace-check.sh; do
+        for trace_check in spec-trace-check.sh docs-trace-check.sh diagram-trace-check.sh; do
             if ! bash "tools/agent/$trace_check" --changed-files "$tmp_changed_files" --strict >/dev/null; then
                 docs_only_failed="true"
             fi
@@ -236,7 +236,7 @@ else
     if [[ "$mode" == "strict" ]]; then
         run_list+=("bash tools/agent/status-trace-check.sh --changed-files $tmp_changed_files --strict")
         run_list+=("bash tools/agent/docs-trace-check.sh --changed-files $tmp_changed_files --strict")
-        run_list+=("bash tools/agent/mermaid-trace-check.sh --changed-files $tmp_changed_files --strict")
+        run_list+=("bash tools/agent/diagram-trace-check.sh --changed-files $tmp_changed_files --strict")
 
         if [[ "$SPEC_SENSITIVE" == "true" ]]; then
             run_list+=("bash tools/agent/spec-trace-check.sh --changed-files $tmp_changed_files --strict")

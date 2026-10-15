@@ -4,16 +4,26 @@ The repository includes a Compose Multiplatform app, Android and iOS hosts, and 
 
 ## Topology
 
-<!-- doc-example: id=site-full-stack-topology-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Shows the runnable sample components and network flow -->
-```mermaid
-flowchart TD
-    A[Compose shared UI and flow] --> B[Android Credential Manager]
-    A --> C[iOS Authentication Services]
-    A <--> D[Ktor sample backend]
-    D --> E[Registration and authentication services]
-    E --> F[(Ceremony and credential stores)]
-    D --> G[Association endpoints]
-```
+<!-- diagram: public-full-stack-topology-1 -->
+<a href="../../../diagrams/assets/public-full-stack-topology-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../../diagrams/assets/public-full-stack-topology-1-desktop-dark.svg">
+  <img alt="Full-stack topology. The mobile flow connects platform credential APIs to the relying-party backend." src="../../../diagrams/assets/public-full-stack-topology-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: Full-stack topology</summary>
+<p>Phone view: <a href="../../../diagrams/assets/public-full-stack-topology-1-mobile-light.svg">light</a> · <a href="../../../diagrams/assets/public-full-stack-topology-1-mobile-dark.svg">dark</a>.</p>
+<p>The mobile flow connects platform credential APIs to the relying-party backend.</p>
+<p>Nodes: Compose shared UI and flow; Android Credential Manager; iOS Authentication Services; Ktor sample backend; Registration and authentication services; Ceremony and credential stores; Association endpoints.</p>
+<p>1. Compose shared UI and flow → Android Credential Manager.</p>
+<p>2. Compose shared UI and flow → iOS Authentication Services.</p>
+<p>3. Compose shared UI and flow ↔ Ktor sample backend.</p>
+<p>4. Ktor sample backend → Registration and authentication services.</p>
+<p>5. Registration and authentication services → Ceremony and credential stores.</p>
+<p>6. Ktor sample backend → Association endpoints.</p>
+</details>
+<!-- /diagram -->
 
 ## Local Android path
 

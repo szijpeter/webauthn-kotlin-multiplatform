@@ -1,0 +1,34 @@
+{
+  "id": "client-webauthn-client-prf-crypto-readme-1",
+  "title": "client-prf-crypto · What it provides",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "Salt", "label": "Caller-owned persisted salt", "shape": "rect", "parent": null, "container": false},
+    {"id": "Start", "label": "PublicKeyCredentialRequestOptions", "shape": "rect", "parent": null, "container": false},
+    {"id": "AddPrf", "label": "PrfCrypto.withPrfEvaluation", "shape": "rect", "parent": null, "container": false},
+    {"id": "Assertion", "label": "PasskeyClient.getAssertion", "shape": "rect", "parent": null, "container": false},
+    {"id": "Extract", "label": "PrfCrypto.requirePrfResults", "shape": "rect", "parent": null, "container": false},
+    {"id": "Derive", "label": "HKDF-SHA256 deriveAes256Key", "shape": "rect", "parent": null, "container": false},
+    {"id": "Session", "label": "PrfCryptoSession (in memory)", "shape": "rect", "parent": null, "container": false},
+    {"id": "Encrypt", "label": "encrypt / encryptString", "shape": "rect", "parent": null, "container": false},
+    {"id": "Decrypt", "label": "decrypt / decryptToString", "shape": "rect", "parent": null, "container": false},
+    {"id": "Clear", "label": "clear() zeroizes key bytes", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "Salt", "target": "Start", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "Start", "target": "AddPrf", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "AddPrf", "target": "Assertion", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "Assertion", "target": "Extract", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "Extract", "target": "Derive", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "Derive", "target": "Session", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "Session", "target": "Encrypt", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "Session", "target": "Decrypt", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "Session", "target": "Clear", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "Request and evaluate PRF", "edges": ["e1", "e2", "e3", "e4", "e5"]},
+    {"title": "Use and clear the in-memory key", "edges": ["e6", "e7", "e8", "e9"]}
+  ]
+}

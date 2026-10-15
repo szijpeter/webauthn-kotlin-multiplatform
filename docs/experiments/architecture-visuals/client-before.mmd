@@ -1,0 +1,42 @@
+flowchart TB
+    COMPOSE["webauthn-client-compose"]
+    PLATFORM["webauthn-client-platform<br/>(androidMain and iosMain)"]
+    JSON["webauthn-client-json-core"]
+    PRF["webauthn-client-prf-crypto<br/>(optional)"]
+    DEFAULTS["webauthn-client-defaults<br/>(recommended composition)"]
+    KTOR_KOTLINX["webauthn-client-ktor-kotlinx<br/>(default JSON contract)"]
+    KTOR["webauthn-client-ktor<br/>(codec-neutral transport)"]
+    FLOW["webauthn-client-flow"]
+    CLIENT_CORE["webauthn-client-core"]
+    JSON_API["webauthn-json-api"]
+    JSON_KOTLINX["webauthn-json-kotlinx"]
+    RUNTIME["webauthn-runtime-core"]
+    MODEL["webauthn-model"]
+
+    COMPOSE --> CLIENT_CORE
+    COMPOSE --> FLOW
+    COMPOSE --> PLATFORM
+    COMPOSE -->|androidMain| JSON_KOTLINX
+
+    DEFAULTS -->|androidMain and iosMain| PLATFORM
+    DEFAULTS --> JSON_API
+    DEFAULTS --> JSON_KOTLINX
+
+    PLATFORM --> CLIENT_CORE
+    PLATFORM --> JSON_API
+
+    JSON --> CLIENT_CORE
+    JSON --> JSON_API
+
+    PRF --> CLIENT_CORE
+    PRF --> RUNTIME
+
+    KTOR_KOTLINX --> KTOR
+    KTOR_KOTLINX --> JSON_KOTLINX
+
+    KTOR --> FLOW
+
+    FLOW --> CLIENT_CORE
+
+    CLIENT_CORE --> RUNTIME
+    CLIENT_CORE --> MODEL

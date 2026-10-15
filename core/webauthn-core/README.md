@@ -11,17 +11,27 @@ Audience: teams validating WebAuthn ceremonies before cryptographic verification
 - Composable per-extension validation hooks (`PrfExtensionHook`, `LargeBlobExtensionHook`).
 - `CompositeExtensionHook` for mix-and-match extension validation pipelines.
 
-<!-- doc-example: id=core-webauthn-core-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TD
-    Start["Typed finish input<br/>RegistrationValidationInput / AuthenticationValidationInput"] --> ClientData["validateClientData"]
-    ClientData --> AuthData["validateAuthenticatorData"]
-    AuthData --> AllowCred["requireAllowedCredential"]
-    AllowCred --> Hook["WebAuthnExtensionHook (optional)"]
-    Hook --> CoreOut["ValidationResult output"]
-    CoreOut --> Crypto["Server crypto verification<br/>signature + attestation"]
-    Crypto --> Persist["Store signCount / credential state"]
-```
+<!-- diagram: core-webauthn-core-readme-1 -->
+<a href="../../docs/diagrams/assets/core-webauthn-core-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/core-webauthn-core-readme-1-desktop-dark.svg">
+  <img alt="core · What it provides. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/core-webauthn-core-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: core · What it provides</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/core-webauthn-core-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/core-webauthn-core-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Typed finish input — RegistrationValidationInput / AuthenticationValidationInput; validateClientData; validateAuthenticatorData; requireAllowedCredential; WebAuthnExtensionHook (optional); ValidationResult output; Server crypto verification — signature + attestation; Store signCount / credential state.</p>
+<p>1. Typed finish input RegistrationValidationInput / AuthenticationValidationInput → validateClientData.</p>
+<p>2. validateClientData → validateAuthenticatorData.</p>
+<p>3. validateAuthenticatorData → requireAllowedCredential.</p>
+<p>4. requireAllowedCredential → WebAuthnExtensionHook (optional).</p>
+<p>5. WebAuthnExtensionHook (optional) → ValidationResult output.</p>
+<p>6. ValidationResult output → Server crypto verification signature + attestation.</p>
+<p>7. Server crypto verification signature + attestation → Store signCount / credential state.</p>
+</details>
+<!-- /diagram -->
 
 ## Where it fits in a real ceremony
 

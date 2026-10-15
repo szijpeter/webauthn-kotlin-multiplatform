@@ -1,0 +1,16 @@
+flowchart TB
+    CLIENT["Client stack<br/>Shared orchestration<br/>and platform bridges"]
+    SERVER["JVM server stack<br/>Ceremonies, storage<br/>and HTTP adapters"]
+    CRYPTO["Cryptography boundary<br/>Crypto contracts<br/>and implementations"]
+    FOUNDATION["Shared foundation<br/>Validation, serialization<br/>and runtime"]
+    MODEL["Protocol model<br/>Typed WebAuthn contracts"]
+
+    CLIENT ---> FOUNDATION
+    CLIENT ----> MODEL
+    SERVER ---> FOUNDATION
+    SERVER --> CRYPTO
+    CRYPTO --> FOUNDATION
+    FOUNDATION --> MODEL
+
+    classDef foundation stroke-width:3px;
+    class FOUNDATION foundation;

@@ -66,14 +66,24 @@ selection. The no-argument factory uses the platform module's default lookup pol
 
 ## How it fits in the system
 
-<!-- doc-example: id=client-webauthn-client-defaults-readme-mermaid-1; owner=illustrative; verify=illustrative; audience=consumer; reason=Diagram is rendered by the Markdown host -->
-```mermaid
-flowchart TB
-    APP["Application"] --> DEFAULTS["webauthn-client-defaults"]
-    DEFAULTS --> PLATFORM["webauthn-client-platform"]
-    DEFAULTS --> JSON["webauthn-json-kotlinx<br/>(Android default)"]
-    PLATFORM --> CORE["webauthn-client-core"]
-```
+<!-- diagram: client-webauthn-client-defaults-readme-1 -->
+<a href="../../docs/diagrams/assets/client-webauthn-client-defaults-readme-1-desktop-light.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../docs/diagrams/assets/client-webauthn-client-defaults-readme-1-desktop-dark.svg">
+  <img alt="client-defaults · How it fits in the system. Selected responsibilities and relationships; see the surrounding module guide for scope and limits." src="../../docs/diagrams/assets/client-webauthn-client-defaults-readme-1-desktop-light.svg" width="640" loading="lazy">
+</picture>
+</a>
+<details>
+<summary>Diagram text: client-defaults · How it fits in the system</summary>
+<p>Phone view: <a href="../../docs/diagrams/assets/client-webauthn-client-defaults-readme-1-mobile-light.svg">light</a> · <a href="../../docs/diagrams/assets/client-webauthn-client-defaults-readme-1-mobile-dark.svg">dark</a>.</p>
+<p>Selected responsibilities and relationships; see the surrounding module guide for scope and limits.</p>
+<p>Nodes: Application; webauthn-client-defaults; webauthn-client-platform; webauthn-json-kotlinx — (Android default); webauthn-client-core.</p>
+<p>1. Application → webauthn-client-defaults.</p>
+<p>2. webauthn-client-defaults → webauthn-client-platform.</p>
+<p>3. webauthn-client-defaults → webauthn-json-kotlinx (Android default).</p>
+<p>4. webauthn-client-platform → webauthn-client-core.</p>
+</details>
+<!-- /diagram -->
 
 ## Pitfalls and limits
 

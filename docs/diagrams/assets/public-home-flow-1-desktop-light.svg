@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="834" viewBox="0 0 960 834" role="img" aria-labelledby="public-home-flow-1-desktop-light-title public-home-flow-1-desktop-light-desc" data-diagram="public-home-flow-1">
+<title id="public-home-flow-1-desktop-light-title">From user action to verified result</title>
+<desc id="public-home-flow-1-desktop-light-desc">The platform supplies a credential response; the server makes the verification decision.
+Nodes: Mobile UI; PasskeyFlow; Ktor backend contract; Registration or authentication service; Credential and ceremony stores; Android or iOS platform prompt.
+1. Mobile UI → PasskeyFlow.
+2. PasskeyFlow → Ktor backend contract.
+3. Ktor backend contract → Registration or authentication service.
+4. Registration or authentication service → Credential and ceremony stores.
+5. PasskeyFlow → Android or iOS platform prompt.
+6. Android or iOS platform prompt → PasskeyFlow.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="public-home-flow-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >From user action to verified result</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >The platform supplies a credential response; the server makes the verification decision.</text>
+<path d="M 621.50 234.42 C 621.50 247.38 621.50 261.87 621.50 275.36" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-home-flow-1-desktop-light-arrow)" data-edge="e1" data-from="UI" data-to="Flow"/>
+<path d="M 534.28 366.37 C 502.27 381.19 465.89 398.03 433.26 413.14" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-home-flow-1-desktop-light-arrow)" data-edge="e2" data-from="Flow" data-to="API"/>
+<path d="M 338.50 499.32 C 338.50 512.51 338.50 527.31 338.50 541.12" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-home-flow-1-desktop-light-arrow)" data-edge="e3" data-from="API" data-to="Service"/>
+<path d="M 338.50 634.40 C 338.50 647.43 338.50 661.94 338.50 675.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-home-flow-1-desktop-light-arrow)" data-edge="e4" data-from="Service" data-to="Store"/>
+<path d="M 611.37 366.37 C 610.56 379.32 610.41 393.82 610.91 407.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-home-flow-1-desktop-light-arrow)" data-edge="e5" data-from="Flow" data-to="Prompt"/>
+<path d="M 631.69 415.63 C 632.46 402.60 632.58 388.10 632.05 374.61" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#public-home-flow-1-desktop-light-arrow)" data-edge="e6" data-from="Prompt" data-to="Flow"/>
+<g data-node="API">
+<rect x="211.50" y="417.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="338.50" y="465.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Ktor backend contract</text>
+</g>
+<g data-node="Flow">
+<rect x="494.50" y="284.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="621.50" y="332.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PasskeyFlow</text>
+</g>
+<g data-node="Prompt">
+<rect x="494.50" y="416.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="621.50" y="453.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Android or iOS</text>
+<text x="621.50" y="478.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >platform prompt</text>
+</g>
+<g data-node="Service">
+<rect x="211.50" y="550.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="338.50" y="587.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Registration or</text>
+<text x="338.50" y="612.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >authentication service</text>
+</g>
+<g data-node="Store">
+<path d="M 211.5 696.0 C 211.5 680.0 465.5 680.0 465.5 696.0 V 756.0 C 465.5 772.0 211.5 772.0 211.5 756.0 Z" fill="var(--panel)" stroke="var(--line)"/>
+<path d="M 211.5 696.0 C 211.5 711.6 465.5 711.6 465.5 696.0" fill="none" stroke="var(--line)"/>
+<text x="338.50" y="721.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Credential and</text>
+<text x="338.50" y="746.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >ceremony stores</text>
+</g>
+<g data-node="UI">
+<rect x="494.50" y="152.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="621.50" y="200.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Mobile UI</text>
+</g>
+</svg>

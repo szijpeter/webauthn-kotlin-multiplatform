@@ -181,3 +181,6 @@ bin/
 
 # macOS
 .DS_Store
+
+# Python documentation tooling
+__pycache__/

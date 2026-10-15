@@ -163,7 +163,7 @@ Reference/samples:
 
 1. If a BCV-covered published module API baseline changes (for example `<module>/api/*` deltas), update that module's `README.md` in the same change.
 2. If public integration paths change (for example published module graph/adoption wiring, root/BOM dependency surface), update both `README.md` (root) and `docs/architecture.md` in the same change.
-3. New or updated architecture/flow diagrams in docs must use Mermaid for GitHub-native rendering and reviewable diffs.
+3. New or updated architecture/flow diagrams must use the maintained `docs/diagrams` catalog: reviewable semantic sources and layouts, generated responsive SVGs, and accessible text embeds. Follow `docs/diagrams/README.md`; run `docsDiagramsCheck` and visually review both widths and themes. Mermaid may be retained only as historical comparison evidence under `docs/experiments/`.
 4. Keep module READMEs implementation-oriented: what it provides, when to use, correct usage patterns, system fit, pitfalls/limits, and status.
 5. Every user-facing fenced block and Kotlin KDoc example must have a `doc-example` directive with one owner and verification level.
 6. Edit source-, sample-, and configuration-owned examples at their declared source region, then run `./gradlew docsUpdate`; do not edit their rendered Markdown bodies.

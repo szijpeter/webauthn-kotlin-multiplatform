@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="432" viewBox="0 0 960 432" role="img" aria-labelledby="core-webauthn-json-kotlinx-readme-1-desktop-dark-title core-webauthn-json-kotlinx-readme-1-desktop-dark-desc" data-diagram="core-webauthn-json-kotlinx-readme-1">
+<title id="core-webauthn-json-kotlinx-readme-1-desktop-dark-title">json-kotlinx · How it fits</title>
+<desc id="core-webauthn-json-kotlinx-readme-1-desktop-dark-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Wire DTOs (JSON or CBOR); WebAuthnDtoMapper; webauthn-model; webauthn-core.
+1. Wire DTOs (JSON or CBOR) → WebAuthnDtoMapper.
+2. WebAuthnDtoMapper → webauthn-model.
+3. webauthn-core → webauthn-model.</desc>
+<defs><style>svg{--paper:#1d242d;--ink:#edf1f5;--muted:#b4bfcc;--line:#3c4755;--panel:#28313d;--accent:#82b5e8;--soft:#263f58;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="core-webauthn-json-kotlinx-readme-1-desktop-dark-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#b4bfcc"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >json-kotlinx · How it fits</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 303.33 324.00 C 316.84 324.00 330.63 324.00 344.25 324.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-json-kotlinx-readme-1-desktop-dark-arrow)" data-edge="e1" data-from="WIRE" data-to="MAPPER"/>
+<path d="M 607.33 300.99 C 620.97 298.51 634.89 295.97 648.63 293.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-json-kotlinx-readme-1-desktop-dark-arrow)" data-edge="e2" data-from="MAPPER" data-to="MODEL"/>
+<path d="M 607.33 236.42 C 620.97 238.96 634.89 241.54 648.63 244.08" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#core-webauthn-json-kotlinx-readme-1-desktop-dark-arrow)" data-edge="e3" data-from="CORE" data-to="MODEL"/>
+<g data-node="CORE">
+<rect x="353.00" y="172.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="220.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-core</text>
+</g>
+<g data-node="MAPPER">
+<rect x="353.00" y="283.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="331.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >WebAuthnDtoMapper</text>
+</g>
+<g data-node="MODEL">
+<rect x="657.00" y="228.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="784.00" y="276.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-model</text>
+</g>
+<g data-node="WIRE">
+<rect x="49.00" y="282.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="319.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Wire DTOs (JSON or</text>
+<text x="176.00" y="344.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >CBOR)</text>
+</g>
+</svg>

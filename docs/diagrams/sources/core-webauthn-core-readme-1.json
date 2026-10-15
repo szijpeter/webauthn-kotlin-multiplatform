@@ -1,0 +1,29 @@
+{
+  "id": "core-webauthn-core-readme-1",
+  "title": "core · What it provides",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "Start", "label": "Typed finish input\nRegistrationValidationInput / AuthenticationValidationInput", "shape": "rect", "parent": null, "container": false},
+    {"id": "ClientData", "label": "validateClientData", "shape": "rect", "parent": null, "container": false},
+    {"id": "AuthData", "label": "validateAuthenticatorData", "shape": "rect", "parent": null, "container": false},
+    {"id": "AllowCred", "label": "requireAllowedCredential", "shape": "rect", "parent": null, "container": false},
+    {"id": "Hook", "label": "WebAuthnExtensionHook (optional)", "shape": "rect", "parent": null, "container": false},
+    {"id": "CoreOut", "label": "ValidationResult output", "shape": "rect", "parent": null, "container": false},
+    {"id": "Crypto", "label": "Server crypto verification\nsignature + attestation", "shape": "rect", "parent": null, "container": false},
+    {"id": "Persist", "label": "Store signCount / credential state", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "Start", "target": "ClientData", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "ClientData", "target": "AuthData", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "AuthData", "target": "AllowCred", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "AllowCred", "target": "Hook", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "Hook", "target": "CoreOut", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "CoreOut", "target": "Crypto", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "Crypto", "target": "Persist", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "core · What it provides", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7"]}
+  ]
+}

@@ -16,6 +16,8 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+import diagrams
+
 
 ROOT = Path(__file__).resolve().parents[2]
 BUILD_ROOT = ROOT / "build" / "docs-site"
@@ -178,6 +180,7 @@ def write_page(source: Path, output: Path, mapping: dict[Path, Path], rewrite: b
     text = replace_tokens(source.read_text())
     if rewrite:
         text = rewrite_links(text, source, output, mapping)
+    text = diagrams.site_embeds(text, output.as_posix())
     destination = STAGED_ROOT / output
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(text)
@@ -334,6 +337,16 @@ def write_platform_support() -> dict[str, str]:
 def copy_assets() -> None:
     if ASSET_ROOT.is_dir():
         shutil.copytree(ASSET_ROOT, STAGED_ROOT / "assets", dirs_exist_ok=True)
+    destination = STAGED_ROOT / "assets/diagrams"
+    destination.mkdir(parents=True, exist_ok=True)
+    # Only registered exports enter the public site; authoring tools and templates do not.
+    for entry in diagrams.catalog():
+        for variant in ("desktop", "mobile"):
+            for theme in diagrams.THEMES:
+                name = diagrams.asset_name(entry["id"], variant, theme)
+                source = ensure_inside(diagrams.HOME / "assets" / name, diagrams.HOME)
+                diagrams.safe_svg(source.read_text())
+                shutil.copyfile(source, destination / name)
 
 
 def stage() -> None:
@@ -368,6 +381,7 @@ def stage() -> None:
         "publishedModules": len(modules),
         "stagedSources": staged,
         "platformSupport": platform_values,
+        "diagrams": json.loads((diagrams.HOME / "manifest.json").read_text()),
     }
     (REPORT_ROOT / "staging.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(
@@ -421,6 +435,10 @@ class AssetParser(html.parser.HTMLParser):
         values = dict(attrs)
         if values.get("id"):
             self.ids.add(values["id"] or "")
+        if values.get("srcset"):
+            for candidate in (values["srcset"] or "").split(","):
+                if candidate.strip():
+                    self.targets.append(("srcset", candidate.strip().split()[0]))
         for attribute in ("href", "src"):
             if values.get(attribute):
                 self.targets.append((attribute, values[attribute] or ""))
@@ -445,7 +463,7 @@ def resolve_site_target(source: Path, target: str) -> tuple[Path, str]:
         path = source
     if path.is_dir() or (not path.suffix and not path.exists()):
         path = path / "index.html"
-    return path.resolve(), parsed.fragment
+    return ensure_inside(path, SITE_ROOT), parsed.fragment
 
 
 def check_html() -> None:
@@ -458,7 +476,7 @@ def check_html() -> None:
     for source in html_files:
         unresolved = sorted(set(UNRESOLVED_TOKEN_PATTERN.findall(source.read_text(errors="replace"))))
         for token in unresolved:
-            failures.append(f"{source.relative_to(SITE_ROOT)}: unresolved token {token}")
+            failures.append(f"{source.resolve().relative_to(SITE_ROOT.resolve())}: unresolved token {token}")
     for source, parser in parsed_files.items():
         for attribute, target in parser.targets:
             parsed = urlsplit(target)
@@ -467,7 +485,7 @@ def check_html() -> None:
             destination, fragment = resolve_site_target(source, target)
             checked += 1
             if not destination.exists():
-                failures.append(f"{source.relative_to(SITE_ROOT)}: missing {attribute} target {target}")
+                failures.append(f"{source.resolve().relative_to(SITE_ROOT.resolve())}: missing {attribute} target {target}")
                 continue
             if fragment and destination.suffix == ".html":
                 target_parser = parsed_files.get(destination)
@@ -475,7 +493,7 @@ def check_html() -> None:
                     target_parser = parse_html(destination)
                     parsed_files[destination] = target_parser
                 if fragment not in target_parser.ids and unquote(fragment) not in target_parser.ids:
-                    failures.append(f"{source.relative_to(SITE_ROOT)}: missing fragment {target}")
+                    failures.append(f"{source.resolve().relative_to(SITE_ROOT.resolve())}: missing fragment {target}")
     report = {"htmlFiles": len(html_files), "localTargets": checked, "failures": failures}
     REPORT_ROOT.mkdir(parents=True, exist_ok=True)
     (REPORT_ROOT / "html-links.json").write_text(json.dumps(report, indent=2) + "\n")

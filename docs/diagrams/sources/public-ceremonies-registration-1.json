@@ -1,0 +1,30 @@
+{
+  "id": "public-ceremonies-registration-1",
+  "title": "Registration",
+  "kind": "sequence",
+  "summary": "The private key stays with the authenticator; the server validates the public credential.",
+  "nodes": [
+    {"id": "App", "label": "Mobile app", "shape": "lifeline", "parent": null, "container": false},
+    {"id": "Server", "label": "RP server", "shape": "lifeline", "parent": null, "container": false},
+    {"id": "OS", "label": "Platform credential API", "shape": "lifeline", "parent": null, "container": false},
+    {"id": "Auth", "label": "Authenticator", "shape": "lifeline", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "App", "target": "Server", "label": "registration/start(account context)", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "Server", "target": "Server", "label": "store short-lived challenge state", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "Server", "target": "App", "label": "creation options", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "App", "target": "OS", "label": "create credential(options)", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "OS", "target": "Auth", "label": "user verification and key creation", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "Auth", "target": "OS", "label": "public-key credential response", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "OS", "target": "App", "label": "raw registration response", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "App", "target": "Server", "label": "registration/finish(raw response)", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "Server", "target": "App", "label": "accepted account result or rejection", "style": "dashed", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "phases": [
+    {"title": "Registration", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9"]}
+  ],
+  "panels": [
+    {"title": "Registration", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9"]}
+  ]
+}

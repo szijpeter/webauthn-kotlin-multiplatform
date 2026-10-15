@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="854" viewBox="0 0 960 854" role="img" aria-labelledby="server-webauthn-attestation-mds-readme-1-desktop-light-title server-webauthn-attestation-mds-readme-1-desktop-light-desc" data-diagram="server-webauthn-attestation-mds-readme-1">
+<title id="server-webauthn-attestation-mds-readme-1-desktop-light-title">attestation-mds · How it fits</title>
+<desc id="server-webauthn-attestation-mds-readme-1-desktop-light-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: FIDO MDS endpoint; FidoMdsTrustSource cache; TrustAnchorSource contract; Attestation verifier; webauthn-server-core-jvm registration flow.
+1. FIDO MDS endpoint → FidoMdsTrustSource cache.
+2. FidoMdsTrustSource cache → TrustAnchorSource contract.
+3. TrustAnchorSource contract → Attestation verifier.
+4. Attestation verifier → webauthn-server-core-jvm registration flow.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="server-webauthn-attestation-mds-readme-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >attestation-mds · How it fits</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<path d="M 480.00 254.37 C 480.00 267.32 480.00 281.82 480.00 295.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-attestation-mds-readme-1-desktop-light-arrow)" data-edge="e1" data-from="MDS" data-to="SOURCE"/>
+<path d="M 480.00 388.40 C 480.00 401.43 480.00 415.94 480.00 429.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-attestation-mds-readme-1-desktop-light-arrow)" data-edge="e2" data-from="SOURCE" data-to="API"/>
+<path d="M 480.00 522.45 C 480.00 535.49 480.00 550.00 480.00 563.48" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-attestation-mds-readme-1-desktop-light-arrow)" data-edge="e3" data-from="API" data-to="VERIFY"/>
+<path d="M 480.00 654.37 C 480.00 667.32 480.00 681.82 480.00 695.35" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#server-webauthn-attestation-mds-readme-1-desktop-light-arrow)" data-edge="e4" data-from="VERIFY" data-to="SVC"/>
+<g data-node="API">
+<rect x="353.00" y="438.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="480.00" y="475.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >TrustAnchorSource</text>
+<text x="480.00" y="500.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >contract</text>
+</g>
+<g data-node="MDS">
+<rect x="353.00" y="172.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="220.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >FIDO MDS endpoint</text>
+</g>
+<g data-node="SOURCE">
+<rect x="353.00" y="304.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="341.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >FidoMdsTrustSource</text>
+<text x="480.00" y="366.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >cache</text>
+</g>
+<g data-node="SVC">
+<rect x="353.00" y="704.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="741.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-server-core-</text>
+<text x="480.00" y="766.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >jvm registration flow</text>
+</g>
+<g data-node="VERIFY">
+<rect x="353.00" y="572.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="620.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Attestation verifier</text>
+</g>
+</svg>

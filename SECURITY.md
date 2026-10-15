@@ -40,4 +40,6 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - Renovate manages dependency and GitHub Actions updates.
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
 - Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.
-- The Central publishing job runs with read-only repository contents and disables persisted Git credentials before executing Gradle. A separate `publish-and-release`-only job receives `contents:write` solely to create the matching GitHub release tag from curated changelog notes.
+- The Central publishing job runs with read-only repository contents and disables persisted Git credentials before executing Gradle. A separate `publish-and-release`-only job receives `contents:write` solely to create the matching GitHub release tag from curated changelog notes and attach its verified diagram snapshot.
+
+- The manual publishing workflow checks documentation diagram freshness and safe SVG exports before Central publication. The release diagram archive contains a commit-pinned manifest and offline assets; it uses no rendering service, remote fonts, credentials, or additional workflow permissions. Public-site staging admits only catalogued diagram SVGs and checks responsive asset links within the site root.

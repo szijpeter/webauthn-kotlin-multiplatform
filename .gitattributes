@@ -1,0 +1,4 @@
+# Authored semantic sources and layouts remain expanded in pull requests.
+docs/diagrams/assets/*.svg linguist-generated=true
+docs/diagrams/gallery.html linguist-generated=true
+docs/diagrams/manifest.json linguist-generated=true

@@ -1,0 +1,19 @@
+{
+  "id": "core-webauthn-cbor-core-readme-1",
+  "title": "cbor-core · How it fits in the system",
+  "kind": "graph",
+  "summary": "Selected responsibilities and relationships; see the surrounding module guide for scope and limits.",
+  "nodes": [
+    {"id": "CBOR", "label": "webauthn-cbor-core", "shape": "rect", "parent": null, "container": false},
+    {"id": "SERIAL", "label": "webauthn-json-kotlinx", "shape": "rect", "parent": null, "container": false},
+    {"id": "JVM", "label": "webauthn-server-jvm-crypto", "shape": "rect", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "CBOR", "target": "SERIAL", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "CBOR", "target": "JVM", "label": "", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "cbor-core · How it fits in the system", "edges": ["e1", "e2"]}
+  ]
+}

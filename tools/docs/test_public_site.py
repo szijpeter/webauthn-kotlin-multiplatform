@@ -104,6 +104,33 @@ class PublicSiteTest(unittest.TestCase):
             self.assertIn('data-omitted-internal-symbol="true"', first.read_text())
             self.assertIn('data-omitted-internal-symbol="true"', second.read_text())
 
+    def test_responsive_sources_are_checked(self) -> None:
+        parser = public_site.AssetParser()
+        parser.feed('<picture><source srcset="dark.svg"><source srcset="mobile.svg 1x, large.svg 2x"><img src="fallback.svg"></picture>')
+        self.assertEqual({"dark.svg", "mobile.svg", "large.svg", "fallback.svg"}, {target for _, target in parser.targets})
+
+    def test_relocated_module_embeds_use_local_themed_assets(self) -> None:
+        source = public_site.ROOT / "core/webauthn-core/README.md"
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.object(public_site, "STAGED_ROOT", Path(temporary)):
+            output = Path("reference/modules/webauthn-core.md")
+            public_site.write_page(source, output, public_site.source_map(), rewrite=True)
+            staged = (Path(temporary) / output).read_text()
+            self.assertIn('../../../assets/diagrams/', staged)
+            self.assertIn('class="diagram-dark"', staged)
+            self.assertNotIn('../../docs/diagrams/assets/', staged)
+
+    def test_html_check_rejects_missing_mobile_asset(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "index.html").write_text('<picture><source srcset="missing.svg"><img src="present.svg"></picture>')
+            (root / "present.svg").write_text('<svg/>')
+            with mock.patch.object(public_site, "SITE_ROOT", root), mock.patch.object(public_site, "REPORT_ROOT", root / "reports"), self.assertRaisesRegex(ValueError, 'missing srcset target'):
+                public_site.check_html()
+
+    def test_site_asset_cannot_escape_site_root(self) -> None:
+        with self.assertRaisesRegex(ValueError, 'escapes allowed root'):
+            public_site.resolve_site_target(public_site.SITE_ROOT / 'index.html', '../private.svg')
+
     def test_html_check_rejects_unresolved_release_tokens(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = Path(temporary)

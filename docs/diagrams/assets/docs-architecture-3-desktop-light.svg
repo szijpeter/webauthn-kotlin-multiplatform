@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="2174" viewBox="0 0 960 2174" role="img" aria-labelledby="docs-architecture-3-desktop-light-title docs-architecture-3-desktop-light-desc" data-diagram="docs-architecture-3">
+<title id="docs-architecture-3-desktop-light-title">Client stack</title>
+<desc id="docs-architecture-3-desktop-light-desc">Focused dependency views. Repeated modules provide context; each relationship appears once.
+Nodes: webauthn-client-compose; webauthn-client-platform — (androidMain and iosMain); webauthn-client-json-core; webauthn-client-prf-crypto — (optional); webauthn-client-defaults — (recommended composition); webauthn-client-ktor-kotlinx — (default JSON contract); webauthn-client-ktor — (codec-neutral transport); webauthn-client-flow; webauthn-client-core; webauthn-json-api; webauthn-json-kotlinx; webauthn-runtime-core; webauthn-model.
+1. webauthn-client-compose → webauthn-client-core.
+2. webauthn-client-compose → webauthn-client-flow.
+3. webauthn-client-compose → webauthn-client-platform (androidMain and iosMain).
+4. webauthn-client-compose → webauthn-json-kotlinx: androidMain.
+5. webauthn-client-defaults (recommended composition) → webauthn-client-platform (androidMain and iosMain): androidMain and iosMain.
+6. webauthn-client-defaults (recommended composition) → webauthn-json-api.
+7. webauthn-client-defaults (recommended composition) → webauthn-json-kotlinx.
+8. webauthn-client-platform (androidMain and iosMain) → webauthn-client-core.
+9. webauthn-client-platform (androidMain and iosMain) → webauthn-json-api.
+10. webauthn-client-json-core → webauthn-client-core.
+11. webauthn-client-json-core → webauthn-json-api.
+12. webauthn-client-prf-crypto (optional) → webauthn-client-core.
+13. webauthn-client-prf-crypto (optional) → webauthn-runtime-core.
+14. webauthn-client-ktor-kotlinx (default JSON contract) → webauthn-client-ktor (codec-neutral transport).
+15. webauthn-client-ktor-kotlinx (default JSON contract) → webauthn-json-kotlinx.
+16. webauthn-client-ktor (codec-neutral transport) → webauthn-client-flow.
+17. webauthn-client-flow → webauthn-client-core.
+18. webauthn-client-core → webauthn-runtime-core.
+19. webauthn-client-core → webauthn-model.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="docs-architecture-3-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >Client stack</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Focused dependency views. Repeated modules provide context; each relationship appears once.</text>
+<text x="32.00" y="164.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >UI and platform bridges</text>
+<path d="M 230.61 251.84 C 173.07 265.63 110.19 292.12 74.91 343.00 40.98 391.94 42.77 426.86 74.91 477.00 90.06 500.63 113.05 518.20 138.07 531.25" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e1" data-from="COMPOSE" data-to="CLIENT_CORE"/>
+<path d="M 324.14 278.20 C 303.41 303.49 276.80 335.94 255.28 362.20" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e2" data-from="COMPOSE" data-to="FLOW"/>
+<path d="M 475.50 278.48 C 526.96 297.25 587.82 320.28 641.91 343.00 643.88 343.82 645.86 344.66 647.85 345.51" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e3" data-from="COMPOSE" data-to="PLATFORM"/>
+<path d="M 391.92 278.20 C 412.81 303.49 439.60 335.94 461.27 362.20" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e4" data-from="COMPOSE" data-to="JSON_KOTLINX"/>
+<rect x="412.90" y="297.50" width="98.50" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="462.15" y="315.50" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >androidMain</text>
+<path d="M 655.81 471.86 C 651.14 473.66 646.50 475.38 641.91 477.00 566.14 503.79 478.94 525.68 408.33 541.28" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e8" data-from="PLATFORM" data-to="CLIENT_CORE"/>
+<path d="M 782.91 477.13 C 782.91 491.42 782.91 506.28 782.91 519.74" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e9" data-from="PLATFORM" data-to="JSON_API"/>
+<g data-node="CLIENT_CORE">
+<rect x="145.91" y="528.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="272.91" y="576.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-core</text>
+</g>
+<g data-node="COMPOSE">
+<rect x="230.91" y="194.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="357.91" y="231.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-</text>
+<text x="357.91" y="256.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >compose</text>
+</g>
+<g data-node="FLOW">
+<rect x="89.91" y="369.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="216.91" y="417.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-flow</text>
+</g>
+<g data-node="JSON_API">
+<rect x="655.91" y="528.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="782.91" y="576.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-api</text>
+</g>
+<g data-node="JSON_KOTLINX">
+<rect x="372.91" y="369.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="499.91" y="417.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-kotlinx</text>
+</g>
+<g data-node="PLATFORM">
+<rect x="655.91" y="343.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="782.91" y="380.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-</text>
+<text x="782.91" y="405.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >platform</text>
+<text x="782.91" y="430.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(androidMain and</text>
+<text x="782.91" y="455.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >iosMain)</text>
+</g>
+<text x="32.00" y="680.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Composition, codecs and optional PRF</text>
+<path d="M 451.58 858.08 C 467.82 850.89 484.48 843.52 500.83 836.28" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e5" data-from="DEFAULTS" data-to="PLATFORM"/>
+<rect x="467.00" y="825.00" width="26.00" height="26.00" rx="7" fill="var(--paper)" stroke="var(--line)" />
+<text x="480.00" y="843.00" font-size="14" fill="var(--accent)" font-weight="650" text-anchor="middle" >5</text>
+<path d="M 451.58 959.31 C 471.36 966.40 491.77 973.72 511.47 980.79" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e6" data-from="DEFAULTS" data-to="JSON_API"/>
+<path d="M 451.58 914.00 C 467.52 914.00 483.88 914.00 499.95 914.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e7" data-from="DEFAULTS" data-to="JSON_KOTLINX"/>
+<path d="M 451.58 1101.08 C 467.67 1104.15 484.18 1107.30 500.39 1110.39" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e10" data-from="JSON" data-to="CLIENT_CORE"/>
+<path d="M 451.58 1055.77 C 467.52 1053.10 483.88 1050.35 499.95 1047.65" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e11" data-from="JSON" data-to="JSON_API"/>
+<path d="M 451.58 1184.53 C 467.67 1180.27 484.18 1175.89 500.39 1171.60" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e12" data-from="PRF" data-to="CLIENT_CORE"/>
+<path d="M 451.58 1229.84 C 467.52 1231.33 483.88 1232.86 499.95 1234.37" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e13" data-from="PRF" data-to="RUNTIME"/>
+<g data-node="CLIENT_CORE">
+<rect x="508.75" y="1095.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="635.75" y="1143.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-core</text>
+</g>
+<g data-node="DEFAULTS">
+<rect x="197.25" y="847.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="324.25" y="884.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-</text>
+<text x="324.25" y="909.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >defaults</text>
+<text x="324.25" y="934.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(recommended</text>
+<text x="324.25" y="959.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >composition)</text>
+</g>
+<g data-node="JSON">
+<rect x="197.25" y="1035.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="324.25" y="1072.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-json-</text>
+<text x="324.25" y="1097.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >core</text>
+</g>
+<g data-node="JSON_API">
+<rect x="508.75" y="984.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="635.75" y="1032.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-api</text>
+</g>
+<g data-node="JSON_KOTLINX">
+<rect x="508.75" y="873.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="635.75" y="921.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-kotlinx</text>
+</g>
+<g data-node="PLATFORM">
+<rect x="508.75" y="710.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="635.75" y="747.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-</text>
+<text x="635.75" y="772.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >platform</text>
+<text x="635.75" y="797.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(androidMain and</text>
+<text x="635.75" y="822.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >iosMain)</text>
+</g>
+<g data-node="PRF">
+<rect x="197.25" y="1163.50" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="324.25" y="1200.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-prf-</text>
+<text x="324.25" y="1225.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >crypto</text>
+<text x="324.25" y="1250.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(optional)</text>
+</g>
+<g data-node="RUNTIME">
+<rect x="508.75" y="1206.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="635.75" y="1254.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-runtime-core</text>
+</g>
+<text x="36.00" y="1336.00" font-size="14" fill="var(--accent)" font-weight="700" text-anchor="start" >05</text>
+<text x="70.00" y="1336.00" font-size="17" fill="var(--muted)" font-weight="400" text-anchor="start" >androidMain and iosMain</text>
+<text x="32.00" y="1389.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Transport and shared operations</text>
+<path d="M 463.81 1553.02 C 475.76 1567.29 488.34 1582.30 500.09 1596.33" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e14" data-from="KTOR_KOTLINX" data-to="KTOR"/>
+<path d="M 353.58 1553.02 C 337.74 1572.06 320.80 1592.43 306.17 1610.02" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e15" data-from="KTOR_KOTLINX" data-to="JSON_KOTLINX"/>
+<path d="M 550.50 1712.34 C 550.50 1725.78 550.50 1740.12 550.50 1753.29" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e16" data-from="KTOR" data-to="FLOW"/>
+<path d="M 550.50 1844.42 C 550.50 1857.38 550.50 1871.87 550.50 1885.36" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e17" data-from="FLOW" data-to="CLIENT_CORE"/>
+<path d="M 594.65 1976.42 C 609.74 1990.24 626.74 2005.79 642.27 2020.02" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e18" data-from="CLIENT_CORE" data-to="RUNTIME"/>
+<path d="M 506.66 1976.42 C 491.67 1990.24 474.80 2005.79 459.37 2020.02" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#docs-architecture-3-desktop-light-arrow)" data-edge="e19" data-from="CLIENT_CORE" data-to="MODEL"/>
+<g data-node="CLIENT_CORE">
+<rect x="423.50" y="1894.00" width="254.00" height="82.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="550.50" y="1942.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-core</text>
+</g>
+<g data-node="FLOW">
+<rect x="423.50" y="1762.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="550.50" y="1810.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-flow</text>
+</g>
+<g data-node="JSON_KOTLINX">
+<rect x="140.50" y="1616.50" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="267.50" y="1665.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-json-kotlinx</text>
+</g>
+<g data-node="KTOR">
+<rect x="423.50" y="1603.00" width="254.00" height="109.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="550.50" y="1640.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-ktor</text>
+<text x="550.50" y="1665.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(codec-neutral</text>
+<text x="550.50" y="1690.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >transport)</text>
+</g>
+<g data-node="KTOR_KOTLINX">
+<rect x="281.50" y="1419.00" width="254.00" height="134.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="408.50" y="1456.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-client-ktor-</text>
+<text x="408.50" y="1481.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >kotlinx</text>
+<text x="408.50" y="1506.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >(default JSON</text>
+<text x="408.50" y="1531.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >contract)</text>
+</g>
+<g data-node="MODEL">
+<rect x="282.50" y="2026.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="409.50" y="2074.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-model</text>
+</g>
+<g data-node="RUNTIME">
+<rect x="565.50" y="2026.00" width="254.00" height="82.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="692.50" y="2074.50" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >webauthn-runtime-core</text>
+</g>
+</svg>

@@ -1,0 +1,31 @@
+{
+  "id": "public-compose-lifecycle-1",
+  "title": "Ceremony lifecycle",
+  "kind": "state",
+  "summary": "Product UI owns state, cancellation and the signed-in session.",
+  "nodes": [
+    {"id": "__start_1", "label": "[start]", "shape": "start", "parent": null, "container": false},
+    {"id": "Idle", "label": "Idle", "shape": "state", "parent": null, "container": false},
+    {"id": "Starting", "label": "Starting", "shape": "state", "parent": null, "container": false},
+    {"id": "PlatformPrompt", "label": "PlatformPrompt", "shape": "state", "parent": null, "container": false},
+    {"id": "Finishing", "label": "Finishing", "shape": "state", "parent": null, "container": false},
+    {"id": "Failed", "label": "Failed", "shape": "state", "parent": null, "container": false},
+    {"id": "SignedIn", "label": "SignedIn", "shape": "state", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "__start_1", "target": "Idle", "label": "", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "Idle", "target": "Starting", "label": "user action", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "Starting", "target": "PlatformPrompt", "label": "start response", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "PlatformPrompt", "target": "Finishing", "label": "signed response", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "Starting", "target": "Failed", "label": "network or contract error", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "PlatformPrompt", "target": "Idle", "label": "user cancellation", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "PlatformPrompt", "target": "Failed", "label": "platform error", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "Finishing", "target": "SignedIn", "label": "server accepts", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "Finishing", "target": "Failed", "label": "server rejects", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e10", "source": "SignedIn", "target": "Idle", "label": "product logout", "style": "solid", "bidirectional": false, "undirected": false}
+  ],
+  "notes": [],
+  "panels": [
+    {"title": "Ceremony lifecycle", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10"]}
+  ]
+}

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagram Design adaptation. MIT License
+Copyright (c) 2025 Cathryn Lavery
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1444" viewBox="0 0 960 1444" role="img" aria-labelledby="client-webauthn-client-prf-crypto-readme-1-desktop-light-title client-webauthn-client-prf-crypto-readme-1-desktop-light-desc" data-diagram="client-webauthn-client-prf-crypto-readme-1">
+<title id="client-webauthn-client-prf-crypto-readme-1-desktop-light-title">client-prf-crypto · What it provides</title>
+<desc id="client-webauthn-client-prf-crypto-readme-1-desktop-light-desc">Selected responsibilities and relationships; see the surrounding module guide for scope and limits.
+Nodes: Caller-owned persisted salt; PublicKeyCredentialRequestOptions; PrfCrypto.withPrfEvaluation; PasskeyClient.getAssertion; PrfCrypto.requirePrfResults; HKDF-SHA256 deriveAes256Key; PrfCryptoSession (in memory); encrypt / encryptString; decrypt / decryptToString; clear() zeroizes key bytes.
+1. Caller-owned persisted salt → PublicKeyCredentialRequestOptions.
+2. PublicKeyCredentialRequestOptions → PrfCrypto.withPrfEvaluation.
+3. PrfCrypto.withPrfEvaluation → PasskeyClient.getAssertion.
+4. PasskeyClient.getAssertion → PrfCrypto.requirePrfResults.
+5. PrfCrypto.requirePrfResults → HKDF-SHA256 deriveAes256Key.
+6. HKDF-SHA256 deriveAes256Key → PrfCryptoSession (in memory).
+7. PrfCryptoSession (in memory) → encrypt / encryptString.
+8. PrfCryptoSession (in memory) → decrypt / decryptToString.
+9. PrfCryptoSession (in memory) → clear() zeroizes key bytes.</desc>
+<defs><style>svg{--paper:#ffffff;--ink:#293545;--muted:#667386;--line:#d8dee7;--panel:#f3f5f7;--accent:#316da8;--soft:#e8f0f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}text{font-kerning:normal}</style>
+<marker id="client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 1 L 7 4 L 0 7 Z" fill="#667386"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="var(--paper)"/>
+<text x="32.00" y="34.00" font-size="11" fill="var(--accent)" font-weight="650" text-anchor="start" >WEBAUTHN · ARCHITECTURE</text>
+<text x="32.00" y="65.00" font-size="28" fill="var(--ink)" font-weight="700" text-anchor="start" >client-prf-crypto · What it provides</text>
+<text x="32.00" y="101.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >Selected responsibilities and relationships; see the surrounding module guide for scope and</text>
+<text x="32.00" y="121.00" font-size="14" fill="var(--muted)" font-weight="400" text-anchor="start" >limits.</text>
+<text x="32.00" y="184.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Request and evaluate PRF</text>
+<path d="M 480.00 298.40 C 480.00 311.43 480.00 325.94 480.00 339.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e1" data-from="Salt" data-to="Start"/>
+<path d="M 480.00 432.40 C 480.00 445.43 480.00 459.94 480.00 473.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e2" data-from="Start" data-to="AddPrf"/>
+<path d="M 480.00 566.40 C 480.00 579.43 480.00 593.94 480.00 607.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e3" data-from="AddPrf" data-to="Assertion"/>
+<path d="M 480.00 700.40 C 480.00 713.43 480.00 727.94 480.00 741.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e4" data-from="Assertion" data-to="Extract"/>
+<path d="M 480.00 834.40 C 480.00 847.43 480.00 861.94 480.00 875.47" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e5" data-from="Extract" data-to="Derive"/>
+<g data-node="AddPrf">
+<rect x="353.00" y="482.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="480.00" y="519.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PrfCrypto.</text>
+<text x="480.00" y="544.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >withPrfEvaluation</text>
+</g>
+<g data-node="Assertion">
+<rect x="353.00" y="616.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="653.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PasskeyClient.</text>
+<text x="480.00" y="678.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >getAssertion</text>
+</g>
+<g data-node="Derive">
+<rect x="353.00" y="884.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="921.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >HKDF-SHA256</text>
+<text x="480.00" y="946.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >deriveAes256Key</text>
+</g>
+<g data-node="Extract">
+<rect x="353.00" y="750.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="787.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PrfCrypto.</text>
+<text x="480.00" y="812.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >requirePrfResults</text>
+</g>
+<g data-node="Salt">
+<rect x="353.00" y="214.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="251.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >Caller-owned persisted</text>
+<text x="480.00" y="276.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >salt</text>
+</g>
+<g data-node="Start">
+<rect x="353.00" y="348.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="385.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PublicKeyCredential</text>
+<text x="480.00" y="410.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >RequestOptions</text>
+</g>
+<text x="32.00" y="1038.00" font-size="20" fill="var(--ink)" font-weight="650" text-anchor="start" >Use and clear the in-memory key</text>
+<path d="M 303.33 1223.00 C 316.84 1223.00 330.63 1223.00 344.25 1223.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e6" data-from="Derive" data-to="Session"/>
+<path d="M 594.31 1265.40 C 616.32 1273.63 639.47 1282.30 661.72 1290.62" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e7" data-from="Session" data-to="Encrypt"/>
+<path d="M 607.33 1223.00 C 620.84 1223.00 634.63 1223.00 648.25 1223.00" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e8" data-from="Session" data-to="Decrypt"/>
+<path d="M 594.31 1180.60 C 616.32 1172.37 639.47 1163.70 661.72 1155.38" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#client-webauthn-client-prf-crypto-readme-1-desktop-light-arrow)" data-edge="e9" data-from="Session" data-to="Clear"/>
+<g data-node="Clear">
+<rect x="657.00" y="1068.00" width="254.00" height="84.00" rx="9" fill="var(--soft)" stroke="var(--accent)" />
+<text x="784.00" y="1105.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >clear() zeroizes key</text>
+<text x="784.00" y="1130.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >bytes</text>
+</g>
+<g data-node="Decrypt">
+<rect x="657.00" y="1181.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="1218.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >decrypt /</text>
+<text x="784.00" y="1243.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >decryptToString</text>
+</g>
+<g data-node="Derive">
+<rect x="49.00" y="1181.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="176.00" y="1218.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >HKDF-SHA256</text>
+<text x="176.00" y="1243.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >deriveAes256Key</text>
+</g>
+<g data-node="Encrypt">
+<rect x="657.00" y="1294.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="784.00" y="1331.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >encrypt /</text>
+<text x="784.00" y="1356.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >encryptString</text>
+</g>
+<g data-node="Session">
+<rect x="353.00" y="1181.00" width="254.00" height="84.00" rx="9" fill="var(--panel)" stroke="var(--line)" />
+<text x="480.00" y="1218.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >PrfCryptoSession (in</text>
+<text x="480.00" y="1243.00" font-size="20.0" fill="var(--ink)" font-weight="600" text-anchor="middle" >memory)</text>
+</g>
+</svg>

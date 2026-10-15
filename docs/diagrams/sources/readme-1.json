@@ -1,0 +1,34 @@
+{
+  "id": "readme-1",
+  "title": "WebAuthn ceremonies",
+  "kind": "sequence",
+  "summary": "The server starts and verifies each ceremony; the platform produces the credential response.",
+  "nodes": [
+    {"id": "User", "label": "User", "shape": "actor", "parent": null, "container": false},
+    {"id": "App", "label": "Client App", "shape": "lifeline", "parent": null, "container": false},
+    {"id": "Auth", "label": "Platform Authenticator", "shape": "lifeline", "parent": null, "container": false},
+    {"id": "RP", "label": "Relying Party Server", "shape": "lifeline", "parent": null, "container": false}
+  ],
+  "edges": [
+    {"id": "e1", "source": "App", "target": "RP", "label": "registration/start request", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e2", "source": "RP", "target": "App", "label": "registration/start response (challenge + options)", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e3", "source": "App", "target": "Auth", "label": "navigator.credentials.create / platform create", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e4", "source": "Auth", "target": "App", "label": "RegistrationResponse", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e5", "source": "App", "target": "RP", "label": "registration/finish (credential response)", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e6", "source": "RP", "target": "App", "label": "verified registration", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e7", "source": "App", "target": "RP", "label": "authentication/start request", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e8", "source": "RP", "target": "App", "label": "authentication/start response (challenge + options)", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e9", "source": "App", "target": "Auth", "label": "navigator.credentials.get / platform get", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e10", "source": "Auth", "target": "App", "label": "AuthenticationResponse", "style": "dashed", "bidirectional": false, "undirected": false},
+    {"id": "e11", "source": "App", "target": "RP", "label": "authentication/finish (credential response)", "style": "solid", "bidirectional": false, "undirected": false},
+    {"id": "e12", "source": "RP", "target": "App", "label": "verified sign-in", "style": "dashed", "bidirectional": false, "undirected": false}
+  ],
+  "notes": ["Registration ceremony", "Authentication ceremony"],
+  "phases": [
+    {"title": "Registration ceremony", "edges": ["e1", "e2", "e3", "e4", "e5", "e6"]},
+    {"title": "Authentication ceremony", "edges": ["e7", "e8", "e9", "e10", "e11", "e12"]}
+  ],
+  "panels": [
+    {"title": "WebAuthn ceremonies", "edges": ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10", "e11", "e12"]}
+  ]
+}

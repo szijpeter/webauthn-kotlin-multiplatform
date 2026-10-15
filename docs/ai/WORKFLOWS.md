@@ -32,7 +32,7 @@ tools/agent/quality-gate.sh --mode strict --scope changed --block false
 7. If core/security-critical modules changed, update `docs/IMPLEMENTATION_STATUS.md` and/or `docs/ROADMAP.md`.
 8. When a published module implementation/build contract changes, update the matching module `README.md` in the same change.
 9. When module relationships or integration paths change, update both root `README.md` and `docs/architecture.md` in the same change.
-10. Add Mermaid diagrams for any new or updated architecture or flow diagrams in docs.
+10. Maintain architecture and flow diagrams through `docs/diagrams/README.md`: semantic sources, reviewed layouts, generated SVGs, accessible text and visual review at both widths/themes. Run `docsDiagramsCheck`.
 11. If public API changed in a BCV-covered published module, run:
 
 <!-- doc-example: id=docs-ai-workflows-bash-4; owner=markdown; verify=syntax; audience=contributor -->
