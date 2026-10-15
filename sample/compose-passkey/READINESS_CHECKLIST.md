@@ -116,6 +116,7 @@ Pass condition:
 - app/action/flow/http events are present and readable.
 - HTTP entries contain request/response metadata without bodies under the default
   configuration.
+- on Android, successful sign-in logs a `signals` entry when Credential Manager accepts or rejects the current-user-details signal.
 - in-app debug sheet opens from the explicit `Logs` header action on both screens.
 
 For an isolated debugging session, build with
