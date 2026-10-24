@@ -1,6 +1,7 @@
 package dev.webauthn.client.ios
 
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.client.PasskeyResult
 import dev.webauthn.model.AuthenticationExtensionsClientOutputs
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
@@ -32,7 +33,13 @@ class IosPasskeyClientImplTest {
         var createResult: Result<IosRegistrationPayload>? = null,
         var getResult: Result<IosAuthenticationPayload>? = null,
     ) : IosAuthorizationBridge {
-        override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+        var receivedCreateOptions: PasskeyCreateOptions? = null
+
+        override suspend fun createCredential(
+            options: PublicKeyCredentialCreationOptions,
+            createOptions: PasskeyCreateOptions,
+        ): IosRegistrationPayload {
+            receivedCreateOptions = createOptions
             return createResult?.getOrThrow() ?: throw IllegalStateException("Not configured")
         }
 
@@ -75,6 +82,29 @@ class IosPasskeyClientImplTest {
         val result = delegate.createCredential(mockOptions())
         assertTrue(result is PasskeyResult.Success)
         assertEquals("MzMzMzMzMzMzMzMzMzMzMw", result.value.credentialId.value.encoded())
+        assertEquals(PasskeyCreateOptions.Default, bridge.receivedCreateOptions)
+    }
+
+    @Test
+    fun createCredential_forwards_conditional_create_options() = runBlocking {
+        val bridge = FakeAuthorizationBridge(
+            createResult = Result.success(
+                IosRegistrationPayload(
+                    credentialId = decode("AQID"),
+                    rawId = decode("AQID"),
+                    clientDataJson = decode("BAUG"),
+                    attestationObject = decode("AQID"),
+                ),
+            ),
+        )
+
+        val result = IosPasskeyClientImpl(bridge).createCredential(
+            mockOptions(),
+            PasskeyCreateOptions.Conditional,
+        )
+
+        assertTrue(result is PasskeyResult.Success)
+        assertEquals(PasskeyCreateOptions.Conditional, bridge.receivedCreateOptions)
     }
 
     @Test
@@ -251,7 +281,10 @@ class IosPasskeyClientImplTest {
     @Test
     fun getAssertion_returns_InvalidOptions_when_rp_id_is_missing() = runBlocking {
         val bridge = object : IosAuthorizationBridge {
-            override suspend fun createCredential(options: PublicKeyCredentialCreationOptions): IosRegistrationPayload {
+            override suspend fun createCredential(
+                options: PublicKeyCredentialCreationOptions,
+                createOptions: PasskeyCreateOptions,
+            ): IosRegistrationPayload {
                 throw IllegalStateException("unused")
             }
 

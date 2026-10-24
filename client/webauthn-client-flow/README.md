@@ -10,6 +10,8 @@ contracts, without library-owned product state.
   `AuthenticationBackend<Input, State, Output>` contracts.
 - Exact forwarding of opaque backend `State` from `start` to `finish`.
 - Application-defined finish `Output` and observable `PasskeyPhase` changes.
+- Registration overloads that forward `PasskeyCreateOptions`, including conditional creation, to
+  the platform client without changing backend state handling.
 - An explicit `AlreadyInProgress` result when the same flow instance is already running a ceremony.
 
 The module depends on `webauthn-client-core`. It has no Ktor engine, HTTP contract, or JSON
@@ -96,6 +98,8 @@ flowchart LR
 - A `PasskeyFlow` instance allows one ceremony at a time; concurrent calls are rejected, not queued.
 - `onPhaseChanged` is synchronous and application-owned. Do not perform blocking work in it.
 - Do not decode or reinterpret opaque continuation state inside the flow layer.
+- Conditional creation is a registration mediation hint, not a separate backend contract; the same
+  opaque start state and raw finish response rules apply.
 - The flow does not own retries, backend exception mapping, navigation, dialogs, or persisted UI state.
 
 ## Status
