@@ -14,6 +14,7 @@ kotlin {
         namespace = "dev.webauthn.samples.composepasskey"
         compileSdk = 37
         minSdk = 30
+        withHostTest {}
     }
 
     val iosArm64 = iosArm64()

@@ -9,6 +9,7 @@ kotlin {
         namespace = "dev.webauthn.client.prf"
         compileSdk = 37
         minSdk = 30
+        withHostTest {}
     }
     jvm()
     iosArm64()

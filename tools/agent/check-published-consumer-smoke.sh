@@ -66,40 +66,48 @@ done
   :client:compileKotlinJvm \
   :client:compileTestKotlinJvm \
   :client:compileAndroidMain \
+  :client:testAndroidHostTest \
   :client:compileKotlinIosSimulatorArm64 \
   :defaults:compileAndroidMain \
   :defaults:compileKotlinIosSimulatorArm64 \
   :server:compileKotlin \
   :json-kotlinx:compileKotlin \
+  --warning-mode all \
   --stacktrace
 
-cp \
-  "$tmp_dir/probes/MustUseProbe.kt" \
-  "$tmp_dir/server/src/main/kotlin/smoke/server/MustUseProbe.kt"
+# Gradle's Problems API may stop reporting after the first compiler error.
+# Compile each ignored result separately so both published contracts are checked.
+for probe in MustUseRegistrationProbe:validateRegistration MustUseSignatureProbe:verify; do
+    probe_name="${probe%%:*}"
+    function_name="${probe##*:}"
+    cp \
+        "$tmp_dir/probes/$probe_name.kt" \
+        "$tmp_dir/server/src/main/kotlin/smoke/server/MustUseProbe.kt"
 
-set +e
-probe_output="$(
-    "$ROOT_DIR/gradlew" \
-        --project-dir "$tmp_dir" \
-        --no-daemon \
-        --rerun-tasks \
-        :server:compileKotlin \
-        --stacktrace 2>&1
-)"
-probe_exit_code="$?"
-set -e
+    set +e
+    probe_output="$(
+        "$ROOT_DIR/gradlew" \
+            --project-dir "$tmp_dir" \
+            --no-daemon \
+            --rerun-tasks \
+            :server:compileKotlin \
+            --warning-mode all \
+            --stacktrace 2>&1
+    )"
+    probe_exit_code="$?"
+    set -e
 
-if [[ "$probe_exit_code" -eq 0 ]]; then
-    echo "Must-use consumer probe unexpectedly compiled ignored security results" >&2
-    exit 1
-fi
+    if [[ "$probe_exit_code" -eq 0 ]]; then
+        echo "Must-use consumer probe unexpectedly compiled ignored '$function_name' result" >&2
+        exit 1
+    fi
 
-for function_name in validateRegistration verify; do
     if ! grep -Fq "Unused return value of '$function_name'." <<< "$probe_output"; then
         echo "Must-use consumer probe did not report ignored '$function_name' result" >&2
         echo "$probe_output" >&2
         exit 1
     fi
+    echo "Must-use consumer probe: '$function_name' rejected as expected"
 done
 
 echo "Published consumer smoke check: PASS"

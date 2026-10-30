@@ -28,7 +28,7 @@ Managed blocks: **135**
 | readme-kotlin-2 | README.md:206 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/client/build.gradle.kts.template#consumer-client-kmp-dependencies | consumer-compile |  |
 | readme-kotlin-3 | README.md:231 | Compose your stack | kotlin | consumer | configuration | documentation/consumer-smoke/server/build.gradle.kts.template#consumer-server-dependencies | consumer-compile |  |
 | readme-bash-1 | README.md:252 | Compose your stack | bash | maintainer | markdown | Markdown block | syntax |  |
-| readme-bash-2 | README.md:345 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
+| readme-bash-2 | README.md:351 | Maintainer Workflow | bash | maintainer | markdown | Markdown block | syntax |  |
 | client-webauthn-client-compose-readme-kotlin-1 | client/webauthn-client-compose/README.md:23 | How to use | kotlin | consumer | illustrative | Markdown illustration | illustrative | Snippet is intentionally abbreviated for the Compose integration guide |
 | client-webauthn-client-compose-readme-kotlin-2 | client/webauthn-client-compose/README.md:47 | How to use | kotlin | consumer | illustrative | Markdown illustration | illustrative | Snippet focuses on ownership and omits host-specific dependency injection |
 | client-webauthn-client-defaults-readme-kotlin-1 | client/webauthn-client-defaults/README.md:26 | Android | kotlin | consumer | source | documentation/examples/src/androidMain/kotlin/dev/webauthn/documentation/examples/DefaultAndroidClientExample.kt#default-android-client | platform-compile |  |

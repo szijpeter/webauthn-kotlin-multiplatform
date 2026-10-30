@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -19,7 +20,8 @@ kotlin {
         common {
             withJvm()
             group("platform") {
-                withAndroidTarget()
+                // Match the AGP-owned KMP target as well as its host-test compilation.
+                withCompilations { it.target.platformType == KotlinPlatformType.androidJvm }
                 group("ios") {
                     withIos()
                 }
@@ -33,6 +35,7 @@ kotlin {
         namespace = "dev.webauthn.documentation.examples"
         compileSdk = 37
         minSdk = 26
+        withHostTest {}
     }
 
     iosArm64()

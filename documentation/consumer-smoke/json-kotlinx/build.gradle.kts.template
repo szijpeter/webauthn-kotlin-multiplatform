@@ -2,8 +2,6 @@ plugins {
     kotlin("jvm")
 }
 
-apply(from = "../repositories.gradle.kts")
-
 dependencies {
     implementation("io.github.szijpeter:webauthn-json-kotlinx:<version>")
 }

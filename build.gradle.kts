@@ -96,7 +96,7 @@ subprojects {
 
         tasks.matching { it.name == "detekt" }.configureEach {
             dependsOn(
-                tasks.matching { candidate ->
+                tasks.withType<Detekt>().matching { candidate ->
                     candidate.name.startsWith("detekt") &&
                         candidate.name.endsWith("SourceSet") &&
                         !candidate.name.startsWith("detektBaseline")
@@ -106,7 +106,7 @@ subprojects {
     }
 
     pluginManager.withPlugin("webauthn.published-library") {
-        rootProject.dependencies.add("dokka", project)
+        rootProject.dependencies.add("dokka", rootProject.dependencies.project(mapOf("path" to project.path)))
     }
 }
 
@@ -129,6 +129,7 @@ tasks.register("docsCheck") {
         docsCatalogCheck,
         ":documentation:tooling:test",
         ":documentation:examples:jvmTest",
+        ":documentation:examples:testAndroidHostTest",
         ":documentation:examples:compileAndroidMain",
         ":documentation:examples:compileKotlinIosSimulatorArm64",
         ":sample:compose-passkey:allTests",

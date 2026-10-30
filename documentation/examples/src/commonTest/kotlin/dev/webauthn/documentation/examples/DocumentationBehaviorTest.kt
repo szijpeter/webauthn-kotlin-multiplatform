@@ -8,6 +8,7 @@ import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.Challenge
 import dev.webauthn.model.CollectedClientData
 import dev.webauthn.model.CredentialId
+import dev.webauthn.model.ExperimentalWebAuthnL3Api
 import dev.webauthn.model.Origin
 import dev.webauthn.model.PublicKeyCredentialRequestOptions
 import dev.webauthn.model.RpId
@@ -21,6 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
+@OptIn(ExperimentalWebAuthnL3Api::class)
 class DocumentationBehaviorTest {
     @Test
     fun requestOptionsExampleRejectsAnOriginInsteadOfAnRpId() {

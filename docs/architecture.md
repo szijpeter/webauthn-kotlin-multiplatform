@@ -201,6 +201,14 @@ artifacts; authored content and the source allowlist stay reviewable in the repo
 build owns these tasks and resolves their scripts and inputs from the repository root, so their
 behavior does not depend on the directory from which Gradle was invoked.
 
+Android-capable shared modules use the Android KMP library plugin, while the
+Android sample apps own application packaging through AGP's application plugin.
+Modules with shared tests enable Android host-test compilations explicitly. The
+documentation module's custom hierarchy connects Android main and host-test
+compilations to its platform/common sources, and `docsCheck` executes those tests.
+Root Detekt aggregation selects only Detekt tasks so it does not configure
+unrelated Android preview variants. See [Android build decisions](./dependency-decisions.md#android-gradle-plugin-95).
+
 ## Dependency rules
 
 - `webauthn-model` remains independent of the rest of the repository.
