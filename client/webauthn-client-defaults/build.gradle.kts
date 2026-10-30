@@ -9,6 +9,7 @@ kotlin {
         namespace = "dev.webauthn.client.defaults"
         compileSdk = 37
         minSdk = 26
+        withHostTest {}
     }
     iosArm64()
     iosSimulatorArm64()

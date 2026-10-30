@@ -341,6 +341,12 @@ Current state:
 
 ## Maintainer Workflow
 
+Android builds use AGP 9.5 and the repository Gradle wrapper. Shared Android tests
+run through `testAndroidHostTest`; `docsCheck` also runs the documentation examples
+on Android. See [the Android build decisions](./docs/dependency-decisions.md#android-gradle-plugin-95)
+for plugin, source-set, and Compose Preview requirements. Use `--warning-mode all`
+when validating build-tool upgrades.
+
 <!-- doc-example: id=readme-bash-2; owner=markdown; verify=syntax; audience=maintainer -->
 ```bash
 tools/agent/setup-hooks.sh

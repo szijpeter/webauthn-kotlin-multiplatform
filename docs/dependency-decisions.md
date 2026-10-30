@@ -1,5 +1,29 @@
 # Dependency Decisions
 
+## Android Gradle Plugin 9.5
+
+The build uses AGP 9.5.0 with Gradle 9.8.2 and Kotlin 2.4.21. Android apps use
+AGP's built-in Kotlin support; multiplatform libraries use
+`com.android.kotlin.multiplatform.library` and the `kotlin.android` DSL.
+The Android application modules stay separate from shared code. This follows the
+[Android KMP plugin migration guidance](https://developer.android.com/kotlin/multiplatform/plugin)
+and satisfies the [AGP 9.5 compatibility requirements](https://developer.android.com/build/releases/agp-9-5-0-release-notes).
+
+- Enable `withHostTest {}` in Android KMP modules containing shared tests. A task
+  reporting `NO-SOURCE` does not establish that those tests ran.
+  The standalone published-consumer smoke check also runs its Android host tests.
+- Custom source-set hierarchies must include AGP-owned Android compilations. The
+  documentation examples select `KotlinPlatformType.androidJvm` so Android main
+  and host-test compilations inherit the platform and common source sets.
+- The Compose Android app includes Android resources in unit tests, as required
+  by AGP's Compose Preview runfiles generation.
+- Detekt aggregation filters typed `Detekt` tasks before inspecting task names.
+  Scanning all task instances realizes unrelated AGP preview tasks, including
+  variants without unit tests, and can fail otherwise unrelated verification.
+- Validate with `--warning-mode all`, Android host tests, sample debug/release
+  builds, API compatibility, documentation checks, and local publishing. Keep
+  external-plugin warnings visible rather than suppressing them globally.
+
 ## Current State
 
 `webauthn-server-jvm-crypto` is Signum-first:

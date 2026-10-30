@@ -62,6 +62,11 @@ android {
         compose = true
     }
 
+    testOptions {
+        // AGP's Compose Preview runfiles need the compiled resources of the unit-test variant.
+        unitTests.isIncludeAndroidResources = true
+    }
+
     packaging {
         resources {
             merges += "META-INF/LICENSE.md"
