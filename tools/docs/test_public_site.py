@@ -104,6 +104,28 @@ class PublicSiteTest(unittest.TestCase):
             self.assertIn('data-omitted-internal-symbol="true"', first.read_text())
             self.assertIn('data-omitted-internal-symbol="true"', second.read_text())
 
+    def test_dokka_grouped_overload_links_use_existing_member_anchor(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary)
+            page = destination / "index.html"
+            member_fragment = "1354671103%2FFunctions%2F42"
+            page.write_text(
+                f'<a data-name="{member_fragment}" anchor-label="createCredential" '
+                f'id="{member_fragment}"></a>'
+                f'<a href="index.html#958361333%2FFunctions%2F42">createCredential</a>'
+                f'<span class="anchor-icon" pointing-to="{member_fragment}"></span>'
+                f'<a href="index.html#-1095451370%2FFunctions%2F42">createCredential</a>'
+                f'<a href="index.html#{member_fragment}">group link</a>'
+                '<a href="index.html#123%2FFunctions%2F99">unrelated link</a>',
+            )
+
+            repairs = public_site.repair_dokka_grouped_overload_links(destination)
+
+            content = page.read_text()
+            self.assertEqual(2, repairs)
+            self.assertEqual(3, content.count(f'href="index.html#{member_fragment}"'))
+            self.assertIn('href="index.html#123%2FFunctions%2F99"', content)
+
     def test_html_check_rejects_unresolved_release_tokens(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = Path(temporary)

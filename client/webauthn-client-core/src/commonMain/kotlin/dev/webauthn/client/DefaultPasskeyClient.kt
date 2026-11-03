@@ -22,6 +22,17 @@ public class DefaultPasskeyClient(
         )
     }
 
+    override suspend fun createCredential(
+        options: PublicKeyCredentialCreationOptions,
+        createOptions: PasskeyCreateOptions,
+    ): PasskeyResult<RawRegistrationResponse> {
+        return runOperation(
+            options = options,
+            validate = ::requireCreationOptions,
+            operation = { bridge.createCredential(it, createOptions) },
+        )
+    }
+
     override suspend fun getAssertion(
         options: PublicKeyCredentialRequestOptions,
     ): PasskeyResult<RawAuthenticationResponse> {

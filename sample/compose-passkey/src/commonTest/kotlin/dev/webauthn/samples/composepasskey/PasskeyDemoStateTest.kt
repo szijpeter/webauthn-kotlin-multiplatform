@@ -1,7 +1,11 @@
 package dev.webauthn.samples.composepasskey
 
 import dev.webauthn.client.PasskeyClientError
+import dev.webauthn.client.CapabilitySupport
+import dev.webauthn.client.PasskeyCapabilities
+import dev.webauthn.client.PasskeyCapability
 import dev.webauthn.client.PasskeyPhase
+import dev.webauthn.client.PlatformCapability
 import dev.webauthn.samples.composepasskey.app.auth.AuthDemoCoordinator
 import dev.webauthn.samples.composepasskey.data.logging.DebugLogStore
 import dev.webauthn.samples.composepasskey.data.session.AppSessionState
@@ -15,12 +19,52 @@ import dev.webauthn.samples.composepasskey.domain.passkey.areCeremonyActionsEnab
 import dev.webauthn.samples.composepasskey.domain.passkey.demoTransitionEvent
 import dev.webauthn.samples.composepasskey.domain.passkey.toDemoStatus
 import dev.webauthn.samples.composepasskey.domain.passkey.PasskeyDemoConfig
+import dev.webauthn.samples.composepasskey.ui.screens.auth.canStartConditionalRegistration
+import dev.webauthn.samples.composepasskey.ui.screens.auth.canStartExplicitRegistration
+import dev.webauthn.samples.composepasskey.ui.screens.auth.supportsConditionalCreate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class PasskeyDemoStateTest {
+    @Test
+    fun explicit_registration_does_not_require_conditional_create_support() {
+        assertTrue(canStartExplicitRegistration(actionsEnabled = true, canRegister = true))
+        assertFalse(canStartExplicitRegistration(actionsEnabled = false, canRegister = true))
+        assertFalse(canStartExplicitRegistration(actionsEnabled = true, canRegister = false))
+
+        assertTrue(
+            canStartConditionalRegistration(
+                actionsEnabled = true,
+                canRegister = true,
+                conditionalCreateAvailable = true,
+            ),
+        )
+        assertFalse(
+            canStartConditionalRegistration(
+                actionsEnabled = true,
+                canRegister = true,
+                conditionalCreateAvailable = false,
+            ),
+        )
+    }
+
+    @Test
+    fun conditional_create_action_requires_a_supported_platform_capability() {
+        val capability = PasskeyCapability.Platform(PlatformCapability.ConditionalCreate)
+
+        assertTrue(
+            PasskeyCapabilities(mapOf(capability to CapabilitySupport.SUPPORTED))
+                .supportsConditionalCreate(),
+        )
+        assertFalse(
+            PasskeyCapabilities(mapOf(capability to CapabilitySupport.UNSUPPORTED))
+                .supportsConditionalCreate(),
+        )
+        assertFalse(PasskeyCapabilities().supportsConditionalCreate())
+    }
+
     @Test
     fun actions_are_disabled_only_while_a_ceremony_is_in_progress() {
         assertTrue(areCeremonyActionsEnabled(DemoCeremonyState.Idle))

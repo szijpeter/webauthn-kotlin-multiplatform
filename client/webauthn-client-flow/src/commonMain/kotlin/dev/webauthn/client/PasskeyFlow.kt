@@ -57,10 +57,23 @@ public class PasskeyFlow(
         input: Input,
         backend: RegistrationBackend<Input, State, Output>,
         onPhaseChanged: (PasskeyPhase) -> Unit = {},
+    ): CeremonyResult<Output> = register(
+        input = input,
+        backend = backend,
+        createOptions = PasskeyCreateOptions.Default,
+        onPhaseChanged = onPhaseChanged,
+    )
+
+    /** Runs registration with cross-platform passkey creation hints. */
+    public suspend fun <Input, State, Output> register(
+        input: Input,
+        backend: RegistrationBackend<Input, State, Output>,
+        createOptions: PasskeyCreateOptions,
+        onPhaseChanged: (PasskeyPhase) -> Unit = {},
     ): CeremonyResult<Output> {
         return runCeremony(
             start = { backend.start(input) },
-            prompt = passkeyClient::createCredential,
+            prompt = { options -> passkeyClient.createCredential(options, createOptions) },
             finish = backend::finish,
             onPhaseChanged = onPhaseChanged,
         )

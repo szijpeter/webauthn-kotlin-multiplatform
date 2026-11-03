@@ -1,15 +1,17 @@
 package dev.webauthn.client.ios
 
+import dev.webauthn.client.PasskeyCreateOptions
 import dev.webauthn.model.AuthenticationExtensionsPRFValues
 import dev.webauthn.model.AuthenticatorAttachment
 import dev.webauthn.model.Base64UrlBytes
 import dev.webauthn.model.PrfExtensionInput
+import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class IosAuthorizationBridgePolicyTest {
@@ -50,6 +52,61 @@ class IosAuthorizationBridgePolicyTest {
                 iosMajorVersion = 14,
             ),
         )
+    }
+
+    @Test
+    fun excludesSecurityKeyRegistration_whenConditionalCreateIsRequested() {
+        assertFalse(
+            shouldIncludeSecurityKeyRegistrationRequest(
+                authenticatorAttachment = AuthenticatorAttachment.CROSS_PLATFORM,
+                iosMajorVersion = 18,
+                conditionalCreateRequested = true,
+            ),
+        )
+    }
+
+    @Test
+    fun rejectsConditionalCreate_whenAttachmentIsCrossPlatform() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            validateConditionalCreateRequest(
+                authenticatorAttachment = AuthenticatorAttachment.CROSS_PLATFORM,
+                conditionalCreateRequested = true,
+            )
+        }
+        assertTrue(error.message?.contains("platform authenticators") == true)
+    }
+
+    @Test
+    fun mapsConditionalCreate_toAuthenticationServicesConditionalRegistrationStyle() {
+        assertEquals(
+            ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyle
+                .ASAuthorizationPlatformPublicKeyCredentialRegistrationRequestStyleConditional,
+            conditionalRegistrationRequestStyleFor(
+                createOptions = PasskeyCreateOptions.Conditional,
+                iosMajorVersion = 18,
+            ),
+        )
+    }
+
+    @Test
+    fun doesNotSetRegistrationRequestStyle_forDefaultCreate() {
+        assertNull(
+            conditionalRegistrationRequestStyleFor(
+                createOptions = PasskeyCreateOptions.Default,
+                iosMajorVersion = 18,
+            ),
+        )
+    }
+
+    @Test
+    fun rejectsConditionalCreate_whenRuntimeIsTooOld() {
+        val error = assertFailsWith<UnsupportedOperationException> {
+            conditionalRegistrationRequestStyleFor(
+                createOptions = PasskeyCreateOptions.Conditional,
+                iosMajorVersion = 17,
+            )
+        }
+        assertTrue(error.message?.contains("iOS 18+") == true)
     }
 
     @Test
