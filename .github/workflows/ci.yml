@@ -136,6 +136,27 @@ jobs:
       - name: iOS Host App Compile
         run: xcodebuild -project sample/compose-passkey-ios/ComposePasskeyIos.xcodeproj -scheme ComposePasskeyIos -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
+  swift-bridge:
+    runs-on: macos-26
+    needs: [harness]
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Swift Bridge Checks
+        run: |
+          ./gradlew \
+            :client:webauthn-client-swift-bridge:iosSimulatorArm64Test \
+            :client:webauthn-client-swift-bridge:assembleWebAuthnBridgeReleaseXCFramework \
+            --stacktrace
+          tools/swift/check-xcframework.sh
+
   release-preflight:
     runs-on: macos-latest
     needs: [harness, api-compatibility]
