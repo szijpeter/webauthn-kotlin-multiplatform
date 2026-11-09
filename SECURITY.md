@@ -41,3 +41,7 @@ When reporting, include affected module(s), threat model assumptions, and whethe
 - The sample backend defaults to strict attestation verification; use `WEBAUTHN_SAMPLE_ATTESTATION=NONE` only as an explicit local-development override.
 - Maven Central publication is a manual workflow and requires signing plus Central Portal credentials.
 - The Central publishing job runs with read-only repository contents and disables persisted Git credentials before executing Gradle. A separate `publish-and-release`-only job receives `contents:write` solely to create the matching GitHub release tag from curated changelog notes.
+
+The optional sample registration canary routes are disabled unless `WEBAUTHN_CONFORMANCE_ENABLED=true`.
+They use server-owned RP/origin configuration and the standard registration verifier. Malformed
+requests return a controlled client error; canary success does not establish FIDO certification.
