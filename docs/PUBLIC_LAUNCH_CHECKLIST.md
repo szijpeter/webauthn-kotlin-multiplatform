@@ -48,3 +48,7 @@ Use this checklist when moving from private to public operation.
 4. Maven Central artifacts resolve using the published coordinates and BOM.
 5. No secret findings exist in baseline scans; if any are found, rotate credentials immediately and evaluate targeted history rewrite.
 6. Delete any temporary release execution-map doc once that release effort is complete.
+
+Swift bridge changes require simulator tests, both XCFramework architectures, and per-slice
+metadata/privacy/license checks before merge. Physical-device qualification remains a separate
+release requirement.
