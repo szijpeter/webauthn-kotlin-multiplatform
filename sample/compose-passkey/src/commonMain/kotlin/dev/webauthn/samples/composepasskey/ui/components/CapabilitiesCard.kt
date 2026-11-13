@@ -38,6 +38,9 @@ fun CapabilitiesCard(
     val securityKeyCapability = remember {
         PasskeyCapability.Platform(PlatformCapability.SecurityKey)
     }
+    val conditionalCreateCapability = remember {
+        PasskeyCapability.Platform(PlatformCapability.ConditionalCreate)
+    }
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -60,6 +63,7 @@ fun CapabilitiesCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 CapabilityChip("Security Key", capabilities.supports(securityKeyCapability))
+                CapabilityChip("Auto Create", capabilities.supports(conditionalCreateCapability))
             }
             Text(
                 text = "Capabilities reported: ${capabilities.support.size}",

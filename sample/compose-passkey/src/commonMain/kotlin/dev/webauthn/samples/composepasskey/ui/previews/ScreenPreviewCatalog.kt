@@ -30,8 +30,10 @@ private fun AuthScreenIdlePreview() {
             ),
             actionsEnabled = true,
             canRegister = true,
+            conditionalCreateAvailable = true,
             onShowLogs = {},
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }
@@ -49,8 +51,10 @@ private fun AuthScreenBusyPreview() {
             ),
             actionsEnabled = false,
             canRegister = true,
+            conditionalCreateAvailable = true,
             onShowLogs = {},
             onRegister = {},
+            onAutoCreate = {},
             onSignIn = {},
         )
     }
