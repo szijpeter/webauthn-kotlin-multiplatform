@@ -45,6 +45,12 @@ val requestLocalNetworkPermission = demoConfigValue(
 android {
     namespace = "dev.webauthn.samples.composepasskey.android"
 
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
+
     defaultConfig {
         applicationId = "dev.webauthn.samples.composepasskey.android"
         minSdk = 30
